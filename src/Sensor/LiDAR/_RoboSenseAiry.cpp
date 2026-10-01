@@ -50,14 +50,14 @@ namespace kai
         IF_Le_F(!m_pPCLout, "PCLframeOut not found: " + n);
 
         n = "";
-        jKv(j, "_UDPmsop", n);
-        m_pUDPmsop = (_UDP *)(pM->findModule(n));
-        NULL_F(m_pUDPmsop);
+        jKv(j, "BytePacketStreamMsopIn", n);
+        m_pBpStreamMsopIn = dynamic_cast<BytePacketStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+        NULL_F(m_pBpStreamMsopIn);
 
         n = "";
-        jKv(j, "_UDPdifop", n);
-        m_pUDPdifop = (_UDP *)(pM->findModule(n));
-        NULL_F(m_pUDPdifop);
+        jKv(j, "BytePacketStreamDifopIn", n);
+        m_pBpStreamDifopIn = dynamic_cast<BytePacketStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+        NULL_F(m_pBpStreamDifopIn);
 
         return true;
     }
@@ -76,8 +76,8 @@ namespace kai
     bool _RoboSenseAiry::check(void)
     {
         NULL_F(m_pPCLout);
-        NULL_F(m_pUDPmsop);
-        NULL_F(m_pUDPdifop);
+        NULL_F(m_pBpStreamMsopIn);
+        NULL_F(m_pBpStreamDifopIn);
 
         return this->_ReferenceFrame::check();
     }
@@ -94,44 +94,48 @@ namespace kai
     {
         while (m_pT->bRun())
         {
+            m_pT->autoFPS();
+
             recvMSOP();
         }
     }
 
     bool _RoboSenseAiry::recvMSOP(void)
     {
-        NULL_F(m_pUDPmsop);
+        NULL_F(m_pBpStreamMsopIn);
 
-        uint8_t pB[RS_MSOP_N];
-        int nBr = m_pUDPmsop->read(pB, RS_MSOP_N);
-        IF_F(nBr <= 0);
+        vector<BYTE_PACKET> vPacket;
+        m_pBpStreamMsopIn->getPackets(vPacket, m_tLastBpStreamMsopIn);
+        for (const BYTE_PACKET &packet : vPacket)
+        {
+            m_tLastBpStreamMsopIn = packet.m_tStamp;
+        }
 
-        // pDataRecv->version = pB[0];
-        // memcpy(pDataRecv->data, &pB[36], LVX2_N_DATA);
-
-        return true;
+        return !vPacket.empty();
     }
 
     void _RoboSenseAiry::updateDIFOP(void)
     {
         while (m_pTdifop->bRun())
         {
+            m_pTdifop->autoFPS();
+
             recvDIFOP();
         }
     }
 
     bool _RoboSenseAiry::recvDIFOP(void)
     {
-        NULL_F(m_pUDPdifop);
+        NULL_F(m_pBpStreamDifopIn);
 
-        uint8_t pB[RS_MSOP_N];
-        int nBr = m_pUDPdifop->read(pB, RS_MSOP_N);
-        IF_F(nBr <= 0);
+        vector<BYTE_PACKET> vPacket;
+        m_pBpStreamDifopIn->getPackets(vPacket, m_tLastBpStreamDifopIn);
+        for (const BYTE_PACKET &packet : vPacket)
+        {
+            m_tLastBpStreamDifopIn = packet.m_tStamp;
+        }
 
-        // pDataRecv->version = pB[0];
-        // memcpy(pDataRecv->data, &pB[36], LVX2_N_DATA);
-
-        return true;
+        return !vPacket.empty();
     }
 
     void _RoboSenseAiry::console(void *pConsole)

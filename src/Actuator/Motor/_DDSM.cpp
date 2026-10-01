@@ -39,9 +39,9 @@ namespace kai
 		const json &j = *m_pJ;
 
 		string n = "";
-		jKv(j, "_IObase", n);
-		m_pIO = (_IObase *)(pM->findModule(n));
-		IF_Le_F(!m_pIO, "_IObase not found: " + n);
+		jKv(j, "BytePacketStreamOut", n);
+		m_pBpStreamOut = dynamic_cast<BytePacketStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+		IF_Le_F(!m_pBpStreamOut, "BytePacketStreamOut not found: " + n);
 
 		return true;
 	}
@@ -56,8 +56,7 @@ namespace kai
 
 	bool _DDSM::check(void)
 	{
-		NULL_F(m_pIO);
-		IF_F(!m_pIO->bOpen());
+		NULL_F(m_pBpStreamOut);
 
 		return this->_ActuatorBase::check();
 	}
@@ -107,7 +106,7 @@ namespace kai
 
 		for (int i = 0; i < 5; i++)
 		{
-			m_pIO->write(pB, DDSM_CMD_NB);
+			m_pBpStreamOut->addPacket(vector<uint8_t>(pB, pB + DDSM_CMD_NB));
 		}
 
 		return true;
@@ -128,7 +127,8 @@ namespace kai
 		pB[7] = 0;
 		pB[8] = 0;
 		pB[9] = m_mode;
-		return m_pIO->write(pB, DDSM_CMD_NB);
+		m_pBpStreamOut->addPacket(vector<uint8_t>(pB, pB + DDSM_CMD_NB));
+		return true;
 	}
 
 	bool _DDSM::setOutput(int16_t v)
@@ -146,7 +146,8 @@ namespace kai
 		pB[7] = 0;
 		pB[8] = 0;
 		pB[9] = crc8_MAXIM(pB, 9);
-		return m_pIO->write(pB, DDSM_CMD_NB);
+		m_pBpStreamOut->addPacket(vector<uint8_t>(pB, pB + DDSM_CMD_NB));
+		return true;
 	}
 
 	void _DDSM::updateR(void)
@@ -172,9 +173,9 @@ namespace kai
 		this->_ActuatorBase::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
-		if (!m_pIO->bOpen())
+		if (!m_pBpStreamOut)
 		{
-			pC->addMsg("Not Connected", 1);
+			pC->addMsg("Output stream unavailable", 1);
 			return;
 		}
 	}

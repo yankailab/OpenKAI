@@ -6,6 +6,7 @@
  */
 
 #include "_GPS.h"
+#include "../UI/_Console.h"
 
 namespace kai
 {
@@ -39,9 +40,9 @@ namespace kai
 		const json &j = *m_pJ;
 
 		string n = "";
-		jKv(j, "_IObase", n);
-		m_pIO = (_IObase *)(pM->findModule(n));
-		NULL_F(m_pIO);
+		jKv(j, "BytePacketStreamIn", n);
+		m_pBpStreamIn = dynamic_cast<BytePacketStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+		IF_Le_F(!m_pBpStreamIn, "BytePacketStreamIn not found: " + n);
 
 		return true;
 	}
@@ -66,19 +67,33 @@ namespace kai
 		}
 	}
 
-	bool _GPS::readNMEA(void)
+	bool _GPS::readByte(uint8_t *pB)
 	{
-		if (m_nRead == 0)
+		NULL_F(m_pBpStreamIn);
+		if (m_iByteIn == m_vBytesIn.size())
 		{
-			m_nRead = m_pIO->read(m_rBuf, IO_BUF_N);
-			IF_F(m_nRead <= 0);
-			m_iRead = 0;
+			vector<BYTE_PACKET> vPacket;
+			m_pBpStreamIn->getPackets(vPacket, m_tLastBpStreamIn);
+			m_vBytesIn.clear();
+			m_iByteIn = 0;
+			for (const BYTE_PACKET &packet : vPacket)
+			{
+				m_vBytesIn.insert(m_vBytesIn.end(), packet.m_vB.begin(), packet.m_vB.end());
+				m_tLastBpStreamIn = packet.m_tStamp;
+			}
 		}
 
-		while (m_iRead < m_nRead)
+		IF_F(m_iByteIn == m_vBytesIn.size());
+		*pB = m_vBytesIn[m_iByteIn++];
+		return true;
+	}
+
+	bool _GPS::readNMEA(void)
+	{
+		uint8_t b;
+		while (readByte(&b))
 		{
-			char c = (char)m_rBuf[m_iRead];
-			m_iRead++;
+			char c = static_cast<char>(b);
 
 			if (m_msg.length() == 0)
 			{
@@ -95,7 +110,6 @@ namespace kai
 			m_msg += c;
 		}
 
-		m_nRead = 0;
 		return false;
 	}
 
@@ -218,9 +232,9 @@ namespace kai
 		this->_ModuleBase::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
-		if (!m_pIO->bOpen())
+		if (!m_pBpStreamIn)
 		{
-			pC->addMsg("Not connected");
+			pC->addMsg("Input stream unavailable");
 			return;
 		}
 

@@ -152,7 +152,6 @@ namespace kai
 		}
 
 	protected:
-		_IObase *m_pIOsend = nullptr;
 		vector<RTCM_MSG> m_vMsg;
 	};
 

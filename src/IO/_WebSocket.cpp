@@ -12,22 +12,20 @@ namespace kai
 
 	_WebSocket::_WebSocket()
 	{
-		m_nPacket = 1024;
-		m_nPbuffer = 512;
-		m_ioType = io_webSocket;
 		m_ioStatus = io_unknown;
 	}
 
 	_WebSocket::~_WebSocket()
 	{
-		m_packetR.clear();
+		stop();
 		close();
 	}
 
 	bool _WebSocket::loadConfig(void)
 	{
 		IF_F(!this->_IObase::loadConfig());
-		IF_F(!m_packetR.init(m_nPbuffer, m_nPacket));
+		IF_F(!m_bpStreamIn.clear(1024, 512));
+		IF_F(!m_bpStreamOut.clear(1024, 512));
 
 		return true;
 	}
@@ -40,16 +38,34 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	int _WebSocket::read(uint8_t *pBuf, int nB)
+	bool _WebSocket::link(InstanceMgr *pM)
 	{
-		NULL__(pBuf, 0);
-
-		return m_packetR.getPacket(pBuf, nB);
+		IF_F(!_IObase::link(pM));
+		if (!m_pBpStreamIn)
+		{
+			m_pBpStreamIn = &m_bpStreamIn;
+		}
+		if (!m_pBpStreamOut)
+		{
+			m_pBpStreamOut = &m_bpStreamOut;
+		}
+		return true;
 	}
 
-	IO_PACKET_FIFO *_WebSocket::getPacketFIFOr(void)
+	bool _WebSocket::start(void)
 	{
-		return &m_packetR;
+		// Accepted endpoints are serviced by their server's read and write workers.
+		return true;
+	}
+
+	BytePacketStream *_WebSocket::getBytePacketStreamIn(void)
+	{
+		return m_pBpStreamIn;
+	}
+
+	BytePacketStream *_WebSocket::getBytePacketStreamOut(void)
+	{
+		return m_pBpStreamOut;
 	}
 
 	void _WebSocket::console(void *pConsole)

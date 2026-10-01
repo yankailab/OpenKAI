@@ -104,10 +104,11 @@ list(APPEND OpenKAI_cpp
 
 list(APPEND OpenKAI_cpp
   src/DataObject/BBoxStream.cpp
-  src/DataObject/BytePacket.cpp
+  src/DataObject/BytePacketStream.cpp
   src/DataObject/DataObjBase.cpp
   src/DataObject/IMUstream.cpp
   src/DataObject/LineFrame.cpp
+  src/DataObject/MavlinkStream.cpp
   src/DataObject/PCLframe.cpp
   src/DataObject/PCLmap.cpp
   src/DataObject/SharedMemoryFrame.cpp

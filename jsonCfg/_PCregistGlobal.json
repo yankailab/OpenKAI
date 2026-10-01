@@ -369,6 +369,8 @@
 		"/paramKiss": "/home/kai/config/tf3.kiss"
 	},
 	"ws": {
+		"BytePacketStreamIn": "ws_tx",
+		"BytePacketStreamOut": "ws_rx",
 		"class": "_WebSocket",
 		"bON": false,
 		"bLog": false,
@@ -386,7 +388,8 @@
 		"bON": false,
 		"Window": "OKview",
 		"_Console": "OK_Console",
-		"_IObase": "ws",
+		"BytePacketStreamIn": "ws_rx",
+		"BytePacketStreamOut": "ws_tx",
 		"PCT": [
 			"tf1",
 			"tf2",
@@ -397,24 +400,27 @@
 		}
 	},
 	"UDPsend": {
+		"BytePacketStreamIn": "UDPsend_tx",
 		"class": "_UDP",
 		"bON": false,
 		"bLog": false,
 		"thread": {
 			"FPS": 30
 		},
+		"threadR": {
+			"FPS": 30
+		},
 		"addrRemote": "127.0.0.1",
 		"portRemote": 19840,
 		"portLocal": 0,
 		"/Window": "OKview",
-		"/_Console": "OpenKAI",
-		"/nFIFO": 1280000
+		"/_Console": "OpenKAI"
 	},
 	"PCsend": {
 		"class": "_PCsend",
 		"bON": false,
 		"bLog": true,
-		"_IObase": "UDPsend",
+		"BytePacketStreamOut": "UDPsend_tx",
 		"nB": 256,
 		"tInt": 100000,
 		"thread": {
@@ -425,21 +431,24 @@
 		"/_Console": "OpenKAI"
 	},
 	"UDPrecv": {
+		"BytePacketStreamOut": "UDPrecv_rx",
 		"class": "_UDP",
 		"bON": false,
 		"thread": {
 			"FPS": 30
 		},
+		"threadR": {
+			"FPS": 30
+		},
 		"portLocal": 19840,
 		"/Window": "OKview",
 		"/_Console": "OpenKAI",
-		"/nFIFO": 1280000,
 		"/_wakeUp": "PCrecv"
 	},
 	"PCrecv": {
 		"class": "_PCrecv",
 		"bON": false,
-		"_IObase": "UDPrecv",
+		"BytePacketStreamIn": "UDPrecv_rx",
 		"/_PCviewer": "pcv",
 		"thread": {
 			"FPS": 30
@@ -500,5 +509,29 @@
 		"type": "dataObject",
 		"class": "PCLframe"
 	},
-	"/migration": "Format-only modules without a current implementation: Window, _PCui, _PCviewer, _RealSensePC. Their original class names and settings are preserved."
+	"/migration": "Format-only modules without a current implementation: Window, _PCui, _PCviewer, _RealSensePC. Their original class names and settings are preserved.",
+	"ws_tx": {
+		"type": "dataObject",
+		"class": "BytePacketStream",
+		"nPacket": 256,
+		"nPbuf": 2000
+	},
+	"ws_rx": {
+		"type": "dataObject",
+		"class": "BytePacketStream",
+		"nPacket": 256,
+		"nPbuf": 2000
+	},
+	"UDPsend_tx": {
+		"type": "dataObject",
+		"class": "BytePacketStream",
+		"nPacket": 256,
+		"nPbuf": 2000
+	},
+	"UDPrecv_rx": {
+		"type": "dataObject",
+		"class": "BytePacketStream",
+		"nPacket": 256,
+		"nPbuf": 2000
+	}
 }

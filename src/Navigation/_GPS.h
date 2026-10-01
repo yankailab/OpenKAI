@@ -8,7 +8,8 @@
 #ifndef OpenKAI_src_Navigation__GPS_H_
 #define OpenKAI_src_Navigation__GPS_H_
 
-#include "../IO/_IObase.h"
+#include "../Base/_ModuleBase.h"
+#include "../DataObject/BytePacketStream.h"
 #include "../Dependencies/minmea.h"
 
 namespace kai
@@ -27,6 +28,7 @@ namespace kai
 		virtual void console(void *pConsole);
 
 	private:
+		bool readByte(uint8_t *pB);
 		bool readNMEA(void);
 		void decodeNMEA(void);
 		virtual void update(void);
@@ -37,10 +39,10 @@ namespace kai
 		}
 
 	protected:
-		_IObase *m_pIO = nullptr;
-		uint8_t m_rBuf[IO_BUF_N];
-		int m_nRead = 0;
-		int m_iRead = 0;
+		BytePacketStream *m_pBpStreamIn = nullptr;
+		uint64_t m_tLastBpStreamIn = 0;
+		vector<uint8_t> m_vBytesIn;
+		size_t m_iByteIn = 0;
 		string m_msg = "";
 
 		minmea_sentence_rmc m_rmc;

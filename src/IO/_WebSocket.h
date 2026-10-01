@@ -8,10 +8,7 @@
 #ifndef OpenKAI_src_IO__WebSocket_H_
 #define OpenKAI_src_IO__WebSocket_H_
 
-#include <wsserver/ws.h>
 #include "_IObase.h"
-
-#define WS_N_BUF 512
 
 namespace kai
 {
@@ -23,13 +20,17 @@ namespace kai
 
 		virtual bool loadConfig(void) override;
 		bool saveConfig(bool bExport) override;
+		bool link(InstanceMgr *pM) override;
+		bool start(void) override;
 		virtual void console(void *pConsole);
 
-		int read(uint8_t *pBuf, int nB);
-		IO_PACKET_FIFO* getPacketFIFOr(void);
+		BytePacketStream *getBytePacketStreamIn(void);
+		BytePacketStream *getBytePacketStreamOut(void);
 
 	protected:
-		IO_PACKET_FIFO m_packetR;
+		// Accepted clients own streams when no named DataObjects are configured.
+		BytePacketStream m_bpStreamIn;
+		BytePacketStream m_bpStreamOut;
 
 	};
 

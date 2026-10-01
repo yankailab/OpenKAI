@@ -39,10 +39,16 @@ namespace kai
 		IF_F(!this->_ModuleBase::link(pM));
 		const json &j = *m_pJ;
 
-		string n = "";
-		jKv(j, "_IObase", n);
-		m_pIO = (_IObase *)(pM->findModule(n));
-		NULL_F(m_pIO);
+		string n;
+		jKv(j, "BytePacketStreamIn", n);
+		m_pBpStreamIn = dynamic_cast<BytePacketStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+		IF_Le_F(!n.empty() && !m_pBpStreamIn, "BytePacketStreamIn not found: " + n);
+
+		n.clear();
+		jKv(j, "BytePacketStreamOut", n);
+		m_pBpStreamOut = dynamic_cast<BytePacketStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+		IF_Le_F(!n.empty() && !m_pBpStreamOut, "BytePacketStreamOut not found: " + n);
+		IF_F(!m_pBpStreamIn && !m_pBpStreamOut);
 
 		return true;
 	}
@@ -57,8 +63,7 @@ namespace kai
 
 	bool _ProtocolBase::check(void)
 	{
-		NULL_F(m_pIO);
-		IF_F(!m_pIO->bOpen());
+		IF_F(!m_pBpStreamIn && !m_pBpStreamOut);
 
 		return this->_ModuleBase::check();
 	}
@@ -81,10 +86,15 @@ namespace kai
 	void _ProtocolBase::updateR(void)
 	{
 		PROTOCOL_CMD rCMD;
+		rCMD.clear();
 
 		while (m_pTr->bRun())
 		{
-			IF_CONT(!readCMD(&rCMD));
+			if (!readCMD(&rCMD))
+			{
+				m_pTr->autoFPS();
+				continue;
+			}
 
 			handleCMD(rCMD);
 			rCMD.clear();
@@ -92,28 +102,47 @@ namespace kai
 		}
 	}
 
+	bool _ProtocolBase::readByte(uint8_t *pB)
+	{
+		NULL_F(m_pBpStreamIn);
+		NULL_F(pB);
+
+		if (m_iPacketIn == m_vPacketIn.size())
+		{
+			m_pBpStreamIn->getPackets(m_vPacketIn, m_tLastBpStreamIn);
+			m_iPacketIn = 0;
+			m_iByteIn = 0;
+		}
+
+		while (m_iPacketIn < m_vPacketIn.size())
+		{
+			const BYTE_PACKET &packet = m_vPacketIn[m_iPacketIn];
+			m_tLastBpStreamIn = packet.m_tStamp;
+			if (m_iByteIn < packet.m_vB.size())
+			{
+				*pB = packet.m_vB[m_iByteIn++];
+				return true;
+			}
+
+			m_iPacketIn++;
+			m_iByteIn = 0;
+		}
+
+		return false;
+	}
+
 	bool _ProtocolBase::readCMD(PROTOCOL_CMD *pCmd)
 	{
 		IF_F(!check());
 		NULL_F(pCmd);
 
-		if (m_nRead == 0)
+		uint8_t b;
+		while (readByte(&b))
 		{
-			m_nRead = m_pIO->read(m_pBuf, PB_N_BUF);
-			IF_F(m_nRead <= 0);
-			m_iRead = 0;
-		}
-
-		while (m_iRead < m_nRead)
-		{
-			bool r = pCmd->input(m_pBuf[m_iRead++]);
-			if (m_iRead == m_nRead)
+			if (pCmd->input(b))
 			{
-				m_iRead = 0;
-				m_nRead = 0;
+				return true;
 			}
-
-			IF__(r, true);
 		}
 
 		return false;

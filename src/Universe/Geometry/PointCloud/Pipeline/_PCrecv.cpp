@@ -43,9 +43,10 @@ namespace kai
 		IF_Le_F(!m_pPCLout, "PCLframeOut not found: " + name);
 
 		name.clear();
-		jKv(*m_pJ, "_IObase", name);
-		m_pIO = static_cast<_IObase *>(pM->findModule(name));
-		IF_Le_F(!m_pIO, "_IObase not found: " + name);
+		jKv(*m_pJ, "BytePacketStreamIn", name);
+		m_pBpStreamIn = dynamic_cast<BytePacketStream *>(static_cast<DataObjBase *>(pM->findDataObject(name)));
+		IF_Le_F(!m_pBpStreamIn, "BytePacketStreamIn not found: " + name);
+		m_tLastBpStreamIn = 0;
 		return true;
 	}
 
@@ -57,7 +58,7 @@ namespace kai
 
 	bool _PCrecv::check(void)
 	{
-		return m_pIO && m_pIO->bOpen() && m_pPCLout && _ReferenceFrame::check();
+		return m_pBpStreamIn && m_pPCLout && _ReferenceFrame::check();
 	}
 
 	void _PCrecv::clear(void)
@@ -70,7 +71,7 @@ namespace kai
 
 	void _PCrecv::update(void)
 	{
-		uint8_t bytes[pcstream::maxPacketBytes];
+		vector<BYTE_PACKET> vPackets;
 		while (m_pT->bRun())
 		{
 			m_pT->autoFPS();
@@ -82,15 +83,14 @@ namespace kai
 				continue;
 			}
 
-			const int count = m_pIO->read(bytes, sizeof(bytes));
-			if (count > 0)
+			m_pBpStreamIn->getPackets(vPackets, m_tLastBpStreamIn);
+			for (const BYTE_PACKET &packet : vPackets)
 			{
-				// Drain transport bursts without delaying every packet by one frame.
-				m_pT->skipSleep();
-			}
-			for (int i = 0; i < count; ++i)
-			{
-				inputByte(bytes[i]);
+				for (uint8_t byte : packet.m_vB)
+				{
+					inputByte(byte);
+				}
+				m_tLastBpStreamIn = packet.m_tStamp;
 			}
 		}
 	}

@@ -86,7 +86,9 @@ namespace kai
         IF_F(!j.is_object());
 
         string msg = j.dump() + m_msgFinishSend;
-        return m_pIO->write((unsigned char *)msg.c_str(), msg.size());
+        NULL_F(m_pBpStreamOut);
+        m_pBpStreamOut->addPacket(vector<uint8_t>(msg.begin(), msg.end()));
+        return true;
     }
 
     void _JSONbase::sendHeartbeat(void)
@@ -105,7 +107,11 @@ namespace kai
 
         while (m_pTr->bRun())
         {
-            IF_CONT(!recvJson(&strR, m_pIO));
+            if (!recvJson(&strR))
+            {
+                m_pTr->autoFPS();
+                continue;
+            }
 
             handleJson(strR);
             strR.clear();
@@ -113,33 +119,18 @@ namespace kai
         }
     }
 
-    bool _JSONbase::recvJson(string *pStr, _IObase *pIO)
+    bool _JSONbase::recvJson(string *pStr)
     {
         IF_F(!check());
         NULL_F(pStr);
 
-        if (m_nRead == 0)
+        const size_t nStrFinish = m_msgFinishRecv.length();
+        uint8_t b;
+        while (readByte(&b))
         {
-            m_nRead = m_pIO->read(m_pBuf, JB_N_BUF);
-            IF_F(m_nRead <= 0);
-            m_iRead = 0;
-        }
-
-        unsigned int nStrFinish = m_msgFinishRecv.length();
-
-        while (m_iRead < m_nRead)
-        {
-            *pStr += m_pBuf[m_iRead++];
-            if (m_iRead == m_nRead)
-            {
-                m_iRead = 0;
-                m_nRead = 0;
-            }
-
+            *pStr += b;
             IF_CONT(pStr->length() <= nStrFinish);
-
-            string lstr = pStr->substr(pStr->length() - nStrFinish, nStrFinish);
-            IF_CONT(lstr != m_msgFinishRecv);
+            IF_CONT(pStr->compare(pStr->length() - nStrFinish, nStrFinish, m_msgFinishRecv) != 0);
 
             pStr->erase(pStr->length() - nStrFinish, nStrFinish);
             LOG_I("Received: " + *pStr);
@@ -181,13 +172,7 @@ namespace kai
         NULL_(pConsole);
         this->_ProtocolBase::console(pConsole);
 
-        string msg;
-        if (m_pIO->bOpen())
-            msg = "Connected";
-        else
-            msg = "Not connected";
-
-        ((_Console *)pConsole)->addMsg(msg, 1);
+        ((_Console *)pConsole)->addMsg(check() ? "BytePacketStream linked" : "BytePacketStream unavailable", 1);
     }
 
 }

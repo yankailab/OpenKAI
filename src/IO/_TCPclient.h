@@ -23,29 +23,27 @@ namespace kai
 
 		virtual bool loadConfig(void) override;
 		bool saveConfig(bool bExport) override;
-		virtual bool start(void);
 		virtual void console(void *pConsole);
 
-		bool open(void);
-		void close(void);
-
-		virtual int read(uint8_t *pBuf, int nB);
+		bool open(void) override;
+		void close(void) override;
 
 	private:
-		virtual void update(void);
-		static void *getUpdate(void *This)
-		{
-			((_TCPclient *)This)->update();
-			return NULL;
-		}
+		void readPackets(void) override;
+		void writePackets(void) override;
+		bool writePending(void);
+		void closeConnection(uint64_t generation = 0);
 
 	protected:
-		struct sockaddr_in m_serverAddr;
+		BYTE_PACKET m_bpWrite;
+		size_t m_iWrite = 0;
+		uint64_t m_writeConnectionGeneration = 0;
+
 		string m_strAddr = "";
 		uint16_t m_port = 0;
 
 		bool m_bClient = true;
-		int m_socket = 0;
+		int m_socket = -1;
 	};
 
 }

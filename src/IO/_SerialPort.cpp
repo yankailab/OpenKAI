@@ -5,11 +5,11 @@ namespace kai
 
 	_SerialPort::_SerialPort(void)
 	{
-		m_ioType = io_serialPort;
 	}
 
 	_SerialPort::~_SerialPort()
 	{
+		stop();
 		close();
 	}
 
@@ -53,73 +53,174 @@ namespace kai
 
 	bool _SerialPort::open(void)
 	{
+		std::unique_lock<std::shared_mutex> lock(m_connectionMutex);
+		if (bOpen())
+		{
+			return true;
+		}
 		if (m_port.empty())
 		{
 			LOG_E("port is empty");
 			return false;
 		}
 
-		m_fd = ::open(m_port.c_str(), O_RDWR | O_NOCTTY | O_NDELAY); // O_SYNC | O_NONBLOCK);
-
-		if (m_fd == -1)
+		m_fd = ::open(m_port.c_str(), O_RDWR | O_NOCTTY | O_NONBLOCK);
+		if (m_fd < 0)
 		{
 			LOG_E("Cannot open: " + m_port);
 			return false;
 		}
+		if (!setup())
+		{
+			::close(m_fd);
+			m_fd = -1;
+			return false;
+		}
 
-		fcntl(m_fd, F_SETFL, 0);
-
+		++m_connectionGeneration;
 		m_ioStatus = io_opened;
-		return setup();
+		return true;
 	}
 
 	void _SerialPort::close(void)
 	{
-		IF_(m_ioStatus != io_opened);
-
-		::close(m_fd);
-		this->_IObase::close();
+		closeConnection();
 	}
 
-	bool _SerialPort::start(void)
+	void _SerialPort::closeConnection(uint64_t generation)
 	{
-		NULL_F(m_pT);
-		return m_pT->startThread(getUpdate, this);
-	}
-
-	void _SerialPort::update(void)
-	{
-		while (m_pT->bRun())
+		std::unique_lock<std::shared_mutex> lock(m_connectionMutex);
+		if (generation != 0 && generation != m_connectionGeneration)
 		{
-			if (!bOpen())
+			return;
+		}
+		if (m_fd >= 0)
+		{
+			::close(m_fd);
+			m_fd = -1;
+		}
+		_IObase::close();
+	}
+
+	void _SerialPort::readPackets(void)
+	{
+		if (!m_pBpStreamOut)
+		{
+			return;
+		}
+
+		uint8_t pB[N_SERIAL_BUF];
+		while (bOpen())
+		{
+			if (m_pTr && !m_pTr->bRun())
 			{
-				if (!open())
+				return;
+			}
+
+			ssize_t nR;
+			int error;
+			uint64_t generation;
+			{
+				std::shared_lock<std::shared_mutex> lock(m_connectionMutex);
+				if (!bOpen() || m_fd < 0)
 				{
-					m_pT->sleepT(NSEC_SEC);
-					continue;
+					return;
 				}
+				generation = m_connectionGeneration;
+				nR = ::read(m_fd, pB, sizeof(pB));
+				error = errno;
 			}
-
-			m_pT->autoFPS();
-
-			uint8_t pB[N_SERIAL_BUF];
-			int nB;
-			while ((nB = m_packetW.getPacket(pB, N_SERIAL_BUF)) > 0)
+			if (nR > 0)
 			{
-				int nW = ::write(m_fd, pB, nB);
-				LOG_I("write: " + i2str(nW) + " bytes");
+				m_pBpStreamOut->addPacket(vector<uint8_t>(pB, pB + nR));
+				continue;
 			}
-
-			tcdrain(m_fd);
+			if (nR < 0 && error == EINTR)
+			{
+				continue;
+			}
+			if (nR < 0 && error != EAGAIN && error != EWOULDBLOCK)
+			{
+				LOG_E("read error: " + i2str(error));
+				closeConnection(generation);
+			}
+			return;
 		}
 	}
 
-	int _SerialPort::read(uint8_t *pBuf, int nB)
+	void _SerialPort::writePackets(void)
 	{
-		if (!bOpen())
-			return -1;
+		uint64_t generation = m_connectionGeneration;
+		if (m_writeConnectionGeneration != generation)
+		{
+			// A reconnect restarts the pending packet; only the writer owns its offset.
+			m_iWrite = 0;
+			m_writeConnectionGeneration = generation;
+		}
+		if (!writePending() || !m_pBpStreamIn)
+		{
+			return;
+		}
 
-		return ::read(m_fd, pBuf, nB);
+		vector<BYTE_PACKET> vBp;
+		m_pBpStreamIn->getPackets(vBp, m_tLastBpStreamIn);
+		for (const BYTE_PACKET &bp : vBp)
+		{
+			m_bpWrite = bp;
+			if (!writePending())
+			{
+				break;
+			}
+		}
+	}
+
+	bool _SerialPort::writePending(void)
+	{
+		while (m_iWrite < m_bpWrite.m_vB.size())
+		{
+			if (m_pT && !m_pT->bRun())
+			{
+				return false;
+			}
+
+			ssize_t nW;
+			int error;
+			{
+				std::shared_lock<std::shared_mutex> lock(m_connectionMutex);
+				if (!bOpen() || m_fd < 0 || m_writeConnectionGeneration != m_connectionGeneration)
+				{
+					return false;
+				}
+				nW = ::write(m_fd, m_bpWrite.m_vB.data() + m_iWrite,
+							  m_bpWrite.m_vB.size() - m_iWrite);
+				error = errno;
+			}
+			if (nW < 0 && error == EINTR)
+			{
+				continue;
+			}
+			if (nW < 0 && error != EAGAIN && error != EWOULDBLOCK)
+			{
+				LOG_E("write error: " + i2str(error));
+				closeConnection(m_writeConnectionGeneration);
+				return false;
+			}
+			if (nW <= 0)
+			{
+				return false;
+			}
+
+			m_iWrite += static_cast<size_t>(nW);
+			LOG_I("write: " + i2str(nW) + " bytes");
+		}
+
+		if (m_bpWrite.m_tStamp > m_tLastBpStreamIn)
+		{
+			m_tLastBpStreamIn = m_bpWrite.m_tStamp;
+		}
+		m_bpWrite.clear();
+		m_iWrite = 0;
+		return true;
 	}
 
 	bool _SerialPort::setup(void)

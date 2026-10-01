@@ -88,10 +88,16 @@ namespace kai
 		IF_F(!this->_ModuleBase::link(pM));
 		const json &j = *m_pJ;
 
-		string n = "";
-		jKv(j, "_IObase", n);
-		m_pIO = (_IObase *)(pM->findModule(n));
-		NULL_F(m_pIO);
+		string n;
+		jKv(j, "BytePacketStreamIn", n);
+		m_pBpStreamIn = dynamic_cast<BytePacketStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+		IF_Le_F(!n.empty() && !m_pBpStreamIn, "BytePacketStreamIn not found: " + n);
+
+		n.clear();
+		jKv(j, "BytePacketStreamOut", n);
+		m_pBpStreamOut = dynamic_cast<BytePacketStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+		IF_Le_F(!n.empty() && !m_pBpStreamOut, "BytePacketStreamOut not found: " + n);
+		IF_F(!m_pBpStreamIn && !m_pBpStreamOut);
 
 		vector<string> vRoutings;
 		IF__(!jKv(j, "vRoutings", vRoutings), true);
@@ -142,8 +148,7 @@ namespace kai
 
 	bool _Mavlink::check(void)
 	{
-		NULL_F(m_pIO);
-		IF_F(!m_pIO->bOpen());
+		IF_F(!m_pBpStreamIn && !m_pBpStreamOut);
 
 		return this->_ModuleBase::check();
 	}
@@ -201,36 +206,36 @@ namespace kai
 	bool _Mavlink::readMessage(mavlink_message_t *pMsg)
 	{
 		IF_F(!check());
+		NULL_F(m_pBpStreamIn);
 		NULL_F(pMsg);
 
-		if (m_nRead <= 0)
+		if (m_iPacketIn == m_vPacketIn.size())
 		{
-			m_nRead = m_pIO->read(m_rBuf, MAV_N_BUF);
-			IF_F(m_nRead < 0);
-			IF_F(m_nRead == 0);
-			m_iRead = 0;
+			m_pBpStreamIn->getPackets(m_vPacketIn, m_tLastBpStreamIn);
+			m_iPacketIn = 0;
+			m_iByteIn = 0;
 		}
 
-		while (m_iRead < m_nRead)
+		while (m_iPacketIn < m_vPacketIn.size())
 		{
-			uint8_t result = mavlink_frame_char(m_iMavComm,
-												m_rBuf[m_iRead++],
+			const BYTE_PACKET &packet = m_vPacketIn[m_iPacketIn];
+			m_tLastBpStreamIn = packet.m_tStamp;
+			while (m_iByteIn < packet.m_vB.size())
+			{
+				uint8_t result = mavlink_frame_char(m_iMavComm,
+												packet.m_vB[m_iByteIn++],
 												pMsg,
 												&m_status);
-			if (m_iRead == m_nRead)
-			{
-				m_iRead = 0;
-				m_nRead = 0;
+				IF__(result == 1, true);
+
+				if (result == 2)
+				{
+					LOG_I(" -> DROPPED PACKETS:" + i2str(m_status.packet_rx_drop_count));
+				}
 			}
 
-			// Good message decoded
-			IF__(result == 1, true);
-
-			if (result == 2)
-			{
-				// Bad CRC
-				LOG_I(" -> DROPPED PACKETS:" + i2str(m_status.packet_rx_drop_count));
-			}
+			m_iPacketIn++;
+			m_iByteIn = 0;
 		}
 
 		return false;
@@ -238,11 +243,11 @@ namespace kai
 
 	bool _Mavlink::writeMessage(const mavlink_message_t &msg)
 	{
-		NULL_F(m_pIO);
+		NULL_F(m_pBpStreamOut);
 
 		uint8_t pB[MAV_N_BUF];
 		int nB = mavlink_msg_to_send_buffer(pB, &msg);
-		IF_F(!m_pIO->write(pB, nB));
+		m_pBpStreamOut->addPacket(vector<uint8_t>(pB, pB + nB));
 
 		LOG_I("<- Wrote MSG_ID = " + i2str((int)msg.msgid) + ", seq = " + i2str((int)msg.seq));
 		return true;
@@ -1051,13 +1056,7 @@ namespace kai
 		IF_(!check());
 
 		_Console *pC = (_Console *)pConsole;
-		if (!m_pIO->bOpen())
-		{
-			pC->addMsg("Not Connected", 0);
-			return;
-		}
-
-		pC->addMsg("Connected", 0);
+		pC->addMsg("BytePacketStream linked", 0);
 		pC->addMsg("mySysID = " + i2str(m_mySystemID) + " myComID = " + i2str(m_myComponentID) + " myType = " + i2str(m_myType));
 		pC->addMsg("devSysID = " + i2str(m_devSystemID) + " devComID = " + i2str(m_devComponentID) + " devType = " + i2str(m_devType));
 		pC->addMsg("Dropped packets = " + i2str(m_status.packet_rx_drop_count));

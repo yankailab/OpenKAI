@@ -131,7 +131,7 @@ namespace kai
 			m_pTr->autoFPS();
 			if (!m_pTr->bRun()) break;
 
-			IF_CONT(!recvJson(&strR, m_pIO));
+			IF_CONT(!recvJson(&strR));
 
 			m_pT->skipSleep();
 

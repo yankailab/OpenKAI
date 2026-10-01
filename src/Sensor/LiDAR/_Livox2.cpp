@@ -164,34 +164,39 @@ namespace kai
         IF_Le_F(!n.empty() && !m_pIMUout, "IMUstreamOut not found: " + n);
 
         n = "";
-        jKv(j, "_UDPdeviceQuery", n);
-        m_pUDPdeviceQuery = (_UDP *)(pM->findModule(n));
-        NULL_F(m_pUDPdeviceQuery);
+        jKv(j, "BytePacketStreamDeviceQueryIn", n);
+        m_pBpStreamDeviceQueryIn = dynamic_cast<BytePacketStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+        IF_Le_F(!m_pBpStreamDeviceQueryIn, "BytePacketStreamDeviceQueryIn not found: " + n);
 
         n = "";
-        jKv(j, "_UDPctrlCmd", n);
-        m_pUDPctrlCmd = (_UDP *)(pM->findModule(n));
-        NULL_F(m_pUDPctrlCmd);
+        jKv(j, "BytePacketStreamDeviceQueryOut", n);
+        m_pBpStreamDeviceQueryOut = dynamic_cast<BytePacketStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+        IF_Le_F(!m_pBpStreamDeviceQueryOut, "BytePacketStreamDeviceQueryOut not found: " + n);
 
         n = "";
-        jKv(j, "_UDPpushCmd", n);
-        m_pUDPpushCmd = (_UDP *)(pM->findModule(n));
-        NULL_F(m_pUDPpushCmd);
+        jKv(j, "BytePacketStreamCtrlCmdIn", n);
+        m_pBpStreamCtrlCmdIn = dynamic_cast<BytePacketStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+        IF_Le_F(!m_pBpStreamCtrlCmdIn, "BytePacketStreamCtrlCmdIn not found: " + n);
 
         n = "";
-        jKv(j, "_UDPpcl", n);
-        m_pUDPpcl = (_UDP *)(pM->findModule(n));
-        NULL_F(m_pUDPpcl);
+        jKv(j, "BytePacketStreamCtrlCmdOut", n);
+        m_pBpStreamCtrlCmdOut = dynamic_cast<BytePacketStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+        IF_Le_F(!m_pBpStreamCtrlCmdOut, "BytePacketStreamCtrlCmdOut not found: " + n);
 
         n = "";
-        jKv(j, "_UDPimu", n);
-        m_pUDPimu = (_UDP *)(pM->findModule(n));
-        NULL_F(m_pUDPimu);
+        jKv(j, "BytePacketStreamPushCmdIn", n);
+        m_pBpStreamPushCmdIn = dynamic_cast<BytePacketStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+        IF_Le_F(!m_pBpStreamPushCmdIn, "BytePacketStreamPushCmdIn not found: " + n);
 
-        // n = "";
-        // jKv(j,"_IObaseLog",n);
-        // m_pUDPlog = (_IObase *)(pM->findModule(n));
-        // NULL_F(m_pUDPlog);
+        n = "";
+        jKv(j, "BytePacketStreamPclIn", n);
+        m_pBpStreamPclIn = dynamic_cast<BytePacketStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+        IF_Le_F(!m_pBpStreamPclIn, "BytePacketStreamPclIn not found: " + n);
+
+        n = "";
+        jKv(j, "BytePacketStreamImuIn", n);
+        m_pBpStreamImuIn = dynamic_cast<BytePacketStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+        IF_Le_F(!m_pBpStreamImuIn, "BytePacketStreamImuIn not found: " + n);
 
         return true;
     }
@@ -220,30 +225,25 @@ namespace kai
     bool _Livox2::check(void)
     {
         NULL_F(m_pPCLout);
-        NULL_F(m_pUDPdeviceQuery);
-        NULL_F(m_pUDPctrlCmd);
-        NULL_F(m_pUDPpushCmd);
-        NULL_F(m_pUDPpcl);
-        NULL_F(m_pUDPimu);
-        //        NULL_F(m_pUDPlog);
+        NULL_F(m_pBpStreamDeviceQueryIn);
+        NULL_F(m_pBpStreamDeviceQueryOut);
+        NULL_F(m_pBpStreamCtrlCmdIn);
+        NULL_F(m_pBpStreamCtrlCmdOut);
+        NULL_F(m_pBpStreamPushCmdIn);
+        NULL_F(m_pBpStreamPclIn);
+        NULL_F(m_pBpStreamImuIn);
 
         return this->_ReferenceFrame::check();
     }
 
     // Common
-    bool _Livox2::recvLivoxCmd(_IObase *pIO, LIVOX2_CMD *pCmdRecv, bool bParity)
+    bool _Livox2::recvLivoxCmd(const BYTE_PACKET &packet, LIVOX2_CMD *pCmdRecv, bool bParity)
     {
-        NULL_F(pIO);
         NULL_F(pCmdRecv);
-
-        int nBr = pIO->read((uint8_t *)pCmdRecv, sizeof(LIVOX2_CMD));
-        if (nBr <= 0)
-        {
-            m_lvxState = lvxState_deviceQuery;
-            return false;
-        }
-
-        IF_F(nBr < pCmdRecv->length);
+        const size_t nBr = packet.m_vB.size();
+        IF_F(nBr < LVX2_CMD_N_HDR || nBr > LVX2_CMD_N_HDR + LVX2_N_DATA);
+        memcpy(pCmdRecv, packet.m_vB.data(), nBr);
+        IF_F(pCmdRecv->length < LVX2_CMD_N_HDR || pCmdRecv->length > nBr);
         IF_F(pCmdRecv->sof != LVX2_SOF);
 
         if (bParity)
@@ -259,23 +259,12 @@ namespace kai
         return true;
     }
 
-    bool _Livox2::recvLivoxData(_IObase *pIO, LIVOX2_DATA *pDataRecv, bool bParity)
+    bool _Livox2::recvLivoxData(const BYTE_PACKET &packet, LIVOX2_DATA *pDataRecv, bool bParity)
     {
-        NULL_F(pIO);
         NULL_F(pDataRecv);
-
-        uint8_t pB[LVX2_N_BUF];
-        int nBr = pIO->read(pB, LVX2_N_BUF);
-        if (nBr <= 0)
-        {
-            m_lvxState = lvxState_deviceQuery;
-            return false;
-        }
-
-        if (nBr < 36)
-        {
-            return false;
-        }
+        const size_t nBr = packet.m_vB.size();
+        IF_F(nBr < 36 || nBr > LVX2_N_BUF);
+        const uint8_t *pB = packet.m_vB.data();
 
         pDataRecv->version = pB[0];
         pDataRecv->length = *((uint16_t *)&pB[1]);
@@ -331,17 +320,25 @@ namespace kai
         LIVOX2_CMD cmd;
         cmd.init(LVX2_CMD_DISCOVER, LVX2_CMD_REQ, 0);
         cmd.calcCRC();
-        m_pUDPdeviceQuery->write((uint8_t *)&cmd, cmd.length);
+        m_pBpStreamDeviceQueryOut->addPacket(vector<uint8_t>((uint8_t *)&cmd, (uint8_t *)&cmd + cmd.length));
     }
 
     void _Livox2::updateRdeviceQuery(void)
     {
         while (m_pTdeviceQueryR->bRun())
         {
-            LIVOX2_CMD cmd;
-            if (recvLivoxCmd(m_pUDPdeviceQuery, &cmd))
+            m_pTdeviceQueryR->autoFPS();
+
+            vector<BYTE_PACKET> vPacket;
+            m_pBpStreamDeviceQueryIn->getPackets(vPacket, m_tLastBpStreamDeviceQueryIn);
+            for (const BYTE_PACKET &packet : vPacket)
             {
-                handleDeviceQuery(cmd);
+                m_tLastBpStreamDeviceQueryIn = packet.m_tStamp;
+                LIVOX2_CMD data;
+                if (recvLivoxCmd(packet, &data))
+                {
+                    handleDeviceQuery(data);
+                }
             }
         }
     }
@@ -423,7 +420,7 @@ namespace kai
         cmd.addData((uint16_t)kKeyHmsCode);
 
         cmd.calcCRC();
-        m_pUDPctrlCmd->write((uint8_t *)&cmd, cmd.length);
+        m_pBpStreamCtrlCmdOut->addPacket(vector<uint8_t>((uint8_t *)&cmd, (uint8_t *)&cmd + cmd.length));
     }
 
     void _Livox2::setLvxPCLdataType(void)
@@ -441,7 +438,7 @@ namespace kai
         cmd.addData((uint8_t)m_lvxCfg.m_pclDataType);
 
         cmd.calcCRC();
-        m_pUDPctrlCmd->write((uint8_t *)&cmd, cmd.length);
+        m_pBpStreamCtrlCmdOut->addPacket(vector<uint8_t>((uint8_t *)&cmd, (uint8_t *)&cmd + cmd.length));
     }
 
     void _Livox2::setLvxPattern(void)
@@ -459,7 +456,7 @@ namespace kai
         cmd.addData((uint8_t)m_lvxCfg.m_patternMode);
 
         cmd.calcCRC();
-        m_pUDPctrlCmd->write((uint8_t *)&cmd, cmd.length);
+        m_pBpStreamCtrlCmdOut->addPacket(vector<uint8_t>((uint8_t *)&cmd, (uint8_t *)&cmd + cmd.length));
     }
 
     void _Livox2::setLvxHost(void)
@@ -494,7 +491,7 @@ namespace kai
         cmd.addData((uint16_t)0);
 
         cmd.calcCRC();
-        m_pUDPctrlCmd->write((uint8_t *)&cmd, cmd.length);
+        m_pBpStreamCtrlCmdOut->addPacket(vector<uint8_t>((uint8_t *)&cmd, (uint8_t *)&cmd + cmd.length));
     }
 
     void _Livox2::setLvxFrameRate(void)
@@ -512,7 +509,7 @@ namespace kai
         cmd.addData((uint8_t)m_lvxCfg.m_frameRate);
 
         cmd.calcCRC();
-        m_pUDPctrlCmd->write((uint8_t *)&cmd, cmd.length);
+        m_pBpStreamCtrlCmdOut->addPacket(vector<uint8_t>((uint8_t *)&cmd, (uint8_t *)&cmd + cmd.length));
     }
 
     void _Livox2::setLvxDetectMode(void)
@@ -530,7 +527,7 @@ namespace kai
         cmd.addData((uint8_t)m_lvxCfg.m_detectMode);
 
         cmd.calcCRC();
-        m_pUDPctrlCmd->write((uint8_t *)&cmd, cmd.length);
+        m_pBpStreamCtrlCmdOut->addPacket(vector<uint8_t>((uint8_t *)&cmd, (uint8_t *)&cmd + cmd.length));
     }
 
     void _Livox2::setLvxWorkModeAfterBoot(void)
@@ -548,7 +545,7 @@ namespace kai
         cmd.addData((uint8_t)m_lvxCfg.m_workModeAfterBoot);
 
         cmd.calcCRC();
-        m_pUDPctrlCmd->write((uint8_t *)&cmd, cmd.length);
+        m_pBpStreamCtrlCmdOut->addPacket(vector<uint8_t>((uint8_t *)&cmd, (uint8_t *)&cmd + cmd.length));
     }
 
     void _Livox2::setLvxWorkMode(void)
@@ -566,7 +563,7 @@ namespace kai
         cmd.addData((uint8_t)m_lvxCfg.m_workMode);
 
         cmd.calcCRC();
-        m_pUDPctrlCmd->write((uint8_t *)&cmd, cmd.length);
+        m_pBpStreamCtrlCmdOut->addPacket(vector<uint8_t>((uint8_t *)&cmd, (uint8_t *)&cmd + cmd.length));
     }
 
     void _Livox2::setLvxIMUdataEn(void)
@@ -584,17 +581,25 @@ namespace kai
         cmd.addData((uint8_t)m_lvxCfg.m_imuDataEn);
 
         cmd.calcCRC();
-        m_pUDPctrlCmd->write((uint8_t *)&cmd, cmd.length);
+        m_pBpStreamCtrlCmdOut->addPacket(vector<uint8_t>((uint8_t *)&cmd, (uint8_t *)&cmd + cmd.length));
     }
 
     void _Livox2::updateRctrlCmd(void)
     {
         while (m_pTctrlCmdR->bRun())
         {
-            LIVOX2_CMD cmd;
-            if (recvLivoxCmd(m_pUDPctrlCmd, &cmd))
+            m_pTctrlCmdR->autoFPS();
+
+            vector<BYTE_PACKET> vPacket;
+            m_pBpStreamCtrlCmdIn->getPackets(vPacket, m_tLastBpStreamCtrlCmdIn);
+            for (const BYTE_PACKET &packet : vPacket)
             {
-                handleCtrlCmdAck(cmd);
+                m_tLastBpStreamCtrlCmdIn = packet.m_tStamp;
+                LIVOX2_CMD data;
+                if (recvLivoxCmd(packet, &data))
+                {
+                    handleCtrlCmdAck(data);
+                }
             }
         }
     }
@@ -711,10 +716,18 @@ namespace kai
     {
         while (m_pTpushCmdR->bRun())
         {
-            LIVOX2_CMD cmd;
-            if (recvLivoxCmd(m_pUDPpushCmd, &cmd))
+            m_pTpushCmdR->autoFPS();
+
+            vector<BYTE_PACKET> vPacket;
+            m_pBpStreamPushCmdIn->getPackets(vPacket, m_tLastBpStreamPushCmdIn);
+            for (const BYTE_PACKET &packet : vPacket)
             {
-                handlePushCmd(cmd);
+                m_tLastBpStreamPushCmdIn = packet.m_tStamp;
+                LIVOX2_CMD data;
+                if (recvLivoxCmd(packet, &data))
+                {
+                    handlePushCmd(data);
+                }
             }
         }
     }
@@ -729,10 +742,18 @@ namespace kai
     {
         while (m_pTpclR->bRun())
         {
-            LIVOX2_DATA d;
-            if (recvLivoxData(m_pUDPpcl, &d))
+            m_pTpclR->autoFPS();
+
+            vector<BYTE_PACKET> vPacket;
+            m_pBpStreamPclIn->getPackets(vPacket, m_tLastBpStreamPclIn);
+            for (const BYTE_PACKET &packet : vPacket)
             {
-                handlePointCloudData(d);
+                m_tLastBpStreamPclIn = packet.m_tStamp;
+                LIVOX2_DATA data;
+                if (recvLivoxData(packet, &data))
+                {
+                    handlePointCloudData(data);
+                }
             }
         }
     }
@@ -804,10 +825,18 @@ namespace kai
     {
         while (m_pTimuR->bRun())
         {
-            LIVOX2_DATA d;
-            if (recvLivoxData(m_pUDPimu, &d))
+            m_pTimuR->autoFPS();
+
+            vector<BYTE_PACKET> vPacket;
+            m_pBpStreamImuIn->getPackets(vPacket, m_tLastBpStreamImuIn);
+            for (const BYTE_PACKET &packet : vPacket)
             {
-                handleIMUdata(d);
+                m_tLastBpStreamImuIn = packet.m_tStamp;
+                LIVOX2_DATA data;
+                if (recvLivoxData(packet, &data))
+                {
+                    handleIMUdata(data);
+                }
             }
         }
     }

@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_Sensor_LiDAR__Livox2_H_
 #define OpenKAI_src_Sensor_LiDAR__Livox2_H_
 
-#include "../../IO/_UDP.h"
+#include "../../DataObject/BytePacketStream.h"
 #include "../../Universe/_ReferenceFrame.h"
 #include "../../DataObject/PCLframe.h"
 #include "../../DataObject/IMUstream.h"
@@ -172,8 +172,8 @@ namespace kai
 
 	private:
 		// Common
-		bool recvLivoxCmd(_IObase *pIO, LIVOX2_CMD *pResvCmd, bool bParity = false);
-		bool recvLivoxData(_IObase *pIO, LIVOX2_DATA *pResvDATA, bool bParity = false);
+		bool recvLivoxCmd(const BYTE_PACKET &packet, LIVOX2_CMD *pResvCmd, bool bParity = false);
+		bool recvLivoxData(const BYTE_PACKET &packet, LIVOX2_DATA *pResvDATA, bool bParity = false);
 
 		// Device Type Query
 		void sendDeviceQuery(void);
@@ -255,12 +255,18 @@ namespace kai
 		_Thread *m_pTpclR = nullptr;
 		_Thread *m_pTimuR = nullptr;
 
-		_UDP *m_pUDPdeviceQuery = nullptr;
-		_UDP *m_pUDPctrlCmd = nullptr;
-		_UDP *m_pUDPpushCmd = nullptr;
-		_UDP *m_pUDPpcl = nullptr;
-		_UDP *m_pUDPimu = nullptr;
-		_UDP *m_pUDPlog = nullptr;
+		BytePacketStream *m_pBpStreamDeviceQueryIn = nullptr;
+		uint64_t m_tLastBpStreamDeviceQueryIn = 0;
+		BytePacketStream *m_pBpStreamDeviceQueryOut = nullptr;
+		BytePacketStream *m_pBpStreamCtrlCmdIn = nullptr;
+		uint64_t m_tLastBpStreamCtrlCmdIn = 0;
+		BytePacketStream *m_pBpStreamCtrlCmdOut = nullptr;
+		BytePacketStream *m_pBpStreamPushCmdIn = nullptr;
+		uint64_t m_tLastBpStreamPushCmdIn = 0;
+		BytePacketStream *m_pBpStreamPclIn = nullptr;
+		uint64_t m_tLastBpStreamPclIn = 0;
+		BytePacketStream *m_pBpStreamImuIn = nullptr;
+		uint64_t m_tLastBpStreamImuIn = 0;
 
 		// lvx state
 		LVX2_STATE m_lvxState = lvxState_deviceQuery;

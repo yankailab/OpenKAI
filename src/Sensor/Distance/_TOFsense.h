@@ -9,7 +9,7 @@
 #define OpenKAI_src_Sensor__TOFsense_H_
 
 #include "_DistSensorBase.h"
-#include "../../IO/_IObase.h"
+#include "../../DataObject/BytePacketStream.h"
 
 #define NLINK_BEGIN 0x57
 
@@ -72,6 +72,7 @@ namespace kai
 		uint8_t verifyCheckSum(const uint8_t *data, size_t dataLength);
 
 	private:
+		bool readByte(uint8_t *pB);
 		bool readCMD(void);
 		void handleCMD(void);
 		virtual void update(void);
@@ -82,7 +83,10 @@ namespace kai
 		}
 
 	protected:
-		_IObase *m_pIO = nullptr;
+		BytePacketStream *m_pBpStreamIn = nullptr;
+		uint64_t m_tLastBpStreamIn = 0;
+		vector<uint8_t> m_vBytesIn;
+		size_t m_iByteIn = 0;
 		NLINK_FRAME m_frame;
 	};
 

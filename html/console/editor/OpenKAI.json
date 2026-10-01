@@ -3,7 +3,7 @@
   "title": "OpenKAI editor class catalog",
   "description": "Source-derived editor metadata; not a JSON Schema validator. See SCHEMA.md.",
   "generator": "tools/generate-schema.py",
-  "sourceDigest": "9f7c4138aa3a2c33219722e66c7e9ea84ae272e8d6e41727bcd578406aec3e9e",
+  "sourceDigest": "5d44eb6f83a132ec8b62a4c6a01b2a11f607d87f2ddf20a01428425527c465bc",
   "categories": [
     "Actuator",
     "Actuator/Articulated",
@@ -3473,6 +3473,18 @@
       "parameters": [
         {
           "path": [
+            "BytePacketStreamOut"
+          ],
+          "type": "string",
+          "declaredIn": "_DDSM",
+          "source": "src/Actuator/Motor/_DDSM.cpp:42",
+          "typeEvidence": "declaration",
+          "cppVariable": "n",
+          "cppType": "string",
+          "dependency": true
+        },
+        {
+          "path": [
             "ID"
           ],
           "type": "integer",
@@ -3490,18 +3502,6 @@
           "type": "string",
           "declaredIn": "_ActuatorBase",
           "source": "src/Actuator/_ActuatorBase.cpp:154",
-          "typeEvidence": "declaration",
-          "cppVariable": "n",
-          "cppType": "string",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_IObase"
-          ],
-          "type": "string",
-          "declaredIn": "_DDSM",
-          "source": "src/Actuator/Motor/_DDSM.cpp:42",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -3980,6 +3980,18 @@
       "dependencies": [
         {
           "path": [
+            "BytePacketStreamOut"
+          ],
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
+          "multiple": false,
+          "declaredIn": "_DDSM",
+          "source": "src/Actuator/Motor/_DDSM.cpp:43",
+          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
             "_ActuatorBase"
           ],
           "targetClass": "_ActuatorBase",
@@ -3987,18 +3999,6 @@
           "multiple": false,
           "declaredIn": "_ActuatorBase",
           "source": "src/Actuator/_ActuatorBase.cpp:155",
-          "containers": []
-        },
-        {
-          "path": [
-            "_IObase"
-          ],
-          "targetClass": "_IObase",
-          "targetKind": "module",
-          "multiple": false,
-          "declaredIn": "_DDSM",
-          "source": "src/Actuator/Motor/_DDSM.cpp:43",
-          "required": true,
           "containers": []
         }
       ],
@@ -8817,6 +8817,28 @@
       "parameters": [
         {
           "path": [
+            "BytePacketStreamIn"
+          ],
+          "type": "string",
+          "declaredIn": "_ProtocolBase",
+          "source": "src/Protocol/_ProtocolBase.cpp:43",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "BytePacketStreamOut"
+          ],
+          "type": "string",
+          "declaredIn": "_ProtocolBase",
+          "source": "src/Protocol/_ProtocolBase.cpp:48",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
             "RTCMmsg"
           ],
           "type": "object",
@@ -8876,30 +8898,6 @@
           "cppVariable": "tOutSec",
           "cppType": "double",
           "default": 10.0
-        },
-        {
-          "path": [
-            "_IObase"
-          ],
-          "type": "string",
-          "declaredIn": "_ProtocolBase",
-          "source": "src/Protocol/_ProtocolBase.cpp:43",
-          "typeEvidence": "declaration",
-          "cppVariable": "n",
-          "cppType": "string",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_IObaseSend"
-          ],
-          "type": "string",
-          "declaredIn": "_RTCMcast",
-          "source": "src/Navigation/_RTCMcast.cpp:95",
-          "typeEvidence": "declaration",
-          "cppVariable": "n",
-          "cppType": "string",
-          "dependency": true
         },
         {
           "path": [
@@ -9020,26 +9018,24 @@
       "dependencies": [
         {
           "path": [
-            "_IObase"
+            "BytePacketStreamIn"
           ],
-          "targetClass": "_IObase",
-          "targetKind": "module",
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_ProtocolBase",
           "source": "src/Protocol/_ProtocolBase.cpp:44",
-          "required": true,
           "containers": []
         },
         {
           "path": [
-            "_IObaseSend"
+            "BytePacketStreamOut"
           ],
-          "targetClass": "_IObase",
-          "targetKind": "module",
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
           "multiple": false,
-          "declaredIn": "_RTCMcast",
-          "source": "src/Navigation/_RTCMcast.cpp:96",
-          "required": true,
+          "declaredIn": "_ProtocolBase",
+          "source": "src/Protocol/_ProtocolBase.cpp:49",
           "containers": []
         },
         {
@@ -10338,9 +10334,9 @@
       "configurable": true
     },
     {
-      "name": "BytePacket",
+      "name": "BytePacketStream",
       "category": "DataObject",
-      "source": "src/DataObject/BytePacket.h:15",
+      "source": "src/DataObject/BytePacketStream.h:63",
       "baseClasses": [
         "DataObjBase"
       ],
@@ -10379,6 +10375,30 @@
           "cppVariable": "m_class",
           "cppType": "string",
           "default": ""
+        },
+        {
+          "path": [
+            "nPacket"
+          ],
+          "type": "integer",
+          "declaredIn": "BytePacketStream",
+          "source": "src/DataObject/BytePacketStream.cpp:28",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_nPacket",
+          "cppType": "size_t",
+          "default": 256
+        },
+        {
+          "path": [
+            "nPbuf"
+          ],
+          "type": "integer",
+          "declaredIn": "BytePacketStream",
+          "source": "src/DataObject/BytePacketStream.cpp:29",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_nPbuf",
+          "cppType": "size_t",
+          "default": 2000
         },
         {
           "path": [
@@ -10619,6 +10639,95 @@
           "cppVariable": "m_class",
           "cppType": "string",
           "default": ""
+        },
+        {
+          "path": [
+            "name"
+          ],
+          "type": "string",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:56",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_name",
+          "cppType": "string",
+          "default": ""
+        },
+        {
+          "path": [
+            "type"
+          ],
+          "type": "string",
+          "source": "src/Instance/InstanceMgr.cpp:createAll",
+          "declaredIn": "DataObjBase",
+          "extraction": "audited-adapter",
+          "default": "dataObject",
+          "description": "Create an independent DataObject rather than a worker module."
+        }
+      ],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": true,
+      "instanceKind": "dataObject",
+      "buildConditions": [
+        []
+      ],
+      "configurable": true
+    },
+    {
+      "name": "MavlinkStream",
+      "category": "DataObject",
+      "source": "src/DataObject/MavlinkStream.h:53",
+      "baseClasses": [
+        "DataObjBase"
+      ],
+      "parameters": [
+        {
+          "path": [
+            "bLog"
+          ],
+          "type": "boolean",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:58",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_bLog",
+          "cppType": "bool",
+          "default": false
+        },
+        {
+          "path": [
+            "bON"
+          ],
+          "type": "boolean",
+          "source": "src/Instance/InstanceMgr.cpp:createAll",
+          "declaredIn": "BASE",
+          "extraction": "audited-adapter",
+          "default": true,
+          "description": "false disables this instance; true enables it."
+        },
+        {
+          "path": [
+            "class"
+          ],
+          "type": "string",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:57",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_class",
+          "cppType": "string",
+          "default": ""
+        },
+        {
+          "path": [
+            "nMsg"
+          ],
+          "type": "integer",
+          "declaredIn": "MavlinkStream",
+          "source": "src/DataObject/MavlinkStream.cpp:26",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_nMsg",
+          "cppType": "int",
+          "default": 0
         },
         {
           "path": [
@@ -13147,11 +13256,33 @@
     {
       "name": "_IObase",
       "category": "IO",
-      "source": "src/IO/_IObase.h:158",
+      "source": "src/IO/_IObase.h:26",
       "baseClasses": [
         "_ModuleBase"
       ],
       "parameters": [
+        {
+          "path": [
+            "BytePacketStreamIn"
+          ],
+          "type": "string",
+          "declaredIn": "_IObase",
+          "source": "src/IO/_IObase.cpp:54",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "BytePacketStreamOut"
+          ],
+          "type": "string",
+          "declaredIn": "_IObase",
+          "source": "src/IO/_IObase.cpp:60",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
         {
           "path": [
             "bLog"
@@ -13186,30 +13317,6 @@
           "cppVariable": "m_class",
           "cppType": "string",
           "default": ""
-        },
-        {
-          "path": [
-            "nPacket"
-          ],
-          "type": "integer",
-          "declaredIn": "_IObase",
-          "source": "src/IO/_IObase.cpp:27",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_nPacket",
-          "cppType": "int",
-          "default": 256
-        },
-        {
-          "path": [
-            "nPbuffer"
-          ],
-          "type": "integer",
-          "declaredIn": "_IObase",
-          "source": "src/IO/_IObase.cpp:28",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_nPbuffer",
-          "cppType": "int",
-          "default": 2000
         },
         {
           "path": [
@@ -13250,13 +13357,70 @@
           "cppType": "bool",
           "default": false,
           "embeddedClass": "_Thread"
+        },
+        {
+          "path": [
+            "threadR",
+            "FPS"
+          ],
+          "type": "number",
+          "declaredIn": "_Thread",
+          "source": "src/Base/_Thread.cpp:60",
+          "typeEvidence": "declaration",
+          "cppVariable": "FPS",
+          "cppType": "float",
+          "default": 30,
+          "embeddedClass": "_Thread"
+        },
+        {
+          "path": [
+            "threadR",
+            "bLog"
+          ],
+          "type": "boolean",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:58",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_bLog",
+          "cppType": "bool",
+          "default": false,
+          "embeddedClass": "_Thread"
         }
       ],
-      "dependencies": [],
+      "dependencies": [
+        {
+          "path": [
+            "BytePacketStreamIn"
+          ],
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
+          "multiple": false,
+          "declaredIn": "_IObase",
+          "source": "src/IO/_IObase.cpp:55",
+          "containers": []
+        },
+        {
+          "path": [
+            "BytePacketStreamOut"
+          ],
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
+          "multiple": false,
+          "declaredIn": "_IObase",
+          "source": "src/IO/_IObase.cpp:61",
+          "containers": []
+        }
+      ],
       "containers": [
         {
           "path": [
             "thread"
+          ],
+          "type": "object"
+        },
+        {
+          "path": [
+            "threadR"
           ],
           "type": "object"
         }
@@ -13274,6 +13438,28 @@
         "_IObase"
       ],
       "parameters": [
+        {
+          "path": [
+            "BytePacketStreamIn"
+          ],
+          "type": "string",
+          "declaredIn": "_IObase",
+          "source": "src/IO/_IObase.cpp:54",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "BytePacketStreamOut"
+          ],
+          "type": "string",
+          "declaredIn": "_IObase",
+          "source": "src/IO/_IObase.cpp:60",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
         {
           "path": [
             "bLog"
@@ -13344,30 +13530,6 @@
           "cppVariable": "m_hardwareControl",
           "cppType": "bool",
           "default": false
-        },
-        {
-          "path": [
-            "nPacket"
-          ],
-          "type": "integer",
-          "declaredIn": "_IObase",
-          "source": "src/IO/_IObase.cpp:27",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_nPacket",
-          "cppType": "int",
-          "default": 256
-        },
-        {
-          "path": [
-            "nPbuffer"
-          ],
-          "type": "integer",
-          "declaredIn": "_IObase",
-          "source": "src/IO/_IObase.cpp:28",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_nPbuffer",
-          "cppType": "int",
-          "default": 2000
         },
         {
           "path": [
@@ -13444,13 +13606,70 @@
           "cppType": "bool",
           "default": false,
           "embeddedClass": "_Thread"
+        },
+        {
+          "path": [
+            "threadR",
+            "FPS"
+          ],
+          "type": "number",
+          "declaredIn": "_Thread",
+          "source": "src/Base/_Thread.cpp:60",
+          "typeEvidence": "declaration",
+          "cppVariable": "FPS",
+          "cppType": "float",
+          "default": 30,
+          "embeddedClass": "_Thread"
+        },
+        {
+          "path": [
+            "threadR",
+            "bLog"
+          ],
+          "type": "boolean",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:58",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_bLog",
+          "cppType": "bool",
+          "default": false,
+          "embeddedClass": "_Thread"
         }
       ],
-      "dependencies": [],
+      "dependencies": [
+        {
+          "path": [
+            "BytePacketStreamIn"
+          ],
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
+          "multiple": false,
+          "declaredIn": "_IObase",
+          "source": "src/IO/_IObase.cpp:55",
+          "containers": []
+        },
+        {
+          "path": [
+            "BytePacketStreamOut"
+          ],
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
+          "multiple": false,
+          "declaredIn": "_IObase",
+          "source": "src/IO/_IObase.cpp:61",
+          "containers": []
+        }
+      ],
       "containers": [
         {
           "path": [
             "thread"
+          ],
+          "type": "object"
+        },
+        {
+          "path": [
+            "threadR"
           ],
           "type": "object"
         }
@@ -13475,11 +13694,33 @@
       "parameters": [
         {
           "path": [
+            "BytePacketStreamIn"
+          ],
+          "type": "string",
+          "declaredIn": "_IObase",
+          "source": "src/IO/_IObase.cpp:54",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "BytePacketStreamOut"
+          ],
+          "type": "string",
+          "declaredIn": "_IObase",
+          "source": "src/IO/_IObase.cpp:60",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
             "addr"
           ],
           "type": "string",
           "declaredIn": "_TCPclient",
-          "source": "src/IO/_TCPclient.cpp:29",
+          "source": "src/IO/_TCPclient.cpp:30",
           "typeEvidence": "declaration",
           "cppVariable": "m_strAddr",
           "cppType": "string",
@@ -13522,30 +13763,6 @@
         },
         {
           "path": [
-            "nPacket"
-          ],
-          "type": "integer",
-          "declaredIn": "_IObase",
-          "source": "src/IO/_IObase.cpp:27",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_nPacket",
-          "cppType": "int",
-          "default": 256
-        },
-        {
-          "path": [
-            "nPbuffer"
-          ],
-          "type": "integer",
-          "declaredIn": "_IObase",
-          "source": "src/IO/_IObase.cpp:28",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_nPbuffer",
-          "cppType": "int",
-          "default": 2000
-        },
-        {
-          "path": [
             "name"
           ],
           "type": "string",
@@ -13562,7 +13779,7 @@
           ],
           "type": "integer",
           "declaredIn": "_TCPclient",
-          "source": "src/IO/_TCPclient.cpp:30",
+          "source": "src/IO/_TCPclient.cpp:31",
           "typeEvidence": "declaration",
           "cppVariable": "m_port",
           "cppType": "uint16_t",
@@ -13595,13 +13812,70 @@
           "cppType": "bool",
           "default": false,
           "embeddedClass": "_Thread"
+        },
+        {
+          "path": [
+            "threadR",
+            "FPS"
+          ],
+          "type": "number",
+          "declaredIn": "_Thread",
+          "source": "src/Base/_Thread.cpp:60",
+          "typeEvidence": "declaration",
+          "cppVariable": "FPS",
+          "cppType": "float",
+          "default": 30,
+          "embeddedClass": "_Thread"
+        },
+        {
+          "path": [
+            "threadR",
+            "bLog"
+          ],
+          "type": "boolean",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:58",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_bLog",
+          "cppType": "bool",
+          "default": false,
+          "embeddedClass": "_Thread"
         }
       ],
-      "dependencies": [],
+      "dependencies": [
+        {
+          "path": [
+            "BytePacketStreamIn"
+          ],
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
+          "multiple": false,
+          "declaredIn": "_IObase",
+          "source": "src/IO/_IObase.cpp:55",
+          "containers": []
+        },
+        {
+          "path": [
+            "BytePacketStreamOut"
+          ],
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
+          "multiple": false,
+          "declaredIn": "_IObase",
+          "source": "src/IO/_IObase.cpp:61",
+          "containers": []
+        }
+      ],
       "containers": [
         {
           "path": [
             "thread"
+          ],
+          "type": "object"
+        },
+        {
+          "path": [
+            "threadR"
           ],
           "type": "object"
         }
@@ -13758,11 +14032,33 @@
     {
       "name": "_UDP",
       "category": "IO",
-      "source": "src/IO/_UDP.h:18",
+      "source": "src/IO/_UDP.h:16",
       "baseClasses": [
         "_IObase"
       ],
       "parameters": [
+        {
+          "path": [
+            "BytePacketStreamIn"
+          ],
+          "type": "string",
+          "declaredIn": "_IObase",
+          "source": "src/IO/_IObase.cpp:54",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "BytePacketStreamOut"
+          ],
+          "type": "string",
+          "declaredIn": "_IObase",
+          "source": "src/IO/_IObase.cpp:60",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
         {
           "path": [
             "addrRemote"
@@ -13836,30 +14132,6 @@
         },
         {
           "path": [
-            "nPacket"
-          ],
-          "type": "integer",
-          "declaredIn": "_IObase",
-          "source": "src/IO/_IObase.cpp:27",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_nPacket",
-          "cppType": "int",
-          "default": 256
-        },
-        {
-          "path": [
-            "nPbuffer"
-          ],
-          "type": "integer",
-          "declaredIn": "_IObase",
-          "source": "src/IO/_IObase.cpp:28",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_nPbuffer",
-          "cppType": "int",
-          "default": 2000
-        },
-        {
-          "path": [
             "name"
           ],
           "type": "string",
@@ -13921,13 +14193,70 @@
           "cppType": "bool",
           "default": false,
           "embeddedClass": "_Thread"
+        },
+        {
+          "path": [
+            "threadR",
+            "FPS"
+          ],
+          "type": "number",
+          "declaredIn": "_Thread",
+          "source": "src/Base/_Thread.cpp:60",
+          "typeEvidence": "declaration",
+          "cppVariable": "FPS",
+          "cppType": "float",
+          "default": 30,
+          "embeddedClass": "_Thread"
+        },
+        {
+          "path": [
+            "threadR",
+            "bLog"
+          ],
+          "type": "boolean",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:58",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_bLog",
+          "cppType": "bool",
+          "default": false,
+          "embeddedClass": "_Thread"
         }
       ],
-      "dependencies": [],
+      "dependencies": [
+        {
+          "path": [
+            "BytePacketStreamIn"
+          ],
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
+          "multiple": false,
+          "declaredIn": "_IObase",
+          "source": "src/IO/_IObase.cpp:55",
+          "containers": []
+        },
+        {
+          "path": [
+            "BytePacketStreamOut"
+          ],
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
+          "multiple": false,
+          "declaredIn": "_IObase",
+          "source": "src/IO/_IObase.cpp:61",
+          "containers": []
+        }
+      ],
       "containers": [
         {
           "path": [
             "thread"
+          ],
+          "type": "object"
+        },
+        {
+          "path": [
+            "threadR"
           ],
           "type": "object"
         }
@@ -13945,11 +14274,33 @@
     {
       "name": "_WebSocket",
       "category": "IO",
-      "source": "src/IO/_WebSocket.h:18",
+      "source": "src/IO/_WebSocket.h:15",
       "baseClasses": [
         "_IObase"
       ],
       "parameters": [
+        {
+          "path": [
+            "BytePacketStreamIn"
+          ],
+          "type": "string",
+          "declaredIn": "_IObase",
+          "source": "src/IO/_IObase.cpp:54",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "BytePacketStreamOut"
+          ],
+          "type": "string",
+          "declaredIn": "_IObase",
+          "source": "src/IO/_IObase.cpp:60",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
         {
           "path": [
             "bLog"
@@ -13984,30 +14335,6 @@
           "cppVariable": "m_class",
           "cppType": "string",
           "default": ""
-        },
-        {
-          "path": [
-            "nPacket"
-          ],
-          "type": "integer",
-          "declaredIn": "_IObase",
-          "source": "src/IO/_IObase.cpp:27",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_nPacket",
-          "cppType": "int",
-          "default": 1024
-        },
-        {
-          "path": [
-            "nPbuffer"
-          ],
-          "type": "integer",
-          "declaredIn": "_IObase",
-          "source": "src/IO/_IObase.cpp:28",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_nPbuffer",
-          "cppType": "int",
-          "default": 512
         },
         {
           "path": [
@@ -14048,13 +14375,70 @@
           "cppType": "bool",
           "default": false,
           "embeddedClass": "_Thread"
+        },
+        {
+          "path": [
+            "threadR",
+            "FPS"
+          ],
+          "type": "number",
+          "declaredIn": "_Thread",
+          "source": "src/Base/_Thread.cpp:60",
+          "typeEvidence": "declaration",
+          "cppVariable": "FPS",
+          "cppType": "float",
+          "default": 30,
+          "embeddedClass": "_Thread"
+        },
+        {
+          "path": [
+            "threadR",
+            "bLog"
+          ],
+          "type": "boolean",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:58",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_bLog",
+          "cppType": "bool",
+          "default": false,
+          "embeddedClass": "_Thread"
         }
       ],
-      "dependencies": [],
+      "dependencies": [
+        {
+          "path": [
+            "BytePacketStreamIn"
+          ],
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
+          "multiple": false,
+          "declaredIn": "_IObase",
+          "source": "src/IO/_IObase.cpp:55",
+          "containers": []
+        },
+        {
+          "path": [
+            "BytePacketStreamOut"
+          ],
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
+          "multiple": false,
+          "declaredIn": "_IObase",
+          "source": "src/IO/_IObase.cpp:61",
+          "containers": []
+        }
+      ],
       "containers": [
         {
           "path": [
             "thread"
+          ],
+          "type": "object"
+        },
+        {
+          "path": [
+            "threadR"
           ],
           "type": "object"
         }
@@ -14073,11 +14457,33 @@
     {
       "name": "_WebSocketServer",
       "category": "IO",
-      "source": "src/IO/_WebSocketServer.h:52",
+      "source": "src/IO/_WebSocketServer.h:42",
       "baseClasses": [
         "_IObase"
       ],
       "parameters": [
+        {
+          "path": [
+            "BytePacketStreamIn"
+          ],
+          "type": "string",
+          "declaredIn": "_IObase",
+          "source": "src/IO/_IObase.cpp:54",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "BytePacketStreamOut"
+          ],
+          "type": "string",
+          "declaredIn": "_IObase",
+          "source": "src/IO/_IObase.cpp:60",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
         {
           "path": [
             "bLog"
@@ -14119,7 +14525,7 @@
           ],
           "type": "string",
           "declaredIn": "_WebSocketServer",
-          "source": "src/IO/_WebSocketServer.cpp:43",
+          "source": "src/IO/_WebSocketServer.cpp:32",
           "typeEvidence": "declaration",
           "cppVariable": "m_host",
           "cppType": "string",
@@ -14131,35 +14537,11 @@
           ],
           "type": "integer",
           "declaredIn": "_WebSocketServer",
-          "source": "src/IO/_WebSocketServer.cpp:46",
+          "source": "src/IO/_WebSocketServer.cpp:35",
           "typeEvidence": "declaration",
           "cppVariable": "m_nClientMax",
           "cppType": "int",
           "default": 128
-        },
-        {
-          "path": [
-            "nPacket"
-          ],
-          "type": "integer",
-          "declaredIn": "_IObase",
-          "source": "src/IO/_IObase.cpp:27",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_nPacket",
-          "cppType": "int",
-          "default": 256
-        },
-        {
-          "path": [
-            "nPbuffer"
-          ],
-          "type": "integer",
-          "declaredIn": "_IObase",
-          "source": "src/IO/_IObase.cpp:28",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_nPbuffer",
-          "cppType": "int",
-          "default": 2000
         },
         {
           "path": [
@@ -14179,7 +14561,7 @@
           ],
           "type": "integer",
           "declaredIn": "_WebSocketServer",
-          "source": "src/IO/_WebSocketServer.cpp:44",
+          "source": "src/IO/_WebSocketServer.cpp:33",
           "typeEvidence": "declaration",
           "cppVariable": "m_port",
           "cppType": "uint16_t",
@@ -14191,7 +14573,7 @@
           ],
           "type": "integer",
           "declaredIn": "_WebSocketServer",
-          "source": "src/IO/_WebSocketServer.cpp:45",
+          "source": "src/IO/_WebSocketServer.cpp:34",
           "typeEvidence": "declaration",
           "cppVariable": "m_tOutMs",
           "cppType": "uint32_t",
@@ -14259,14 +14641,37 @@
           ],
           "type": "json",
           "declaredIn": "_WebSocketServer",
-          "source": "src/IO/_WebSocketServer.cpp:42",
+          "source": "src/IO/_WebSocketServer.cpp:31",
           "typeEvidence": "unresolved",
           "cppVariable": "m_wsMode",
           "cppType": "WSSOCKET_MODE",
           "defaultExpression": "wsSocket_txt_bcast"
         }
       ],
-      "dependencies": [],
+      "dependencies": [
+        {
+          "path": [
+            "BytePacketStreamIn"
+          ],
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
+          "multiple": false,
+          "declaredIn": "_IObase",
+          "source": "src/IO/_IObase.cpp:55",
+          "containers": []
+        },
+        {
+          "path": [
+            "BytePacketStreamOut"
+          ],
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
+          "multiple": false,
+          "declaredIn": "_IObase",
+          "source": "src/IO/_IObase.cpp:61",
+          "containers": []
+        }
+      ],
       "containers": [
         {
           "path": [
@@ -14308,7 +14713,7 @@
     {
       "name": "DataObjects",
       "category": "Instance",
-      "source": "src/Instance/DataObjects.h:35",
+      "source": "src/Instance/DataObjects.h:36",
       "baseClasses": [],
       "parameters": [],
       "dependencies": [],
@@ -14555,21 +14960,20 @@
     {
       "name": "_GPS",
       "category": "Navigation",
-      "source": "src/Navigation/_GPS.h:17",
+      "source": "src/Navigation/_GPS.h:18",
       "baseClasses": [
         "_ModuleBase"
       ],
       "parameters": [
         {
           "path": [
-            "_IObase"
+            "BytePacketStreamIn"
           ],
           "type": "string",
           "declaredIn": "_GPS",
-          "source": "src/Navigation/_GPS.cpp:42",
-          "typeEvidence": "declaration",
+          "source": "src/Navigation/_GPS.cpp:43",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "string",
           "dependency": true
         },
         {
@@ -14651,13 +15055,13 @@
       "dependencies": [
         {
           "path": [
-            "_IObase"
+            "BytePacketStreamIn"
           ],
-          "targetClass": "_IObase",
-          "targetKind": "module",
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_GPS",
-          "source": "src/Navigation/_GPS.cpp:43",
+          "source": "src/Navigation/_GPS.cpp:44",
           "required": true,
           "containers": []
         }
@@ -14822,6 +15226,28 @@
       "parameters": [
         {
           "path": [
+            "BytePacketStreamIn"
+          ],
+          "type": "string",
+          "declaredIn": "_ProtocolBase",
+          "source": "src/Protocol/_ProtocolBase.cpp:43",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "BytePacketStreamOut"
+          ],
+          "type": "string",
+          "declaredIn": "_ProtocolBase",
+          "source": "src/Protocol/_ProtocolBase.cpp:48",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
             "RTCMmsg"
           ],
           "type": "object",
@@ -14881,30 +15307,6 @@
           "cppVariable": "tOutSec",
           "cppType": "double",
           "default": 10.0
-        },
-        {
-          "path": [
-            "_IObase"
-          ],
-          "type": "string",
-          "declaredIn": "_ProtocolBase",
-          "source": "src/Protocol/_ProtocolBase.cpp:43",
-          "typeEvidence": "declaration",
-          "cppVariable": "n",
-          "cppType": "string",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_IObaseSend"
-          ],
-          "type": "string",
-          "declaredIn": "_RTCMcast",
-          "source": "src/Navigation/_RTCMcast.cpp:95",
-          "typeEvidence": "declaration",
-          "cppVariable": "n",
-          "cppType": "string",
-          "dependency": true
         },
         {
           "path": [
@@ -15013,26 +15415,24 @@
       "dependencies": [
         {
           "path": [
-            "_IObase"
+            "BytePacketStreamIn"
           ],
-          "targetClass": "_IObase",
-          "targetKind": "module",
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_ProtocolBase",
           "source": "src/Protocol/_ProtocolBase.cpp:44",
-          "required": true,
           "containers": []
         },
         {
           "path": [
-            "_IObaseSend"
+            "BytePacketStreamOut"
           ],
-          "targetClass": "_IObase",
-          "targetKind": "module",
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
           "multiple": false,
-          "declaredIn": "_RTCMcast",
-          "source": "src/Navigation/_RTCMcast.cpp:96",
-          "required": true,
+          "declaredIn": "_ProtocolBase",
+          "source": "src/Protocol/_ProtocolBase.cpp:49",
           "containers": []
         }
       ],
@@ -15404,21 +15804,31 @@
     {
       "name": "_JSONbase",
       "category": "Protocol",
-      "source": "src/Protocol/_JSONbase.h:14",
+      "source": "src/Protocol/_JSONbase.h:11",
       "baseClasses": [
         "_ProtocolBase"
       ],
       "parameters": [
         {
           "path": [
-            "_IObase"
+            "BytePacketStreamIn"
           ],
           "type": "string",
           "declaredIn": "_ProtocolBase",
           "source": "src/Protocol/_ProtocolBase.cpp:43",
-          "typeEvidence": "declaration",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "string",
+          "dependency": true
+        },
+        {
+          "path": [
+            "BytePacketStreamOut"
+          ],
+          "type": "string",
+          "declaredIn": "_ProtocolBase",
+          "source": "src/Protocol/_ProtocolBase.cpp:48",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
           "dependency": true
         },
         {
@@ -15564,14 +15974,24 @@
       "dependencies": [
         {
           "path": [
-            "_IObase"
+            "BytePacketStreamIn"
           ],
-          "targetClass": "_IObase",
-          "targetKind": "module",
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_ProtocolBase",
           "source": "src/Protocol/_ProtocolBase.cpp:44",
-          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
+            "BytePacketStreamOut"
+          ],
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
+          "multiple": false,
+          "declaredIn": "_ProtocolBase",
+          "source": "src/Protocol/_ProtocolBase.cpp:49",
           "containers": []
         }
       ],
@@ -15602,21 +16022,31 @@
     {
       "name": "_Mavlink",
       "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:865",
+      "source": "src/Protocol/_Mavlink.h:867",
       "baseClasses": [
         "_ModuleBase"
       ],
       "parameters": [
         {
           "path": [
-            "_IObase"
+            "BytePacketStreamIn"
           ],
           "type": "string",
           "declaredIn": "_Mavlink",
           "source": "src/Protocol/_Mavlink.cpp:92",
-          "typeEvidence": "declaration",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "string",
+          "dependency": true
+        },
+        {
+          "path": [
+            "BytePacketStreamOut"
+          ],
+          "type": "string",
+          "declaredIn": "_Mavlink",
+          "source": "src/Protocol/_Mavlink.cpp:97",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
           "dependency": true
         },
         {
@@ -15756,7 +16186,7 @@
           ],
           "type": "array",
           "declaredIn": "_Mavlink",
-          "source": "src/Protocol/_Mavlink.cpp:115",
+          "source": "src/Protocol/_Mavlink.cpp:121",
           "typeEvidence": "declaration",
           "cppVariable": "vNoRouteCmd",
           "cppType": "vector<int>"
@@ -15795,7 +16225,7 @@
           ],
           "type": "array",
           "declaredIn": "_Mavlink",
-          "source": "src/Protocol/_Mavlink.cpp:97",
+          "source": "src/Protocol/_Mavlink.cpp:103",
           "typeEvidence": "declaration",
           "cppVariable": "vRoutings",
           "cppType": "vector<string>",
@@ -15805,14 +16235,24 @@
       "dependencies": [
         {
           "path": [
-            "_IObase"
+            "BytePacketStreamIn"
           ],
-          "targetClass": "_IObase",
-          "targetKind": "module",
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_Mavlink",
           "source": "src/Protocol/_Mavlink.cpp:93",
-          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
+            "BytePacketStreamOut"
+          ],
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
+          "multiple": false,
+          "declaredIn": "_Mavlink",
+          "source": "src/Protocol/_Mavlink.cpp:98",
           "containers": []
         },
         {
@@ -15823,7 +16263,7 @@
           "targetKind": "module",
           "multiple": true,
           "declaredIn": "_Mavlink",
-          "source": "src/Protocol/_Mavlink.cpp:103",
+          "source": "src/Protocol/_Mavlink.cpp:109",
           "extraction": "audited-adapter",
           "containers": []
         }
@@ -16084,21 +16524,31 @@
     {
       "name": "_ProtocolBase",
       "category": "Protocol",
-      "source": "src/Protocol/_ProtocolBase.h:63",
+      "source": "src/Protocol/_ProtocolBase.h:64",
       "baseClasses": [
         "_ModuleBase"
       ],
       "parameters": [
         {
           "path": [
-            "_IObase"
+            "BytePacketStreamIn"
           ],
           "type": "string",
           "declaredIn": "_ProtocolBase",
           "source": "src/Protocol/_ProtocolBase.cpp:43",
-          "typeEvidence": "declaration",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "string",
+          "dependency": true
+        },
+        {
+          "path": [
+            "BytePacketStreamOut"
+          ],
+          "type": "string",
+          "declaredIn": "_ProtocolBase",
+          "source": "src/Protocol/_ProtocolBase.cpp:48",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
           "dependency": true
         },
         {
@@ -16208,14 +16658,24 @@
       "dependencies": [
         {
           "path": [
-            "_IObase"
+            "BytePacketStreamIn"
           ],
-          "targetClass": "_IObase",
-          "targetKind": "module",
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_ProtocolBase",
           "source": "src/Protocol/_ProtocolBase.cpp:44",
-          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
+            "BytePacketStreamOut"
+          ],
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
+          "multiple": false,
+          "declaredIn": "_ProtocolBase",
+          "source": "src/Protocol/_ProtocolBase.cpp:49",
           "containers": []
         }
       ],
@@ -16253,14 +16713,24 @@
       "parameters": [
         {
           "path": [
-            "_IObase"
+            "BytePacketStreamIn"
           ],
           "type": "string",
           "declaredIn": "_ProtocolBase",
           "source": "src/Protocol/_ProtocolBase.cpp:43",
-          "typeEvidence": "declaration",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "string",
+          "dependency": true
+        },
+        {
+          "path": [
+            "BytePacketStreamOut"
+          ],
+          "type": "string",
+          "declaredIn": "_ProtocolBase",
+          "source": "src/Protocol/_ProtocolBase.cpp:48",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
           "dependency": true
         },
         {
@@ -16405,14 +16875,24 @@
       "dependencies": [
         {
           "path": [
-            "_IObase"
+            "BytePacketStreamIn"
           ],
-          "targetClass": "_IObase",
-          "targetKind": "module",
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_ProtocolBase",
           "source": "src/Protocol/_ProtocolBase.cpp:44",
-          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
+            "BytePacketStreamOut"
+          ],
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
+          "multiple": false,
+          "declaredIn": "_ProtocolBase",
+          "source": "src/Protocol/_ProtocolBase.cpp:49",
           "containers": []
         }
       ],
@@ -16450,14 +16930,24 @@
       "parameters": [
         {
           "path": [
-            "_IObase"
+            "BytePacketStreamIn"
           ],
           "type": "string",
           "declaredIn": "_ProtocolBase",
           "source": "src/Protocol/_ProtocolBase.cpp:43",
-          "typeEvidence": "declaration",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "string",
+          "dependency": true
+        },
+        {
+          "path": [
+            "BytePacketStreamOut"
+          ],
+          "type": "string",
+          "declaredIn": "_ProtocolBase",
+          "source": "src/Protocol/_ProtocolBase.cpp:48",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
           "dependency": true
         },
         {
@@ -16615,14 +17105,24 @@
       "dependencies": [
         {
           "path": [
-            "_IObase"
+            "BytePacketStreamIn"
           ],
-          "targetClass": "_IObase",
-          "targetKind": "module",
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_ProtocolBase",
           "source": "src/Protocol/_ProtocolBase.cpp:44",
-          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
+            "BytePacketStreamOut"
+          ],
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
+          "multiple": false,
+          "declaredIn": "_ProtocolBase",
+          "source": "src/Protocol/_ProtocolBase.cpp:49",
           "containers": []
         }
       ],
@@ -16787,14 +17287,24 @@
       "parameters": [
         {
           "path": [
-            "_IObase"
+            "BytePacketStreamIn"
           ],
           "type": "string",
           "declaredIn": "_USR_CANET",
           "source": "src/Protocol/_USR_CANET.cpp:36",
-          "typeEvidence": "declaration",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "string",
+          "dependency": true
+        },
+        {
+          "path": [
+            "BytePacketStreamOut"
+          ],
+          "type": "string",
+          "declaredIn": "_USR_CANET",
+          "source": "src/Protocol/_USR_CANET.cpp:41",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
           "dependency": true
         },
         {
@@ -16888,14 +17398,24 @@
       "dependencies": [
         {
           "path": [
-            "_IObase"
+            "BytePacketStreamIn"
           ],
-          "targetClass": "_IObase",
-          "targetKind": "module",
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_USR_CANET",
           "source": "src/Protocol/_USR_CANET.cpp:37",
-          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
+            "BytePacketStreamOut"
+          ],
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
+          "multiple": false,
+          "declaredIn": "_USR_CANET",
+          "source": "src/Protocol/_USR_CANET.cpp:42",
           "containers": []
         }
       ],
@@ -16927,14 +17447,24 @@
       "parameters": [
         {
           "path": [
-            "_IObase"
+            "BytePacketStreamIn"
           ],
           "type": "string",
           "declaredIn": "_ProtocolBase",
           "source": "src/Protocol/_ProtocolBase.cpp:43",
-          "typeEvidence": "declaration",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "string",
+          "dependency": true
+        },
+        {
+          "path": [
+            "BytePacketStreamOut"
+          ],
+          "type": "string",
+          "declaredIn": "_ProtocolBase",
+          "source": "src/Protocol/_ProtocolBase.cpp:48",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
           "dependency": true
         },
         {
@@ -17092,14 +17622,24 @@
       "dependencies": [
         {
           "path": [
-            "_IObase"
+            "BytePacketStreamIn"
           ],
-          "targetClass": "_IObase",
-          "targetKind": "module",
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_ProtocolBase",
           "source": "src/Protocol/_ProtocolBase.cpp:44",
-          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
+            "BytePacketStreamOut"
+          ],
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
+          "multiple": false,
+          "declaredIn": "_ProtocolBase",
+          "source": "src/Protocol/_ProtocolBase.cpp:49",
           "containers": []
         },
         {
@@ -17148,14 +17688,24 @@
       "parameters": [
         {
           "path": [
-            "_IObase"
+            "BytePacketStreamIn"
           ],
           "type": "string",
           "declaredIn": "_ProtocolBase",
           "source": "src/Protocol/_ProtocolBase.cpp:43",
-          "typeEvidence": "declaration",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "string",
+          "dependency": true
+        },
+        {
+          "path": [
+            "BytePacketStreamOut"
+          ],
+          "type": "string",
+          "declaredIn": "_ProtocolBase",
+          "source": "src/Protocol/_ProtocolBase.cpp:48",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
           "dependency": true
         },
         {
@@ -17277,14 +17827,24 @@
       "dependencies": [
         {
           "path": [
-            "_IObase"
+            "BytePacketStreamIn"
           ],
-          "targetClass": "_IObase",
-          "targetKind": "module",
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_ProtocolBase",
           "source": "src/Protocol/_ProtocolBase.cpp:44",
-          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
+            "BytePacketStreamOut"
+          ],
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
+          "multiple": false,
+          "declaredIn": "_ProtocolBase",
+          "source": "src/Protocol/_ProtocolBase.cpp:49",
           "containers": []
         }
       ],
@@ -17315,7 +17875,7 @@
     {
       "name": "MavAttitude",
       "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:120",
+      "source": "src/Protocol/_Mavlink.h:122",
       "baseClasses": [
         "MavMsgBase"
       ],
@@ -17330,7 +17890,7 @@
     {
       "name": "MavAttitudeQuaternion",
       "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:144",
+      "source": "src/Protocol/_Mavlink.h:146",
       "baseClasses": [
         "MavMsgBase"
       ],
@@ -17345,7 +17905,7 @@
     {
       "name": "MavBatteryStatus",
       "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:173",
+      "source": "src/Protocol/_Mavlink.h:175",
       "baseClasses": [
         "MavMsgBase"
       ],
@@ -17360,7 +17920,7 @@
     {
       "name": "MavCommandAck",
       "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:190",
+      "source": "src/Protocol/_Mavlink.h:192",
       "baseClasses": [
         "MavMsgBase"
       ],
@@ -17375,7 +17935,7 @@
     {
       "name": "MavGlobalPositionINT",
       "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:207",
+      "source": "src/Protocol/_Mavlink.h:209",
       "baseClasses": [
         "MavMsgBase"
       ],
@@ -17390,7 +17950,7 @@
     {
       "name": "MavGpsRawINT",
       "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:230",
+      "source": "src/Protocol/_Mavlink.h:232",
       "baseClasses": [
         "MavMsgBase"
       ],
@@ -17405,7 +17965,7 @@
     {
       "name": "MavHeartbeat",
       "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:254",
+      "source": "src/Protocol/_Mavlink.h:256",
       "baseClasses": [
         "MavMsgBase"
       ],
@@ -17420,7 +17980,7 @@
     {
       "name": "MavHighresIMU",
       "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:274",
+      "source": "src/Protocol/_Mavlink.h:276",
       "baseClasses": [
         "MavMsgBase"
       ],
@@ -17435,7 +17995,7 @@
     {
       "name": "MavHomePosition",
       "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:291",
+      "source": "src/Protocol/_Mavlink.h:293",
       "baseClasses": [
         "MavMsgBase"
       ],
@@ -17450,7 +18010,7 @@
     {
       "name": "MavLocalPositionNED",
       "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:308",
+      "source": "src/Protocol/_Mavlink.h:310",
       "baseClasses": [
         "MavMsgBase"
       ],
@@ -17465,7 +18025,7 @@
     {
       "name": "MavMissionAck",
       "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:427",
+      "source": "src/Protocol/_Mavlink.h:429",
       "baseClasses": [
         "MavMsgBase"
       ],
@@ -17480,7 +18040,7 @@
     {
       "name": "MavMissionClearAll",
       "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:461",
+      "source": "src/Protocol/_Mavlink.h:463",
       "baseClasses": [
         "MavMsgBase"
       ],
@@ -17495,7 +18055,7 @@
     {
       "name": "MavMissionCount",
       "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:332",
+      "source": "src/Protocol/_Mavlink.h:334",
       "baseClasses": [
         "MavMsgBase"
       ],
@@ -17510,7 +18070,7 @@
     {
       "name": "MavMissionCurrent",
       "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:352",
+      "source": "src/Protocol/_Mavlink.h:354",
       "baseClasses": [
         "MavMsgBase"
       ],
@@ -17525,7 +18085,7 @@
     {
       "name": "MavMissionItemInt",
       "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:410",
+      "source": "src/Protocol/_Mavlink.h:412",
       "baseClasses": [
         "MavMsgBase"
       ],
@@ -17540,7 +18100,7 @@
     {
       "name": "MavMissionItemReached",
       "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:478",
+      "source": "src/Protocol/_Mavlink.h:480",
       "baseClasses": [
         "MavMsgBase"
       ],
@@ -17555,7 +18115,7 @@
     {
       "name": "MavMissionRequestInt",
       "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:391",
+      "source": "src/Protocol/_Mavlink.h:393",
       "baseClasses": [
         "MavMsgBase"
       ],
@@ -17570,7 +18130,7 @@
     {
       "name": "MavMissionRequestList",
       "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:372",
+      "source": "src/Protocol/_Mavlink.h:374",
       "baseClasses": [
         "MavMsgBase"
       ],
@@ -17585,7 +18145,7 @@
     {
       "name": "MavMissionSetCurrent",
       "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:444",
+      "source": "src/Protocol/_Mavlink.h:446",
       "baseClasses": [
         "MavMsgBase"
       ],
@@ -17600,7 +18160,7 @@
     {
       "name": "MavMountStatus",
       "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:495",
+      "source": "src/Protocol/_Mavlink.h:497",
       "baseClasses": [
         "MavMsgBase"
       ],
@@ -17615,7 +18175,7 @@
     {
       "name": "MavMsgBase",
       "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:35",
+      "source": "src/Protocol/_Mavlink.h:37",
       "baseClasses": [],
       "parameters": [],
       "dependencies": [],
@@ -17628,7 +18188,7 @@
     {
       "name": "MavParamRequestRead",
       "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:512",
+      "source": "src/Protocol/_Mavlink.h:514",
       "baseClasses": [
         "MavMsgBase"
       ],
@@ -17643,7 +18203,7 @@
     {
       "name": "MavParamSet",
       "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:529",
+      "source": "src/Protocol/_Mavlink.h:531",
       "baseClasses": [
         "MavMsgBase"
       ],
@@ -17658,7 +18218,7 @@
     {
       "name": "MavParamValue",
       "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:546",
+      "source": "src/Protocol/_Mavlink.h:548",
       "baseClasses": [
         "MavMsgBase"
       ],
@@ -17673,7 +18233,7 @@
     {
       "name": "MavPositionTargetGlobalINT",
       "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:580",
+      "source": "src/Protocol/_Mavlink.h:582",
       "baseClasses": [
         "MavMsgBase"
       ],
@@ -17688,7 +18248,7 @@
     {
       "name": "MavPositionTargetLocalNED",
       "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:563",
+      "source": "src/Protocol/_Mavlink.h:565",
       "baseClasses": [
         "MavMsgBase"
       ],
@@ -17703,7 +18263,7 @@
     {
       "name": "MavRadioStatus",
       "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:597",
+      "source": "src/Protocol/_Mavlink.h:599",
       "baseClasses": [
         "MavMsgBase"
       ],
@@ -17718,7 +18278,7 @@
     {
       "name": "MavRawIMU",
       "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:614",
+      "source": "src/Protocol/_Mavlink.h:616",
       "baseClasses": [
         "MavMsgBase"
       ],
@@ -17733,7 +18293,7 @@
     {
       "name": "MavRcChannels",
       "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:631",
+      "source": "src/Protocol/_Mavlink.h:633",
       "baseClasses": [
         "MavMsgBase"
       ],
@@ -17748,7 +18308,7 @@
     {
       "name": "MavRcChannelsOverride",
       "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:684",
+      "source": "src/Protocol/_Mavlink.h:686",
       "baseClasses": [
         "MavMsgBase"
       ],
@@ -17763,7 +18323,7 @@
     {
       "name": "MavScaledIMU",
       "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:812",
+      "source": "src/Protocol/_Mavlink.h:814",
       "baseClasses": [
         "MavMsgBase"
       ],
@@ -17778,7 +18338,7 @@
     {
       "name": "MavServoOutputRaw",
       "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:701",
+      "source": "src/Protocol/_Mavlink.h:703",
       "baseClasses": [
         "MavMsgBase"
       ],
@@ -17793,7 +18353,7 @@
     {
       "name": "MavStatusText",
       "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:778",
+      "source": "src/Protocol/_Mavlink.h:780",
       "baseClasses": [
         "MavMsgBase"
       ],
@@ -17808,7 +18368,7 @@
     {
       "name": "MavSysStatus",
       "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:795",
+      "source": "src/Protocol/_Mavlink.h:797",
       "baseClasses": [
         "MavMsgBase"
       ],
@@ -19162,14 +19722,13 @@
       "parameters": [
         {
           "path": [
-            "_IObase"
+            "BytePacketStreamIn"
           ],
           "type": "string",
           "declaredIn": "_BenewakeTF",
           "source": "src/Sensor/Distance/_BenewakeTF.cpp:43",
-          "typeEvidence": "declaration",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "string",
           "dependency": true
         },
         {
@@ -19347,10 +19906,10 @@
       "dependencies": [
         {
           "path": [
-            "_IObase"
+            "BytePacketStreamIn"
           ],
-          "targetClass": "_IObase",
-          "targetKind": "module",
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_BenewakeTF",
           "source": "src/Sensor/Distance/_BenewakeTF.cpp:44",
@@ -19983,14 +20542,13 @@
       "parameters": [
         {
           "path": [
-            "_IObase"
+            "BytePacketStreamIn"
           ],
           "type": "string",
           "declaredIn": "_TOFsense",
           "source": "src/Sensor/Distance/_TOFsense.cpp:43",
-          "typeEvidence": "declaration",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "string",
           "dependency": true
         },
         {
@@ -20168,10 +20726,10 @@
       "dependencies": [
         {
           "path": [
-            "_IObase"
+            "BytePacketStreamIn"
           ],
-          "targetClass": "_IObase",
-          "targetKind": "module",
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_TOFsense",
           "source": "src/Sensor/Distance/_TOFsense.cpp:44",
@@ -20207,14 +20765,90 @@
       "parameters": [
         {
           "path": [
+            "BytePacketStreamCtrlCmdIn"
+          ],
+          "type": "string",
+          "declaredIn": "_Livox2",
+          "source": "src/Sensor/LiDAR/_Livox2.cpp:177",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "BytePacketStreamCtrlCmdOut"
+          ],
+          "type": "string",
+          "declaredIn": "_Livox2",
+          "source": "src/Sensor/LiDAR/_Livox2.cpp:182",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "BytePacketStreamDeviceQueryIn"
+          ],
+          "type": "string",
+          "declaredIn": "_Livox2",
+          "source": "src/Sensor/LiDAR/_Livox2.cpp:167",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "BytePacketStreamDeviceQueryOut"
+          ],
+          "type": "string",
+          "declaredIn": "_Livox2",
+          "source": "src/Sensor/LiDAR/_Livox2.cpp:172",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "BytePacketStreamImuIn"
+          ],
+          "type": "string",
+          "declaredIn": "_Livox2",
+          "source": "src/Sensor/LiDAR/_Livox2.cpp:197",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "BytePacketStreamPclIn"
+          ],
+          "type": "string",
+          "declaredIn": "_Livox2",
+          "source": "src/Sensor/LiDAR/_Livox2.cpp:192",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "BytePacketStreamPushCmdIn"
+          ],
+          "type": "string",
+          "declaredIn": "_Livox2",
+          "source": "src/Sensor/LiDAR/_Livox2.cpp:187",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
             "IMUstreamOut"
           ],
           "type": "string",
           "declaredIn": "_Livox2",
           "source": "src/Sensor/LiDAR/_Livox2.cpp:162",
-          "typeEvidence": "declaration",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "string",
           "dependency": true
         },
         {
@@ -20224,9 +20858,8 @@
           "type": "string",
           "declaredIn": "_Livox2",
           "source": "src/Sensor/LiDAR/_Livox2.cpp:157",
-          "typeEvidence": "declaration",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "string",
           "dependency": true
         },
         {
@@ -20396,66 +21029,6 @@
           "cppType": "bool",
           "default": false,
           "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "_UDPctrlCmd"
-          ],
-          "type": "string",
-          "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/_Livox2.cpp:172",
-          "typeEvidence": "declaration",
-          "cppVariable": "n",
-          "cppType": "string",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_UDPdeviceQuery"
-          ],
-          "type": "string",
-          "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/_Livox2.cpp:167",
-          "typeEvidence": "declaration",
-          "cppVariable": "n",
-          "cppType": "string",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_UDPimu"
-          ],
-          "type": "string",
-          "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/_Livox2.cpp:187",
-          "typeEvidence": "declaration",
-          "cppVariable": "n",
-          "cppType": "string",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_UDPpcl"
-          ],
-          "type": "string",
-          "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/_Livox2.cpp:182",
-          "typeEvidence": "declaration",
-          "cppVariable": "n",
-          "cppType": "string",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_UDPpushCmd"
-          ],
-          "type": "string",
-          "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/_Livox2.cpp:177",
-          "typeEvidence": "declaration",
-          "cppVariable": "n",
-          "cppType": "string",
-          "dependency": true
         },
         {
           "path": [
@@ -20750,6 +21323,90 @@
       "dependencies": [
         {
           "path": [
+            "BytePacketStreamCtrlCmdIn"
+          ],
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
+          "multiple": false,
+          "declaredIn": "_Livox2",
+          "source": "src/Sensor/LiDAR/_Livox2.cpp:178",
+          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
+            "BytePacketStreamCtrlCmdOut"
+          ],
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
+          "multiple": false,
+          "declaredIn": "_Livox2",
+          "source": "src/Sensor/LiDAR/_Livox2.cpp:183",
+          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
+            "BytePacketStreamDeviceQueryIn"
+          ],
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
+          "multiple": false,
+          "declaredIn": "_Livox2",
+          "source": "src/Sensor/LiDAR/_Livox2.cpp:168",
+          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
+            "BytePacketStreamDeviceQueryOut"
+          ],
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
+          "multiple": false,
+          "declaredIn": "_Livox2",
+          "source": "src/Sensor/LiDAR/_Livox2.cpp:173",
+          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
+            "BytePacketStreamImuIn"
+          ],
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
+          "multiple": false,
+          "declaredIn": "_Livox2",
+          "source": "src/Sensor/LiDAR/_Livox2.cpp:198",
+          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
+            "BytePacketStreamPclIn"
+          ],
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
+          "multiple": false,
+          "declaredIn": "_Livox2",
+          "source": "src/Sensor/LiDAR/_Livox2.cpp:193",
+          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
+            "BytePacketStreamPushCmdIn"
+          ],
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
+          "multiple": false,
+          "declaredIn": "_Livox2",
+          "source": "src/Sensor/LiDAR/_Livox2.cpp:188",
+          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
             "IMUstreamOut"
           ],
           "targetClass": "IMUstream",
@@ -20768,66 +21425,6 @@
           "multiple": false,
           "declaredIn": "_Livox2",
           "source": "src/Sensor/LiDAR/_Livox2.cpp:158",
-          "required": true,
-          "containers": []
-        },
-        {
-          "path": [
-            "_UDPctrlCmd"
-          ],
-          "targetClass": "_UDP",
-          "targetKind": "module",
-          "multiple": false,
-          "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/_Livox2.cpp:173",
-          "required": true,
-          "containers": []
-        },
-        {
-          "path": [
-            "_UDPdeviceQuery"
-          ],
-          "targetClass": "_UDP",
-          "targetKind": "module",
-          "multiple": false,
-          "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/_Livox2.cpp:168",
-          "required": true,
-          "containers": []
-        },
-        {
-          "path": [
-            "_UDPimu"
-          ],
-          "targetClass": "_UDP",
-          "targetKind": "module",
-          "multiple": false,
-          "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/_Livox2.cpp:188",
-          "required": true,
-          "containers": []
-        },
-        {
-          "path": [
-            "_UDPpcl"
-          ],
-          "targetClass": "_UDP",
-          "targetKind": "module",
-          "multiple": false,
-          "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/_Livox2.cpp:183",
-          "required": true,
-          "containers": []
-        },
-        {
-          "path": [
-            "_UDPpushCmd"
-          ],
-          "targetClass": "_UDP",
-          "targetKind": "module",
-          "multiple": false,
-          "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/_Livox2.cpp:178",
           "required": true,
           "containers": []
         }
@@ -20897,38 +21494,35 @@
       "parameters": [
         {
           "path": [
+            "BytePacketStreamDifopIn"
+          ],
+          "type": "string",
+          "declaredIn": "_RoboSenseAiry",
+          "source": "src/Sensor/LiDAR/_RoboSenseAiry.cpp:58",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "BytePacketStreamMsopIn"
+          ],
+          "type": "string",
+          "declaredIn": "_RoboSenseAiry",
+          "source": "src/Sensor/LiDAR/_RoboSenseAiry.cpp:53",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
             "PCLframeOut"
           ],
           "type": "string",
           "declaredIn": "_RoboSenseAiry",
           "source": "src/Sensor/LiDAR/_RoboSenseAiry.cpp:48",
-          "typeEvidence": "declaration",
+          "typeEvidence": "instance-lookup",
           "cppVariable": "n",
-          "cppType": "string",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_UDPdifop"
-          ],
-          "type": "string",
-          "declaredIn": "_RoboSenseAiry",
-          "source": "src/Sensor/LiDAR/_RoboSenseAiry.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "n",
-          "cppType": "string",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_UDPmsop"
-          ],
-          "type": "string",
-          "declaredIn": "_RoboSenseAiry",
-          "source": "src/Sensor/LiDAR/_RoboSenseAiry.cpp:53",
-          "typeEvidence": "declaration",
-          "cppVariable": "n",
-          "cppType": "string",
           "dependency": true
         },
         {
@@ -21060,22 +21654,10 @@
       "dependencies": [
         {
           "path": [
-            "PCLframeOut"
+            "BytePacketStreamDifopIn"
           ],
-          "targetClass": "PCLframe",
+          "targetClass": "BytePacketStream",
           "targetKind": "dataObject",
-          "multiple": false,
-          "declaredIn": "_RoboSenseAiry",
-          "source": "src/Sensor/LiDAR/_RoboSenseAiry.cpp:49",
-          "required": true,
-          "containers": []
-        },
-        {
-          "path": [
-            "_UDPdifop"
-          ],
-          "targetClass": "_UDP",
-          "targetKind": "module",
           "multiple": false,
           "declaredIn": "_RoboSenseAiry",
           "source": "src/Sensor/LiDAR/_RoboSenseAiry.cpp:59",
@@ -21084,13 +21666,25 @@
         },
         {
           "path": [
-            "_UDPmsop"
+            "BytePacketStreamMsopIn"
           ],
-          "targetClass": "_UDP",
-          "targetKind": "module",
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RoboSenseAiry",
           "source": "src/Sensor/LiDAR/_RoboSenseAiry.cpp:54",
+          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
+            "PCLframeOut"
+          ],
+          "targetClass": "PCLframe",
+          "targetKind": "dataObject",
+          "multiple": false,
+          "declaredIn": "_RoboSenseAiry",
+          "source": "src/Sensor/LiDAR/_RoboSenseAiry.cpp:49",
           "required": true,
           "containers": []
         }
@@ -26510,11 +27104,11 @@
       "parameters": [
         {
           "path": [
-            "PCLframeOut"
+            "BytePacketStreamIn"
           ],
           "type": "string",
           "declaredIn": "_PCrecv",
-          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCrecv.cpp:41",
+          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCrecv.cpp:46",
           "typeEvidence": "declaration",
           "cppVariable": "name",
           "cppType": "string",
@@ -26522,11 +27116,11 @@
         },
         {
           "path": [
-            "_IObase"
+            "PCLframeOut"
           ],
           "type": "string",
           "declaredIn": "_PCrecv",
-          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCrecv.cpp:46",
+          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCrecv.cpp:41",
           "typeEvidence": "declaration",
           "cppVariable": "name",
           "cppType": "string",
@@ -26645,6 +27239,18 @@
       "dependencies": [
         {
           "path": [
+            "BytePacketStreamIn"
+          ],
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
+          "multiple": false,
+          "declaredIn": "_PCrecv",
+          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCrecv.cpp:47",
+          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
             "PCLframeOut"
           ],
           "targetClass": "PCLframe",
@@ -26652,18 +27258,6 @@
           "multiple": false,
           "declaredIn": "_PCrecv",
           "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCrecv.cpp:42",
-          "required": true,
-          "containers": []
-        },
-        {
-          "path": [
-            "_IObase"
-          ],
-          "targetClass": "_IObase",
-          "targetKind": "module",
-          "multiple": false,
-          "declaredIn": "_PCrecv",
-          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCrecv.cpp:47",
           "required": true,
           "containers": []
         }
@@ -26846,11 +27440,11 @@
       "parameters": [
         {
           "path": [
-            "PCLframeIn"
+            "BytePacketStreamOut"
           ],
           "type": "string",
           "declaredIn": "_PCsend",
-          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCsend.cpp:49",
+          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCsend.cpp:44",
           "typeEvidence": "declaration",
           "cppVariable": "name",
           "cppType": "string",
@@ -26858,11 +27452,11 @@
         },
         {
           "path": [
-            "_IObase"
+            "PCLframeIn"
           ],
           "type": "string",
           "declaredIn": "_PCsend",
-          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCsend.cpp:44",
+          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCsend.cpp:49",
           "typeEvidence": "declaration",
           "cppVariable": "name",
           "cppType": "string",
@@ -26993,6 +27587,18 @@
       "dependencies": [
         {
           "path": [
+            "BytePacketStreamOut"
+          ],
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
+          "multiple": false,
+          "declaredIn": "_PCsend",
+          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCsend.cpp:45",
+          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
             "PCLframeIn"
           ],
           "targetClass": "PCLframe",
@@ -27000,18 +27606,6 @@
           "multiple": false,
           "declaredIn": "_PCsend",
           "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCsend.cpp:50",
-          "required": true,
-          "containers": []
-        },
-        {
-          "path": [
-            "_IObase"
-          ],
-          "targetClass": "_IObase",
-          "targetKind": "module",
-          "multiple": false,
-          "declaredIn": "_PCsend",
-          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCsend.cpp:45",
           "required": true,
           "containers": []
         }
@@ -38752,10 +39346,10 @@
     ]
   },
   "audit": {
-    "sourceFiles": 338,
-    "classCount": 197,
-    "classDeclarations": 197,
-    "creatableClassCount": 123,
+    "sourceFiles": 340,
+    "classCount": 198,
+    "classDeclarations": 198,
+    "creatableClassCount": 124,
     "factoryClassesWithoutDeclaration": [
       "_TestJSON",
       "_TestWebSocket"
@@ -38835,14 +39429,16 @@
       "src/Control/PID.h",
       "src/DataObject/BBoxStream.cpp",
       "src/DataObject/BBoxStream.h",
-      "src/DataObject/BytePacket.cpp",
-      "src/DataObject/BytePacket.h",
+      "src/DataObject/BytePacketStream.cpp",
+      "src/DataObject/BytePacketStream.h",
       "src/DataObject/DataObjBase.cpp",
       "src/DataObject/DataObjBase.h",
       "src/DataObject/IMUstream.cpp",
       "src/DataObject/IMUstream.h",
       "src/DataObject/LineFrame.cpp",
       "src/DataObject/LineFrame.h",
+      "src/DataObject/MavlinkStream.cpp",
+      "src/DataObject/MavlinkStream.h",
       "src/DataObject/PCLframe.cpp",
       "src/DataObject/PCLframe.h",
       "src/DataObject/PCLmap.cpp",
@@ -39100,10 +39696,10 @@
       "src/Vision/_VideoFile.h",
       "src/main.cpp"
     ],
-    "configReads": 637,
-    "resolvedReads": 625,
-    "moduleLookups": 117,
-    "resolvedLookups": 113,
+    "configReads": 644,
+    "resolvedReads": 632,
+    "moduleLookups": 123,
+    "resolvedLookups": 119,
     "unresolvedReads": 12,
     "unresolvedLookups": 4,
     "diagnosticsCount": 16,

@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_Sensor_LiDAR__RoboSenseAiry_H_
 #define OpenKAI_src_Sensor_LiDAR__RoboSenseAiry_H_
 
-#include "../../IO/_UDP.h"
+#include "../../DataObject/BytePacketStream.h"
 #include "../../Universe/_ReferenceFrame.h"
 #include "../../DataObject/PCLframe.h"
 #include "../../Dependencies/SensorFusion/SensorFusion.h"
@@ -123,8 +123,10 @@ namespace kai
         PCLframe *m_pPCLout = nullptr;
 		_Thread *m_pTdifop = nullptr;
 
-		_UDP *m_pUDPmsop = nullptr;
-		_UDP *m_pUDPdifop = nullptr;
+		BytePacketStream *m_pBpStreamMsopIn = nullptr;
+		uint64_t m_tLastBpStreamMsopIn = 0;
+		BytePacketStream *m_pBpStreamDifopIn = nullptr;
+		uint64_t m_tLastBpStreamDifopIn = 0;
 
 		// IMU
 		SF m_SF;

@@ -82,16 +82,22 @@ namespace kai
 			pB[j++] = ((uint8_t)((v >> 8) & 0xFF));
 		}
 
-		m_pIO->write(pB, PB_N_HDR + m_nCw * 2);
+		NULL_(m_pBpStreamOut);
+		m_pBpStreamOut->addPacket(vector<uint8_t>(pB, pB + PB_N_HDR + m_nCw * 2));
 	}
 
 	void _PWMio::updateR(void)
 	{
 		PROTOCOL_CMD rCMD;
+		rCMD.clear();
 
 		while (m_pTr->bRun())
 		{
-			IF_CONT(!readCMD(&rCMD));
+			if (!readCMD(&rCMD))
+			{
+				m_pTr->autoFPS();
+				continue;
+			}
 
 			handleCMD(rCMD);
 			rCMD.clear();
@@ -137,9 +143,9 @@ namespace kai
 		this->_ProtocolBase::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
-		if (!m_pIO->bOpen())
+		if (!check())
 		{
-			pC->addMsg("Not Connected", 1);
+			pC->addMsg("BytePacketStream unavailable", 1);
 			return;
 		}
 

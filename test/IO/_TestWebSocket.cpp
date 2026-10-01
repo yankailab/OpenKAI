@@ -35,7 +35,7 @@ namespace kai
     bool _TestWebSocket::start(void)
     {
         NULL_F(m_pT);
-        return m_pT->start(getUpdate, this);
+        return m_pT->startThread(getUpdate, this);
     }
 
     bool _TestWebSocket::check(void)
@@ -57,22 +57,23 @@ namespace kai
             _WebSocket *pWS = m_pWSserver->getClient(0);
             IF_CONT(!pWS);
 
-            uint8_t pB[512];
-            int nB;
-            nB = pWS->read(pB, 512);
+            BytePacketStream *pStreamIn = pWS->getBytePacketStreamOut();
+            BytePacketStream *pStreamOut = pWS->getBytePacketStreamIn();
+            IF_CONT(!pStreamIn || !pStreamOut);
 
-            IF_CONT(nB <= 0);
+            vector<BYTE_PACKET> vBp;
+            pStreamIn->getPackets(vBp, m_tLastBpStreamIn);
+            for (const BYTE_PACKET &bp : vBp)
+            {
+                m_tLastBpStreamIn = bp.m_tStamp;
+                json j = json::object();
+                j["id"] = i2str(1);
+                j["cmd"] = "heartbeat";
+                j["t"] = li2str(m_pT->getTfromNs());
 
-            // if(nB > 0)
-            //     pWS->write(pB, nB);
-
-            object o;
-            JO(o, "id", i2str(1));
-            JO(o, "cmd", "heartbeat");
-            JO(o, "t", li2str(m_pT->getTfromNs()));
-
-            string msg = picojson::value(o).serialize();
-            pWS->write((uint8_t *)msg.c_str(), msg.length());
+                string msg = j.dump();
+                pStreamOut->addPacket(vector<uint8_t>(msg.begin(), msg.end()));
+            }
         }
     }
 

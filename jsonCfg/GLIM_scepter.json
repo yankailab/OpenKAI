@@ -17,6 +17,8 @@
 		]
 	},
 	"wsServer": {
+		"BytePacketStreamIn": "wsServer_tx",
+		"BytePacketStreamOut": "wsServer_rx",
 		"class": "_WebSocketServer",
 		"bON": true,
 		"thread": {
@@ -40,7 +42,8 @@
 		"threadR": {
 			"FPS": 30
 		},
-		"_IObase": "wsServer",
+		"BytePacketStreamIn": "wsServer_rx",
+		"BytePacketStreamOut": "wsServer_tx",
 		"msgFinishSend": "",
 		"msgFinishRecv": "EOJ",
 		"vBASE": [
@@ -235,5 +238,17 @@
 	"GLIMMap": {
 		"type": "dataObject",
 		"class": "PCLmap"
+	},
+	"wsServer_tx": {
+		"type": "dataObject",
+		"class": "BytePacketStream",
+		"nPacket": 256,
+		"nPbuf": 2000
+	},
+	"wsServer_rx": {
+		"type": "dataObject",
+		"class": "BytePacketStream",
+		"nPacket": 256,
+		"nPbuf": 2000
 	}
 }

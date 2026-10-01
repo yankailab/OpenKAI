@@ -16,28 +16,29 @@ namespace kai
 
 	_IObase::~_IObase()
 	{
-		m_packetW.release();
+		stop();
+		DEL(m_pTr);
 	}
 
 	bool _IObase::loadConfig(void)
 	{
+		stop();
 		IF_F(!this->_ModuleBase::loadConfig());
-		const json &j = *m_pJ;
-
-		jKv(j, "nPacket", m_nPacket);
-		jKv(j, "nPbuffer", m_nPbuffer);
-		IF_F(!m_packetW.init(m_nPbuffer, m_nPacket));
-
-		return true;
+		json &j = *m_pJ;
+		if (!j.contains("threadR"))
+		{
+			// Preserve the existing receive cadence until it is configured separately.
+			j["threadR"] = {{"FPS", m_pT->getTargetFPS()}};
+		}
+		DEL(m_pTr);
+		m_pTr = createThread(jK(j, "threadR"), "threadR");
+		return m_pTr != nullptr;
 	}
 
 	bool _IObase::saveConfig(bool bExport)
 	{
 		IF_F(!_ModuleBase::saveConfig(false));
-
-		json &j = *m_pJ;
-		j["nPacket"] = m_nPacket;
-		j["nPbuffer"] = m_nPbuffer;
+		IF_F(m_pTr && !m_pTr->saveConfig(false));
 
 		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
@@ -46,8 +47,146 @@ namespace kai
 	bool _IObase::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_ModuleBase::link(pM));
+		const json &j = *m_pJ;
+
+		string n = "";
+
+		jKv(j, "BytePacketStreamIn", n);
+		m_pBpStreamIn = dynamic_cast<BytePacketStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+		IF_Le_F(!n.empty() && !m_pBpStreamIn, "BytePacketStreamIn not found: " + n);
+		m_tLastBpStreamIn = 0;
+
+		n.clear();
+		jKv(j, "BytePacketStreamOut", n);
+		m_pBpStreamOut = dynamic_cast<BytePacketStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+		IF_Le_F(!n.empty() && !m_pBpStreamOut, "BytePacketStreamOut not found: " + n);
 
 		return true;
+	}
+
+	bool _IObase::start(void)
+	{
+		if (!m_pT || !m_pTr || !bStopped())
+		{
+			return false;
+		}
+		if (!m_pT->startThread(getUpdateW, this) ||
+			!m_pTr->startThread(getUpdateR, this))
+		{
+			stop();
+			return false;
+		}
+		return true;
+	}
+
+	void _IObase::pause(void)
+	{
+		if (m_pT)
+		{
+			m_pT->pause();
+		}
+		if (m_pTr)
+		{
+			m_pTr->pause();
+		}
+	}
+
+	void _IObase::resume(void)
+	{
+		if (m_pT)
+		{
+			m_pT->run();
+		}
+		if (m_pTr)
+		{
+			m_pTr->run();
+		}
+	}
+
+	void _IObase::stop(void)
+	{
+		// Wake both workers before waiting for either to finish.
+		if (m_pT)
+		{
+			m_pT->stop();
+		}
+		if (m_pTr)
+		{
+			m_pTr->stop();
+		}
+		if (m_pT)
+		{
+			m_pT->join();
+		}
+		if (m_pTr)
+		{
+			m_pTr->join();
+		}
+	}
+
+	bool _IObase::bRun(void)
+	{
+		return (m_pT && m_pT->bRun()) || (m_pTr && m_pTr->bRun());
+	}
+
+	bool _IObase::bRunning(void)
+	{
+		return (m_pT && m_pT->bRunning()) || (m_pTr && m_pTr->bRunning());
+	}
+
+	bool _IObase::bStopped(void)
+	{
+		return (!m_pT || m_pT->bStopped()) && (!m_pTr || m_pTr->bStopped());
+	}
+
+	_Thread *_IObase::getThread(const string &name)
+	{
+		if (m_pTr && m_pTr->getName() == name)
+		{
+			return m_pTr;
+		}
+		return _ModuleBase::getThread(name);
+	}
+
+	void _IObase::updateW(void)
+	{
+		while (m_pT->bRun())
+		{
+			m_pT->autoFPS();
+
+			// One worker owns reconnect attempts, including receive-only transports.
+			if (!bOpen() && !open())
+			{
+				m_pT->sleepT(NSEC_SEC);
+				continue;
+			}
+
+			if (m_pBpStreamIn)
+			{
+				writePackets();
+			}
+		}
+	}
+
+	void _IObase::updateR(void)
+	{
+		while (m_pTr->bRun())
+		{
+			m_pTr->autoFPS();
+
+			if (bOpen() && m_pBpStreamOut)
+			{
+				readPackets();
+			}
+		}
+	}
+
+	void _IObase::readPackets(void)
+	{
+	}
+
+	void _IObase::writePackets(void)
+	{
 	}
 
 	bool _IObase::open(void)
@@ -60,40 +199,14 @@ namespace kai
 		return (m_ioStatus == io_opened);
 	}
 
-	IO_TYPE _IObase::ioType(void)
-	{
-		return m_ioType;
-	}
-
 	void _IObase::close(void)
 	{
-		m_packetW.clear();
-
 		m_ioStatus = io_closed;
-	}
-
-	bool _IObase::write(uint8_t *pBuf, int nB)
-	{
-		IF_F(m_ioStatus != io_opened);
-
-		m_packetW.setPacket(pBuf, nB);
-
-		NULL__(m_pT, true);
-		m_pT->run();
-		return true;
-	}
-
-	int _IObase::read(uint8_t *pBuf, int nB)
-	{
-		if (m_ioStatus != io_opened)
-			return -1;
-
-		return 0;
 	}
 
 	IO_STATUS _IObase::getIOstatus(void)
 	{
-		return m_ioStatus;
+		return m_ioStatus.load();
 	}
 
 	void _IObase::setIOstatus(IO_STATUS s)
@@ -101,19 +214,14 @@ namespace kai
 		m_ioStatus = s;
 	}
 
-	IO_PACKET_FIFO *_IObase::getPacketFIFOw(void)
-	{
-		return &m_packetW;
-	}
-
 	void _IObase::console(void *pConsole)
 	{
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);
-		_Console *pC = (_Console *)pConsole;
-
-		pC->addMsg("packetW_iPset=" + i2str(m_packetW.m_iPset));
-		pC->addMsg("packetW_iPget=" + i2str(m_packetW.m_iPget));
+		if (m_pTr)
+		{
+			m_pTr->console(pConsole);
+		}
 	}
 
 }

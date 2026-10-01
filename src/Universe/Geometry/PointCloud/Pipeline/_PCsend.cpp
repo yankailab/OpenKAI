@@ -41,9 +41,9 @@ namespace kai
 	{
 		IF_F(!_ReferenceFrame::link(pM));
 		string name;
-		jKv(*m_pJ, "_IObase", name);
-		m_pIO = static_cast<_IObase *>(pM->findModule(name));
-		IF_Le_F(!m_pIO, "_IObase not found: " + name);
+		jKv(*m_pJ, "BytePacketStreamOut", name);
+		m_pBpStreamOut = dynamic_cast<BytePacketStream *>(static_cast<DataObjBase *>(pM->findDataObject(name)));
+		IF_Le_F(!m_pBpStreamOut, "BytePacketStreamOut not found: " + name);
 
 		name.clear();
 		jKv(*m_pJ, "PCLframeIn", name);
@@ -61,7 +61,7 @@ namespace kai
 
 	bool _PCsend::check(void)
 	{
-		return m_pIO && m_pIO->bOpen() && m_pPCLin && !m_vPacket.empty() && _ReferenceFrame::check();
+		return m_pBpStreamOut && m_pPCLin && !m_vPacket.empty() && _ReferenceFrame::check();
 	}
 
 	void _PCsend::update(void)
@@ -115,12 +115,7 @@ namespace kai
 				pcstream::packUint(pPoint + 24, point.m_tStamp, 8);
 			}
 
-			// On failure retry the entire frame next iteration. Its first
-			// packet resets any incomplete frame at the receiver.
-			if (!m_pIO->write(pBytes, static_cast<int>(bytes)))
-			{
-				return;
-			}
+			m_pBpStreamOut->addPacket(vector<uint8_t>(pBytes, pBytes + bytes));
 			first += count;
 		}
 		while (first < m_vPoints.size() && m_pT->bRun());

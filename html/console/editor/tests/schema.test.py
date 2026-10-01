@@ -36,7 +36,7 @@ class StreamReferenceSchemaTest(unittest.TestCase):
         self.assertEqual(set(self.schema["audit"]["factoryClassesWithoutDeclaration"]), registered.difference(self.classes))
 
     def test_data_object_factories_and_configuration_defaults(self):
-        names = {"BBoxStream", "BytePacket", "IMUstream", "LineFrame", "PCLframe", "PCLmap",
+        names = {"BBoxStream", "BytePacketStream", "IMUstream", "LineFrame", "PCLframe", "PCLmap",
                  "RGBframe", "RGBDframe", "SharedMemoryFrame", "UGLIDcellStream"}
         self.assertEqual(
             {name for name, entry in self.classes.items() if entry["category"] == "DataObject" and entry["creatable"]},
@@ -61,6 +61,35 @@ class StreamReferenceSchemaTest(unittest.TestCase):
         shared = self.parameters("SharedMemoryFrame")
         for key, value in {"shmName": "", "nB": 0, "bWriter": True}.items():
             self.assertEqual(shared[(key,)]["default"], value)
+
+    def test_byte_packet_ports_replace_transport_dependencies(self):
+        classes = ("_IObase", "_UDP", "_TCPclient", "_SerialPort", "_WebSocketServer",
+                   "_ProtocolBase", "_JSONbase", "_Mavlink", "_USR_CANET", "_RTCMcast")
+        for name in classes:
+            with self.subTest(class_name=name):
+                dependencies = self.dependencies(name)
+                for key in ("BytePacketStreamIn", "BytePacketStreamOut"):
+                    self.assertEqual(dependencies[(key,)]["targetKind"], "dataObject")
+                    self.assertEqual(dependencies[(key,)]["targetClass"], "BytePacketStream")
+                self.assertNotIn(("_IObase",), dependencies)
+                self.assertNotIn(("_IObaseSend",), dependencies)
+        parameters = self.parameters("BytePacketStream")
+        self.assertEqual(parameters[("nPacket",)]["default"], 256)
+        self.assertEqual(parameters[("nPbuf",)]["default"], 2000)
+
+    def test_io_threads_are_independently_configurable(self):
+        classes = ("_IObase", "_UDP", "_TCPclient", "_SerialPort", "_WebSocket", "_WebSocketServer")
+        for name in classes:
+            with self.subTest(class_name=name):
+                parameters = self.parameters(name)
+                containers = {tuple(c["path"]): c["type"] for c in self.classes[name]["containers"]}
+                for thread in ("thread", "threadR"):
+                    self.assertEqual(containers[(thread,)], "object")
+                    self.assertEqual(parameters[(thread, "FPS")]["type"], "number")
+                    self.assertEqual(parameters[(thread, "FPS")]["default"], 30)
+                    self.assertEqual(parameters[(thread, "bLog")]["type"], "boolean")
+                    self.assertNotIn((thread, "class"), parameters)
+                    self.assertNotIn((thread, "name"), parameters)
 
     def test_realsense_validated_configuration_and_option_domains(self):
         parameters = self.parameters("_RealSense")

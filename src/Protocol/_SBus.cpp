@@ -76,9 +76,6 @@ namespace kai
 
 	bool _SBus::check(void)
 	{
-		NULL_F(m_pIO);
-		IF_F(!m_pIO->bOpen());
-
 		return this->_ProtocolBase::check();
 	}
 
@@ -96,14 +93,17 @@ namespace kai
 	{
 		IF_(!check());
 
-		//		m_pIO->write(m_pB, 16);
 	}
 
 	void _SBus::updateR(void)
 	{
 		while (m_pTr->bRun())
 		{
-			IF_CONT(!readSbus(&m_frame));
+			if (!readSbus(&m_frame))
+			{
+				m_pTr->autoFPS();
+				continue;
+			}
 
 			if (m_bRawSbus)
 				m_frame.decodeRaw();
@@ -120,21 +120,10 @@ namespace kai
 		IF_F(!check());
 		NULL_F(pF);
 
-		if (m_nRead == 0)
+		uint8_t b;
+		while (readByte(&b))
 		{
-			m_nRead = m_pIO->read(m_pBuf, PB_N_BUF);
-			IF_F(m_nRead <= 0);
-			m_iRead = 0;
-		}
-
-		while (m_iRead < m_nRead)
-		{
-			bool r = pF->input(m_pBuf[m_iRead++]);
-			if (m_iRead == m_nRead)
-			{
-				m_iRead = 0;
-				m_nRead = 0;
-			}
+			bool r = pF->input(b);
 
 			IF_CONT(!r);
 
@@ -168,10 +157,7 @@ namespace kai
 		this->_ProtocolBase::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
-		if (!m_pIO->bOpen())
-			pC->addMsg("Not connected");
-		else
-			pC->addMsg("Connected");
+		pC->addMsg(check() ? "BytePacketStream linked" : "BytePacketStream unavailable");
 
 		pC->addMsg("Raw: " + i2str(m_frame.m_pRC[0].raw()) + "|" + i2str(m_frame.m_pRC[1].raw()) + "|" + i2str(m_frame.m_pRC[2].raw()) + "|" + i2str(m_frame.m_pRC[3].raw()) + "|" + i2str(m_frame.m_pRC[4].raw()) + "|" + i2str(m_frame.m_pRC[5].raw()) + "|" + i2str(m_frame.m_pRC[6].raw()) + "|" + i2str(m_frame.m_pRC[7].raw()) + "|" + i2str(m_frame.m_pRC[8].raw()) + "|" + i2str(m_frame.m_pRC[9].raw()) + "|" + i2str(m_frame.m_pRC[10].raw()) + "|" + i2str(m_frame.m_pRC[11].raw()) + "|" + i2str(m_frame.m_pRC[12].raw()) + "|" + i2str(m_frame.m_pRC[13].raw()) + "|" + i2str(m_frame.m_pRC[14].raw()) + "|" + i2str(m_frame.m_pRC[15].raw()));
 

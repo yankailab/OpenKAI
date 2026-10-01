@@ -2,7 +2,7 @@
 #define OpenKAI_src_Actuator__DDSM_H_
 
 #include "../_ActuatorBase.h"
-#include "../../IO/_IObase.h"
+#include "../../DataObject/BytePacketStream.h"
 #include "../../Utility/util.h"
 
 #define DDSM_CMD_NB 10
@@ -50,7 +50,7 @@ namespace kai
 
 	protected:
 		_Thread *m_pTr = nullptr;
-		_IObase *m_pIO = nullptr;
+		BytePacketStream *m_pBpStreamOut = nullptr;
 	};
 
 }

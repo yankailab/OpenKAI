@@ -10,7 +10,9 @@
 #if defined(__GNUC__)
 #pragma GCC diagnostic pop
 #endif
-#include "../IO/_IObase.h"
+#include "../Base/_ModuleBase.h"
+#include "../DataObject/BytePacketStream.h"
+#include "../UI/_Console.h"
 
 #define MAV_N_PEER 16
 #define MAV_N_CMD_U64 4
@@ -989,7 +991,9 @@ namespace kai
 		vector<MavMsgBase *> m_vpMsg;
 
 	protected:
-		_IObase *m_pIO = nullptr;
+		BytePacketStream *m_pBpStreamIn = nullptr;
+		uint64_t m_tLastBpStreamIn = 0;
+		BytePacketStream *m_pBpStreamOut = nullptr;
 		int m_mySystemID = 255;
 		int m_myComponentID = MAV_COMP_ID_MISSIONPLANNER;
 		int m_myType = MAV_TYPE_GCS;
@@ -997,9 +1001,9 @@ namespace kai
 		int m_devComponentID = -1;
 		int m_devType = 0;
 
-		uint8_t m_rBuf[MAV_N_BUF];
-		int m_nRead = 0;
-		int m_iRead = 0;
+		vector<BYTE_PACKET> m_vPacketIn;
+		size_t m_iPacketIn = 0;
+		size_t m_iByteIn = 0;
 		uint8_t m_iMavComm = MAVLINK_COMM_0;	// Mavlink decode channel index
 		mavlink_status_t m_status;
 

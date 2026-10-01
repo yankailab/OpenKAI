@@ -89,12 +89,8 @@ namespace kai
 	bool _RTCMcast::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_ProtocolBase::link(pM));
-		const json &j = *m_pJ;
-
-		string n = "";
-		jKv(j, "_IObaseSend", n);
-		m_pIOsend = (_IObase *)(pM->findModule(n));
-		NULL_F(m_pIOsend);
+		NULL_F(m_pBpStreamIn);
+		NULL_F(m_pBpStreamOut);
 
 		return true;
 	}
@@ -109,8 +105,8 @@ namespace kai
 
 	bool _RTCMcast::check(void)
 	{
-		NULL_F(m_pIOsend);
-		IF_F(!m_pIOsend->bOpen());
+		NULL_F(m_pBpStreamIn);
+		NULL_F(m_pBpStreamOut);
 
 		return this->_ProtocolBase::check();
 	}
@@ -140,7 +136,7 @@ namespace kai
 
 			if (pM->m_tLastSent != tLr)
 			{
-				IF_CONT(!m_pIOsend->write(pM->m_pB, pM->m_nB));
+				m_pBpStreamOut->addPacket(vector<uint8_t>(pM->m_pB, pM->m_pB + pM->m_nB));
 
 				pM->m_tLastSent = tLr;
 				pM->m_ieSend.reset(tNow);
@@ -151,7 +147,7 @@ namespace kai
 
 			IF_CONT(pM->m_tOutRecv.bTout(tNow));
 			IF_CONT(!pM->m_ieSend.update(tNow, false));
-			IF_CONT(!m_pIOsend->write(pM->m_pB, pM->m_nB));
+			m_pBpStreamOut->addPacket(vector<uint8_t>(pM->m_pB, pM->m_pB + pM->m_nB));
 
 			pM->m_tLastSent = tLr;
 			pM->m_ieSend.reset(tNow);
@@ -184,23 +180,10 @@ namespace kai
 		IF_F(!check());
 		NULL_F(pMsg);
 
-		if (m_nRead == 0)
+		uint8_t b;
+		while (readByte(&b))
 		{
-			m_nRead = m_pIO->read(m_pBuf, RTCM_N_BUF);
-			IF_F(m_nRead <= 0);
-			m_iRead = 0;
-		}
-
-		while (m_iRead < m_nRead)
-		{
-			bool r = pMsg->input(m_pBuf[m_iRead++]);
-			if (m_iRead == m_nRead)
-			{
-				m_iRead = 0;
-				m_nRead = 0;
-			}
-
-			IF__(r, true);
+			IF__(pMsg->input(b), true);
 		}
 
 		return false;

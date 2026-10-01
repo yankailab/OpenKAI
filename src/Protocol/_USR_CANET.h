@@ -2,7 +2,7 @@
 #define OpenKAI_src_Protocol__USR_CANET_H_
 
 #include "_CANbase.h"
-#include "../IO/_IObase.h"
+#include "../DataObject/BytePacketStream.h"
 #include "../Utility/util.h"
 
 #define CANET_BUF_N 13
@@ -40,7 +40,10 @@ namespace kai
 		}
 
 	protected:
-		_IObase *m_pIO = nullptr;
+		BytePacketStream *m_pBpStreamIn = nullptr;
+		uint64_t m_tLastBpStreamIn = 0;
+		BytePacketStream *m_pBpStreamOut = nullptr;
+		vector<uint8_t> m_vFrameBytes;
 	};
 
 }

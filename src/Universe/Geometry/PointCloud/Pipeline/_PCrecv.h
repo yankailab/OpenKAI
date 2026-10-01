@@ -10,7 +10,7 @@
 
 #include "../../../_ReferenceFrame.h"
 #include "../../../../DataObject/PCLframe.h"
-#include "../../../../IO/_IObase.h"
+#include "../../../../DataObject/BytePacketStream.h"
 #include "PCstreamProtocol.h"
 
 namespace kai
@@ -42,7 +42,8 @@ namespace kai
 
 	protected:
 		PCLframe *m_pPCLout = nullptr;
-		_IObase *m_pIO = nullptr;
+		BytePacketStream *m_pBpStreamIn = nullptr;
+		uint64_t m_tLastBpStreamIn = 0;
 		vector<uint8_t> m_vPacket;
 		size_t m_nPacketBytes = 0;
 		// Private decoder staging; only complete frames enter the DataObject.

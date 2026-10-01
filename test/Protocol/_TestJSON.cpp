@@ -46,7 +46,7 @@ namespace kai
     bool _TestJSON::start(void)
     {
         NULL_F(m_pT);
-        return m_pT->start(getUpdate, this);
+        return m_pT->startThread(getUpdate, this);
     }
 
     bool _TestJSON::check(void)
@@ -66,11 +66,11 @@ namespace kai
             while (!check())
                 sleep(1);
 
-            object o;
-            JO(o, "id", (double)1);
-            JO(o, "t", (double)m_pT->getTfromNs());
-            JO(o, "cmd", "stat");
-            JO(o, "stat", "STANDBY");
+            json o = json::object();
+            o["id"] = 1;
+            o["t"] = m_pT->getTfromNs();
+            o["cmd"] = "stat";
+            o["stat"] = "STANDBY";
 
             m_pJreceiver->sendJson(o);
 

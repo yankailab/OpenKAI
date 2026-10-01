@@ -2,7 +2,8 @@
 #define OpenKAI_src_Protocol__ProtocolBase_H_
 
 #include "../Base/_ModuleBase.h"
-#include "../IO/_IObase.h"
+#include "../DataObject/BytePacketStream.h"
+#include "../UI/_Console.h"
 
 // 0 PROTOCOL_BEGIN
 // 1 COMMAND
@@ -75,6 +76,7 @@ namespace kai
 
 	protected:
 		virtual void send(void);
+		bool readByte(uint8_t *pB);
 		virtual bool readCMD(PROTOCOL_CMD *pCmd);
 		virtual void handleCMD(const PROTOCOL_CMD &cmd);
 
@@ -95,12 +97,15 @@ namespace kai
 
 	protected:
 		_Thread *m_pTr = nullptr;
-		_IObase *m_pIO = nullptr;
+		BytePacketStream *m_pBpStreamIn = nullptr;
+		uint64_t m_tLastBpStreamIn = 0;
+		BytePacketStream *m_pBpStreamOut = nullptr;
 		uint64_t m_nCMDrecv = 0;
 
-		uint8_t m_pBuf[PB_N_BUF];
-		int m_nRead = 0;
-		int m_iRead = 0;
+		// Keep unread bytes when a packet contains multiple protocol frames.
+		vector<BYTE_PACKET> m_vPacketIn;
+		size_t m_iPacketIn = 0;
+		size_t m_iByteIn = 0;
 	};
 
 }

@@ -29,6 +29,7 @@ namespace kai
 
 	protected:
 		_WebSocketServer* m_pWSserver;
+		uint64_t m_tLastBpStreamIn = 0;
 	};
 
 }

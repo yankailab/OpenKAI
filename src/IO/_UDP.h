@@ -10,8 +10,6 @@
 
 #include "_IObase.h"
 
-#define N_UDP_BUF 512
-
 namespace kai
 {
 
@@ -23,20 +21,17 @@ namespace kai
 
 		virtual bool loadConfig(void) override;
 		bool saveConfig(bool bExport) override;
-		virtual bool start(void);
 		virtual void console(void *pConsole);
 
 		bool open(void);
 		void close(void);
-		int read(uint8_t *pBuf, int nB);
+
+	protected:
+		void readPackets(void) override;
+		void writePackets(void) override;
 
 	private:
-		virtual void update(void);
-		static void *getUpdate(void *This)
-		{
-			((_UDP *)This)->update();
-			return NULL;
-		}
+		void closeConnection(uint64_t generation = 0);
 
 	protected:
 		string m_addrRemote = "";
@@ -45,8 +40,9 @@ namespace kai
 		bool m_bW2R = true;	// write back to the client recevied from
 		int m_bWbroadcast = 0;
 
-		sockaddr_in m_sAddrLocal;
-		sockaddr_in m_sAddrRemote;
+		std::mutex m_remoteMutex;
+		sockaddr_in m_sAddrLocal{};
+		sockaddr_in m_sAddrRemote{};
 		int m_socket = -1;
 	};
 

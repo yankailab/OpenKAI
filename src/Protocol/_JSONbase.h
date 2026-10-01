@@ -2,11 +2,8 @@
 #define OpenKAI_src_Protocol__JSONbase_H_
 
 #include "_ProtocolBase.h"
-#include "../IO/_IObase.h"
 #include "../UI/_Console.h"
 #include <openssl/md5.h>
-
-#define JB_N_BUF 512
 
 namespace kai
 {
@@ -30,7 +27,7 @@ namespace kai
 		virtual void send(void);
 		virtual void sendHeartbeat(void);
 
-		virtual bool recvJson(string *pStr, _IObase *pIO);
+		virtual bool recvJson(string *pStr);
 		virtual void handleJson(const string &str);
 		virtual void md5(const string &str, string *pDigest);
 		virtual bool str2JSON(const string &str, json &j);

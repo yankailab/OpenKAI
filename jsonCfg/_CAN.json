@@ -19,14 +19,17 @@
 		]
 	},
 	"udp": {
+		"BytePacketStreamIn": "udp_tx",
+		"BytePacketStreamOut": "udp_rx",
 		"class": "_UDP",
 		"bON": true,
 		"bLog": false,
 		"thread": {
-			"FPS": 1
+			"FPS": 100
 		},
-		"nPacket": 1024,
-		"nPbuffer": 512,
+		"threadR": {
+			"FPS": 100
+		},
 		"addrRemote": "192.168.0.7",
 		"portRemote": 20001,
 		"portLocal": 20001,
@@ -35,14 +38,17 @@
 		"/bServer": 0
 	},
 	"tcp": {
+		"BytePacketStreamIn": "tcp_tx",
+		"BytePacketStreamOut": "tcp_rx",
 		"class": "_TCPclient",
 		"bON": false,
 		"bLog": false,
 		"thread": {
-			"FPS": 1
+			"FPS": 100
 		},
-		"nPacket": 1024,
-		"nPbuffer": 512,
+		"threadR": {
+			"FPS": 100
+		},
 		"addr": "192.168.0.7",
 		"port": 20001
 	},
@@ -53,8 +59,10 @@
 		"thread": {
 			"FPS": 1
 		},
-		"_IObase": "udp",
-		"/_IObase": "tcp"
+		"BytePacketStreamIn": "udp_rx",
+		"BytePacketStreamOut": "udp_tx",
+		"/BytePacketStreamIn": "tcp_rx",
+		"/BytePacketStreamOut": "tcp_tx"
 	},
 	"socketCAN": {
 		"class": "_SocketCAN",
@@ -64,5 +72,29 @@
 			"FPS": 1
 		},
 		"ifName": "can0"
+	},
+	"udp_tx": {
+		"type": "dataObject",
+		"class": "BytePacketStream",
+		"nPacket": 1024,
+		"nPbuf": 512
+	},
+	"udp_rx": {
+		"type": "dataObject",
+		"class": "BytePacketStream",
+		"nPacket": 1024,
+		"nPbuf": 512
+	},
+	"tcp_tx": {
+		"type": "dataObject",
+		"class": "BytePacketStream",
+		"nPacket": 1024,
+		"nPbuf": 512
+	},
+	"tcp_rx": {
+		"type": "dataObject",
+		"class": "BytePacketStream",
+		"nPacket": 1024,
+		"nPbuf": 512
 	}
 }

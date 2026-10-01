@@ -28,13 +28,14 @@ namespace kai
 
 	bool _APmav_RTCM::link(InstanceMgr *pM)
 	{
-		IF_F(!this->_ProtocolBase::link(pM));	// Do not use _RTCM::link as we send to _Mavlink thus the _IObaseSend is not needed
+		IF_F(!this->_ProtocolBase::link(pM));	// Output is sent through _Mavlink; only the RTCM input stream is needed.
 		const json &j = *m_pJ;
 
 		string n = "";
 		jKv(j, "_Mavlink", n);
 		m_pMav = (_Mavlink *)(pM->findModule(n));
 		NULL_F(m_pMav);
+		NULL_F(m_pBpStreamIn);
 
 		return true;
 	}
@@ -50,6 +51,7 @@ namespace kai
 	bool _APmav_RTCM::check(void)
 	{
 		NULL_F(m_pMav);
+		NULL_F(m_pBpStreamIn);
 
 		return this->_ProtocolBase::check();
 	}

@@ -74,12 +74,14 @@ Include the companion configuration in your application's `APP` block:
 ```
 
 That file defines `_WebSocketServer` on port 7890 in text mode (`wsMode: 2`) and
-`_WSconsole` linked through `_IObase`. Extend its `vBASE` list with the names of
+`_WSconsole` linked through two `BytePacketStream` data objects. The server's
+`BytePacketStreamOut` connects to the console's `BytePacketStreamIn`; replies
+use the reverse connection. Extend its `vBASE` list with the names of
 modules that should receive commands. `_WSconsole` dispatches using the JSON
 `module` field and calls that module's `console(const json &, void *)` method.
 The module implements its own commands and can reply through `_JSONbase::sendJson()`.
 The companion config allows one command client because the existing server's
-read/write interface targets client 0; geometry streaming retains its own
+configured byte streams target client 0; geometry streaming retains its own
 independent multi-client support.
 
 The classic-script API is intentionally small and reusable:

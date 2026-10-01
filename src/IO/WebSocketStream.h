@@ -9,7 +9,7 @@ namespace kai
 {
 	// Shared immutable snapshots, one unacknowledged message per browser.
 	// publish() is thread safe and coalesces notifications; socket IO stays on
-	// HttpServer's worker. This deliberately bypasses IO_PACKET_FIFO.
+	// HttpServer's worker.
 	class WebSocketStream
 	{
 	public:

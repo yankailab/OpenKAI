@@ -39,13 +39,16 @@
 		"/bShow": 1
 	},
 	"udpAP": {
+		"BytePacketStreamIn": "udpAP_tx",
+		"BytePacketStreamOut": "udpAP_rx",
 		"class": "_UDP",
 		"bON": true,
 		"thread": {
 			"FPS": 30
 		},
-		"nPacket": 10,
-		"nPbuffer": 512,
+		"threadR": {
+			"FPS": 30
+		},
 		"bW2R": true,
 		"bWbroadcast": 0,
 		"addrRemote": "127.0.0.1",
@@ -54,13 +57,16 @@
 		"/bServer": 0
 	},
 	"serialAP": {
+		"BytePacketStreamIn": "serialAP_tx",
+		"BytePacketStreamOut": "serialAP_rx",
 		"class": "_SerialPort",
 		"bON": true,
 		"thread": {
-			"FPS": 30
+			"FPS": 100
 		},
-		"nPacket": 10,
-		"nPbuffer": 512,
+		"threadR": {
+			"FPS": 100
+		},
 		"/port": "/dev/ttyAMA0",
 		"port": "/dev/ttyACM0",
 		"/port_2": "/dev/ttyTHS1",
@@ -74,7 +80,8 @@
 		"thread": {
 			"FPS": 30
 		},
-		"_IObase": "serialAP",
+		"BytePacketStreamIn": "serialAP_rx",
+		"BytePacketStreamOut": "serialAP_tx",
 		"mySystemID": 200,
 		"iMavComm": 0,
 		"vRoutings": [],
@@ -227,5 +234,29 @@
 		"type": "dataObject",
 		"class": "RGBframe"
 	},
-	"/migration": "mavAP: absent routing targets are retained in /vRoutings: mavUDP. Format-only modules without a current implementation: _YOLOv8. Their original class names and settings are preserved. Classes present in source but not registered in the current factory: PID."
+	"/migration": "mavAP: absent routing targets are retained in /vRoutings: mavUDP. Format-only modules without a current implementation: _YOLOv8. Their original class names and settings are preserved. Classes present in source but not registered in the current factory: PID.",
+	"udpAP_tx": {
+		"type": "dataObject",
+		"class": "BytePacketStream",
+		"nPacket": 10,
+		"nPbuf": 512
+	},
+	"udpAP_rx": {
+		"type": "dataObject",
+		"class": "BytePacketStream",
+		"nPacket": 10,
+		"nPbuf": 512
+	},
+	"serialAP_tx": {
+		"type": "dataObject",
+		"class": "BytePacketStream",
+		"nPacket": 10,
+		"nPbuf": 512
+	},
+	"serialAP_rx": {
+		"type": "dataObject",
+		"class": "BytePacketStream",
+		"nPacket": 10,
+		"nPbuf": 512
+	}
 }

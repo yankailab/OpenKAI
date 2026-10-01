@@ -10,9 +10,10 @@
 
 // Data streams
 #include "../DataObject/BBoxStream.h"
-#include "../DataObject/BytePacket.h"
+#include "../DataObject/BytePacketStream.h"
 #include "../DataObject/IMUstream.h"
 #include "../DataObject/LineFrame.h"
+#include "../DataObject/MavlinkStream.h"
 #include "../DataObject/PCLframe.h"
 #include "../DataObject/PCLmap.h"
 #include "../DataObject/SharedMemoryFrame.h"

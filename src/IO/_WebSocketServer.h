@@ -9,7 +9,10 @@
 #define OpenKAI_src_IO__WebSocketServer_H_
 
 #include "_WebSocket.h"
+#include <condition_variable>
 #include <memory>
+#include <mutex>
+#include <wsserver/ws.h>
 
 namespace kai
 {
@@ -19,26 +22,13 @@ namespace kai
 		// Accepted connections own transient configuration, outside the launch document.
 		std::shared_ptr<JsonCfg> m_pJcfg;
 		ws_cli_conn_t m_wsConn;
-		uint64_t m_tStamp;
+		uint64_t m_tLastBpStreamIn = 0;
 
-		bool init(_WebSocket* pWS)
+		~wsClient()
 		{
-			NULL_F(pWS);
-
-			m_pWS = pWS;
-			m_tStamp = getTns();
-			return true;
+			delete m_pWS;
 		}
 
-		void setWS(_WebSocket *pWS)
-		{
-			m_pWS = pWS;
-		}
-
-		_WebSocket *getWS(void)
-		{
-			return m_pWS;
-		}
 	};
 
 	enum WSSOCKET_MODE
@@ -58,12 +48,11 @@ namespace kai
 		bool loadConfig(void) override;
 		bool saveConfig(bool bExport) override;
 		bool link(InstanceMgr *pM) override;
-		virtual bool start(void);
+		bool start(void) override;
+		void pause(void) override;
+		void resume(void) override;
+		void stop(void) override;
 		virtual void console(void *pConsole);
-
-		// default to client 0
-		bool write(uint8_t *pBuf, int nB);
-		int read(uint8_t *pBuf, int nB);
 
 		int nClient(void);
 		_WebSocket* getClient(int i);
@@ -73,33 +62,19 @@ namespace kai
 		static void sCbMessage(ws_cli_conn_t client, const unsigned char *msg, uint64_t size, int type);
 
 	private:
+		bool sendPacket(ws_cli_conn_t client, const BYTE_PACKET &bp);
 		void cbOpen(ws_cli_conn_t client);
 		void cbClose(ws_cli_conn_t client);
 		void cbMessage(ws_cli_conn_t client, const unsigned char *msg, uint64_t size, int type);
 
-		wsClient* findWSclient(ws_cli_conn_t wsCli);
-		int findWSclientIdx(ws_cli_conn_t wsCli);
-		wsClient *getWSclient(int i);
-		void delWSclient(int i);
-//		wsClient *findClient(const string& addr, const string& port);
-
-		void updateW(void);
-		static void *getUpdateW(void *This)
-		{
-			((_WebSocketServer *)This)->updateW();
-			return NULL;
-		}
-
-		void updateR(void);
-		static void *getUpdateR(void *This)
-		{
-			((_WebSocketServer *)This)->updateR();
-			return NULL;
-		}
+		std::shared_ptr<wsClient> findWSclient(ws_cli_conn_t wsCli);
+		void updateW(void) override;
+		void updateR(void) override;
 
 	protected:
 		InstanceMgr* m_pM = nullptr;
-		vector<wsClient> m_vClient;
+		vector<std::shared_ptr<wsClient>> m_vClient;
+		std::mutex m_clientMutex;
 		int m_nClientMax = 128;
 		WSSOCKET_MODE m_wsMode = wsSocket_txt_bcast;
 
@@ -107,7 +82,11 @@ namespace kai
 		uint16_t m_port = 8080;
 		uint32_t m_tOutMs = 1000;
 
-		_Thread *m_pTr = nullptr;
+		std::mutex m_readMutex;
+		std::condition_variable m_readReady;
+		bool m_bReadPaused = false;
+		bool m_bStopping = true;
+		uintptr_t m_callbackToken = 0;
 	};
 
 }

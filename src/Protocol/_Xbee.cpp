@@ -86,7 +86,8 @@ namespace kai
         f.m_destAddr = dest;
         f.encode(pB, nB);
 
-        m_pIO->write(f.m_pF, f.m_nF);
+        NULL_(m_pBpStreamOut);
+        m_pBpStreamOut->addPacket(vector<uint8_t>(f.m_pF, f.m_pF + f.m_nF));
     }
 
     void _Xbee::updateR(void)
@@ -101,6 +102,10 @@ namespace kai
                 handleFrame(&xbFrame);
                 xbFrame.clear();
             }
+            else
+            {
+                m_pTr->autoFPS();
+            }
         }
     }
 
@@ -109,21 +114,10 @@ namespace kai
         IF_F(!check());
         NULL_F(pF);
 
-        if (m_nRead == 0)
+        uint8_t b;
+        while (readByte(&b))
         {
-            m_nRead = m_pIO->read(m_pBuf, PB_N_BUF);
-            IF_F(m_nRead <= 0);
-            m_iRead = 0;
-        }
-
-        while (m_iRead < m_nRead)
-        {
-            bool r = pF->input(m_pBuf[m_iRead++]);
-            if (m_iRead == m_nRead)
-            {
-                m_iRead = 0;
-                m_nRead = 0;
-            }
+            bool r = pF->input(b);
 
             IF__(r, true);
         }
@@ -206,12 +200,6 @@ namespace kai
         NULL_(pConsole);
         this->_ProtocolBase::console(pConsole);
 
-        string msg;
-        if (m_pIO->bOpen())
-            msg = "Connected";
-        else
-            msg = "Not connected";
-
-        ((_Console *)pConsole)->addMsg(msg, 0);
+        ((_Console *)pConsole)->addMsg(check() ? "BytePacketStream linked" : "BytePacketStream unavailable", 0);
     }
 }

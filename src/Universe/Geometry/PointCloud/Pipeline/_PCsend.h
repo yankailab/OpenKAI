@@ -10,7 +10,7 @@
 
 #include "../../../_ReferenceFrame.h"
 #include "../../../../DataObject/PCLframe.h"
-#include "../../../../IO/_IObase.h"
+#include "../../../../DataObject/BytePacketStream.h"
 #include "PCstreamProtocol.h"
 
 namespace kai
@@ -37,7 +37,7 @@ namespace kai
 		}
 
 	protected:
-		_IObase *m_pIO = nullptr;
+		BytePacketStream *m_pBpStreamOut = nullptr;
 		PCLframe *m_pPCLin = nullptr;
 		uint64_t m_tInput = 0;
 		vector<GEOMETRY_POINT> m_vPoints;

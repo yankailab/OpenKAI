@@ -32,24 +32,28 @@ namespace kai
 		IF_F(!this->_CANbase::link(pM));
 		const json &j = *m_pJ;
 
-		string n = "";
-		jKv(j, "_IObase", n);
-		m_pIO = (_IObase *)(pM->findModule(n));
-		NULL_F(m_pIO);
+		string n;
+		jKv(j, "BytePacketStreamIn", n);
+		m_pBpStreamIn = dynamic_cast<BytePacketStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+		IF_Le_F(!n.empty() && !m_pBpStreamIn, "BytePacketStreamIn not found: " + n);
+
+		n.clear();
+		jKv(j, "BytePacketStreamOut", n);
+		m_pBpStreamOut = dynamic_cast<BytePacketStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+		IF_Le_F(!n.empty() && !m_pBpStreamOut, "BytePacketStreamOut not found: " + n);
+		IF_F(!m_pBpStreamIn && !m_pBpStreamOut);
 
 		return true;
 	}
 
 	bool _USR_CANET::open(void)
 	{
-		NULL_F(m_pIO);
-		return m_pIO->bOpen();
+		return m_pBpStreamIn || m_pBpStreamOut;
 	}
 
 	bool _USR_CANET::bOpen(void)
 	{
-		NULL_F(m_pIO);
-		return m_pIO->bOpen();
+		return m_pBpStreamIn || m_pBpStreamOut;
 	}
 
 	void _USR_CANET::close(void)
@@ -65,8 +69,7 @@ namespace kai
 
 	bool _USR_CANET::check(void)
 	{
-		NULL_F(m_pIO);
-		IF_F(!m_pIO->bOpen());
+		IF_F(!bOpen());
 
 		// use ModuleBase::check() as CANbase uses m_bOpened but CANET does not rely on it
 		return this->_ModuleBase::check();
@@ -104,12 +107,8 @@ namespace kai
 		// data
 		memcpy(&pB[5], f.m_pData, f.m_nData);
 
-		if (!m_pIO->write(pB, CANET_BUF_N))
-		{
-			LOG_E("m_pIO->write(pB, CANET_BUF_N)");
-			m_iErr++;
-			return false;
-		}
+		NULL_F(m_pBpStreamOut);
+		m_pBpStreamOut->addPacket(vector<uint8_t>(pB, pB + CANET_BUF_N));
 
 		LOG_I("Sent: id=" + i2str(f.m_ID) + ", len=" + i2str(f.m_nData));
 		return true;
@@ -120,23 +119,22 @@ namespace kai
 		IF_F(!check());
 		NULL_F(pF);
 
+		NULL_F(m_pBpStreamIn);
+		if (m_vFrameBytes.size() < CANET_BUF_N)
+		{
+			vector<BYTE_PACKET> vPackets;
+			m_pBpStreamIn->getPackets(vPackets, m_tLastBpStreamIn);
+			for (const BYTE_PACKET &packet : vPackets)
+			{
+				m_vFrameBytes.insert(m_vFrameBytes.end(), packet.m_vB.begin(), packet.m_vB.end());
+				m_tLastBpStreamIn = packet.m_tStamp;
+			}
+		}
+		IF_F(m_vFrameBytes.size() < CANET_BUF_N);
+
 		uint8_t pB[CANET_BUF_N];
-		memset(pB, 0, CANET_BUF_N);
-
-		int nR = m_pIO->read(pB, CANET_BUF_N);
-		if (nR <= 0)
-		{
-			LOG_E("pIO->read(pB, CANET_BUF_N) <= 0");
-			m_iErr++;
-			return false;
-		}
-
-		if (nR < CANET_BUF_N)
-		{
-			LOG_E("pIO->read(pB, CANET_BUF_N) < CANET_BUF_N");
-			m_iErr++;
-			return false;
-		}
+		memcpy(pB, m_vFrameBytes.data(), CANET_BUF_N);
+		m_vFrameBytes.erase(m_vFrameBytes.begin(), m_vFrameBytes.begin() + CANET_BUF_N);
 
 		pF->clear();
 		uint8_t ctrlB = pB[0];

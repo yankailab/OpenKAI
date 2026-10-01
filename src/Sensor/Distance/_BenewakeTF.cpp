@@ -40,9 +40,9 @@ namespace kai
 		const json &j = *m_pJ;
 
 		string n = "";
-		jKv(j, "_IObase", n);
-		m_pIO = (_IObase *)(pM->findModule(n));
-		NULL_F(m_pIO);
+		jKv(j, "BytePacketStreamIn", n);
+		m_pBpStreamIn = dynamic_cast<BytePacketStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+		IF_Le_F(!m_pBpStreamIn, "BytePacketStreamIn not found: " + n);
 
 		return true;
 	}
@@ -57,13 +57,7 @@ namespace kai
 	{
 		while (m_pT->bRun())
 		{
-			if (!m_pIO)
-			{
-				m_pT->sleepT(NSEC_SEC);
-				continue;
-			}
-
-			if (!m_pIO->bOpen())
+			if (!m_pBpStreamIn)
 			{
 				m_pT->sleepT(NSEC_SEC);
 				continue;
@@ -78,12 +72,32 @@ namespace kai
 		}
 	}
 
+	bool _BenewakeTF::readByte(uint8_t *pB)
+	{
+		NULL_F(m_pBpStreamIn);
+		if (m_iByteIn == m_vBytesIn.size())
+		{
+			vector<BYTE_PACKET> vPacket;
+			m_pBpStreamIn->getPackets(vPacket, m_tLastBpStreamIn);
+			m_vBytesIn.clear();
+			m_iByteIn = 0;
+			for (const BYTE_PACKET &packet : vPacket)
+			{
+				m_vBytesIn.insert(m_vBytesIn.end(), packet.m_vB.begin(), packet.m_vB.end());
+				m_tLastBpStreamIn = packet.m_tStamp;
+			}
+		}
+
+		IF_F(m_iByteIn == m_vBytesIn.size());
+		*pB = m_vBytesIn[m_iByteIn++];
+		return true;
+	}
+
 	bool _BenewakeTF::readCMD(void)
 	{
 		uint8_t b;
-		int nB;
 
-		while ((nB = m_pIO->read(&b, 1)) > 0)
+		while (readByte(&b))
 		{
 			if (m_frame.m_header != 0)
 			{

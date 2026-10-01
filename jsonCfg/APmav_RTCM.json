@@ -25,24 +25,30 @@
 
 
 	"serialAP": {
+		"BytePacketStreamIn": "serialAP_tx",
+		"BytePacketStreamOut": "serialAP_rx",
 		"class": "_SerialPort",
 		"bON": false,
 		"thread": {
 			"FPS": 30
 		},
-		"nPacket": 256,
-		"nPbuffer": 2000,
+		"threadR": {
+			"FPS": 30
+		},
 		"port": "/dev/ttyACM0",
 		"baud": 115200
 	},
 	"udpAP": {
+		"BytePacketStreamIn": "udpAP_tx",
+		"BytePacketStreamOut": "udpAP_rx",
 		"class": "_UDP",
 		"bON": true,
 		"thread": {
 			"FPS": 30
 		},
-		"nPacket": 256,
-		"nPbuffer": 2000,
+		"threadR": {
+			"FPS": 30
+		},
 		"addrRemote": "192.168.16.203",
 		"portRemote": 24603,
 		"/portLocal": 24600,
@@ -56,8 +62,10 @@
 			"FPS": 30
 		},
 		"bLog": false,
-		"_IObase": "udpAP",
-		"/_IObase": "serialAP",
+		"BytePacketStreamIn": "udpAP_rx",
+		"BytePacketStreamOut": "udpAP_tx",
+		"/BytePacketStreamIn": "serialAP_rx",
+		"/BytePacketStreamOut": "serialAP_tx",
 		"mySystemID": 200,
 		"iMavComm": 0
 	},
@@ -111,24 +119,28 @@
 
 
 	"tcpNtrip": {
+		"BytePacketStreamOut": "tcpNtrip_rx",
 		"class": "_TCPclient",
 		"bON": false,
 		"thread": {
 			"FPS": 30
 		},
-		"nPacket": 256,
-		"nPbuffer": 2000,
+		"threadR": {
+			"FPS": 30
+		},
 		"addr": "127.0.0.1",
 		"port": 24608
 	},
 	"serialRTCM": {
+		"BytePacketStreamOut": "serialRTCM_rx",
 		"class": "_SerialPort",
 		"bON": true,
 		"thread": {
 			"FPS": 10
 		},
-		"nPacket": 256,
-		"nPbuffer": 2000,
+		"threadR": {
+			"FPS": 10
+		},
 		"port": "/dev/ttyUSB0",
 		"baud": 115200
 	},
@@ -140,11 +152,11 @@
 			"FPS": 1
 		},
 		"threadR": {
-			"FPS": 1
+			"FPS": 30
 		},
-		"/_IObase": "tcpNtrip",
-		"_IObase": "serialRTCM",
-		"_IObaseSend": "udpRTCMsvr",
+		"/BytePacketStreamIn": "tcpNtrip_rx",
+		"BytePacketStreamIn": "serialRTCM_rx",
+		"BytePacketStreamOut": "udpRTCMsvr_tx",
 		"/RTCMmsg": [
 			{
 				"ID": 1006,
@@ -155,13 +167,15 @@
 		]
 	},
 	"udpRTCMsvr": {
+		"BytePacketStreamIn": "udpRTCMsvr_tx",
 		"class": "_UDP",
 		"bON": false,
 		"thread": {
 			"FPS": 30
 		},
-		"nPacket": 256,
-		"nPbuffer": 2000,
+		"threadR": {
+			"FPS": 30
+		},
 		"addrRemote": "127.0.0.1",
 		"portRemote": 24609,
 		"/portLocal": 24609,
@@ -171,13 +185,15 @@
 
 
 	"udpRTCMcli": {
+		"BytePacketStreamOut": "udpRTCMcli_rx",
 		"class": "_UDP",
 		"bON": false,
 		"thread": {
 			"FPS": 30
 		},
-		"nPacket": 256,
-		"nPbuffer": 2000,
+		"threadR": {
+			"FPS": 30
+		},
 		"/addrRemote": "127.0.0.1",
 		"/portRemote": 24609,
 		"portLocal": 24609,
@@ -192,11 +208,59 @@
 			"FPS": 1
 		},
 		"threadR": {
-			"FPS": 10
+			"FPS": 30
 		},
-		"_IObase": "serialRTCM",
-		"/_IObase": "udpRTCMcli",
-		"//_IObase": "tcpNtrip",
+		"BytePacketStreamIn": "serialRTCM_rx",
+		"/BytePacketStreamIn": "udpRTCMcli_rx",
+		"//BytePacketStreamIn": "tcpNtrip_rx",
 		"_Mavlink": "mavAP"
+	},
+	"serialAP_tx": {
+		"type": "dataObject",
+		"class": "BytePacketStream",
+		"nPacket": 256,
+		"nPbuf": 2000
+	},
+	"serialAP_rx": {
+		"type": "dataObject",
+		"class": "BytePacketStream",
+		"nPacket": 256,
+		"nPbuf": 2000
+	},
+	"udpAP_tx": {
+		"type": "dataObject",
+		"class": "BytePacketStream",
+		"nPacket": 256,
+		"nPbuf": 2000
+	},
+	"udpAP_rx": {
+		"type": "dataObject",
+		"class": "BytePacketStream",
+		"nPacket": 256,
+		"nPbuf": 2000
+	},
+	"tcpNtrip_rx": {
+		"type": "dataObject",
+		"class": "BytePacketStream",
+		"nPacket": 256,
+		"nPbuf": 2000
+	},
+	"serialRTCM_rx": {
+		"type": "dataObject",
+		"class": "BytePacketStream",
+		"nPacket": 256,
+		"nPbuf": 2000
+	},
+	"udpRTCMsvr_tx": {
+		"type": "dataObject",
+		"class": "BytePacketStream",
+		"nPacket": 256,
+		"nPbuf": 2000
+	},
+	"udpRTCMcli_rx": {
+		"type": "dataObject",
+		"class": "BytePacketStream",
+		"nPacket": 256,
+		"nPbuf": 2000
 	}
 }

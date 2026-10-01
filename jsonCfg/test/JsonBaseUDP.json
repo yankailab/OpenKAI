@@ -20,13 +20,16 @@
 		]
 	},
 	"udpClient": {
+		"BytePacketStreamIn": "udpClient_tx",
+		"BytePacketStreamOut": "udpClient_rx",
 		"class": "_UDP",
 		"bON": true,
 		"thread": {
 			"FPS": 30
 		},
-		"nPacket": 10,
-		"nPbuffer": 512,
+		"threadR": {
+			"FPS": 30
+		},
 		"bW2R": true,
 		"bWbroadcast": 0,
 		"addrRemote": "127.0.0.1",
@@ -35,13 +38,16 @@
 		"/bServer": 0
 	},
 	"udpServer": {
+		"BytePacketStreamIn": "udpServer_tx",
+		"BytePacketStreamOut": "udpServer_rx",
 		"class": "_UDP",
 		"bON": true,
 		"thread": {
 			"FPS": 30
 		},
-		"nPacket": 10,
-		"nPbuffer": 512,
+		"threadR": {
+			"FPS": 30
+		},
 		"bW2R": true,
 		"bWbroadcast": 0,
 		"portLocal": 19840,
@@ -59,7 +65,8 @@
 		},
 		"msgFinishSend": "EOJ",
 		"msgFinishRecv": "EOJ",
-		"_IObase": "udpClient"
+		"BytePacketStreamIn": "udpClient_rx",
+		"BytePacketStreamOut": "udpClient_tx"
 	},
 	"JsonReceiver": {
 		"class": "_JSONbase",
@@ -73,7 +80,8 @@
 		},
 		"msgFinishSend": "EOJ",
 		"msgFinishRecv": "EOJ",
-		"_IObase": "udpServer"
+		"BytePacketStreamIn": "udpServer_rx",
+		"BytePacketStreamOut": "udpServer_tx"
 	},
 	"TestJSON": {
 		"class": "_TestJSON",
@@ -103,8 +111,30 @@
 				11,
 				12
 			]
-		],
-		"/_IObaseClient": "udpClient",
-		"/_IObaseServer": "udpServer"
+		]
+	},
+	"udpClient_tx": {
+		"type": "dataObject",
+		"class": "BytePacketStream",
+		"nPacket": 10,
+		"nPbuf": 512
+	},
+	"udpClient_rx": {
+		"type": "dataObject",
+		"class": "BytePacketStream",
+		"nPacket": 10,
+		"nPbuf": 512
+	},
+	"udpServer_tx": {
+		"type": "dataObject",
+		"class": "BytePacketStream",
+		"nPacket": 10,
+		"nPbuf": 512
+	},
+	"udpServer_rx": {
+		"type": "dataObject",
+		"class": "BytePacketStream",
+		"nPacket": 10,
+		"nPbuf": 512
 	}
 }

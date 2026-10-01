@@ -29,23 +29,23 @@ namespace kai
 		virtual bool loadConfig(void) override;
 		bool saveConfig(bool bExport) override;
 		virtual bool link(InstanceMgr *pM) override;
-		virtual bool start(void);
 		virtual void console(void *pConsole);
 
-		virtual bool open(void);
-		virtual void close(void);
-		virtual int read(uint8_t *pBuf, int nB);
+		bool open(void) override;
+		void close(void) override;
 
 	private:
+		void readPackets(void) override;
+		void writePackets(void) override;
+		bool writePending(void);
 		bool setup(void);
-		virtual void update(void);
-		static void *getUpdate(void *This)
-		{
-			((_SerialPort *)This)->update();
-			return NULL;
-		}
+		void closeConnection(uint64_t generation = 0);
 
 	protected:
+		BYTE_PACKET m_bpWrite;
+		size_t m_iWrite = 0;
+		uint64_t m_writeConnectionGeneration = 0;
+
 		int m_fd = -1;
 		string m_port = "";
 		int m_baud = 115200;
