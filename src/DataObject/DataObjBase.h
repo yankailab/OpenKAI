@@ -25,6 +25,7 @@ namespace kai
 		uint64_t getTstamp(void);
 
 	protected:
+		// m_tStamp the last time this data object is updated, not for each of its element.
 		std::atomic<uint64_t> m_tStamp{0};
 
 	};
