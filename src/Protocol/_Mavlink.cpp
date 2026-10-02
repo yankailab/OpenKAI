@@ -115,53 +115,24 @@ namespace kai
 
 	void _Mavlink::updateW(void)
 	{
-		vector<std::shared_ptr<MavMsgBase>> vMsg;
+		vector<mavlink_message_t> vMsg;
 
 		while (m_pT->bRun())
 		{
 			m_pT->autoFPS();
-
 			IF_CONT(!m_pMavStreamIn || !m_pBpStreamOut);
 
-			m_pMavStreamIn->getMsgQueue(vMsg, m_tLastMavStreamIn);
-			uint64_t tLast = m_tLastMavStreamIn;
+			m_tLastMavStreamIn = m_pMavStreamIn->getMsgQueue(vMsg, m_tLastMavStreamIn);
 
-			bool bComplete = true;
-			for (const auto &pM : vMsg)
+			uint8_t pB[MAVLINK_MAX_PACKET_LEN];
+			for (mavlink_message_t msg : vMsg)
 			{
-				const uint64_t tStamp = pM->getTstamp();
-				mavlink_message_t msg;
-				msg = pM->encode(m_mySystemID, m_myComponentID,
-								 m_devSystemID, m_devComponentID);
+				int nB = mavlink_msg_to_send_buffer(pB, &msg);
+				m_pBpStreamOut->addPacket(vector<uint8_t>(pB, pB + nB));
 
-				if (!writeMessage(msg))
-				{
-					bComplete = false;
-					break;
-				}
-
-				tLast = std::max(tLast, tStamp);
-			}
-
-			// Commit only complete batches; readers retain independent cursors.
-			// Clearing the shared queue could erase concurrent arrivals.
-			if (bComplete)
-			{
-				m_tLastMavStreamIn = tLast;
+				LOG_I("Packet added, MSG_ID = " + i2str((int)msg.msgid) + ", seq = " + i2str((int)msg.seq));
 			}
 		}
-	}
-
-	bool _Mavlink::writeMessage(const mavlink_message_t &msg)
-	{
-		NULL_F(m_pBpStreamOut);
-
-		uint8_t pB[MAVLINK_MAX_PACKET_LEN];
-		int nB = mavlink_msg_to_send_buffer(pB, &msg);
-		m_pBpStreamOut->addPacket(vector<uint8_t>(pB, pB + nB));
-
-		LOG_I("Packet added, MSG_ID = " + i2str((int)msg.msgid) + ", seq = " + i2str((int)msg.seq));
-		return true;
 	}
 
 	void _Mavlink::updateR(void)

@@ -54,6 +54,7 @@ namespace kai
 
 
 
+
 		// gimbal, payloads
 		virtual void setMount(AP_MOUNT &mount);
 
@@ -80,6 +81,11 @@ namespace kai
 		MavlinkStream *m_pMavStreamOut = nullptr;
 		int m_myType = MAV_TYPE_GCS;
 
+		uint8_t m_mySysID = 0;
+		uint8_t m_myComID = 0;
+		uint8_t m_targetSysID = 0;
+		uint8_t m_targetComID = 0;
+
 		INTERVAL_EVENT m_ieSendHB;
 		INTERVAL_EVENT m_ieSendMsgInt;
 
@@ -89,6 +95,8 @@ namespace kai
 
 		int32_t m_customMode = -1;
 		int32_t m_customModeFC = -1;
+
+
 
 
 

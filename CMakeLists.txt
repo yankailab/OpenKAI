@@ -109,6 +109,56 @@ list(APPEND OpenKAI_cpp
   src/DataObject/IMUstream.cpp
   src/DataObject/LineFrame.cpp
   src/DataObject/MavlinkStream.cpp
+  src/DataObject/Mavlink/MavMsgBase.cpp
+  src/DataObject/Mavlink/MavAttitude.cpp
+  src/DataObject/Mavlink/MavAttitudeQuaternion.cpp
+  src/DataObject/Mavlink/MavBatteryStatus.cpp
+  src/DataObject/Mavlink/MavCommandAck.cpp
+  src/DataObject/Mavlink/MavCommandInt.cpp
+  src/DataObject/Mavlink/MavCommandLong.cpp
+  src/DataObject/Mavlink/MavDistanceSensor.cpp
+  src/DataObject/Mavlink/MavGlobalPositionINT.cpp
+  src/DataObject/Mavlink/MavGlobalVisionPositionEstimate.cpp
+  src/DataObject/Mavlink/MavGpsInput.cpp
+  src/DataObject/Mavlink/MavGpsRawINT.cpp
+  src/DataObject/Mavlink/MavGpsRTCMdata.cpp
+  src/DataObject/Mavlink/MavHeartbeat.cpp
+  src/DataObject/Mavlink/MavHighresIMU.cpp
+  src/DataObject/Mavlink/MavHomePosition.cpp
+  src/DataObject/Mavlink/MavLandingTarget.cpp
+  src/DataObject/Mavlink/MavLocalPositionNED.cpp
+  src/DataObject/Mavlink/MavMissionCount.cpp
+  src/DataObject/Mavlink/MavMissionCurrent.cpp
+  src/DataObject/Mavlink/MavMissionRequestList.cpp
+  src/DataObject/Mavlink/MavMissionRequestInt.cpp
+  src/DataObject/Mavlink/MavMissionItemInt.cpp
+  src/DataObject/Mavlink/MavMissionAck.cpp
+  src/DataObject/Mavlink/MavMissionSetCurrent.cpp
+  src/DataObject/Mavlink/MavMissionClearAll.cpp
+  src/DataObject/Mavlink/MavMissionItemReached.cpp
+  src/DataObject/Mavlink/MavMountConfigure.cpp
+  src/DataObject/Mavlink/MavMountControl.cpp
+  src/DataObject/Mavlink/MavMountStatus.cpp
+  src/DataObject/Mavlink/MavParamRequestRead.cpp
+  src/DataObject/Mavlink/MavParamSet.cpp
+  src/DataObject/Mavlink/MavParamValue.cpp
+  src/DataObject/Mavlink/MavPositionTargetLocalNED.cpp
+  src/DataObject/Mavlink/MavPositionTargetGlobalINT.cpp
+  src/DataObject/Mavlink/MavRadioStatus.cpp
+  src/DataObject/Mavlink/MavRawIMU.cpp
+  src/DataObject/Mavlink/MavRcChannels.cpp
+  src/DataObject/Mavlink/MavRcChannelsOverride.cpp
+  src/DataObject/Mavlink/MavRequestDataStream.cpp
+  src/DataObject/Mavlink/MavServoOutputRaw.cpp
+  src/DataObject/Mavlink/MavSetAttitudeTarget.cpp
+  src/DataObject/Mavlink/MavSetMode.cpp
+  src/DataObject/Mavlink/MavSetPositionTargetLocalNED.cpp
+  src/DataObject/Mavlink/MavSetPositionTargetGlobalINT.cpp
+  src/DataObject/Mavlink/MavStatusText.cpp
+  src/DataObject/Mavlink/MavSysStatus.cpp
+  src/DataObject/Mavlink/MavScaledIMU.cpp
+  src/DataObject/Mavlink/MavVisionPositionEstimate.cpp
+  src/DataObject/Mavlink/MavVisionSpeedEstimate.cpp
   src/DataObject/PCLframe.cpp
   src/DataObject/PCLmap.cpp
   src/DataObject/SharedMemoryFrame.cpp

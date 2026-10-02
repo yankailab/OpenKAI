@@ -19,6 +19,10 @@ namespace kai
 		const json &j = *m_pJ;
 
 		jKv(j, "myType", m_myType);
+		jKv(j, "mySysID", m_mySysID);
+		jKv(j, "myComID", m_myComID);
+		jKv(j, "targetSysID", m_targetSysID);
+		jKv(j, "targetComID", m_targetComID);
 
 		double t;
 		if (jKv(j, "ieSendHB", t))
@@ -36,6 +40,10 @@ namespace kai
 
 		json &j = *m_pJ;
 		j["myType"] = m_myType;
+		j["mySysID"] = m_mySysID;
+		j["myComID"] = m_myComID;
+		j["targetSysID"] = m_targetSysID;
+		j["targetComID"] = m_targetComID;
 		j["ieSendHB"] = static_cast<double>(m_ieSendHB.m_tInterval) / NSEC_SEC;
 		j["ieSendMsgInt"] = static_cast<double>(m_ieSendMsgInt.m_tInterval) / NSEC_SEC;
 

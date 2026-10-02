@@ -25,7 +25,6 @@ namespace kai
 		virtual void console(void *pConsole);
 
 	protected:
-		bool writeMessage(const mavlink_message_t &msg);
 		bool readMessage(mavlink_message_t *pMsg);
 
 	private:
