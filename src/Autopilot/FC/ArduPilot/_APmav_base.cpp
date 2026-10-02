@@ -18,6 +18,8 @@ namespace kai
 		IF_F(!this->_AutopilotBase::loadConfig());
 		const json &j = *m_pJ;
 
+		jKv(j, "myType", m_myType);
+
 		double t;
 		if (jKv(j, "ieSendHB", t))
 			m_ieSendHB.init(t * NSEC_SEC);
@@ -33,6 +35,7 @@ namespace kai
 		IF_F(!_AutopilotBase::saveConfig(false));
 
 		json &j = *m_pJ;
+		j["myType"] = m_myType;
 		j["ieSendHB"] = static_cast<double>(m_ieSendHB.m_tInterval) / NSEC_SEC;
 		j["ieSendMsgInt"] = static_cast<double>(m_ieSendMsgInt.m_tInterval) / NSEC_SEC;
 
@@ -46,9 +49,14 @@ namespace kai
 		const json &j = *m_pJ;
 
 		string n = "";
-		jKv(j, "_Mavlink", n);
-		m_pMav = (_Mavlink *)(pM->findModule(n));
-		NULL_F(m_pMav);
+		jKv(j, "MavlinkStreamIn", n);
+		m_pMavStreamIn = dynamic_cast<MavlinkStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+		NULL_F(m_pMavStreamIn);
+
+		n.clear();
+		jKv(j, "MavlinkStreamOut", n);
+		m_pMavStreamOut = dynamic_cast<MavlinkStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+		NULL_F(m_pMavStreamOut);
 
 		const json *pJm = jK(j, "mavMsgInt");
 		IF__(!pJm || !pJm->is_object(), true);
@@ -64,7 +72,7 @@ namespace kai
 			float tInt = 1;
 			jKv(Ji, "tInt", tInt);
 
-			if (!m_pMav->setMsgInterval(id, tInt * NSEC_SEC))
+			if (!m_pMavStreamIn->setMsgInterval(id, tInt * NSEC_SEC))
 			{
 				LOG_E("Interval msg id = " + i2str(id) + " not found");
 			}
@@ -81,7 +89,8 @@ namespace kai
 
 	bool _APmav_base::check(void)
 	{
-		NULL_F(m_pMav);
+		NULL_F(m_pMavStreamIn);
+		NULL_F(m_pMavStreamOut);
 
 		return this->_AutopilotBase::check();
 	}
@@ -102,68 +111,73 @@ namespace kai
 	{
 		IF_(!check());
 
-		uint64_t tNow = getTns();
-
-		if (m_pMav->m_heartbeat.bValid())
+		if (auto *pM = m_pMavStreamIn->getMsg<MavHeartbeat>(); pM && pM->bValid())
 		{
-			m_customModeFC = m_pMav->m_heartbeat.m_msg.custom_mode;
+			const auto &msg = pM->get();
+			m_customModeFC = msg.custom_mode;
 			// update m_modeFC in inherit class according to vehicle type
 
-			m_armFC = (m_pMav->m_heartbeat.m_msg.base_mode & 0b10000000) ? apArm_arm : apArm_disarm;
+			m_armFC = (msg.base_mode & 0b10000000) ? apArm_arm : apArm_disarm;
 		}
 
-		if (m_pMav->m_attitude.bValid())
+		if (auto *pM = m_pMavStreamIn->getMsg<MavAttitude>(); pM && pM->bValid())
 		{
-			m_vAngle.x() = m_pMav->m_attitude.m_msg.roll;
-			m_vAngle.y() = m_pMav->m_attitude.m_msg.pitch;
-			m_vAngle.z() = m_pMav->m_attitude.m_msg.yaw;
+			const auto &msg = pM->get();
+			m_vAngle.x() = msg.roll;
+			m_vAngle.y() = msg.pitch;
+			m_vAngle.z() = msg.yaw;
 		}
 
-		if (m_pMav->m_globalPositionINT.bValid())
+		if (auto *pM = m_pMavStreamIn->getMsg<MavGlobalPositionINT>(); pM && pM->bValid())
 		{
-			m_vPos.x() = ((double)(m_pMav->m_globalPositionINT.m_msg.lat)) * 1e-7;
-			m_vPos.y() = ((double)(m_pMav->m_globalPositionINT.m_msg.lon)) * 1e-7;
-			m_vPos.z() = ((double)(m_pMav->m_globalPositionINT.m_msg.alt)) * 1e-3;
+			const auto &msg = pM->get();
+			m_vPos.x() = ((double)(msg.lat)) * 1e-7;
+			m_vPos.y() = ((double)(msg.lon)) * 1e-7;
+			m_vPos.z() = ((double)(msg.alt)) * 1e-3;
 
-			m_rAlt = ((float)(m_pMav->m_globalPositionINT.m_msg.relative_alt)) * 1e-3;
-			//			m_vAngle.z() = ((float)(m_pMav->m_globalPositionINT.m_msg.hdg)) * 1e-2;
+			m_rAlt = ((float)(msg.relative_alt)) * 1e-3;
+			//			m_vAngle.z() = ((float)(msg.hdg)) * 1e-2;
 		}
 
-		if (m_pMav->m_localPositionNED.bValid())
+		if (auto *pM = m_pMavStreamIn->getMsg<MavLocalPositionNED>(); pM && pM->bValid())
 		{
-			m_vVelocity.x() = m_pMav->m_localPositionNED.m_msg.vx;
-			m_vVelocity.y() = m_pMav->m_localPositionNED.m_msg.vy;
-			m_vVelocity.z() = m_pMav->m_localPositionNED.m_msg.vz;
+			const auto &msg = pM->get();
+			m_vVelocity.x() = msg.vx;
+			m_vVelocity.y() = msg.vy;
+			m_vVelocity.z() = msg.vz;
 
-			// m_vLocalPos.x() = m_pMav->m_localPositionNED.m_msg.x;
-			// m_vLocalPos.y() = m_pMav->m_localPositionNED.m_msg.y;
-			// m_vLocalPos.z() = m_pMav->m_localPositionNED.m_msg.z;
+			// m_vLocalPos.x() = msg.x;
+			// m_vLocalPos.y() = msg.y;
+			// m_vLocalPos.z() = msg.z;
 		}
 
-		if (m_pMav->m_homePosition.bValid())
+		if (auto *pM = m_pMavStreamIn->getMsg<MavHomePosition>(); pM && pM->bValid())
 		{
-			m_vHomePos.x() = ((double)(m_pMav->m_homePosition.m_msg.latitude)) * 1e-7;
-			m_vHomePos.y() = ((double)(m_pMav->m_homePosition.m_msg.longitude)) * 1e-7;
-			m_vHomePos.z() = ((double)(m_pMav->m_homePosition.m_msg.altitude)) * 1e-3;
+			const auto &msg = pM->get();
+			m_vHomePos.x() = ((double)(msg.latitude)) * 1e-7;
+			m_vHomePos.y() = ((double)(msg.longitude)) * 1e-7;
+			m_vHomePos.z() = ((double)(msg.altitude)) * 1e-3;
 		}
 		else
 		{
-			//	m_pMav->clGetHomePosition();
+			//	m_pMavStreamOut->clGetHomePosition();
 		}
 
 
 
 		// Battery status
-		if (m_pMav->m_batteryStatus.bValid())
+		if (auto *pM = m_pMavStreamIn->getMsg<MavBatteryStatus>(); pM && pM->bValid())
 		{
-			m_battery = (float)(m_pMav->m_batteryStatus.m_msg.battery_remaining) * 0.01;
+			const auto &msg = pM->get();
+			m_battery = (float)(msg.battery_remaining) * 0.01;
 		}
 
 		// GPS raw
-		if (m_pMav->m_gpsRawINT.bValid())
+		if (auto *pM = m_pMavStreamIn->getMsg<MavGpsRawINT>(); pM && pM->bValid())
 		{
-			m_gpsFixType = (int)m_pMav->m_gpsRawINT.m_msg.fix_type;
-			m_gpsHacc = m_pMav->m_gpsRawINT.m_msg.h_acc;
+			const auto &msg = pM->get();
+			m_gpsFixType = (int)msg.fix_type;
+			m_gpsHacc = msg.h_acc;
 		}
 	}
 
@@ -173,14 +187,15 @@ namespace kai
 
 		if (m_armFC != m_arm)
 		{
-			m_pMav->clComponentArmDisarm(m_arm == apArm_arm);
+			m_pMavStreamOut->clComponentArmDisarm(m_arm == apArm_arm);
 		}
 
 		if (m_customModeFC != m_customMode)
 		{
-			mavlink_set_mode_t D;
+			mavlink_set_mode_t D{};
+			D.base_mode = MAV_MODE_FLAG_CUSTOM_MODE_ENABLED;
 			D.custom_mode = m_customMode;
-			m_pMav->setMode(D);
+			m_pMavStreamOut->setMode(D);
 		}
 
 		uint64_t tNow = getTns();
@@ -188,12 +203,16 @@ namespace kai
 		// Send Heartbeat
 		if (m_ieSendHB.update(tNow))
 		{
-			m_pMav->heartbeat();
+			mavlink_heartbeat_t heartbeat{};
+			heartbeat.type = m_myType;
+			heartbeat.autopilot = MAV_AUTOPILOT_INVALID;
+			heartbeat.system_status = MAV_STATE_ACTIVE;
+			m_pMavStreamOut->heartbeat(heartbeat);
 		}
 
 		if (m_ieSendMsgInt.update(tNow))
 		{
-			m_pMav->sendSetMsgInterval();
+			m_pMavStreamIn->sendSetMsgInterval(m_pMavStreamOut);
 		}
 	}
 
@@ -221,22 +240,22 @@ namespace kai
 	{
 		IF_(!check());
 
-		m_pMav->mountControl(m.m_control);
-		m_pMav->mountConfigure(m.m_config);
+		m_pMavStreamOut->mountControl(m.m_control);
+		m_pMavStreamOut->mountConfigure(m.m_config);
 
-		mavlink_param_set_t D;
+		mavlink_param_set_t D{};
 		D.param_type = MAV_PARAM_TYPE_INT8;
 		string id;
 
 		D.param_value = m.m_config.stab_pitch;
 		id = "MNT_STAB_TILT";
 		strcpy(D.param_id, id.c_str());
-		m_pMav->paramSet(D);
+		m_pMavStreamOut->paramSet(D);
 
 		D.param_value = m.m_config.stab_roll;
 		id = "MNT_STAB_ROLL";
 		strcpy(D.param_id, id.c_str());
-		m_pMav->paramSet(D);
+		m_pMavStreamOut->paramSet(D);
 	}
 
 	int _APmav_base::getGPSfixType(void)
@@ -249,31 +268,40 @@ namespace kai
 		return m_gpsHacc;
 	}
 
-	_Mavlink *_APmav_base::getMavlink(void)
+	MavlinkStream *_APmav_base::getMavlinkStreamIn(void)
 	{
-		return m_pMav;
+		return m_pMavStreamIn;
+	}
+
+	MavlinkStream *_APmav_base::getMavlinkStreamOut(void)
+	{
+		return m_pMavStreamOut;
 	}
 
 	void _APmav_base::console(void *pConsole)
 	{
 		NULL_(pConsole);
 		this->_AutopilotBase::console(pConsole);
+		NULL_(m_pMavStreamIn);
 
 		_Console *pC = (_Console *)pConsole;
+		const auto &position = m_pMavStreamIn->getMsg<MavLocalPositionNED>()->get();
+		const auto &heartbeat = m_pMavStreamIn->getMsg<MavHeartbeat>()->get();
+		const auto &imu = m_pMavStreamIn->getMsg<MavRawIMU>()->get();
 
 		pC->addMsg("-Local Pos-", 1);
-		pC->addMsg("\tx=\t" + f2str(m_pMav->m_localPositionNED.m_msg.x) +
-					   "\ty=\t" + f2str(m_pMav->m_localPositionNED.m_msg.y) +
-					   "\tz=\t" + f2str(m_pMav->m_localPositionNED.m_msg.z),
+		pC->addMsg("\tx=\t" + f2str(position.x) +
+					   "\ty=\t" + f2str(position.y) +
+					   "\tz=\t" + f2str(position.z),
 				   1);
 
 		pC->addMsg("-System-", 1);
-		pC->addMsg("\tstatus=\t" + i2str(m_pMav->m_heartbeat.m_msg.system_status));
+		pC->addMsg("\tstatus=\t" + i2str(heartbeat.system_status));
 
 		pC->addMsg("-Sensor-", 1);
-		pC->addMsg("\txAcc=\t" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.xacc) + "\tyAcc=\t" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.yacc) + "\tzAcc=\t" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.zacc), 1);
-		pC->addMsg("\txGyro=\t" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.xgyro) + "\tyGyro=\t" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.ygyro) + "\tzGyro=\t" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.zgyro), 1);
-		pC->addMsg("\txMag=\t" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.xmag) + "\tyMag=\t" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.ymag) + "\tzMag=\t" + i2str((int32_t)m_pMav->m_rawIMU.m_msg.zmag), 1);
+		pC->addMsg("\txAcc=\t" + i2str((int32_t)imu.xacc) + "\tyAcc=\t" + i2str((int32_t)imu.yacc) + "\tzAcc=\t" + i2str((int32_t)imu.zacc), 1);
+		pC->addMsg("\txGyro=\t" + i2str((int32_t)imu.xgyro) + "\tyGyro=\t" + i2str((int32_t)imu.ygyro) + "\tzGyro=\t" + i2str((int32_t)imu.zgyro), 1);
+		pC->addMsg("\txMag=\t" + i2str((int32_t)imu.xmag) + "\tyMag=\t" + i2str((int32_t)imu.ymag) + "\tzMag=\t" + i2str((int32_t)imu.zmag), 1);
 	}
 
 	void _APmav_base::console(const json &j, void *pJSONbase)

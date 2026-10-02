@@ -51,6 +51,8 @@
 	},
 	"mavAP": {
 		"class": "_Mavlink",
+		"MavlinkStreamIn": "mavAP_tx",
+		"MavlinkStreamOut": "mavAP_rx",
 		"bON": true,
 		"thread": {
 			"FPS": 100
@@ -83,6 +85,8 @@
 	},
 	"mavUDP": {
 		"class": "_Mavlink",
+		"MavlinkStreamIn": "mavUDP_tx",
+		"MavlinkStreamOut": "mavUDP_rx",
 		"bON": true,
 		"thread": {
 			"FPS": 30
@@ -101,7 +105,8 @@
 		"thread": {
 			"FPS": 10
 		},
-		"_Mavlink": "mavAP",
+		"MavlinkStreamIn": "mavAP_rx",
+		"MavlinkStreamOut": "mavAP_tx",
 		"ieSendHB": 1,
 		"ieSendMsgInt": 1,
 		"mavMsgInt": {
@@ -201,6 +206,26 @@
 		"thrJumpPos": 0.1,
 		"thrJumpSpd": 20.0,
 		"apModeInError": 9
+	},
+	"mavAP_tx": {
+		"type": "dataObject",
+		"class": "MavlinkStream",
+		"nMsgQueue": 1024
+	},
+	"mavAP_rx": {
+		"type": "dataObject",
+		"class": "MavlinkStream",
+		"nMsgQueue": 1024
+	},
+	"mavUDP_tx": {
+		"type": "dataObject",
+		"class": "MavlinkStream",
+		"nMsgQueue": 1024
+	},
+	"mavUDP_rx": {
+		"type": "dataObject",
+		"class": "MavlinkStream",
+		"nMsgQueue": 1024
 	},
 	"serialAP_tx": {
 		"type": "dataObject",

@@ -24,15 +24,7 @@ namespace kai
 		virtual bool check(void);
 		virtual void console(void *pConsole);
 
-		bool bRun(void) override;
-		bool bRunning(void) override;
-		bool bStopped(void) override;
-		void pause(void) override;
-		void resume(void) override;
-		void stop(void) override;
-
 	protected:
-		_Thread *getThread(const string &name) override;
 		bool writeMessage(const mavlink_message_t &msg);
 		bool readMessage(mavlink_message_t *pMsg);
 
@@ -51,30 +43,29 @@ namespace kai
 			return NULL;
 		}
 
-		// MAVLink encoders and parsers share channel state across instances.
-		static std::mutex m_mavlinkMutex;
-
 	protected:
-		_Thread *m_pTr = nullptr; // Receive/decode worker; m_pT sends queued messages.
-		MavlinkStream *m_pMavStreamIn = nullptr;  // Messages queued for encoding and transmission to IO
-		MavlinkStream *m_pMavStreamOut = nullptr; // Decoded messages received from IO
+		MavlinkStream *m_pMavStreamIn = nullptr;	// Messages queued for encoding and transmission to IO
 		uint64_t m_tLastMavStreamIn = 0;
 
-		BytePacketStream *m_pBpStreamIn = nullptr; // StreamIn: byte packets received from IO
+		_Thread *m_pTr = nullptr;					// Receive/decode worker; m_pT sends queued messages.
+		MavlinkStream *m_pMavStreamOut = nullptr;	// Decoded messages received from IO
+
+		BytePacketStream *m_pBpStreamIn = nullptr;	// StreamIn: byte packets received from IO
 		uint64_t m_tLastBpStreamIn = 0;
 		vector<BYTE_PACKET> m_vPacketIn;
 		size_t m_iPacketIn = 0;
 		size_t m_iByteIn = 0;
-		uint8_t m_iMavComm = MAVLINK_COMM_0; // Mavlink decode channel index
+		uint8_t m_iMavComm = MAVLINK_COMM_0;		// Mavlink decode channel index
 		mavlink_status_t m_status{};
 		std::atomic<uint16_t> m_nDroppedPackets{0};
-		BytePacketStream *m_pBpStreamOut = nullptr; // StreamOut: byte packets to be written to IO
+
+		BytePacketStream *m_pBpStreamOut = nullptr;	// StreamOut: byte packets to be written to IO
 
 		int m_mySystemID = 255;
 		int m_myComponentID = MAV_COMP_ID_MISSIONPLANNER;
 		int m_myType = MAV_TYPE_GCS;
-		std::atomic<int> m_devSystemID{-1};
-		std::atomic<int> m_devComponentID{-1};
+		int m_devSystemID = -1;
+		int m_devComponentID = -1;
 		int m_devType = 0;
 	};
 

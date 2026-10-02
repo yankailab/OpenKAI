@@ -1,7 +1,7 @@
 #ifndef OpenKAI_src_Autopilot_FC_ArduPilot__APmav_RTCM_H_
 #define OpenKAI_src_Autopilot_FC_ArduPilot__APmav_RTCM_H_
 
-#include "../../../Protocol/_Mavlink.h"
+#include "../../../DataObject/MavlinkStream.h"
 #include "../../../Navigation/_RTCMcast.h"
 
 #define GPS_DATA_FRAG_N 180
@@ -43,7 +43,8 @@ namespace kai
 		}
 
 	protected:
-		_Mavlink *m_pMav = nullptr;
+		MavlinkStream *m_pMavStreamIn = nullptr;
+		MavlinkStream *m_pMavStreamOut = nullptr;
 
 		uint8_t m_iSeq = 0;
 	};

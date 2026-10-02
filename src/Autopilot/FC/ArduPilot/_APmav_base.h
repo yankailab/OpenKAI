@@ -1,7 +1,7 @@
 #ifndef OpenKAI_src_Autopilot_FC_ArduPilot__APmav_base_H_
 #define OpenKAI_src_Autopilot_FC_ArduPilot__APmav_base_H_
 
-#include "../../../Protocol/_Mavlink.h"
+#include "../../../DataObject/MavlinkStream.h"
 #include "../../_AutopilotBase.h"
 
 namespace kai
@@ -48,7 +48,8 @@ namespace kai
 		virtual int32_t getCustomMode(void);
 
 		// Mavlink
-		virtual _Mavlink *getMavlink(void);
+		virtual MavlinkStream *getMavlinkStreamIn(void);
+		virtual MavlinkStream *getMavlinkStreamOut(void);
 
 
 
@@ -75,7 +76,9 @@ namespace kai
 		}
 
 	protected:
-		_Mavlink *m_pMav = nullptr;
+		MavlinkStream *m_pMavStreamIn = nullptr;
+		MavlinkStream *m_pMavStreamOut = nullptr;
+		int m_myType = MAV_TYPE_GCS;
 
 		INTERVAL_EVENT m_ieSendHB;
 		INTERVAL_EVENT m_ieSendMsgInt;

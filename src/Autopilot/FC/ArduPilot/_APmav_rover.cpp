@@ -41,8 +41,6 @@ namespace kai
 
 	bool _APmav_rover::check(void)
 	{
-		NULL_F(m_pMav);
-
 		return this->_APmav_base::check();
 	}
 

@@ -19,6 +19,9 @@
 #endif
 
 #include "DataObjBase.h"
+#include <deque>
+#include <memory>
+#include <mutex>
 
 namespace kai
 {
@@ -48,21 +51,16 @@ namespace kai
 			return m_id;
 		}
 
-		virtual const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			return m_msgT;
-		}
-
 		virtual void decode(const mavlink_message_t &msg)
 		{
 		}
 
-		void setDesiredInterval(uint64_t tIntervalNsec)
+		void setDesiredInterval(int64_t tIntervalNsec)
 		{
 			m_tDesiredInterval = tIntervalNsec;
 		}
 
-		uint64_t getDesiredInterval(void)
+		int64_t getDesiredInterval(void)
 		{
 			return m_tDesiredInterval;
 		}
@@ -95,7 +93,11 @@ namespace kai
 
 		void callbackAll(void)
 		{
-			for (MavCallback c : m_vCbRecv)
+			// Unregistering waits for active callbacks; callbacks may unregister themselves.
+			std::lock_guard<std::recursive_mutex> lock(m_cbMutex);
+
+			const auto callbacks = m_vCbRecv;
+			for (MavCallback c : callbacks)
 			{
 				c.callback(this);
 			}
@@ -104,6 +106,7 @@ namespace kai
 		bool addCbRecv(CbMavMsg pCb, void *pInst)
 		{
 			NULL_F(pCb);
+			std::lock_guard<std::recursive_mutex> lock(m_cbMutex);
 
 			for (MavCallback c : m_vCbRecv)
 			{
@@ -121,6 +124,7 @@ namespace kai
 		void clearCbRecv(CbMavMsg pCb, void *pInst)
 		{
 			NULL_(pCb);
+			std::lock_guard<std::recursive_mutex> lock(m_cbMutex);
 
 			for (auto it = m_vCbRecv.begin(); it != m_vCbRecv.end(); ++it)
 			{
@@ -135,6 +139,7 @@ namespace kai
 
 		void clearAllCbRecv(void)
 		{
+			std::lock_guard<std::recursive_mutex> lock(m_cbMutex);
 			m_vCbRecv.clear();
 		}
 
@@ -147,8 +152,9 @@ namespace kai
 		int64_t m_tIntervalDelayAllowed = NSEC_SEC / 10;
 
 		vector<MavCallback> m_vCbRecv;
+		std::recursive_mutex m_cbMutex;
 
-		mavlink_message_t m_msgT;
+		mavlink_message_t m_msgT{};
 	};
 
 	class MavAttitude : public MavMsgBase
@@ -157,13 +163,6 @@ namespace kai
 		MavAttitude()
 		{
 			m_id = MAVLINK_MSG_ID_ATTITUDE;
-
-			m_msg.yaw = 0;
-			m_msg.yawspeed = 0;
-			m_msg.pitch = 0;
-			m_msg.pitchspeed = 0;
-			m_msg.roll = 0;
-			m_msg.rollspeed = 0;
 		}
 
 		void decode(const mavlink_message_t &msg)
@@ -173,25 +172,19 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_attitude_t &msg)
+		const mavlink_message_t &encode(mavlink_attitude_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
-
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			m_msg.time_boot_ms = tStamp;
+			msg.time_boot_ms = tStamp;
 			if (tStamp == 0)
-				m_msg.time_boot_ms = getTbootMs();
+				msg.time_boot_ms = getTbootMs();
 
-			mavlink_msg_attitude_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_attitude_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_attitude_t m_msg;
+		mavlink_attitude_t m_msg{};
 	};
 
 	class MavAttitudeQuaternion : public MavMsgBase
@@ -200,18 +193,6 @@ namespace kai
 		MavAttitudeQuaternion()
 		{
 			m_id = MAVLINK_MSG_ID_ATTITUDE_QUATERNION;
-
-			m_msg.q1 = 0;
-			m_msg.q2 = 0;
-			m_msg.q3 = 0;
-			m_msg.q4 = 0;
-			m_msg.rollspeed = 0;
-			m_msg.pitchspeed = 0;
-			m_msg.yawspeed = 0;
-			m_msg.repr_offset_q[0] = 0;
-			m_msg.repr_offset_q[1] = 0;
-			m_msg.repr_offset_q[2] = 0;
-			m_msg.repr_offset_q[3] = 0;
 		}
 
 		void decode(const mavlink_message_t &msg)
@@ -221,25 +202,19 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_attitude_quaternion_t &msg)
+		const mavlink_message_t &encode(mavlink_attitude_quaternion_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
-
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			m_msg.time_boot_ms = tStamp;
+			msg.time_boot_ms = tStamp;
 			if (tStamp == 0)
-				m_msg.time_boot_ms = getTbootMs();
+				msg.time_boot_ms = getTbootMs();
 
-			mavlink_msg_attitude_quaternion_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_attitude_quaternion_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_attitude_quaternion_t m_msg;
+		mavlink_attitude_quaternion_t m_msg{};
 	};
 
 	class MavBatteryStatus : public MavMsgBase
@@ -257,21 +232,15 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_battery_status_t &msg)
+		const mavlink_message_t &encode(mavlink_battery_status_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
-
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			mavlink_msg_battery_status_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_battery_status_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_battery_status_t m_msg;
+		mavlink_battery_status_t m_msg{};
 	};
 
 	class MavCommandAck : public MavMsgBase
@@ -289,24 +258,18 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_command_ack_t &msg)
+		const mavlink_message_t &encode(mavlink_command_ack_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
+			msg.target_system = sysIDto;
+			msg.target_component = comIDto;
 
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			m_msg.target_system = sysIDto;
-			m_msg.target_component = comIDto;
-
-			mavlink_msg_command_ack_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_command_ack_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_command_ack_t m_msg;
+		mavlink_command_ack_t m_msg{};
 	};
 
 	class MavCommandInt : public MavMsgBase
@@ -324,24 +287,18 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_command_int_t &msg)
+		const mavlink_message_t &encode(mavlink_command_int_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
+			msg.target_system = sysIDto;
+			msg.target_component = comIDto;
 
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			m_msg.target_system = sysIDto;
-			m_msg.target_component = comIDto;
-
-			mavlink_msg_command_int_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_command_int_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_command_int_t m_msg;
+		mavlink_command_int_t m_msg{};
 	};
 
 	class MavCommandLong : public MavMsgBase
@@ -359,24 +316,18 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_command_long_t &msg)
+		const mavlink_message_t &encode(mavlink_command_long_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
+			msg.target_system = sysIDto;
+			msg.target_component = comIDto;
 
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			m_msg.target_system = sysIDto;
-			m_msg.target_component = comIDto;
-
-			mavlink_msg_command_long_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_command_long_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_command_long_t m_msg;
+		mavlink_command_long_t m_msg{};
 	};
 
 	class MavDistanceSensor : public MavMsgBase
@@ -394,25 +345,19 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_distance_sensor_t &msg)
+		const mavlink_message_t &encode(mavlink_distance_sensor_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
-
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			m_msg.time_boot_ms = tStamp;
+			msg.time_boot_ms = tStamp;
 			if (tStamp == 0)
-				m_msg.time_boot_ms = getTbootMs();
+				msg.time_boot_ms = getTbootMs();
 
-			mavlink_msg_distance_sensor_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_distance_sensor_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_distance_sensor_t m_msg;
+		mavlink_distance_sensor_t m_msg{};
 	};
 
 	class MavGlobalPositionINT : public MavMsgBase
@@ -421,12 +366,6 @@ namespace kai
 		MavGlobalPositionINT()
 		{
 			m_id = MAVLINK_MSG_ID_GLOBAL_POSITION_INT;
-
-			m_msg.alt = 0;
-			m_msg.lat = 0.0;
-			m_msg.lon = 0.0;
-			m_msg.relative_alt = 0;
-			m_msg.hdg = UINT16_MAX;
 		}
 
 		void decode(const mavlink_message_t &msg)
@@ -436,25 +375,19 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_global_position_int_t &msg)
+		const mavlink_message_t &encode(mavlink_global_position_int_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
-
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			m_msg.time_boot_ms = tStamp;
+			msg.time_boot_ms = tStamp;
 			if (tStamp == 0)
-				m_msg.time_boot_ms = getTbootMs();
+				msg.time_boot_ms = getTbootMs();
 
-			mavlink_msg_global_position_int_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_global_position_int_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_global_position_int_t m_msg;
+		mavlink_global_position_int_t m_msg{};
 	};
 
 	class MavGlobalVisionPositionEstimate : public MavMsgBase
@@ -472,25 +405,19 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_global_vision_position_estimate_t &msg)
+		const mavlink_message_t &encode(mavlink_global_vision_position_estimate_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
-
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			m_msg.usec = tStamp;
+			msg.usec = tStamp;
 			if (tStamp == 0)
-				m_msg.usec = getTbootMs() * USEC_MSEC;
+				msg.usec = getTbootMs() * USEC_MSEC;
 
-			mavlink_msg_global_vision_position_estimate_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_global_vision_position_estimate_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_global_vision_position_estimate_t m_msg;
+		mavlink_global_vision_position_estimate_t m_msg{};
 	};
 
 	class MavGpsInput : public MavMsgBase
@@ -508,25 +435,19 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_gps_input_t &msg)
+		const mavlink_message_t &encode(mavlink_gps_input_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
-
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			m_msg.time_usec = tStamp;
+			msg.time_usec = tStamp;
 			if (tStamp == 0)
-				m_msg.time_usec = getTbootMs() * USEC_MSEC;
+				msg.time_usec = getTbootMs() * USEC_MSEC;
 
-			mavlink_msg_gps_input_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_gps_input_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_gps_input_t m_msg;
+		mavlink_gps_input_t m_msg{};
 	};
 
 	class MavGpsRawINT : public MavMsgBase
@@ -535,13 +456,6 @@ namespace kai
 		MavGpsRawINT()
 		{
 			m_id = MAVLINK_MSG_ID_GPS_RAW_INT;
-
-			m_msg.fix_type = GPS_FIX_TYPE_NO_GPS;
-			m_msg.alt = 0;
-			m_msg.lat = 0.0;
-			m_msg.lon = 0.0;
-			m_msg.h_acc = UINT32_MAX;
-			m_msg.v_acc = UINT32_MAX;
 		}
 
 		void decode(const mavlink_message_t &msg)
@@ -551,25 +465,19 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_gps_raw_int_t &msg)
+		const mavlink_message_t &encode(mavlink_gps_raw_int_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
-
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			m_msg.time_usec = tStamp;
+			msg.time_usec = tStamp;
 			if (tStamp == 0)
-				m_msg.time_usec = getTbootMs() * USEC_MSEC;
+				msg.time_usec = getTbootMs() * USEC_MSEC;
 
-			mavlink_msg_gps_raw_int_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_gps_raw_int_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_gps_raw_int_t m_msg;
+		mavlink_gps_raw_int_t m_msg{};
 	};
 
 	class MavGpsRTCMdata : public MavMsgBase
@@ -587,21 +495,15 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_gps_rtcm_data_t &msg)
+		const mavlink_message_t &encode(mavlink_gps_rtcm_data_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
-
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			mavlink_msg_gps_rtcm_data_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_gps_rtcm_data_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_gps_rtcm_data_t m_msg;
+		mavlink_gps_rtcm_data_t m_msg{};
 	};
 
 	class MavHeartbeat : public MavMsgBase
@@ -610,9 +512,6 @@ namespace kai
 		MavHeartbeat()
 		{
 			m_id = MAVLINK_MSG_ID_HEARTBEAT;
-
-			m_msg.custom_mode = 0;
-			m_msg.base_mode = 0;
 		}
 
 		void decode(const mavlink_message_t &msg)
@@ -622,21 +521,15 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_heartbeat_t &msg)
+		const mavlink_message_t &encode(mavlink_heartbeat_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
-
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			mavlink_msg_heartbeat_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_heartbeat_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_heartbeat_t m_msg;
+		mavlink_heartbeat_t m_msg{};
 	};
 
 	class MavHighresIMU : public MavMsgBase
@@ -654,25 +547,19 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_highres_imu_t &msg)
+		const mavlink_message_t &encode(mavlink_highres_imu_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
-
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			m_msg.time_usec = tStamp;
+			msg.time_usec = tStamp;
 			if (tStamp == 0)
-				m_msg.time_usec = getTbootMs() * USEC_MSEC;
+				msg.time_usec = getTbootMs() * USEC_MSEC;
 
-			mavlink_msg_highres_imu_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_highres_imu_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_highres_imu_t m_msg;
+		mavlink_highres_imu_t m_msg{};
 	};
 
 	class MavHomePosition : public MavMsgBase
@@ -690,25 +577,19 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_home_position_t &msg)
+		const mavlink_message_t &encode(mavlink_home_position_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
-
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			m_msg.time_usec = tStamp;
+			msg.time_usec = tStamp;
 			if (tStamp == 0)
-				m_msg.time_usec = getTbootMs() * USEC_MSEC;
+				msg.time_usec = getTbootMs() * USEC_MSEC;
 
-			mavlink_msg_home_position_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_home_position_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_home_position_t m_msg;
+		mavlink_home_position_t m_msg{};
 	};
 
 	class MavLandingTarget : public MavMsgBase
@@ -726,25 +607,19 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_landing_target_t &msg)
+		const mavlink_message_t &encode(mavlink_landing_target_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
-
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			m_msg.time_usec = tStamp;
+			msg.time_usec = tStamp;
 			if (tStamp == 0)
-				m_msg.time_usec = getTbootMs() * USEC_MSEC;
+				msg.time_usec = getTbootMs() * USEC_MSEC;
 
-			mavlink_msg_landing_target_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_landing_target_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_landing_target_t m_msg;
+		mavlink_landing_target_t m_msg{};
 	};
 
 	class MavLocalPositionNED : public MavMsgBase
@@ -753,13 +628,6 @@ namespace kai
 		MavLocalPositionNED()
 		{
 			m_id = MAVLINK_MSG_ID_LOCAL_POSITION_NED;
-
-			m_msg.vx = 0;
-			m_msg.vy = 0;
-			m_msg.vz = 0;
-			m_msg.x = 0;
-			m_msg.y = 0;
-			m_msg.z = 0;
 		}
 
 		void decode(const mavlink_message_t &msg)
@@ -769,25 +637,19 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_local_position_ned_t &msg)
+		const mavlink_message_t &encode(mavlink_local_position_ned_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
-
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			m_msg.time_boot_ms = tStamp;
+			msg.time_boot_ms = tStamp;
 			if (tStamp == 0)
-				m_msg.time_boot_ms = getTbootMs();
+				msg.time_boot_ms = getTbootMs();
 
-			mavlink_msg_local_position_ned_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_local_position_ned_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_local_position_ned_t m_msg;
+		mavlink_local_position_ned_t m_msg{};
 	};
 
 	class MavMissionCount : public MavMsgBase
@@ -796,9 +658,6 @@ namespace kai
 		MavMissionCount()
 		{
 			m_id = MAVLINK_MSG_ID_MISSION_COUNT;
-
-			m_msg.count = 0;
-			m_msg.mission_type = 0;
 		}
 
 		void decode(const mavlink_message_t &msg)
@@ -808,24 +667,18 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_mission_count_t &msg)
+		const mavlink_message_t &encode(mavlink_mission_count_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
+			msg.target_system = sysIDto;
+			msg.target_component = comIDto;
 
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			m_msg.target_system = sysIDto;
-			m_msg.target_component = comIDto;
-
-			mavlink_msg_mission_count_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_mission_count_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_mission_count_t m_msg;
+		mavlink_mission_count_t m_msg{};
 	};
 
 	class MavMissionCurrent : public MavMsgBase
@@ -834,9 +687,6 @@ namespace kai
 		MavMissionCurrent()
 		{
 			m_id = MAVLINK_MSG_ID_MISSION_CURRENT;
-
-			m_msg.seq = 0;
-			m_msg.total = 0;
 		}
 
 		void decode(const mavlink_message_t &msg)
@@ -846,21 +696,15 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_mission_current_t &msg)
+		const mavlink_message_t &encode(mavlink_mission_current_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
-
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			mavlink_msg_mission_current_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_mission_current_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_mission_current_t m_msg;
+		mavlink_mission_current_t m_msg{};
 	};
 
 	class MavMissionRequestList : public MavMsgBase
@@ -880,24 +724,18 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_mission_request_list_t &msg)
+		const mavlink_message_t &encode(mavlink_mission_request_list_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
+			msg.target_system = sysIDto;
+			msg.target_component = comIDto;
 
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			m_msg.target_system = sysIDto;
-			m_msg.target_component = comIDto;
-
-			mavlink_msg_mission_request_list_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_mission_request_list_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_mission_request_list_t m_msg;
+		mavlink_mission_request_list_t m_msg{};
 	};
 
 	class MavMissionRequestInt : public MavMsgBase
@@ -906,8 +744,6 @@ namespace kai
 		MavMissionRequestInt()
 		{
 			m_id = MAVLINK_MSG_ID_MISSION_REQUEST_INT;
-
-			m_msg.mission_type = 0;
 		}
 
 		void decode(const mavlink_message_t &msg)
@@ -917,24 +753,18 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_mission_request_int_t &msg)
+		const mavlink_message_t &encode(mavlink_mission_request_int_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
+			msg.target_system = sysIDto;
+			msg.target_component = comIDto;
 
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			m_msg.target_system = sysIDto;
-			m_msg.target_component = comIDto;
-
-			mavlink_msg_mission_request_int_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_mission_request_int_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_mission_request_int_t m_msg;
+		mavlink_mission_request_int_t m_msg{};
 	};
 
 	class MavMissionItemInt : public MavMsgBase
@@ -952,24 +782,18 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_mission_item_int_t &msg)
+		const mavlink_message_t &encode(mavlink_mission_item_int_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
+			msg.target_system = sysIDto;
+			msg.target_component = comIDto;
 
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			m_msg.target_system = sysIDto;
-			m_msg.target_component = comIDto;
-
-			mavlink_msg_mission_item_int_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_mission_item_int_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_mission_item_int_t m_msg;
+		mavlink_mission_item_int_t m_msg{};
 	};
 
 	class MavMissionAck : public MavMsgBase
@@ -987,24 +811,18 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_mission_ack_t &msg)
+		const mavlink_message_t &encode(mavlink_mission_ack_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
+			msg.target_system = sysIDto;
+			msg.target_component = comIDto;
 
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			m_msg.target_system = sysIDto;
-			m_msg.target_component = comIDto;
-
-			mavlink_msg_mission_ack_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_mission_ack_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_mission_ack_t m_msg;
+		mavlink_mission_ack_t m_msg{};
 	};
 
 	class MavMissionSetCurrent : public MavMsgBase
@@ -1022,24 +840,18 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_mission_set_current_t &msg)
+		const mavlink_message_t &encode(mavlink_mission_set_current_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
+			msg.target_system = sysIDto;
+			msg.target_component = comIDto;
 
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			m_msg.target_system = sysIDto;
-			m_msg.target_component = comIDto;
-
-			mavlink_msg_mission_set_current_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_mission_set_current_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_mission_set_current_t m_msg;
+		mavlink_mission_set_current_t m_msg{};
 	};
 
 	class MavMissionClearAll : public MavMsgBase
@@ -1057,24 +869,18 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_mission_clear_all_t &msg)
+		const mavlink_message_t &encode(mavlink_mission_clear_all_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
+			msg.target_system = sysIDto;
+			msg.target_component = comIDto;
 
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			m_msg.target_system = sysIDto;
-			m_msg.target_component = comIDto;
-
-			mavlink_msg_mission_clear_all_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_mission_clear_all_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_mission_clear_all_t m_msg;
+		mavlink_mission_clear_all_t m_msg{};
 	};
 
 	class MavMissionItemReached : public MavMsgBase
@@ -1092,21 +898,15 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_mission_item_reached_t &msg)
+		const mavlink_message_t &encode(mavlink_mission_item_reached_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
-
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			mavlink_msg_mission_item_reached_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_mission_item_reached_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_mission_item_reached_t m_msg;
+		mavlink_mission_item_reached_t m_msg{};
 	};
 
 	class MavMountConfigure : public MavMsgBase
@@ -1124,24 +924,18 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_mount_configure_t &msg)
+		const mavlink_message_t &encode(mavlink_mount_configure_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
+			msg.target_system = sysIDto;
+			msg.target_component = comIDto;
 
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			m_msg.target_system = sysIDto;
-			m_msg.target_component = comIDto;
-
-			mavlink_msg_mount_configure_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_mount_configure_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_mount_configure_t m_msg;
+		mavlink_mount_configure_t m_msg{};
 	};
 
 	class MavMountControl : public MavMsgBase
@@ -1159,24 +953,18 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_mount_control_t &msg)
+		const mavlink_message_t &encode(mavlink_mount_control_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
+			msg.target_system = sysIDto;
+			msg.target_component = comIDto;
 
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			m_msg.target_system = sysIDto;
-			m_msg.target_component = comIDto;
-
-			mavlink_msg_mount_control_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_mount_control_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_mount_control_t m_msg;
+		mavlink_mount_control_t m_msg{};
 	};
 
 	class MavMountStatus : public MavMsgBase
@@ -1194,24 +982,18 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_mount_status_t &msg)
+		const mavlink_message_t &encode(mavlink_mount_status_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
+			msg.target_system = sysIDto;
+			msg.target_component = comIDto;
 
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			m_msg.target_system = sysIDto;
-			m_msg.target_component = comIDto;
-
-			mavlink_msg_mount_status_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_mount_status_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_mount_status_t m_msg;
+		mavlink_mount_status_t m_msg{};
 	};
 
 	class MavParamRequestRead : public MavMsgBase
@@ -1229,24 +1011,18 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_param_request_read_t &msg)
+		const mavlink_message_t &encode(mavlink_param_request_read_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
+			msg.target_system = sysIDto;
+			msg.target_component = comIDto;
 
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			m_msg.target_system = sysIDto;
-			m_msg.target_component = comIDto;
-
-			mavlink_msg_param_request_read_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_param_request_read_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_param_request_read_t m_msg;
+		mavlink_param_request_read_t m_msg{};
 	};
 
 	class MavParamSet : public MavMsgBase
@@ -1264,24 +1040,18 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_param_set_t &msg)
+		const mavlink_message_t &encode(mavlink_param_set_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
+			msg.target_system = sysIDto;
+			msg.target_component = comIDto;
 
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			m_msg.target_system = sysIDto;
-			m_msg.target_component = comIDto;
-
-			mavlink_msg_param_set_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_param_set_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_param_set_t m_msg;
+		mavlink_param_set_t m_msg{};
 	};
 
 	class MavParamValue : public MavMsgBase
@@ -1299,21 +1069,15 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_param_value_t &msg)
+		const mavlink_message_t &encode(mavlink_param_value_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
-
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			mavlink_msg_param_value_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_param_value_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_param_value_t m_msg;
+		mavlink_param_value_t m_msg{};
 	};
 
 	class MavPositionTargetLocalNED : public MavMsgBase
@@ -1331,25 +1095,19 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_position_target_local_ned_t &msg)
+		const mavlink_message_t &encode(mavlink_position_target_local_ned_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
-
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			m_msg.time_boot_ms = tStamp;
+			msg.time_boot_ms = tStamp;
 			if (tStamp == 0)
-				m_msg.time_boot_ms = getTbootMs();
+				msg.time_boot_ms = getTbootMs();
 
-			mavlink_msg_position_target_local_ned_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_position_target_local_ned_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_position_target_local_ned_t m_msg;
+		mavlink_position_target_local_ned_t m_msg{};
 	};
 
 	class MavPositionTargetGlobalINT : public MavMsgBase
@@ -1367,25 +1125,19 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_position_target_global_int_t &msg)
+		const mavlink_message_t &encode(mavlink_position_target_global_int_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
-
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			m_msg.time_boot_ms = tStamp;
+			msg.time_boot_ms = tStamp;
 			if (tStamp == 0)
-				m_msg.time_boot_ms = getTbootMs();
+				msg.time_boot_ms = getTbootMs();
 
-			mavlink_msg_position_target_global_int_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_position_target_global_int_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_position_target_global_int_t m_msg;
+		mavlink_position_target_global_int_t m_msg{};
 	};
 
 	class MavRadioStatus : public MavMsgBase
@@ -1403,21 +1155,15 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_radio_status_t &msg)
+		const mavlink_message_t &encode(mavlink_radio_status_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
-
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			mavlink_msg_radio_status_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_radio_status_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_radio_status_t m_msg;
+		mavlink_radio_status_t m_msg{};
 	};
 
 	class MavRawIMU : public MavMsgBase
@@ -1435,25 +1181,19 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_raw_imu_t &msg)
+		const mavlink_message_t &encode(mavlink_raw_imu_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
-
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			m_msg.time_usec = tStamp;
+			msg.time_usec = tStamp;
 			if (tStamp == 0)
-				m_msg.time_usec = getTbootMs() * USEC_MSEC;
+				msg.time_usec = getTbootMs() * USEC_MSEC;
 
-			mavlink_msg_raw_imu_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_raw_imu_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_raw_imu_t m_msg;
+		mavlink_raw_imu_t m_msg{};
 	};
 
 	class MavRcChannels : public MavMsgBase
@@ -1499,19 +1239,13 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_rc_channels_t &msg)
+		const mavlink_message_t &encode(mavlink_rc_channels_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
-
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			m_msg.time_boot_ms = tStamp;
+			msg.time_boot_ms = tStamp;
 			if (tStamp == 0)
-				m_msg.time_boot_ms = getTbootMs();
+				msg.time_boot_ms = getTbootMs();
 
-			mavlink_msg_rc_channels_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_rc_channels_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
@@ -1525,7 +1259,7 @@ namespace kai
 		}
 
 	protected:
-		mavlink_rc_channels_t m_msg;
+		mavlink_rc_channels_t m_msg{};
 	};
 
 	class MavRcChannelsOverride : public MavMsgBase
@@ -1543,24 +1277,18 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_rc_channels_override_t &msg)
+		const mavlink_message_t &encode(mavlink_rc_channels_override_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
+			msg.target_system = sysIDto;
+			msg.target_component = comIDto;
 
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			m_msg.target_system = sysIDto;
-			m_msg.target_component = comIDto;
-
-			mavlink_msg_rc_channels_override_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_rc_channels_override_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_rc_channels_override_t m_msg;
+		mavlink_rc_channels_override_t m_msg{};
 	};
 
 	class MavRequestDataStream : public MavMsgBase
@@ -1578,24 +1306,18 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_request_data_stream_t &msg)
+		const mavlink_message_t &encode(mavlink_request_data_stream_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
+			msg.target_system = sysIDto;
+			msg.target_component = comIDto;
 
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			m_msg.target_system = sysIDto;
-			m_msg.target_component = comIDto;
-
-			mavlink_msg_request_data_stream_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_request_data_stream_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_request_data_stream_t m_msg;
+		mavlink_request_data_stream_t m_msg{};
 	};
 
 	class MavServoOutputRaw : public MavMsgBase
@@ -1604,24 +1326,6 @@ namespace kai
 		MavServoOutputRaw()
 		{
 			m_id = MAVLINK_MSG_ID_SERVO_OUTPUT_RAW;
-
-			m_msg.port = 0;
-			m_msg.servo1_raw = 0;
-			m_msg.servo2_raw = 0;
-			m_msg.servo3_raw = 0;
-			m_msg.servo4_raw = 0;
-			m_msg.servo5_raw = 0;
-			m_msg.servo6_raw = 0;
-			m_msg.servo7_raw = 0;
-			m_msg.servo8_raw = 0;
-			m_msg.servo9_raw = 0;
-			m_msg.servo10_raw = 0;
-			m_msg.servo11_raw = 0;
-			m_msg.servo12_raw = 0;
-			m_msg.servo13_raw = 0;
-			m_msg.servo14_raw = 0;
-			m_msg.servo15_raw = 0;
-			m_msg.servo16_raw = 0;
 		}
 
 		void decode(const mavlink_message_t &msg)
@@ -1631,19 +1335,13 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_servo_output_raw_t &msg)
+		const mavlink_message_t &encode(mavlink_servo_output_raw_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
-
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			m_msg.time_usec = tStamp;
+			msg.time_usec = tStamp;
 			if (tStamp == 0)
-				m_msg.time_usec = getTbootMs() * USEC_MSEC;
+				msg.time_usec = getTbootMs() * USEC_MSEC;
 
-			mavlink_msg_servo_output_raw_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_servo_output_raw_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
@@ -1690,7 +1388,7 @@ namespace kai
 		}
 
 	protected:
-		mavlink_servo_output_raw_t m_msg;
+		mavlink_servo_output_raw_t m_msg{};
 	};
 
 	class MavSetAttitudeTarget : public MavMsgBase
@@ -1708,28 +1406,22 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_set_attitude_target_t &msg)
+		const mavlink_message_t &encode(mavlink_set_attitude_target_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
-
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			m_msg.time_boot_ms = tStamp;
+			msg.time_boot_ms = tStamp;
 			if (tStamp == 0)
-				m_msg.time_boot_ms = getTbootMs();
+				msg.time_boot_ms = getTbootMs();
 
-			m_msg.target_system = sysIDto;
-			m_msg.target_component = comIDto;
+			msg.target_system = sysIDto;
+			msg.target_component = comIDto;
 
-			mavlink_msg_set_attitude_target_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_set_attitude_target_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_set_attitude_target_t m_msg;
+		mavlink_set_attitude_target_t m_msg{};
 	};
 
 	class MavSetMode : public MavMsgBase
@@ -1747,23 +1439,17 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_set_mode_t &msg)
+		const mavlink_message_t &encode(mavlink_set_mode_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
+			msg.target_system = sysIDto;
 
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			m_msg.target_system = sysIDto;
-
-			mavlink_msg_set_mode_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_set_mode_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_set_mode_t m_msg;
+		mavlink_set_mode_t m_msg{};
 	};
 
 	class MavSetPositionTargetLocalNED : public MavMsgBase
@@ -1781,28 +1467,22 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_set_position_target_local_ned_t &msg)
+		const mavlink_message_t &encode(mavlink_set_position_target_local_ned_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
-
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			m_msg.time_boot_ms = tStamp;
+			msg.time_boot_ms = tStamp;
 			if (tStamp == 0)
-				m_msg.time_boot_ms = getTbootMs();
+				msg.time_boot_ms = getTbootMs();
 
-			m_msg.target_system = sysIDto;
-			m_msg.target_component = comIDto;
+			msg.target_system = sysIDto;
+			msg.target_component = comIDto;
 
-			mavlink_msg_set_position_target_local_ned_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_set_position_target_local_ned_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_set_position_target_local_ned_t m_msg;
+		mavlink_set_position_target_local_ned_t m_msg{};
 	};
 
 	class MavSetPositionTargetGlobalINT : public MavMsgBase
@@ -1820,28 +1500,22 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_set_position_target_global_int_t &msg)
+		const mavlink_message_t &encode(mavlink_set_position_target_global_int_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
-
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			m_msg.time_boot_ms = tStamp;
+			msg.time_boot_ms = tStamp;
 			if (tStamp == 0)
-				m_msg.time_boot_ms = getTbootMs();
+				msg.time_boot_ms = getTbootMs();
 
-			m_msg.target_system = sysIDto;
-			m_msg.target_component = comIDto;
+			msg.target_system = sysIDto;
+			msg.target_component = comIDto;
 
-			mavlink_msg_set_position_target_global_int_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_set_position_target_global_int_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_set_position_target_global_int_t m_msg;
+		mavlink_set_position_target_global_int_t m_msg{};
 	};
 
 	class MavStatusText : public MavMsgBase
@@ -1859,21 +1533,15 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_statustext_t &msg)
+		const mavlink_message_t &encode(mavlink_statustext_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
-
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			mavlink_msg_statustext_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_statustext_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_statustext_t m_msg;
+		mavlink_statustext_t m_msg{};
 	};
 
 	class MavSysStatus : public MavMsgBase
@@ -1891,21 +1559,15 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_sys_status_t &msg)
+		const mavlink_message_t &encode(mavlink_sys_status_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
-
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			mavlink_msg_sys_status_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_sys_status_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_sys_status_t m_msg;
+		mavlink_sys_status_t m_msg{};
 	};
 
 	class MavScaledIMU : public MavMsgBase
@@ -1923,25 +1585,19 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_scaled_imu_t &msg)
+		const mavlink_message_t &encode(mavlink_scaled_imu_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
-
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			m_msg.time_boot_ms = tStamp;
+			msg.time_boot_ms = tStamp;
 			if (tStamp == 0)
-				m_msg.time_boot_ms = getTbootMs();
+				msg.time_boot_ms = getTbootMs();
 
-			mavlink_msg_scaled_imu_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_scaled_imu_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_scaled_imu_t m_msg;
+		mavlink_scaled_imu_t m_msg{};
 	};
 
 	class MavVisionPositionEstimate : public MavMsgBase
@@ -1959,25 +1615,19 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_vision_position_estimate_t &msg)
+		const mavlink_message_t &encode(mavlink_vision_position_estimate_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
-
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			m_msg.usec = tStamp;
+			msg.usec = tStamp;
 			if (tStamp == 0)
-				m_msg.usec = getTbootMs() * USEC_MSEC;
+				msg.usec = getTbootMs() * USEC_MSEC;
 
-			mavlink_msg_vision_position_estimate_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_vision_position_estimate_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_vision_position_estimate_t m_msg;
+		mavlink_vision_position_estimate_t m_msg{};
 	};
 
 	class MavVisionSpeedEstimate : public MavMsgBase
@@ -1995,25 +1645,25 @@ namespace kai
 			callbackAll();
 		}
 
-		void set(const mavlink_vision_speed_estimate_t &msg)
+		const mavlink_message_t &encode(mavlink_vision_speed_estimate_t &msg, uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
 		{
-			m_msg = msg;
-			updateTstamp();
-		}
-
-		const mavlink_message_t &encode(uint8_t sysIDfrom, uint8_t comIDfrom, uint8_t sysIDto, uint8_t comIDto, uint64_t tStamp = 0)
-		{
-			m_msg.usec = tStamp;
+			msg.usec = tStamp;
 			if (tStamp == 0)
-				m_msg.usec = getTbootMs() * USEC_MSEC;
+				msg.usec = getTbootMs() * USEC_MSEC;
 
-			mavlink_msg_vision_speed_estimate_encode(sysIDfrom, comIDfrom, &m_msgT, &m_msg);
+			mavlink_msg_vision_speed_estimate_encode(sysIDfrom, comIDfrom, &m_msgT, &msg);
 
 			return m_msgT;
 		}
 
 	protected:
-		mavlink_vision_speed_estimate_t m_msg;
+		mavlink_vision_speed_estimate_t m_msg{};
+	};
+
+	struct MAV_MSG_TSTAMP
+	{
+		mavlink_message_t m_msg{};
+		uint64_t m_tStamp = 0;
 	};
 
 	class MavlinkStream : public DataObjBase
@@ -2025,12 +1675,14 @@ namespace kai
 		bool saveConfig(bool bExport = false);
 		void console(void *pConsole) override;
 
-		bool decode(const mavlink_message_t& msg);								// caller add a msg received from IO
-		void getMsgQueue(vector<MavMsgBase*>& vMsg, uint64_t tStampFrom = 0);	// caller get the list of msgs to be written to IO
+		bool decode(const mavlink_message_t &msg); // caller add a msg received from IO
+
+		void addMsgQueue(const MAV_MSG_TSTAMP& m);
+		void getMsgQueue(vector<MAV_MSG_TSTAMP> &vMsg, uint64_t tStampFrom = 0);
 		void clearMsgQueue(size_t nMsg = 0);
 
-		void sendSetMsgInterval(void);
-		bool setMsgInterval(int id, uint64_t tInt);
+		void sendSetMsgInterval(MavlinkStream *pOut);
+		bool setMsgInterval(int id, int64_t tInt);
 
 		// caller call these functions to add a msg to send to FC
 		void attitude(mavlink_attitude_t &D);
@@ -2100,10 +1752,10 @@ namespace kai
 		void clSetMessageInterval(float id, float interval, float responseTarget);
 
 	protected:
-		void addMsgQueue(MavMsgBase* pM);
 		std::shared_mutex m_sMutex;
-		vector<MavMsgBase *> m_vpMsgQueue;
-		int m_nMsgQueue = 0;
+		std::vector<MAV_MSG_TSTAMP> m_vMsgQueue;
+		size_t m_nMsgQueue = 1024;
+		uint64_t m_tLastQueued = 0;
 
 		vector<MavMsgBase *> m_vpMsgRegistry;
 		MavAttitude m_attitude;

@@ -50,6 +50,7 @@ namespace kai
 		bool saveConfig(bool bExport) override;
 		virtual bool link(InstanceMgr *pM) override;
 		virtual bool start(void);
+		void stop(void) override;
 		virtual bool check(void);
 		virtual void console(void *pConsole);
 
@@ -84,6 +85,7 @@ namespace kai
 		}
 
 	private:
+		void clearMavlinkCallbacks(void);
 		void updateMission(void);
 		virtual void update(void);
 		static void *getUpdate(void *This)
@@ -114,6 +116,7 @@ namespace kai
 
 	protected:
 		_APmav_base *m_pAP = nullptr;
+		MavlinkStream *m_pMavStreamIn = nullptr;
 
 		vector<AP_MISSION> m_vMissionUL;
 		int m_iMissionUL;

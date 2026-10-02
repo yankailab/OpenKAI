@@ -5,10 +5,13 @@
 #include "../../src/Protocol/_JSONbase.h"
 #include "../../src/Protocol/_Mavlink.h"
 #include "../../src/Protocol/_USR_CANET.h"
+#include <atomic>
 #include <cassert>
 #include <iostream>
 
 void runBytePacketStreamTests();
+void runMavlinkStreamTests();
+void runMavlinkConsumerTests();
 
 namespace kai
 {
@@ -188,6 +191,104 @@ namespace kai
 		assert(!receiver.readMavlink(&received));
 		assert(!receiver.readMavlink(&received));
 	}
+
+	class MavlinkWorkerHarness : public _Mavlink
+	{
+	public:
+		~MavlinkWorkerHarness()
+		{
+			joinWorkers();
+		}
+
+		void joinWorkers(void)
+		{
+			if (m_pT)
+				m_pT->stop();
+			if (m_pTr)
+				m_pTr->stop();
+			if (m_pT)
+				m_pT->join();
+			if (m_pTr)
+				m_pTr->join();
+		}
+	};
+
+	void countDecodedHeartbeat(void *, void *pContext)
+	{
+		++*static_cast<std::atomic<int> *>(pContext);
+	}
+
+	void testMavlinkWorkers(void)
+	{
+		JsonCfg cfg;
+		cfg.setJson({
+			{"bytesIn", {{"class", "BytePacketStream"}}},
+			{"bytesOut", {{"class", "BytePacketStream"}}},
+			{"commands", {{"class", "MavlinkStream"}}},
+			{"received", {{"class", "MavlinkStream"}}},
+			{"codec", {{"class", "_Mavlink"},
+				{"BytePacketStreamIn", "bytesIn"}, {"BytePacketStreamOut", "bytesOut"},
+				{"MavlinkStreamIn", "commands"}, {"MavlinkStreamOut", "received"},
+				{"thread", {{"FPS", 500}}}, {"threadR", {{"FPS", 500}}},
+				{"devSystemID", 1}, {"devComponentID", 2}, {"iMavComm", MAVLINK_COMM_1}}},
+		});
+		InstanceMgr instances;
+		json &config = *cfg.getJson();
+		for (const string name : {"bytesIn", "bytesOut", "commands", "received"})
+			assert(instances.addDataObject(name, &cfg, &config[name]));
+		assert(instances.initAll());
+		auto *bytesIn = static_cast<BytePacketStream *>(instances.findDataObject("bytesIn"));
+		auto *bytesOut = static_cast<BytePacketStream *>(instances.findDataObject("bytesOut"));
+		auto *commands = static_cast<MavlinkStream *>(instances.findDataObject("commands"));
+		auto *received = static_cast<MavlinkStream *>(instances.findDataObject("received"));
+		std::atomic<int> heartbeats{0};
+		received->getMsg<MavHeartbeat>()->addCbRecv(countDecodedHeartbeat, &heartbeats);
+		MavlinkWorkerHarness codec;
+		codec.setName("codec");
+		codec.setConfig(&cfg, &config["codec"]);
+		assert(codec.loadConfig());
+		assert(codec.link(&instances));
+
+		commands->clDoSetServo(1, 1200);
+		commands->clDoSetServo(2, 1800);
+		mavlink_message_t heartbeat{};
+		mavlink_msg_heartbeat_pack(1, 2, &heartbeat, MAV_TYPE_QUADROTOR,
+			MAV_AUTOPILOT_ARDUPILOTMEGA, 0, 99, MAV_STATE_ACTIVE);
+		uint8_t frame[MAVLINK_MAX_PACKET_LEN];
+		const size_t length = mavlink_msg_to_send_buffer(frame, &heartbeat);
+		bytesIn->addPacket(vector<uint8_t>(frame, frame + 4));
+		bytesIn->addPacket(vector<uint8_t>(frame + 4, frame + length));
+		assert(codec.start());
+
+		vector<BYTE_PACKET> packets;
+		const uint64_t deadline = getTns() + 2 * NSEC_SEC;
+		do
+		{
+			bytesOut->getPackets(packets);
+			if (packets.size() == 2 && heartbeats == 1)
+				break;
+			::usleep(1000);
+		} while (getTns() < deadline);
+		codec.joinWorkers();
+		bytesOut->getPackets(packets);
+		assert(packets.size() == 2 && heartbeats == 1);
+		assert(received->getMsg<MavHeartbeat>()->get().custom_mode == 99);
+		assert(!commands->getMsg<MavHeartbeat>()->bValid());
+		for (size_t i = 0; i < packets.size(); ++i)
+		{
+			mavlink_message_t parser{}, decoded{};
+			mavlink_status_t parserStatus{}, status{};
+			bool complete = false;
+			for (uint8_t byte : packets[i].m_vB)
+				complete |= mavlink_frame_char_buffer(&parser, &parserStatus, byte, &decoded, &status) == 1;
+			assert(complete && decoded.msgid == MAVLINK_MSG_ID_COMMAND_LONG);
+			mavlink_command_long_t command{};
+			mavlink_msg_command_long_decode(&decoded, &command);
+			assert(command.command == MAV_CMD_DO_SET_SERVO);
+			assert(command.param1 == i + 1 && command.param2 == (i == 0 ? 1200 : 1800));
+			assert(command.target_system == 1 && command.target_component == 2);
+		}
+	}
 }
 
 #ifdef USE_WSSERVER
@@ -197,8 +298,17 @@ namespace kai
 }
 #endif
 
-int main(void)
+int main(int argc, char **argv)
 {
+	runMavlinkStreamTests();
+	runMavlinkConsumerTests();
+	kai::testMavlinkPackets();
+	kai::testMavlinkWorkers();
+	if (argc > 1 && std::string(argv[1]) == "--mavlink-only")
+	{
+		std::cout << "MavlinkStream storage, codec, and consumer regressions passed\n";
+		return 0;
+	}
 	runBytePacketStreamTests();
 	kai::runBytePacketTransportTests();
 #ifdef USE_WSSERVER
@@ -207,8 +317,7 @@ int main(void)
 	kai::testJsonPackets();
 	kai::testBinaryPackets();
 	kai::testCanPackets();
-	kai::testMavlinkPackets();
-	std::cout << "BytePacketStream storage, transport, and protocol regressions passed\n";
+	std::cout << "BytePacketStream and MavlinkStream storage, transport, protocol, and consumer regressions passed\n";
 	return 0;
 }
 

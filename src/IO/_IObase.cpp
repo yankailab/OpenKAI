@@ -25,11 +25,13 @@ namespace kai
 		stop();
 		IF_F(!this->_ModuleBase::loadConfig());
 		json &j = *m_pJ;
+
 		if (!j.contains("threadR"))
 		{
 			// Preserve the existing receive cadence until it is configured separately.
 			j["threadR"] = {{"FPS", m_pT->getTargetFPS()}};
 		}
+		
 		DEL(m_pTr);
 		m_pTr = createThread(jK(j, "threadR"), "threadR");
 		return m_pTr != nullptr;

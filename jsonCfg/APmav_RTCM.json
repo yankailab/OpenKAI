@@ -57,6 +57,8 @@
 	},
 	"mavAP": {
 		"class": "_Mavlink",
+		"MavlinkStreamIn": "mavAP_tx",
+		"MavlinkStreamOut": "mavAP_rx",
 		"bON": true,
 		"thread": {
 			"FPS": 30
@@ -77,7 +79,8 @@
 			"FPS": 10
 		},
 		"_StateControl": "state",
-		"_Mavlink": "mavAP",
+		"MavlinkStreamIn": "mavAP_rx",
+		"MavlinkStreamOut": "mavAP_tx",
 		"apType": 0,
 		"ieSendHB": 1,
 		"ieSendMsgInt": 1,
@@ -213,7 +216,18 @@
 		"BytePacketStreamIn": "serialRTCM_rx",
 		"/BytePacketStreamIn": "udpRTCMcli_rx",
 		"//BytePacketStreamIn": "tcpNtrip_rx",
-		"_Mavlink": "mavAP"
+		"MavlinkStreamIn": "mavAP_rx",
+		"MavlinkStreamOut": "mavAP_tx"
+	},
+	"mavAP_tx": {
+		"type": "dataObject",
+		"class": "MavlinkStream",
+		"nMsgQueue": 1024
+	},
+	"mavAP_rx": {
+		"type": "dataObject",
+		"class": "MavlinkStream",
+		"nMsgQueue": 1024
 	},
 	"serialAP_tx": {
 		"type": "dataObject",

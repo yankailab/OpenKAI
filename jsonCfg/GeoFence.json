@@ -88,6 +88,8 @@
 	},
 	"mavAP": {
 		"class": "_Mavlink",
+		"MavlinkStreamIn": "mavAP_tx",
+		"MavlinkStreamOut": "mavAP_rx",
 		"bON": true,
 		"thread": {
 			"FPS": 30
@@ -108,7 +110,8 @@
 			"FPS": 10
 		},
 		"_StateControl": "state",
-		"_Mavlink": "mavAP",
+		"MavlinkStreamIn": "mavAP_rx",
+		"MavlinkStreamOut": "mavAP_tx",
 		"apType": 1,
 		"ieSendHB": 1,
 		"ieSendMsgInt": 1,
@@ -157,6 +160,16 @@
 		"_JSONbase": "",
 		"_APmav_base": "apBase",
 		"estD":1
+	},
+	"mavAP_tx": {
+		"type": "dataObject",
+		"class": "MavlinkStream",
+		"nMsgQueue": 1024
+	},
+	"mavAP_rx": {
+		"type": "dataObject",
+		"class": "MavlinkStream",
+		"nMsgQueue": 1024
 	},
 	"wsServer_tx": {
 		"type": "dataObject",

@@ -41,8 +41,6 @@ namespace kai
 
 	bool _APmav_copter::check(void)
 	{
-		NULL_F(m_pMav);
-
 		return this->_APmav_base::check();
 	}
 
@@ -124,7 +122,7 @@ namespace kai
 	{
 		IF_(!check());
 
-		m_pMav->clNavTakeoff(alt);
+		m_pMavStreamOut->clNavTakeoff(alt);
 	}
 
 	void _APmav_copter::console(void *pConsole)

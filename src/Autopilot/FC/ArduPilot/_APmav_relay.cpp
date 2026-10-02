@@ -93,7 +93,7 @@ namespace kai
 	bool _APmav_relay::check(void)
 	{
 		NULL_F(m_pAP);
-		NULL_F(m_pAP->getMavlink());
+		NULL_F(m_pAP->getMavlinkStreamOut());
 
 		return this->_ModuleBase::check();
 	}
@@ -112,7 +112,7 @@ namespace kai
 	{
 		IF_(!check());
 
-		_Mavlink *pMav = m_pAP->getMavlink();
+		MavlinkStream *pMav = m_pAP->getMavlinkStreamOut();
 
 		for (AP_relay s : m_vRelay)
 		{

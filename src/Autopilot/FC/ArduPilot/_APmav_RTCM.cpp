@@ -28,13 +28,18 @@ namespace kai
 
 	bool _APmav_RTCM::link(InstanceMgr *pM)
 	{
-		IF_F(!this->_ProtocolBase::link(pM));	// Output is sent through _Mavlink; only the RTCM input stream is needed.
+		IF_F(!this->_ProtocolBase::link(pM));	// RTCM input is byte packets; output is queued as MAVLink messages.
 		const json &j = *m_pJ;
 
 		string n = "";
-		jKv(j, "_Mavlink", n);
-		m_pMav = (_Mavlink *)(pM->findModule(n));
-		NULL_F(m_pMav);
+		jKv(j, "MavlinkStreamIn", n);
+		m_pMavStreamIn = dynamic_cast<MavlinkStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+		NULL_F(m_pMavStreamIn);
+
+		n.clear();
+		jKv(j, "MavlinkStreamOut", n);
+		m_pMavStreamOut = dynamic_cast<MavlinkStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+		NULL_F(m_pMavStreamOut);
 		NULL_F(m_pBpStreamIn);
 
 		return true;
@@ -50,7 +55,8 @@ namespace kai
 
 	bool _APmav_RTCM::check(void)
 	{
-		NULL_F(m_pMav);
+		NULL_F(m_pMavStreamIn);
+		NULL_F(m_pMavStreamOut);
 		NULL_F(m_pBpStreamIn);
 
 		return this->_ProtocolBase::check();
@@ -90,7 +96,7 @@ namespace kai
 	{
 		IF_F(!check());
 
-		mavlink_gps_rtcm_data_t D;
+		mavlink_gps_rtcm_data_t D{};
 		D.flags = (pM->m_nB > GPS_DATA_FRAG_N) ? 1 : 0;
 
 		int iB = 0;
@@ -109,7 +115,7 @@ namespace kai
 			memcpy(D.data, &pM->m_pB[iB], nB);
 			iB += nB;
 
-			m_pMav->gpsRTCMdata(D);
+			m_pMavStreamOut->gpsRTCMdata(D);
 		}
 
 		m_iSeq = (m_iSeq + 1) & 0x1F;

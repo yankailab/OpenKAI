@@ -75,6 +75,8 @@
 	},
 	"mavAP": {
 		"class": "_Mavlink",
+		"MavlinkStreamIn": "mavAP_tx",
+		"MavlinkStreamOut": "mavAP_rx",
 		"bON": true,
 		"bLog": true,
 		"thread": {
@@ -95,7 +97,8 @@
 		"thread": {
 			"FPS": 10
 		},
-		"_Mavlink": "mavAP",
+		"MavlinkStreamIn": "mavAP_rx",
+		"MavlinkStreamOut": "mavAP_tx",
 		"ieSendHB": 1,
 		"ieSendMsgInt": 1,
 		"mavMsgInt": {
@@ -235,6 +238,16 @@
 		"class": "RGBframe"
 	},
 	"/migration": "mavAP: absent routing targets are retained in /vRoutings: mavUDP. Format-only modules without a current implementation: _YOLOv8. Their original class names and settings are preserved. Classes present in source but not registered in the current factory: PID.",
+	"mavAP_tx": {
+		"type": "dataObject",
+		"class": "MavlinkStream",
+		"nMsgQueue": 1024
+	},
+	"mavAP_rx": {
+		"type": "dataObject",
+		"class": "MavlinkStream",
+		"nMsgQueue": 1024
+	},
 	"udpAP_tx": {
 		"type": "dataObject",
 		"class": "BytePacketStream",

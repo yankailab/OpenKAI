@@ -103,12 +103,12 @@ namespace kai
 	void _APmav_depthVision::update(void)
 	{
 		NULL_(m_pAP);
-		NULL_(m_pAP->getMavlink());
-		_Mavlink *pMavlink = m_pAP->getMavlink();
+		NULL_(m_pAP->getMavlinkStreamOut());
+		MavlinkStream *pMavlink = m_pAP->getMavlinkStreamOut();
 		NULL_(m_pDV);
 
 		Vector2f range = m_pDV->getDepthRange();
-		mavlink_distance_sensor_t D;
+		mavlink_distance_sensor_t D{};
 
 		for (int i = 0; i < m_nROI; i++)
 		{
