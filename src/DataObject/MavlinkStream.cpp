@@ -96,6 +96,7 @@ namespace kai
 
 	bool MavlinkStream::decode(const mavlink_message_t &msg)
 	{
+		std::lock_guard<std::recursive_mutex> lock(m_receiveMutex);
 		for (MavMsgBase *pM : m_vpMsgRegistry)
 		{
 			IF_CONT(pM->getID() != msg.msgid);

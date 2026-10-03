@@ -1,0 +1,117 @@
+{
+  "APP": {
+    "class": "InstanceMgr",
+    "appName": "WebMavlinkStream",
+    "bLog": true,
+    "bStdErr": true
+  },
+  "udpMavlink": {
+    "class": "_UDP",
+    "bON": true,
+    "bLog": false,
+    "thread": {
+      "FPS": 30
+    },
+    "threadR": {
+      "FPS": 100
+    },
+    "portLocal": 14550,
+    "bW2R": false,
+    "BytePacketStreamOut": "mavlink_rx"
+  },
+  "mavlink": {
+    "class": "_Mavlink",
+    "bON": true,
+    "bLog": false,
+    "thread": {
+      "FPS": 20
+    },
+    "threadR": {
+      "FPS": 100
+    },
+    "BytePacketStreamIn": "mavlink_rx",
+    "BytePacketStreamOut": "mavlink_tx_unused",
+    "MavlinkStream": "vehicle",
+    "devSystemID": 1,
+    "devComponentID": 1,
+    "mySystemID": 255,
+    "iMavComm": 0
+  },
+  "vehicle": {
+    "type": "dataObject",
+    "class": "MavlinkStream",
+    "nMsgQueue": 1024
+  },
+  "mavlink_rx": {
+    "type": "dataObject",
+    "class": "BytePacketStream",
+    "nPacket": 512,
+    "nPbuf": 65536
+  },
+  "mavlink_tx_unused": {
+    "type": "dataObject",
+    "class": "BytePacketStream",
+    "nPacket": 32,
+    "nPbuf": 512
+  },
+  "viewer": {
+    "class": "_WebMavlinkStream",
+    "bON": true,
+    "thread": {
+      "FPS": 20
+    },
+    "MavlinkStream": "vehicle",
+    "host": "0.0.0.0",
+    "port": 8080,
+    "nClientMax": 8,
+    "webRoot": "html/viewer/mavlink",
+    "modelsRoot": "/home/kai/dev/models/webMavlink",
+    "staleAfterMs": 3000,
+    "scene": {
+      "initialView": {
+        "longitude": 139.7671,
+        "latitude": 35.6812,
+        "height": 2500,
+        "heading": 0,
+        "pitch": -45
+      },
+      "drone": {
+        "url": "/models/drone/multirotor.glb",
+        "scale": 1
+      },
+      "imagery": {
+        "url": "/models/imagery/plateau-ortho-2024/{z}/{x}/{y}.png",
+        "minimumLevel": 12,
+        "maximumLevel": 19,
+        "rectangle": [
+          139.725,
+          35.665,
+          139.79,
+          35.71
+        ],
+        "credit": "東京都 / 国土交通省 Project PLATEAU / 国土地理院（航空写真）"
+      },
+      "terrain": {
+        "url": "/models/terrain/plateau/"
+      },
+      "buildings": [
+        {
+          "url": "/models/plateau/tokyo-central/tileset.json",
+          "credit": "東京都 / 国土交通省 Project PLATEAU — Chiyoda 2025"
+        }
+      ],
+      "altitude": {
+        "geoidSeparationM": null
+      },
+      "trailMaxPoints": 2000,
+      "buildingRendering": {
+        "maximumScreenSpaceError": 2,
+        "dynamicScreenSpaceError": false,
+        "foveatedScreenSpaceError": false,
+        "cullRequestsWhileMoving": false,
+        "cacheMegabytes": 1024,
+        "maximumCacheOverflowMegabytes": 1024
+      }
+    }
+  }
+}

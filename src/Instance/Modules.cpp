@@ -39,6 +39,7 @@ namespace kai
 		ADD_MODULE(_GeometryViewerBase);
 		ADD_MODULE(_WebSelectableOctGrid);
 		ADD_MODULE(_WebGeometry);
+		ADD_MODULE(_WebMavlinkStream);
 
 #ifdef USE_OPEN3D
 		ADD_MODULE(_PCcrop);

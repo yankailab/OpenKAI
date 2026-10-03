@@ -12,6 +12,8 @@
 #include <functional>
 #include <memory>
 #include <string>
+#include <utility>
+#include <vector>
 
 namespace kai
 {
@@ -22,6 +24,8 @@ namespace kai
 	public:
 		using Request = boost::beast::http::request<boost::beast::http::string_body>;
 		using Upgrade = std::function<void(boost::beast::tcp_stream, Request)>;
+		// Explicit URL-prefix -> filesystem-root mounts, each confined to its root.
+		using Mounts = std::vector<std::pair<std::string, std::string>>;
 		HttpServer();
 		~HttpServer();
 		HttpServer(const HttpServer &) = delete;
@@ -29,7 +33,8 @@ namespace kai
 
 		boost::asio::io_context &context();
 		bool start(const std::string &host, uint16_t port, const std::string &root,
-				   Upgrade upgrade, std::string *error = nullptr, size_t maxConnections = 32);
+				   Upgrade upgrade, std::string *error = nullptr, size_t maxConnections = 32,
+				   const Mounts &mounts = {});
 		void stop();
 		uint16_t port() const;
 

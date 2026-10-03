@@ -18,6 +18,7 @@ namespace kai
 		net::io_context &io;
 		const std::string hello;
 		const size_t limit;
+		const Mode mode;
 		std::atomic<size_t> clients{0};
 		std::mutex mutex;
 		Frame latest;
@@ -25,7 +26,7 @@ namespace kai
 		bool notification = false;
 		std::unordered_map<Session *, std::weak_ptr<Session>> sessions;
 
-		State(net::io_context &i, std::string h, size_t n) : io(i), hello(std::move(h)), limit(n) {}
+		State(net::io_context &i, std::string h, size_t n, Mode m) : io(i), hello(std::move(h)), limit(n), mode(m) {}
 		struct Session : std::enable_shared_from_this<Session>
 		{
 			std::shared_ptr<State> state;
@@ -36,7 +37,11 @@ namespace kai
 			bool writing = true, enabled = false, awaitingAck = false, closed = false;
 
 			Session(std::shared_ptr<State> s, beast::tcp_stream stream)
-				: state(std::move(s)), socket(std::move(stream)) { ++state->clients; }
+				: state(std::move(s)), socket(std::move(stream))
+			{
+				++state->clients;
+				enabled = state->mode == Mode::TextPush;
+			}
 			~Session() { --state->clients; }
 			void close()
 			{
@@ -67,6 +72,9 @@ namespace kai
 			{
 				socket.async_read(input, [self = shared_from_this()](beast::error_code ec, size_t) {
 					if (ec) return self->close();
+					// The push protocol has no client commands. Control ping/close frames
+					// are handled by Beast; application messages end the connection.
+					if (self->state->mode == Mode::TextPush) return self->close();
 					const auto cmd = beast::buffers_to_string(self->input.data());
 					self->input.consume(self->input.size());
 					if (!self->socket.got_text()) return self->close();
@@ -87,8 +95,9 @@ namespace kai
 					sending = state->latest;
 					sentVersion = state->version;
 				}
-				writing = awaitingAck = true;
-				socket.binary(true);
+				writing = true;
+				awaitingAck = state->mode == Mode::BinaryAcknowledged;
+				socket.binary(state->mode == Mode::BinaryAcknowledged);
 				socket.async_write(net::buffer(*sending), [self = shared_from_this()](beast::error_code ec, size_t) {
 					self->sending.reset();
 					self->writing = false;
@@ -99,8 +108,8 @@ namespace kai
 		};
 	};
 
-	WebSocketStream::WebSocketStream(net::io_context &io, std::string hello, size_t maxClients)
-		: m_state(std::make_shared<State>(io, std::move(hello), maxClients)) {}
+	WebSocketStream::WebSocketStream(net::io_context &io, std::string hello, size_t maxClients, Mode mode)
+		: m_state(std::make_shared<State>(io, std::move(hello), maxClients, mode)) {}
 	WebSocketStream::~WebSocketStream() = default;
 	HttpServer::Upgrade WebSocketStream::upgradeHandler()
 	{
@@ -120,7 +129,7 @@ namespace kai
 				if (request.target() == entry.first) return entry.second(std::move(stream), std::move(request));
 			auto socket = std::make_shared<beast::tcp_stream>(std::move(stream));
 			auto response = std::make_shared<beast::http::response<beast::http::string_body>>(beast::http::status::not_found, request.version());
-			response->body() = "Unknown geometry stream";
+			response->body() = "Unknown WebSocket stream";
 			response->prepare_payload();
 			socket->expires_after(std::chrono::seconds(5));
 			beast::http::async_write(*socket, *response, [socket, response](beast::error_code, size_t) {});

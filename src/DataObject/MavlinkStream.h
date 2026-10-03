@@ -78,6 +78,19 @@ namespace kai
 		// Receive from IO
 		bool decode(const mavlink_message_t &msg);
 
+		// Copy received telemetry and its timestamp together while decode is excluded.
+		// Polling consumers must use this instead of retaining a message's get() reference.
+		template <typename T, typename M>
+		bool snapshot(M &message, uint64_t &timestamp)
+		{
+			std::lock_guard<std::recursive_mutex> lock(m_receiveMutex);
+			T *source = get<T>();
+			timestamp = source->getTstamp();
+			if (!timestamp) return false;
+			message = source->get();
+			return true;
+		}
+
 		// Send to IO
 		// each message class has its own internal queue, for Mavlink message with fragmented sequences just call the same setter multiple times
 		template <typename T, typename M>
@@ -214,6 +227,7 @@ namespace kai
 		}
 
 	protected:
+		std::recursive_mutex m_receiveMutex;
 		// caller add msg into the queue to be written to IO
 		void addMsgQueue(MavMsgBase *pMb);
 		void clearMsgQueue(size_t nMb = 0);

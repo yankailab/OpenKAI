@@ -26,6 +26,7 @@
 #include "../Universe/Geometry/_GeometryViewerBase.h"
 #include "../UI/Viewer/Web/_WebSelectableOctGrid.h"
 #include "../UI/Viewer/Web/_WebGeometry.h"
+#include "../UI/Viewer/Web/_WebMavlinkStream.h"
 
 #ifdef USE_OPEN3D
 #include "../Universe/Geometry/PointCloud/Pipeline/_PCcrop.h"

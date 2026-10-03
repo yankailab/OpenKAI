@@ -1,0 +1,8 @@
+cmake_minimum_required(VERSION 3.18)
+project(HttpServerTests LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 17)
+find_package(Threads REQUIRED)
+enable_testing()
+add_executable(http_server_test HttpServer.cpp ../../src/Net/HttpServer.cpp)
+target_link_libraries(http_server_test PRIVATE Threads::Threads)
+add_test(NAME http_server_mounts COMMAND http_server_test)

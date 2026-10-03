@@ -207,6 +207,8 @@ if(WITH_UNIVERSE)
 	src/UI/Viewer/Web/_WebSelectableOctGrid.cpp
 	src/UI/Viewer/SelectableOctGridSources.cpp
 	src/UI/Viewer/Web/_WebGeometry.cpp
+	src/UI/Viewer/Web/_WebMavlinkStream.cpp
+	src/UI/Viewer/Web/WebMavlinkProtocol.cpp
 	src/Universe/_ReferenceFrame.cpp
   src/Universe/Grid/_OctreeBase.cpp
 	src/Universe/Grid/_OctreeGrid.cpp
@@ -913,6 +915,8 @@ target_link_libraries(OpenKAI ${OpenKAI_lib})
 
 if(WITH_UNIVERSE)
   add_custom_command(TARGET OpenKAI POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+      "${PROJECT_SOURCE_DIR}/html/viewer/mavlink" "$<TARGET_FILE_DIR:OpenKAI>/html/viewer/mavlink"
     COMMAND ${CMAKE_COMMAND} -E copy_directory
       "${PROJECT_SOURCE_DIR}/html/viewer/_SelectableOctGrid" "$<TARGET_FILE_DIR:OpenKAI>/html/viewer/_SelectableOctGrid"
     COMMAND ${CMAKE_COMMAND} -E copy_directory

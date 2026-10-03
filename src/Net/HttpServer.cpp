@@ -4,6 +4,7 @@
 #include <boost/beast/http.hpp>
 #include <boost/beast/websocket/rfc6455.hpp>
 #include <filesystem>
+#include <algorithm>
 #include <thread>
 
 namespace kai
@@ -23,6 +24,11 @@ namespace kai
 		if (ext == ".json") return "application/json";
 		if (ext == ".svg") return "image/svg+xml";
 		if (ext == ".png") return "image/png";
+		if (ext == ".jpg" || ext == ".jpeg") return "image/jpeg";
+		if (ext == ".webp") return "image/webp";
+		if (ext == ".glb") return "model/gltf-binary";
+		if (ext == ".gltf") return "model/gltf+json";
+		if (ext == ".wasm") return "application/wasm";
 		if (ext == ".ico") return "image/x-icon";
 		return "application/octet-stream";
 	}
@@ -33,6 +39,7 @@ namespace kai
 		tcp::acceptor acceptor{io};
 		std::thread worker;
 		fs::path root;
+		std::vector<std::pair<std::string, fs::path>> mounts;
 		Upgrade upgrade;
 		size_t active = 0, limit = 32;
 		uint16_t boundPort = 0;
@@ -118,11 +125,22 @@ namespace kai
 				}
 				if (decoded.empty() || decoded.front() != '/') return fail(http::status::bad_request);
 				if (decoded == "/") decoded = "/index.html";
+				const fs::path *root = &server.root;
+				std::string relative = decoded.substr(1);
+				for (const auto &mount : server.mounts)
+				{
+					if (decoded == mount.first || decoded.compare(0, mount.first.size() + 1, mount.first + "/") == 0)
+					{
+						root = &mount.second;
+						relative = decoded.size() == mount.first.size() ? "" : decoded.substr(mount.first.size() + 1);
+						break;
+					}
+				}
 				std::error_code ec;
-				const auto path = fs::canonical(server.root / decoded.substr(1), ec);
+				const auto path = fs::canonical(*root / relative, ec);
 				if (ec) return fail(http::status::not_found);
 				auto p = path.begin();
-				for (auto r = server.root.begin(); r != server.root.end(); ++r, ++p)
+				for (auto r = root->begin(); r != root->end(); ++r, ++p)
 					if (p == path.end() || *p != *r) return fail(http::status::forbidden);
 				if (!fs::is_regular_file(path, ec) || ec) return fail(http::status::not_found);
 				beast::error_code fileError;
@@ -163,13 +181,31 @@ namespace kai
 	net::io_context &HttpServer::context() { return m_impl->io; }
 	uint16_t HttpServer::port() const { return m_impl->boundPort; }
 	bool HttpServer::start(const std::string &host, uint16_t port, const std::string &root,
-		Upgrade upgrade, std::string *error, size_t maxConnections)
+		Upgrade upgrade, std::string *error, size_t maxConnections, const Mounts &mounts)
 	{
 		try
 		{
 			if (m_impl->started) throw std::runtime_error("HttpServer already started; create a new instance to restart");
 			m_impl->root = fs::canonical(root);
 			if (!fs::is_directory(m_impl->root)) throw std::runtime_error("Invalid HTTP root");
+			m_impl->mounts.clear();
+			for (const auto &mount : mounts)
+			{
+				const auto &prefix = mount.first;
+				if (prefix.size() < 2 || prefix.front() != '/' || prefix.back() == '/' ||
+					prefix.find_first_of("%?#\\:") != std::string::npos || prefix.find("//") != std::string::npos)
+					throw std::runtime_error("Invalid HTTP mount prefix: " + prefix);
+				for (const auto &component : fs::path(prefix))
+					if (component == "." || component == "..") throw std::runtime_error("Invalid HTTP mount prefix: " + prefix);
+				for (const auto &existing : m_impl->mounts)
+					if (existing.first == prefix) throw std::runtime_error("Duplicate HTTP mount prefix: " + prefix);
+				auto directory = fs::canonical(mount.second);
+				if (!fs::is_directory(directory)) throw std::runtime_error("Invalid HTTP mount root: " + mount.second);
+				m_impl->mounts.emplace_back(prefix, std::move(directory));
+			}
+			std::sort(m_impl->mounts.begin(), m_impl->mounts.end(), [](const auto &a, const auto &b) {
+				return a.first.size() > b.first.size();
+			});
 			tcp::resolver resolver(m_impl->io);
 			auto endpoint = resolver.resolve(host, std::to_string(port), tcp::resolver::passive).begin()->endpoint();
 			m_impl->acceptor.open(endpoint.protocol());

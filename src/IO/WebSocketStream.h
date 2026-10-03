@@ -7,14 +7,17 @@
 
 namespace kai
 {
-	// Shared immutable snapshots, one unacknowledged message per browser.
+	// Shared immutable snapshots, one write in flight per browser. Geometry streams
+	// additionally wait for an application ACK; TextPush needs no client messages.
 	// publish() is thread safe and coalesces notifications; socket IO stays on
 	// HttpServer's worker.
 	class WebSocketStream
 	{
 	public:
+		enum class Mode { BinaryAcknowledged, TextPush };
 		using Frame = std::shared_ptr<const std::vector<uint8_t>>;
-		WebSocketStream(boost::asio::io_context &io, std::string hello, size_t maxClients = 8);
+		WebSocketStream(boost::asio::io_context &io, std::string hello, size_t maxClients = 8,
+			Mode mode = Mode::BinaryAcknowledged);
 		~WebSocketStream();
 		HttpServer::Upgrade upgradeHandler();
 		static HttpServer::Upgrade routes(const std::vector<std::pair<std::string, WebSocketStream *>> &streams);

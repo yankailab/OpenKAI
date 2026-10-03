@@ -1,0 +1,26 @@
+CesiumJS 1.138.0 (Apache-2.0)
+  Source: https://github.com/CesiumGS/cesium/tree/1.138
+  Archive: https://registry.npmjs.org/cesium/-/cesium-1.138.0.tgz
+  SHA-256: dac1310ae9e23d420217fd9e7fdb72240cd479472dc9aa9dd6ef257842bb1b07
+  Files: package/Build/Cesium/*, LICENSE.md, ThirdParty.json,
+         ThirdParty.extra.json. Upstream files are unchanged.
+  License and dependencies: cesium/LICENSE.md, cesium/ThirdParty.json,
+         cesium/ThirdParty.extra.json and cesium/ThirdParty/.
+  NaturalEarthII overview tiles are public-domain Natural Earth data:
+         https://www.naturalearthdata.com/about/terms-of-use/
+
+three.js r185 / npm 0.185.0 (MIT)
+  Source: https://github.com/mrdoob/three.js/tree/r185
+  Archive: https://registry.npmjs.org/three/-/three-0.185.0.tgz
+  SHA-256: 5f52a93ffb7d5bd87735d414fad83709af45ddcb77f8c1198dda98971074433d
+  Files: build/three.module.min.js, build/three.core.min.js,
+         examples/jsm/loaders/GLTFLoader.js,
+         examples/jsm/utils/BufferGeometryUtils.js,
+         examples/jsm/utils/SkeletonUtils.js, LICENSE (LICENSE.three).
+  Modification: GLTFLoader.js imports ./BufferGeometryUtils.js and
+         ./SkeletonUtils.js instead of ../utils/ paths to fit this directory.
+  All "three" imports resolve through the viewer's local import map.
+
+Reproduction: python3 ../tools/download_assets.py from this directory,
+or python3 html/viewer/mavlink/tools/download_assets.py from the repo root.
+Requires Python 3.9+ and curl; library archive hashes are verified.

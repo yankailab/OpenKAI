@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OpenKAI · MAVLink viewer</title>
+  <link rel="stylesheet" href="vendor/cesium/Widgets/widgets.css">
+  <link rel="stylesheet" href="css/viewer.css">
+  <script>window.CESIUM_BASE_URL = './vendor/cesium/';</script>
+  <script defer src="vendor/cesium/Cesium.js"></script>
+  <script type="importmap">{"imports":{"three":"./vendor/three.module.min.js"}}</script>
+  <script defer src="js/launcher.js"></script>
+</head>
+<body>
+  <header>
+    <a class="brand" href="./"><img src="img/OK.png" alt="OpenKAI" width="1300" height="315"><span>MAVLink viewer</span></a>
+    <form id="connection">
+      <label>IP / host <input id="host" value="127.0.0.1" required spellcheck="false" autocomplete="off"></label>
+      <label>Stream port <input id="port" type="number" min="1" max="65535" value="8080" required></label>
+      <button id="start" type="submit" disabled>Start</button>
+      <button id="stop" type="button" disabled>Stop</button>
+    </form>
+    <output id="status" role="status">Loading viewer…</output>
+  </header>
+  <main>
+    <div id="viewport" aria-label="Interactive 3D Earth and live drone position"></div>
+    <nav id="map-controls" aria-label="Map controls">
+      <button id="center" type="button" disabled>Locate drone</button>
+      <button id="follow" type="button" aria-pressed="false">Follow</button>
+      <button id="buildings" type="button" aria-pressed="true">Buildings</button>
+      <button id="trail" type="button" aria-pressed="true">Trail</button>
+      <button id="clear-trail" type="button">Clear trail</button>
+      <button id="tokyo" type="button">Tokyo</button>
+    </nav>
+    <aside id="telemetry" aria-label="Aircraft telemetry">
+      <div class="panel-heading"><span>Aircraft</span><span class="badge" id="vehicle-state">NO TELEMETRY</span></div>
+      <div id="attitude-viewport" aria-label="Three.js aircraft attitude preview"><span id="attitude-state">Waiting for attitude</span></div>
+      <div class="angles"><div><span>Roll</span><strong id="roll">—</strong></div><div><span>Pitch</span><strong id="pitch">—</strong></div><div><span>Yaw</span><strong id="yaw">—</strong></div></div>
+      <dl>
+        <dt>Latitude</dt><dd id="latitude">—</dd>
+        <dt>Longitude</dt><dd id="longitude">—</dd>
+        <dt>Altitude · MSL</dt><dd id="altitude">—</dd>
+        <dt>Relative altitude</dt><dd id="relative-altitude">—</dd>
+        <dt>Ground speed</dt><dd id="speed">—</dd>
+        <dt>Vertical speed ↑</dt><dd id="vertical-speed">—</dd>
+        <dt>Battery</dt><dd id="battery">—</dd>
+        <dt>Voltage / current</dt><dd id="power">—</dd>
+        <dt>GPS fix / satellites</dt><dd id="gps">—</dd>
+        <dt>System status / mode</dt><dd id="mode">—</dd>
+      </dl>
+      <div id="sample-state">Waiting for MAVLink messages</div>
+      <p id="vehicle-message" hidden></p>
+      <details id="scene-details"><summary>Map &amp; model status</summary><ul id="scene-status"></ul><p id="height-status">Position heights use the WGS84 ellipsoid.</p></details>
+    </aside>
+    <div id="welcome">Connect to your OpenKAI backend<br><small>Live position and attitude · Read-only telemetry</small></div>
+    <footer><span>Left drag to orbit · Right drag to pan · Wheel to zoom</span><output id="stats">No aircraft position received</output></footer>
+  </main>
+</body>
+</html>
