@@ -4,7 +4,7 @@
 namespace
 {
 	using namespace kai;
-	using Messages = vector<std::shared_ptr<MavMsgBase>>;
+	using Messages = vector<mavlink_message_t>;
 
 	void countHeartbeats(void *pMessage, void *pContext)
 	{
@@ -13,21 +13,19 @@ namespace
 		++*static_cast<int *>(pContext);
 	}
 
-	mavlink_command_long_t command(const std::shared_ptr<MavMsgBase> &message)
+	mavlink_command_long_t command(const mavlink_message_t &message)
 	{
-		assert(message->getID() == MAVLINK_MSG_ID_COMMAND_LONG);
-		mavlink_message_t encoded = message->encode(255, 190, 1, 2);
+		assert(message.msgid == MAVLINK_MSG_ID_COMMAND_LONG);
 		mavlink_command_long_t result{};
-		mavlink_msg_command_long_decode(&encoded, &result);
-		assert(result.target_system == 1 && result.target_component == 2);
+		mavlink_msg_command_long_decode(&message, &result);
 		return result;
 	}
 
 	void testReceiveCallbacks(void)
 	{
-		MavlinkStream input;
-		MavlinkStream output;
-		auto *pHeartbeat = input.getMsg<MavHeartbeat>();
+		MavlinkStream stream;
+		MavlinkStream other;
+		auto *pHeartbeat = stream.get<MavHeartbeat>();
 		assert(pHeartbeat && !pHeartbeat->bValid());
 		int received = 0;
 		assert(pHeartbeat->addCbRecv(countHeartbeats, &received));
@@ -36,87 +34,86 @@ namespace
 		mavlink_message_t encoded{};
 		mavlink_msg_heartbeat_pack(1, 2, &encoded, MAV_TYPE_QUADROTOR,
 			MAV_AUTOPILOT_ARDUPILOTMEGA, MAV_MODE_FLAG_SAFETY_ARMED, 42, MAV_STATE_ACTIVE);
-		assert(input.decode(encoded));
+		assert(stream.decode(encoded));
 		assert(pHeartbeat->bValid() && received == 1);
-		assert(!output.getMsg<MavHeartbeat>()->bValid());
+		assert(!other.get<MavHeartbeat>()->bValid());
 		Messages queued;
-		input.getMsgQueue(queued);
+		assert(stream.getEncodedMsgs(queued) == 0);
 		assert(queued.empty());
 
 		pHeartbeat->clearCbRecv(countHeartbeats, &received);
-		assert(input.decode(encoded));
+		assert(stream.decode(encoded));
 		assert(received == 1);
+
+		encoded.msgid = 0xFFFFFF;
+		assert(!stream.decode(encoded));
+		assert(received == 1);
+		assert(stream.setMsgInterval(MAVLINK_MSG_ID_ATTITUDE, NSEC_SEC / 10));
+		assert(stream.get<MavAttitude>()->getDesiredInterval() == NSEC_SEC / 10);
+		assert(!stream.setMsgInterval(-1, NSEC_SEC));
 	}
 
-	void testOrderedSnapshots(void)
+	void testEncodedSnapshots(void)
 	{
-		MavlinkStream output;
-		output.clDoSetServo(1, 1200);
-		output.clDoSetServo(2, 1800);
-		output.clDoSetRelay(3, true);
+		MavlinkStream stream;
+		mavlink_command_long_t servo{};
+		servo.target_system = 1;
+		servo.target_component = 2;
+		servo.command = MAV_CMD_DO_SET_SERVO;
+		servo.param1 = 1;
+		servo.param2 = 1200;
+		stream.set<MavCommandLong>(servo, 255, 190);
 		Messages firstReader;
-		output.getMsgQueue(firstReader);
-		assert(firstReader.size() == 3);
-		assert(command(firstReader[0]).command == MAV_CMD_DO_SET_SERVO);
-		assert(command(firstReader[0]).param1 == 1 && command(firstReader[0]).param2 == 1200);
-		assert(command(firstReader[1]).param1 == 2 && command(firstReader[1]).param2 == 1800);
-		assert(command(firstReader[2]).command == MAV_CMD_DO_SET_RELAY);
-		assert(command(firstReader[2]).param1 == 3 && command(firstReader[2]).param2 == 1);
-		for (size_t i = 1; i < firstReader.size(); ++i)
-			assert(firstReader[i]->getTstamp() > firstReader[i - 1]->getTstamp());
+		const uint64_t cursor = stream.getEncodedMsgs(firstReader);
+		assert(cursor > 0 && firstReader.size() == 1);
+		assert(firstReader[0].sysid == 255 && firstReader[0].compid == 190);
+		const auto firstCommand = command(firstReader[0]);
+		assert(firstCommand.command == MAV_CMD_DO_SET_SERVO);
+		assert(firstCommand.target_system == 1 && firstCommand.target_component == 2);
+		assert(firstCommand.param1 == 1 && firstCommand.param2 == 1200);
 
-		const uint64_t cursor = firstReader.back()->getTstamp();
 		Messages secondReader;
-		output.getMsgQueue(secondReader);
-		assert(secondReader.size() == 3);
-		output.getMsgQueue(secondReader, cursor);
+		assert(stream.getEncodedMsgs(secondReader) == cursor);
+		assert(secondReader.size() == 1);
+		stream.getEncodedMsgs(secondReader, cursor);
 		assert(secondReader.empty());
 
-		output.clearMsgQueue();
-		output.clDoSetServo(4, 1500);
-		output.getMsgQueue(secondReader, cursor);
+		mavlink_heartbeat_t heartbeat{};
+		heartbeat.custom_mode = 7;
+		stream.set<MavHeartbeat>(heartbeat, 254, 191);
+		assert(stream.getEncodedMsgs(secondReader, cursor) > cursor);
 		assert(secondReader.size() == 1);
-		assert(command(secondReader[0]).param1 == 4);
-		// Clearing/reusing stream storage must not invalidate retained batches.
-		assert(command(firstReader[0]).param1 == 1);
-		assert(command(firstReader[1]).param2 == 1800);
-
-		output.clearMsgQueue(2);
-		for (int servo = 5; servo <= 7; ++servo)
-			output.clDoSetServo(servo, 1500);
-		output.getMsgQueue(secondReader, cursor);
-		assert(secondReader.size() == 2);
-		assert(command(secondReader[0]).param1 == 6);
-		assert(command(secondReader[1]).param1 == 7);
-		assert(command(firstReader[0]).param1 == 1);
+		assert(secondReader[0].msgid == MAVLINK_MSG_ID_HEARTBEAT);
+		assert(secondReader[0].sysid == 254 && secondReader[0].compid == 191);
+		mavlink_heartbeat_t decoded{};
+		mavlink_msg_heartbeat_decode(&secondReader[0], &decoded);
+		assert(decoded.custom_mode == 7);
+		// Outbound messages do not overwrite telemetry received through decode().
+		assert(!stream.get<MavHeartbeat>()->bValid());
+		assert(command(firstReader[0]).param2 == 1200);
 	}
 
 	void testIntervalRouting(void)
 	{
-		MavlinkStream input;
-		MavlinkStream output;
-		assert(input.setMsgInterval(MAVLINK_MSG_ID_ATTITUDE, NSEC_SEC / 10));
-		assert(input.setMsgInterval(MAVLINK_MSG_ID_GLOBAL_POSITION_INT, NSEC_SEC / 5));
-		assert(!input.setMsgInterval(-1, NSEC_SEC));
-		input.sendSetMsgInterval(&output);
+		MavlinkStream stream;
+		assert(stream.setMsgInterval(MAVLINK_MSG_ID_ATTITUDE, NSEC_SEC / 10));
+		stream.sendSetMsgInterval();
 
 		Messages queued;
-		input.getMsgQueue(queued);
-		assert(queued.empty());
-		output.getMsgQueue(queued);
-		assert(queued.size() == 2);
+		stream.getEncodedMsgs(queued);
+		assert(queued.size() == 1);
 		const auto attitude = command(queued[0]);
-		const auto position = command(queued[1]);
 		assert(attitude.command == MAV_CMD_SET_MESSAGE_INTERVAL);
 		assert(attitude.param1 == MAVLINK_MSG_ID_ATTITUDE && attitude.param2 == 100000);
-		assert(position.command == MAV_CMD_SET_MESSAGE_INTERVAL);
-		assert(position.param1 == MAVLINK_MSG_ID_GLOBAL_POSITION_INT && position.param2 == 200000);
 	}
 }
 
-void runMavlinkStreamTests(void)
+void runMavlinkStreamTests(bool testEncoding)
 {
 	testReceiveCallbacks();
-	testOrderedSnapshots();
-	testIntervalRouting();
+	if (testEncoding)
+	{
+		testEncodedSnapshots();
+		testIntervalRouting();
+	}
 }

@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Run packet storage, duplex transport, and parser tests against an existing CMake build.
 
-Usage: python3 test/run_byte_packet_tests.py [build-directory] [--mavlink-only]
+Usage: python3 test/run_byte_packet_tests.py [build-directory] [--mavlink-only | --mavlink-receive-only]
 Build OpenKAI with WITH_IO=ON and WITH_PROTOCOL=ON before running this script.
 WITH_ARDUPILOT=ON additionally exercises the MAVLink stream consumers.
+--mavlink-receive-only checks receive/link paths while outgoing message queue
+encoding in MavMsgBase is unfinished; it does not validate sending or fragments.
 """
 
 import argparse
@@ -40,7 +42,9 @@ def main():
     repo = pathlib.Path(__file__).resolve().parents[1]
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("build_directory", nargs="?", type=pathlib.Path, default=repo / "build")
-    parser.add_argument("--mavlink-only", action="store_true", help="run MAVLink stream, codec, and consumer regressions only")
+    modes = parser.add_mutually_exclusive_group()
+    modes.add_argument("--mavlink-only", action="store_true", help="run MAVLink stream, codec, and consumer regressions only")
+    modes.add_argument("--mavlink-receive-only", action="store_true", help="run MAVLink receive/link regressions without outgoing queue encoding")
     options = parser.parse_args()
     build = options.build_directory.resolve()
     entries = json.loads((build / "compile_commands.json").read_text())
@@ -76,6 +80,8 @@ def main():
         test_args = [executable]
         if options.mavlink_only:
             test_args.append("--mavlink-only")
+        elif options.mavlink_receive_only:
+            test_args.append("--mavlink-receive-only")
         subprocess.run(test_args, cwd=repo, check=True)
 
 

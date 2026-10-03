@@ -43,8 +43,7 @@ namespace kai
 		}
 
 	protected:
-		MavlinkStream *m_pMavStreamIn = nullptr;
-		MavlinkStream *m_pMavStreamOut = nullptr;
+		MavlinkStream *m_pMavStream = nullptr;
 
 		uint8_t m_iSeq = 0;
 	};

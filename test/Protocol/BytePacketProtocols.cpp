@@ -10,8 +10,8 @@
 #include <iostream>
 
 void runBytePacketStreamTests();
-void runMavlinkStreamTests();
-void runMavlinkConsumerTests();
+void runMavlinkStreamTests(bool testEncoding);
+void runMavlinkConsumerTests(bool testEncoding);
 
 namespace kai
 {
@@ -45,11 +45,6 @@ namespace kai
 		bool readMavlink(mavlink_message_t *pMsg)
 		{
 			return this->readMessage(pMsg);
-		}
-
-		bool writeMavlink(const mavlink_message_t &msg)
-		{
-			return this->writeMessage(msg);
 		}
 	};
 
@@ -167,17 +162,13 @@ namespace kai
 	void testMavlinkPackets(void)
 	{
 		BytePacketStream input;
-		BytePacketStream output;
 		_PacketTest<_Mavlink> receiver(&input);
-		_PacketTest<_Mavlink> sender(nullptr, &output);
 		mavlink_message_t sent;
 		mavlink_msg_heartbeat_pack(1, 2, &sent, MAV_TYPE_QUADROTOR,
 			MAV_AUTOPILOT_ARDUPILOTMEGA, 0, 1234, MAV_STATE_ACTIVE);
-		assert(sender.writeMavlink(sent));
-		vector<BYTE_PACKET> packets;
-		output.getPackets(packets);
-		assert(packets.size() == 1);
-		const vector<uint8_t> &frame = packets[0].m_vB;
+		uint8_t encoded[MAVLINK_MAX_PACKET_LEN];
+		const size_t length = mavlink_msg_to_send_buffer(encoded, &sent);
+		const vector<uint8_t> frame(encoded, encoded + length);
 		input.addPacket(vector<uint8_t>(frame.begin(), frame.begin() + 4));
 		mavlink_message_t received;
 		assert(!receiver.readMavlink(&received));
@@ -218,39 +209,46 @@ namespace kai
 		++*static_cast<std::atomic<int> *>(pContext);
 	}
 
-	void testMavlinkWorkers(void)
+	void testMavlinkWorkers(bool testEncoding)
 	{
 		JsonCfg cfg;
 		cfg.setJson({
 			{"bytesIn", {{"class", "BytePacketStream"}}},
 			{"bytesOut", {{"class", "BytePacketStream"}}},
-			{"commands", {{"class", "MavlinkStream"}}},
-			{"received", {{"class", "MavlinkStream"}}},
+			{"mavlink", {{"class", "MavlinkStream"}}},
 			{"codec", {{"class", "_Mavlink"},
 				{"BytePacketStreamIn", "bytesIn"}, {"BytePacketStreamOut", "bytesOut"},
-				{"MavlinkStreamIn", "commands"}, {"MavlinkStreamOut", "received"},
+				{"MavlinkStream", "mavlink"},
 				{"thread", {{"FPS", 500}}}, {"threadR", {{"FPS", 500}}},
 				{"devSystemID", 1}, {"devComponentID", 2}, {"iMavComm", MAVLINK_COMM_1}}},
 		});
 		InstanceMgr instances;
 		json &config = *cfg.getJson();
-		for (const string name : {"bytesIn", "bytesOut", "commands", "received"})
+		for (const string name : {"bytesIn", "bytesOut", "mavlink"})
 			assert(instances.addDataObject(name, &cfg, &config[name]));
 		assert(instances.initAll());
 		auto *bytesIn = static_cast<BytePacketStream *>(instances.findDataObject("bytesIn"));
 		auto *bytesOut = static_cast<BytePacketStream *>(instances.findDataObject("bytesOut"));
-		auto *commands = static_cast<MavlinkStream *>(instances.findDataObject("commands"));
-		auto *received = static_cast<MavlinkStream *>(instances.findDataObject("received"));
+		auto *stream = static_cast<MavlinkStream *>(instances.findDataObject("mavlink"));
 		std::atomic<int> heartbeats{0};
-		received->getMsg<MavHeartbeat>()->addCbRecv(countDecodedHeartbeat, &heartbeats);
+		stream->get<MavHeartbeat>()->addCbRecv(countDecodedHeartbeat, &heartbeats);
 		MavlinkWorkerHarness codec;
 		codec.setName("codec");
 		codec.setConfig(&cfg, &config["codec"]);
 		assert(codec.loadConfig());
 		assert(codec.link(&instances));
 
-		commands->clDoSetServo(1, 1200);
-		commands->clDoSetServo(2, 1800);
+		if (testEncoding)
+		{
+			mavlink_command_long_t servo{};
+			servo.target_system = 1;
+			servo.target_component = 2;
+			servo.command = MAV_CMD_DO_SET_SERVO;
+			servo.param1 = 1;
+			servo.param2 = 1200;
+			stream->set<MavCommandLong>(servo, 255, 190);
+		}
+		const size_t expectedPackets = testEncoding ? 1 : 0;
 		mavlink_message_t heartbeat{};
 		mavlink_msg_heartbeat_pack(1, 2, &heartbeat, MAV_TYPE_QUADROTOR,
 			MAV_AUTOPILOT_ARDUPILOTMEGA, 0, 99, MAV_STATE_ACTIVE);
@@ -265,15 +263,14 @@ namespace kai
 		do
 		{
 			bytesOut->getPackets(packets);
-			if (packets.size() == 2 && heartbeats == 1)
+			if (packets.size() == expectedPackets && heartbeats == 1)
 				break;
 			::usleep(1000);
 		} while (getTns() < deadline);
 		codec.joinWorkers();
 		bytesOut->getPackets(packets);
-		assert(packets.size() == 2 && heartbeats == 1);
-		assert(received->getMsg<MavHeartbeat>()->get().custom_mode == 99);
-		assert(!commands->getMsg<MavHeartbeat>()->bValid());
+		assert(packets.size() == expectedPackets && heartbeats == 1);
+		assert(stream->get<MavHeartbeat>()->get().custom_mode == 99);
 		for (size_t i = 0; i < packets.size(); ++i)
 		{
 			mavlink_message_t parser{}, decoded{};
@@ -285,7 +282,8 @@ namespace kai
 			mavlink_command_long_t command{};
 			mavlink_msg_command_long_decode(&decoded, &command);
 			assert(command.command == MAV_CMD_DO_SET_SERVO);
-			assert(command.param1 == i + 1 && command.param2 == (i == 0 ? 1200 : 1800));
+			assert(command.param1 == 1 && command.param2 == 1200);
+			assert(decoded.sysid == 255 && decoded.compid == 190);
 			assert(command.target_system == 1 && command.target_component == 2);
 		}
 	}
@@ -300,10 +298,17 @@ namespace kai
 
 int main(int argc, char **argv)
 {
-	runMavlinkStreamTests();
-	runMavlinkConsumerTests();
+	const bool receiveOnly = argc > 1 && std::string(argv[1]) == "--mavlink-receive-only";
+	runMavlinkStreamTests(!receiveOnly);
+	runMavlinkConsumerTests(!receiveOnly);
 	kai::testMavlinkPackets();
-	kai::testMavlinkWorkers();
+	kai::testMavlinkWorkers(!receiveOnly);
+	if (receiveOnly)
+	{
+		std::cout << "MAVLink receive, configuration, and parser regressions passed; "
+			"outbound encoding and fragment retention were not tested\n";
+		return 0;
+	}
 	if (argc > 1 && std::string(argv[1]) == "--mavlink-only")
 	{
 		std::cout << "MavlinkStream storage, codec, and consumer regressions passed\n";

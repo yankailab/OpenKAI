@@ -39,8 +39,7 @@
 	},
 	"mavAP": {
 		"class": "_Mavlink",
-		"MavlinkStreamIn": "mavAP_tx",
-		"MavlinkStreamOut": "mavAP_rx",
+		"MavlinkStream": "mavAP_stream",
 		"bON": true,
 		"bLog": false,
 		"thread": {
@@ -50,11 +49,7 @@
 		"BytePacketStreamOut": "serial_tx",
 		"devSystemID": 1,
 		"mySystemID": 200,
-		"iMavComm": 0,
-		"/noRouteCmd": [],
-		"vRoutings": [
-			"mavUDP"
-		]
+		"iMavComm": 0
 	},
 	"apBase": {
 		"class": "_APmav_base",
@@ -63,10 +58,8 @@
 			"FPS": 30
 		},
 		"/_StateControl": "state",
-		"MavlinkStreamIn": "mavAP_rx",
-		"MavlinkStreamOut": "mavAP_tx",
-		"/MavlinkStreamIn": "mavUDP_rx",
-		"/MavlinkStreamOut": "mavUDP_tx",
+		"MavlinkStream": "mavAP_stream",
+		"/MavlinkStream": "mavUDP_stream",
 		"apType": 0,
 		"ieSendHB": 1,
 		"ieSendMsgInt": 1,
@@ -122,8 +115,7 @@
 	},
 	"mavUDP": {
 		"class": "_Mavlink",
-		"MavlinkStreamIn": "mavUDP_tx",
-		"MavlinkStreamOut": "mavUDP_rx",
+		"MavlinkStream": "mavUDP_stream",
 		"bON": false,
 		"bLog": false,
 		"thread": {
@@ -133,28 +125,14 @@
 		"BytePacketStreamOut": "udp_tx",
 		"/devSystemID": 1,
 		"mySystemID": 200,
-		"iMavComm": 0,
-		"/noRouteCmd": [],
-		"vRoutings": [
-			"mavAP"
-		]
+		"iMavComm": 0
 	},
-	"mavAP_tx": {
+	"mavAP_stream": {
 		"type": "dataObject",
 		"class": "MavlinkStream",
 		"nMsgQueue": 1024
 	},
-	"mavAP_rx": {
-		"type": "dataObject",
-		"class": "MavlinkStream",
-		"nMsgQueue": 1024
-	},
-	"mavUDP_tx": {
-		"type": "dataObject",
-		"class": "MavlinkStream",
-		"nMsgQueue": 1024
-	},
-	"mavUDP_rx": {
+	"mavUDP_stream": {
 		"type": "dataObject",
 		"class": "MavlinkStream",
 		"nMsgQueue": 1024

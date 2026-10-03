@@ -36,7 +36,7 @@ class StreamReferenceSchemaTest(unittest.TestCase):
         self.assertEqual(set(self.schema["audit"]["factoryClassesWithoutDeclaration"]), registered.difference(self.classes))
 
     def test_data_object_factories_and_configuration_defaults(self):
-        names = {"BBoxStream", "BytePacketStream", "IMUstream", "LineFrame", "PCLframe", "PCLmap",
+        names = {"BBoxStream", "BytePacketStream", "IMUstream", "LineFrame", "MavlinkStream", "PCLframe", "PCLmap",
                  "RGBframe", "RGBDframe", "SharedMemoryFrame", "UGLIDcellStream"}
         self.assertEqual(
             {name for name, entry in self.classes.items() if entry["category"] == "DataObject" and entry["creatable"]},
@@ -76,6 +76,20 @@ class StreamReferenceSchemaTest(unittest.TestCase):
         parameters = self.parameters("BytePacketStream")
         self.assertEqual(parameters[("nPacket",)]["default"], 256)
         self.assertEqual(parameters[("nPbuf",)]["default"], 2000)
+
+    def test_mavlink_uses_a_duplex_data_object(self):
+        for name in ("_Mavlink", "_APmav_base", "_APmav_copter", "_APmav_rover", "_APmav_RTCM"):
+            with self.subTest(class_name=name):
+                dependencies = self.dependencies(name)
+                stream = dependencies[("MavlinkStream",)]
+                self.assertEqual(stream["targetKind"], "dataObject")
+                self.assertEqual(stream["targetClass"], "MavlinkStream")
+                self.assertTrue(stream["required"])
+                self.assertNotIn(("MavlinkStreamIn",), dependencies)
+                self.assertNotIn(("MavlinkStreamOut",), dependencies)
+                self.assertNotIn(("_Mavlink",), dependencies)
+        self.assertNotIn(("vRoutings",), self.dependencies("_Mavlink"))
+        self.assertEqual(self.parameters("MavlinkStream")[("nMsgQueue",)]["default"], 1024)
 
     def test_io_threads_are_independently_configurable(self):
         classes = ("_IObase", "_UDP", "_TCPclient", "_SerialPort", "_WebSocket", "_WebSocketServer")

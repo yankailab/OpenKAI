@@ -23,6 +23,8 @@ namespace kai
 		// for decode message received from IO
 		void decode(const mavlink_message_t &msg);
 
+		const mavlink_raw_imu_t &get() const { return m_msg; }
+
 	protected:
 		mavlink_raw_imu_t m_msg{};
 	};

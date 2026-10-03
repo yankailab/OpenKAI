@@ -62,6 +62,7 @@
 #include <deque>
 #include <memory>
 #include <mutex>
+#include <type_traits>
 
 namespace kai
 {
@@ -74,84 +75,20 @@ namespace kai
 		bool saveConfig(bool bExport = false);
 		void console(void *pConsole) override;
 
-		// caller add a msg received from IO
+		// Receive from IO
 		bool decode(const mavlink_message_t &msg);
-		// set desired update rate for message
-		void sendSetMsgInterval(void);
-		bool setMsgInterval(int id, int64_t tInt);
 
-
-		uint64_t getMsgQueue(vector<mavlink_message_t> &vMsg, uint64_t tStampFrom = 0);
-	protected:
-		// caller added msg into a queue to be written to IO
-		void clearMsgQueue(size_t nMb = 0);
-		void addMsgQueue(MavMsgBase *pMb);
-
-		std::shared_mutex m_sMutexMq;
-		std::vector<MavMsgBase *> m_vMsgQueue;	// ring buffer. message from each class pointer will be sent as a batch, not necessary to preserve the send order across different classes
-		size_t m_nMsgQueue = 1024;
-		size_t m_iMqSet = 0;
-		uint64_t m_tLastQueued = 0;
-
-
-		vector<MavMsgBase *> m_vpMsgRegistry;
-	public:
-		// caller call these functions send a msg to IO.
+		// Send to IO
 		// each message class has its own internal queue, for Mavlink message with fragmented sequences just call the same setter multiple times
-		void attitude(mavlink_attitude_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void attitudeQuaternion(mavlink_attitude_quaternion_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void batteryStatus(mavlink_battery_status_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void commandAck(mavlink_command_ack_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void cmdInt(mavlink_command_int_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void cmdLong(mavlink_command_long_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void distanceSensor(mavlink_distance_sensor_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void globalPositionInt(mavlink_global_position_int_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void globalVisionPositionEstimate(mavlink_global_vision_position_estimate_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void gpsInput(mavlink_gps_input_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void gpsRawINT(mavlink_gps_raw_int_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void gpsRTCMdata(mavlink_gps_rtcm_data_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void highresIMU(mavlink_highres_imu_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void homePosition(mavlink_home_position_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void landingTarget(mavlink_landing_target_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void localPositionNED(mavlink_local_position_ned_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
+		template <typename T, typename M>
+		void set(M msg, uint8_t mySysID = 0, uint8_t myComID = 0)
+		{
+			T* pT = get<T>();
+			pT->add(msg, mySysID, myComID);
+			addMsgQueue(pT);
+		}
 
-		void missionAck(mavlink_mission_ack_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void missionClearAll(mavlink_mission_clear_all_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void missionCount(mavlink_mission_count_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void missionCurrent(mavlink_mission_current_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void missionItemInt(mavlink_mission_item_int_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void missionItemReached(mavlink_mission_item_reached_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void missionRequestInt(mavlink_mission_request_int_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void missionRequestList(mavlink_mission_request_list_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void missionSetCurrent(mavlink_mission_set_current_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-
-		void mountConfigure(mavlink_mount_configure_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void mountControl(mavlink_mount_control_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void mountStatus(mavlink_mount_status_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void paramRequestRead(mavlink_param_request_read_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void paramSet(mavlink_param_set_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void paramValue(mavlink_param_value_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void positionTargetLocalNed(mavlink_position_target_local_ned_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void positionTargetGlobalInt(mavlink_position_target_global_int_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void radioStatus(mavlink_radio_status_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void rawIMU(mavlink_raw_imu_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void rcChannels(mavlink_rc_channels_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void rcChannelsOverride(mavlink_rc_channels_override_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void requestDataStream(mavlink_request_data_stream_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void requestDataStream(uint8_t stream_id, int rate);
-		void heartbeat(mavlink_heartbeat_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void servoOutputRaw(mavlink_servo_output_raw_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void setAttitudeTarget(mavlink_set_attitude_target_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void setMode(mavlink_set_mode_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void setPositionTargetLocalNED(mavlink_set_position_target_local_ned_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void setPositionTargetGlobalINT(mavlink_set_position_target_global_int_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void statusText(mavlink_statustext_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void sysStatus(mavlink_sys_status_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void scaledIMU(mavlink_scaled_imu_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void visionPositionEstimate(mavlink_vision_position_estimate_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-		void visionSpeedEstimate(mavlink_vision_speed_estimate_t &D, uint8_t mySysID = 0, uint8_t myComID = 0);
-
-		// Cmd long
+		// helpers for command long
 		void clComponentArmDisarm(bool bArm, uint8_t mySysID = 0, uint8_t myComID = 0);
 		void clDoFlightTermination(bool bTerminate, uint8_t mySysID = 0, uint8_t myComID = 0);
 		void clDoSetMode(int mode, uint8_t mySysID = 0, uint8_t myComID = 0);
@@ -163,6 +100,132 @@ namespace kai
 		void clNavTakeoff(float alt, uint8_t mySysID = 0, uint8_t myComID = 0);
 		void clNavRTL(uint8_t mySysID = 0, uint8_t myComID = 0);
 		void clSetMessageInterval(float id, float interval, float responseTarget, uint8_t mySysID = 0, uint8_t myComID = 0);
+
+		// set desired update rate for message
+		void sendSetMsgInterval(void);
+		bool setMsgInterval(int id, int64_t tInt);
+
+		// _Mavlink instance call this to get encoded message queue and send to IO
+		uint64_t getEncodedMsgs(vector<mavlink_message_t> &vMsg, uint64_t tStampFrom = 0);
+
+		template <typename T>
+		T *get() noexcept
+		{
+			if constexpr (std::is_same_v<T, MavAttitude>)
+				return &m_attitude;
+			else if constexpr (std::is_same_v<T, MavAttitudeQuaternion>)
+				return &m_attitudeQuaternion;
+			else if constexpr (std::is_same_v<T, MavBatteryStatus>)
+				return &m_batteryStatus;
+			else if constexpr (std::is_same_v<T, MavCommandAck>)
+				return &m_commandAck;
+			else if constexpr (std::is_same_v<T, MavCommandInt>)
+				return &m_cmdInt;
+			else if constexpr (std::is_same_v<T, MavCommandLong>)
+				return &m_cmdLong;
+			else if constexpr (std::is_same_v<T, MavDistanceSensor>)
+				return &m_distanceSensor;
+			else if constexpr (std::is_same_v<T, MavGlobalPositionINT>)
+				return &m_globalPositionINT;
+			else if constexpr (std::is_same_v<T, MavGlobalVisionPositionEstimate>)
+				return &m_globalVisionPositionEstimate;
+			else if constexpr (std::is_same_v<T, MavGpsInput>)
+				return &m_gpsInput;
+			else if constexpr (std::is_same_v<T, MavGpsRawINT>)
+				return &m_gpsRawINT;
+			else if constexpr (std::is_same_v<T, MavGpsRTCMdata>)
+				return &m_gpsRTCMdata;
+			else if constexpr (std::is_same_v<T, MavHeartbeat>)
+				return &m_heartbeat;
+			else if constexpr (std::is_same_v<T, MavHighresIMU>)
+				return &m_highresIMU;
+			else if constexpr (std::is_same_v<T, MavHomePosition>)
+				return &m_homePosition;
+			else if constexpr (std::is_same_v<T, MavLandingTarget>)
+				return &m_landingTarget;
+			else if constexpr (std::is_same_v<T, MavLocalPositionNED>)
+				return &m_localPositionNED;
+			else if constexpr (std::is_same_v<T, MavMissionAck>)
+				return &m_missionAck;
+			else if constexpr (std::is_same_v<T, MavMissionClearAll>)
+				return &m_missionClearAll;
+			else if constexpr (std::is_same_v<T, MavMissionCount>)
+				return &m_missionCount;
+			else if constexpr (std::is_same_v<T, MavMissionCurrent>)
+				return &m_missionCurrent;
+			else if constexpr (std::is_same_v<T, MavMissionItemInt>)
+				return &m_missionItemInt;
+			else if constexpr (std::is_same_v<T, MavMissionItemReached>)
+				return &m_missionItemReached;
+			else if constexpr (std::is_same_v<T, MavMissionRequestInt>)
+				return &m_missionRequestInt;
+			else if constexpr (std::is_same_v<T, MavMissionRequestList>)
+				return &m_missionRequestList;
+			else if constexpr (std::is_same_v<T, MavMissionSetCurrent>)
+				return &m_missionSetCurrent;
+			else if constexpr (std::is_same_v<T, MavMountConfigure>)
+				return &m_mountConfigure;
+			else if constexpr (std::is_same_v<T, MavMountControl>)
+				return &m_mountControl;
+			else if constexpr (std::is_same_v<T, MavMountStatus>)
+				return &m_mountStatus;
+			else if constexpr (std::is_same_v<T, MavParamRequestRead>)
+				return &m_paramRequestRead;
+			else if constexpr (std::is_same_v<T, MavParamSet>)
+				return &m_paramSet;
+			else if constexpr (std::is_same_v<T, MavParamValue>)
+				return &m_paramValue;
+			else if constexpr (std::is_same_v<T, MavPositionTargetLocalNED>)
+				return &m_positionTargetLocalNED;
+			else if constexpr (std::is_same_v<T, MavPositionTargetGlobalINT>)
+				return &m_positionTargetGlobalINT;
+			else if constexpr (std::is_same_v<T, MavRadioStatus>)
+				return &m_radioStatus;
+			else if constexpr (std::is_same_v<T, MavRawIMU>)
+				return &m_rawIMU;
+			else if constexpr (std::is_same_v<T, MavRcChannels>)
+				return &m_rcChannels;
+			else if constexpr (std::is_same_v<T, MavRcChannelsOverride>)
+				return &m_rcChannelsOverride;
+			else if constexpr (std::is_same_v<T, MavRequestDataStream>)
+				return &m_requestDataStream;
+			else if constexpr (std::is_same_v<T, MavServoOutputRaw>)
+				return &m_servoOutputRaw;
+			else if constexpr (std::is_same_v<T, MavSetAttitudeTarget>)
+				return &m_setAttitudeTarget;
+			else if constexpr (std::is_same_v<T, MavSetMode>)
+				return &m_setMode;
+			else if constexpr (std::is_same_v<T, MavSetPositionTargetLocalNED>)
+				return &m_setPositionTargetLocalNED;
+			else if constexpr (std::is_same_v<T, MavSetPositionTargetGlobalINT>)
+				return &m_setPositionTargetGlobalINT;
+			else if constexpr (std::is_same_v<T, MavStatusText>)
+				return &m_statusText;
+			else if constexpr (std::is_same_v<T, MavSysStatus>)
+				return &m_sysStatus;
+			else if constexpr (std::is_same_v<T, MavScaledIMU>)
+				return &m_scaledIMU;
+			else if constexpr (std::is_same_v<T, MavVisionPositionEstimate>)
+				return &m_visionPositionEstimate;
+			else if constexpr (std::is_same_v<T, MavVisionSpeedEstimate>)
+				return &m_visionSpeedEstimate;
+			else
+				static_assert(!std::is_same_v<T, T>, "Unsupported MAVLink message type");
+		}
+
+	protected:
+		// caller add msg into the queue to be written to IO
+		void addMsgQueue(MavMsgBase *pMb);
+		void clearMsgQueue(size_t nMb = 0);
+
+		std::shared_mutex m_sMutexMq;
+		std::vector<MavMsgBase *> m_vMsgQueue; // ring buffer. message from each class pointer will be sent as a batch, not necessary to preserve the send order among different classes
+		size_t m_nMsgQueue = 1024;
+		size_t m_iMqSet = 0;
+		uint64_t m_tLastQueued = 0;
+
+		// Message object instances
+		vector<MavMsgBase *> m_vpMsgRegistry;
 
 		MavAttitude m_attitude;
 		MavAttitudeQuaternion m_attitudeQuaternion;
@@ -216,6 +279,5 @@ namespace kai
 		MavVisionPositionEstimate m_visionPositionEstimate;
 		MavVisionSpeedEstimate m_visionSpeedEstimate;
 	};
-
 }
 #endif

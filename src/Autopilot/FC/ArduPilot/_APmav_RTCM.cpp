@@ -32,14 +32,9 @@ namespace kai
 		const json &j = *m_pJ;
 
 		string n = "";
-		jKv(j, "MavlinkStreamIn", n);
-		m_pMavStreamIn = dynamic_cast<MavlinkStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
-		NULL_F(m_pMavStreamIn);
-
-		n.clear();
-		jKv(j, "MavlinkStreamOut", n);
-		m_pMavStreamOut = dynamic_cast<MavlinkStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
-		NULL_F(m_pMavStreamOut);
+		jKv(j, "MavlinkStream", n);
+		m_pMavStream = dynamic_cast<MavlinkStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+		NULL_F(m_pMavStream);
 		NULL_F(m_pBpStreamIn);
 
 		return true;
@@ -55,8 +50,7 @@ namespace kai
 
 	bool _APmav_RTCM::check(void)
 	{
-		NULL_F(m_pMavStreamIn);
-		NULL_F(m_pMavStreamOut);
+		NULL_F(m_pMavStream);
 		NULL_F(m_pBpStreamIn);
 
 		return this->_ProtocolBase::check();
@@ -115,7 +109,7 @@ namespace kai
 			memcpy(D.data, &pM->m_pB[iB], nB);
 			iB += nB;
 
-			m_pMavStreamOut->gpsRTCMdata(D);
+			m_pMavStream->set<MavGpsRTCMdata>(D);
 		}
 
 		m_iSeq = (m_iSeq + 1) & 0x1F;

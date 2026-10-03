@@ -43,11 +43,9 @@ namespace kai
 		}
 
 	protected:
-		MavlinkStream *m_pMavStreamIn = nullptr;	// Messages queued for encoding and transmission to IO
-		uint64_t m_tLastMavStreamIn = 0;
-
+		MavlinkStream *m_pMavStream = nullptr;		// MavlinkStream is duplexed so we only need one for both in and out
+		uint64_t m_tLastMavStreamIn = 0;			// tStamp for getting encoded messages and send them to IO
 		_Thread *m_pTr = nullptr;					// Receive/decode worker; m_pT sends queued messages.
-		MavlinkStream *m_pMavStreamOut = nullptr;	// Decoded messages received from IO
 
 		BytePacketStream *m_pBpStreamIn = nullptr;	// StreamIn: byte packets received from IO
 		uint64_t m_tLastBpStreamIn = 0;

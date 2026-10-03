@@ -116,7 +116,7 @@ namespace kai
 
 	protected:
 		_APmav_base *m_pAP = nullptr;
-		MavlinkStream *m_pMavStreamIn = nullptr;
+		MavlinkStream *m_pMavStream = nullptr;
 
 		vector<AP_MISSION> m_vMissionUL;
 		int m_iMissionUL;

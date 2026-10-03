@@ -538,11 +538,6 @@ def adapters(records, files, constants, symbol):
         if parameter['path'] == ['vPCLframesIn']:
             parameter['dependency'] = True
             parameter['extraction'] = 'audited-adapter'
-    # Preserve the more specific runtime peer cast used by the routing consumer.
-    for dependency in records['_Mavlink']['dependencies']:
-        if dependency['path'] == ['vRoutings']:
-            dependency['targetClass'] = '_Mavlink'
-            dependency['extraction'] = 'audited-adapter'
     dep('_APmav_drive',['_SelectableOctGrid'],'_SelectableOctGrid','src/Autopilot/FC/ArduPilot/_APmav_drive.cpp:link')
     for dependency in records['_APmav_drive']['dependencies']:
         if dependency['path'] in (['_SelectableOctGrid'],['_OctreeGrid']):

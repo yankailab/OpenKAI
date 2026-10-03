@@ -103,8 +103,8 @@ namespace kai
 	void _APmav_depthVision::update(void)
 	{
 		NULL_(m_pAP);
-		NULL_(m_pAP->getMavlinkStreamOut());
-		MavlinkStream *pMavlink = m_pAP->getMavlinkStreamOut();
+		NULL_(m_pAP->getMavlinkStream());
+		MavlinkStream *pMavlink = m_pAP->getMavlinkStream();
 		NULL_(m_pDV);
 
 		Vector2f range = m_pDV->getDepthRange();
@@ -128,7 +128,7 @@ namespace kai
 			D.orientation = pR->m_orientation;
 			D.covariance = 255;
 
-			pMavlink->distanceSensor(D);
+			pMavlink->set<MavDistanceSensor>(D);
 			LOG_I("orient: " + i2str(pR->m_orientation) + " minD: " + f2str(pR->m_minD));
 		}
 	}

@@ -122,7 +122,7 @@ namespace kai
 	{
 		IF_(!check());
 
-		m_pMavStreamOut->clNavTakeoff(alt);
+		m_pMavStream->clNavTakeoff(alt);
 	}
 
 	void _APmav_copter::console(void *pConsole)

@@ -23,6 +23,8 @@ namespace kai
 		// for decode message received from IO
 		void decode(const mavlink_message_t &msg);
 
+		const mavlink_local_position_ned_t &get() const { return m_msg; }
+
 	protected:
 		mavlink_local_position_ned_t m_msg{};
 	};

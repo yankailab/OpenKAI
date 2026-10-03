@@ -78,14 +78,9 @@ namespace kai
 		IF_Le_F(!m_pBpStreamOut, "BytePacketStreamOut not found: " + n);
 
 		n.clear();
-		jKv(j, "MavlinkStreamIn", n);
-		m_pMavStreamIn = dynamic_cast<MavlinkStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
-		IF_Le_F(!m_pMavStreamIn, "MavlinkStreamIn not found: " + n);
-
-		n.clear();
-		jKv(j, "MavlinkStreamOut", n);
-		m_pMavStreamOut = dynamic_cast<MavlinkStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
-		IF_Le_F(!m_pMavStreamOut, "MavlinkStreamOut not found: " + n);
+		jKv(j, "MavlinkStream", n);
+		m_pMavStream = dynamic_cast<MavlinkStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+		IF_Le_F(!m_pMavStream, "MavlinkStream not found: " + n);
 
 		return true;
 	}
@@ -105,8 +100,7 @@ namespace kai
 	bool _Mavlink::check(void)
 	{
 		NULL_F(m_pTr);
-		IF_F(!m_pMavStreamIn);
-		IF_F(!m_pMavStreamOut);
+		IF_F(!m_pMavStream);
 		IF_F(!m_pBpStreamIn);
 		IF_F(!m_pBpStreamOut);
 
@@ -120,9 +114,9 @@ namespace kai
 		while (m_pT->bRun())
 		{
 			m_pT->autoFPS();
-			IF_CONT(!m_pMavStreamIn || !m_pBpStreamOut);
+			IF_CONT(!m_pMavStream || !m_pBpStreamOut);
 
-			m_tLastMavStreamIn = m_pMavStreamIn->getMsgQueue(vMsg, m_tLastMavStreamIn);
+			m_tLastMavStreamIn = m_pMavStream->getEncodedMsgs(vMsg, m_tLastMavStreamIn);
 
 			uint8_t pB[MAVLINK_MAX_PACKET_LEN];
 			for (mavlink_message_t msg : vMsg)
@@ -143,7 +137,7 @@ namespace kai
 		{
 			m_pTr->autoFPS();
 
-			IF_CONT(!m_pMavStreamOut);
+			IF_CONT(!m_pMavStream);
 
 			IF_CONT(!readMessage(&msg));
 			m_pTr->skipSleep();
@@ -158,7 +152,7 @@ namespace kai
 			IF_CONT(msg.sysid != m_devSystemID);
 			IF_CONT(msg.compid != m_devComponentID);
 
-			m_pMavStreamOut->decode(msg);
+			m_pMavStream->decode(msg);
 		}
 	}
 

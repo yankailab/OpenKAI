@@ -57,14 +57,9 @@ namespace kai
 		const json &j = *m_pJ;
 
 		string n = "";
-		jKv(j, "MavlinkStreamIn", n);
-		m_pMavStreamIn = dynamic_cast<MavlinkStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
-		NULL_F(m_pMavStreamIn);
-
-		n.clear();
-		jKv(j, "MavlinkStreamOut", n);
-		m_pMavStreamOut = dynamic_cast<MavlinkStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
-		NULL_F(m_pMavStreamOut);
+		jKv(j, "MavlinkStream", n);
+		m_pMavStream = dynamic_cast<MavlinkStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+		NULL_F(m_pMavStream);
 
 		const json *pJm = jK(j, "mavMsgInt");
 		IF__(!pJm || !pJm->is_object(), true);
@@ -80,7 +75,7 @@ namespace kai
 			float tInt = 1;
 			jKv(Ji, "tInt", tInt);
 
-			if (!m_pMavStreamIn->setMsgInterval(id, tInt * NSEC_SEC))
+			if (!m_pMavStream->setMsgInterval(id, tInt * NSEC_SEC))
 			{
 				LOG_E("Interval msg id = " + i2str(id) + " not found");
 			}
@@ -97,8 +92,7 @@ namespace kai
 
 	bool _APmav_base::check(void)
 	{
-		NULL_F(m_pMavStreamIn);
-		NULL_F(m_pMavStreamOut);
+		NULL_F(m_pMavStream);
 
 		return this->_AutopilotBase::check();
 	}
@@ -119,7 +113,7 @@ namespace kai
 	{
 		IF_(!check());
 
-		if (auto *pM = m_pMavStreamIn->getMsg<MavHeartbeat>(); pM && pM->bValid())
+		if (auto *pM = m_pMavStream->get<MavHeartbeat>(); pM && pM->bValid())
 		{
 			const auto &msg = pM->get();
 			m_customModeFC = msg.custom_mode;
@@ -128,7 +122,7 @@ namespace kai
 			m_armFC = (msg.base_mode & 0b10000000) ? apArm_arm : apArm_disarm;
 		}
 
-		if (auto *pM = m_pMavStreamIn->getMsg<MavAttitude>(); pM && pM->bValid())
+		if (auto *pM = m_pMavStream->get<MavAttitude>(); pM && pM->bValid())
 		{
 			const auto &msg = pM->get();
 			m_vAngle.x() = msg.roll;
@@ -136,7 +130,7 @@ namespace kai
 			m_vAngle.z() = msg.yaw;
 		}
 
-		if (auto *pM = m_pMavStreamIn->getMsg<MavGlobalPositionINT>(); pM && pM->bValid())
+		if (auto *pM = m_pMavStream->get<MavGlobalPositionINT>(); pM && pM->bValid())
 		{
 			const auto &msg = pM->get();
 			m_vPos.x() = ((double)(msg.lat)) * 1e-7;
@@ -147,7 +141,7 @@ namespace kai
 			//			m_vAngle.z() = ((float)(msg.hdg)) * 1e-2;
 		}
 
-		if (auto *pM = m_pMavStreamIn->getMsg<MavLocalPositionNED>(); pM && pM->bValid())
+		if (auto *pM = m_pMavStream->get<MavLocalPositionNED>(); pM && pM->bValid())
 		{
 			const auto &msg = pM->get();
 			m_vVelocity.x() = msg.vx;
@@ -159,7 +153,7 @@ namespace kai
 			// m_vLocalPos.z() = msg.z;
 		}
 
-		if (auto *pM = m_pMavStreamIn->getMsg<MavHomePosition>(); pM && pM->bValid())
+		if (auto *pM = m_pMavStream->get<MavHomePosition>(); pM && pM->bValid())
 		{
 			const auto &msg = pM->get();
 			m_vHomePos.x() = ((double)(msg.latitude)) * 1e-7;
@@ -168,20 +162,20 @@ namespace kai
 		}
 		else
 		{
-			//	m_pMavStreamOut->clGetHomePosition();
+			//	m_pMavStream->clGetHomePosition();
 		}
 
 
 
 		// Battery status
-		if (auto *pM = m_pMavStreamIn->getMsg<MavBatteryStatus>(); pM && pM->bValid())
+		if (auto *pM = m_pMavStream->get<MavBatteryStatus>(); pM && pM->bValid())
 		{
 			const auto &msg = pM->get();
 			m_battery = (float)(msg.battery_remaining) * 0.01;
 		}
 
 		// GPS raw
-		if (auto *pM = m_pMavStreamIn->getMsg<MavGpsRawINT>(); pM && pM->bValid())
+		if (auto *pM = m_pMavStream->get<MavGpsRawINT>(); pM && pM->bValid())
 		{
 			const auto &msg = pM->get();
 			m_gpsFixType = (int)msg.fix_type;
@@ -195,7 +189,7 @@ namespace kai
 
 		if (m_armFC != m_arm)
 		{
-			m_pMavStreamOut->clComponentArmDisarm(m_arm == apArm_arm);
+			m_pMavStream->clComponentArmDisarm(m_arm == apArm_arm);
 		}
 
 		if (m_customModeFC != m_customMode)
@@ -203,7 +197,7 @@ namespace kai
 			mavlink_set_mode_t D{};
 			D.base_mode = MAV_MODE_FLAG_CUSTOM_MODE_ENABLED;
 			D.custom_mode = m_customMode;
-			m_pMavStreamOut->setMode(D);
+			m_pMavStream->set<MavSetMode>(D);
 		}
 
 		uint64_t tNow = getTns();
@@ -215,12 +209,12 @@ namespace kai
 			heartbeat.type = m_myType;
 			heartbeat.autopilot = MAV_AUTOPILOT_INVALID;
 			heartbeat.system_status = MAV_STATE_ACTIVE;
-			m_pMavStreamOut->heartbeat(heartbeat);
+			m_pMavStream->set<MavHeartbeat>(heartbeat);
 		}
 
 		if (m_ieSendMsgInt.update(tNow))
 		{
-			m_pMavStreamIn->sendSetMsgInterval(m_pMavStreamOut);
+			m_pMavStream->sendSetMsgInterval();
 		}
 	}
 
@@ -248,8 +242,8 @@ namespace kai
 	{
 		IF_(!check());
 
-		m_pMavStreamOut->mountControl(m.m_control);
-		m_pMavStreamOut->mountConfigure(m.m_config);
+		m_pMavStream->set<MavMountControl>(m.m_control);
+		m_pMavStream->set<MavMountConfigure>(m.m_config);
 
 		mavlink_param_set_t D{};
 		D.param_type = MAV_PARAM_TYPE_INT8;
@@ -258,12 +252,12 @@ namespace kai
 		D.param_value = m.m_config.stab_pitch;
 		id = "MNT_STAB_TILT";
 		strcpy(D.param_id, id.c_str());
-		m_pMavStreamOut->paramSet(D);
+		m_pMavStream->set<MavParamSet>(D);
 
 		D.param_value = m.m_config.stab_roll;
 		id = "MNT_STAB_ROLL";
 		strcpy(D.param_id, id.c_str());
-		m_pMavStreamOut->paramSet(D);
+		m_pMavStream->set<MavParamSet>(D);
 	}
 
 	int _APmav_base::getGPSfixType(void)
@@ -276,26 +270,21 @@ namespace kai
 		return m_gpsHacc;
 	}
 
-	MavlinkStream *_APmav_base::getMavlinkStreamIn(void)
+	MavlinkStream *_APmav_base::getMavlinkStream(void)
 	{
-		return m_pMavStreamIn;
-	}
-
-	MavlinkStream *_APmav_base::getMavlinkStreamOut(void)
-	{
-		return m_pMavStreamOut;
+		return m_pMavStream;
 	}
 
 	void _APmav_base::console(void *pConsole)
 	{
 		NULL_(pConsole);
 		this->_AutopilotBase::console(pConsole);
-		NULL_(m_pMavStreamIn);
+		NULL_(m_pMavStream);
 
 		_Console *pC = (_Console *)pConsole;
-		const auto &position = m_pMavStreamIn->getMsg<MavLocalPositionNED>()->get();
-		const auto &heartbeat = m_pMavStreamIn->getMsg<MavHeartbeat>()->get();
-		const auto &imu = m_pMavStreamIn->getMsg<MavRawIMU>()->get();
+		const auto &position = m_pMavStream->get<MavLocalPositionNED>()->get();
+		const auto &heartbeat = m_pMavStream->get<MavHeartbeat>()->get();
+		const auto &imu = m_pMavStream->get<MavRawIMU>()->get();
 
 		pC->addMsg("-Local Pos-", 1);
 		pC->addMsg("\tx=\t" + f2str(position.x) +

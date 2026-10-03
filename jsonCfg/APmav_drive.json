@@ -90,8 +90,7 @@
 	},
 	"apMavlink": {
 		"class": "_Mavlink",
-		"MavlinkStreamIn": "apMavlink_tx",
-		"MavlinkStreamOut": "apMavlink_rx",
+		"MavlinkStream": "apMavlink_stream",
 		"bON": true,
 		"thread": {
 			"FPS": 10
@@ -112,8 +111,7 @@
 			"FPS": 10
 		},
 		"_StateControl": "state",
-		"MavlinkStreamIn": "apMavlink_rx",
-		"MavlinkStreamOut": "apMavlink_tx",
+		"MavlinkStream": "apMavlink_stream",
 		"apType": 1,
 		"ieSendHB": 1,
 		"ieSendMsgInt": 1,
@@ -331,12 +329,7 @@
 		"type": "dataObject",
 		"class": "RGBframe"
 	},
-	"apMavlink_tx": {
-		"type": "dataObject",
-		"class": "MavlinkStream",
-		"nMsgQueue": 1024
-	},
-	"apMavlink_rx": {
+	"apMavlink_stream": {
 		"type": "dataObject",
 		"class": "MavlinkStream",
 		"nMsgQueue": 1024

@@ -48,8 +48,7 @@ namespace kai
 		virtual int32_t getCustomMode(void);
 
 		// Mavlink
-		virtual MavlinkStream *getMavlinkStreamIn(void);
-		virtual MavlinkStream *getMavlinkStreamOut(void);
+		virtual MavlinkStream *getMavlinkStream(void);
 
 
 
@@ -77,8 +76,7 @@ namespace kai
 		}
 
 	protected:
-		MavlinkStream *m_pMavStreamIn = nullptr;
-		MavlinkStream *m_pMavStreamOut = nullptr;
+		MavlinkStream *m_pMavStream = nullptr;
 		int m_myType = MAV_TYPE_GCS;
 
 		uint8_t m_mySysID = 0;

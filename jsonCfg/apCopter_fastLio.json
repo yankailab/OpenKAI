@@ -51,8 +51,7 @@
 	},
 	"mavAP": {
 		"class": "_Mavlink",
-		"MavlinkStreamIn": "mavAP_tx",
-		"MavlinkStreamOut": "mavAP_rx",
+		"MavlinkStream": "mavAP_stream",
 		"bON": true,
 		"thread": {
 			"FPS": 100
@@ -64,11 +63,7 @@
 		"/BytePacketStreamOut": "udpAP_tx",
 		"devSystemID": 1,
 		"mySystemID": 200,
-		"iMavComm": 0,
-		"/noRouteCmd": [],
-		"vRoutings": [
-			"mavUDP"
-		]
+		"iMavComm": 0
 	},
 	"udpMav": {
 		"BytePacketStreamIn": "udpMav_tx",
@@ -85,19 +80,14 @@
 	},
 	"mavUDP": {
 		"class": "_Mavlink",
-		"MavlinkStreamIn": "mavUDP_tx",
-		"MavlinkStreamOut": "mavUDP_rx",
+		"MavlinkStream": "mavUDP_stream",
 		"bON": true,
 		"thread": {
 			"FPS": 30
 		},
 		"bLog": false,
 		"BytePacketStreamIn": "udpMav_rx",
-		"BytePacketStreamOut": "udpMav_tx",
-		"/noRouteCmd": [],
-		"vRoutings": [
-			"mavAP"
-		]
+		"BytePacketStreamOut": "udpMav_tx"
 	},
 	"apBase": {
 		"class": "_APmav_base",
@@ -105,8 +95,7 @@
 		"thread": {
 			"FPS": 10
 		},
-		"MavlinkStreamIn": "mavAP_rx",
-		"MavlinkStreamOut": "mavAP_tx",
+		"MavlinkStream": "mavAP_stream",
 		"ieSendHB": 1,
 		"ieSendMsgInt": 1,
 		"mavMsgInt": {
@@ -207,22 +196,12 @@
 		"thrJumpSpd": 20.0,
 		"apModeInError": 9
 	},
-	"mavAP_tx": {
+	"mavAP_stream": {
 		"type": "dataObject",
 		"class": "MavlinkStream",
 		"nMsgQueue": 1024
 	},
-	"mavAP_rx": {
-		"type": "dataObject",
-		"class": "MavlinkStream",
-		"nMsgQueue": 1024
-	},
-	"mavUDP_tx": {
-		"type": "dataObject",
-		"class": "MavlinkStream",
-		"nMsgQueue": 1024
-	},
-	"mavUDP_rx": {
+	"mavUDP_stream": {
 		"type": "dataObject",
 		"class": "MavlinkStream",
 		"nMsgQueue": 1024

@@ -3,7 +3,7 @@
   "title": "OpenKAI editor class catalog",
   "description": "Source-derived editor metadata; not a JSON Schema validator. See SCHEMA.md.",
   "generator": "tools/generate-schema.py",
-  "sourceDigest": "5d44eb6f83a132ec8b62a4c6a01b2a11f607d87f2ddf20a01428425527c465bc",
+  "sourceDigest": "b4c90fb10888beda3f8c1e0025b8b5a1cbb24336e276179c76aded61ed4697c9",
   "categories": [
     "Actuator",
     "Actuator/Articulated",
@@ -16,6 +16,7 @@
     "Compute/OpenCL",
     "Control",
     "DataObject",
+    "DataObject/Mavlink",
     "Detector",
     "File",
     "Filter",
@@ -5872,11 +5873,11 @@
       "parameters": [
         {
           "path": [
-            "_Mavlink"
+            "MavlinkStream"
           ],
           "type": "string",
           "declaredIn": "_APmav_base",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:49",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:60",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -5923,7 +5924,7 @@
           ],
           "type": "number",
           "declaredIn": "_APmav_base",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:22",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:28",
           "typeEvidence": "declaration",
           "cppVariable": "t",
           "cppType": "double"
@@ -5934,7 +5935,7 @@
           ],
           "type": "number",
           "declaredIn": "_APmav_base",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:25",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:31",
           "typeEvidence": "declaration",
           "cppVariable": "t",
           "cppType": "double"
@@ -5945,7 +5946,7 @@
           ],
           "type": "object",
           "declaredIn": "_APmav_base",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:53"
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:64"
         },
         {
           "path": [
@@ -5955,7 +5956,7 @@
           ],
           "type": "integer",
           "declaredIn": "_APmav_base",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:63",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:74",
           "typeEvidence": "declaration",
           "cppVariable": "id",
           "cppType": "int",
@@ -5969,11 +5970,47 @@
           ],
           "type": "number",
           "declaredIn": "_APmav_base",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:65",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:76",
           "typeEvidence": "declaration",
           "cppVariable": "tInt",
           "cppType": "float",
           "default": 1
+        },
+        {
+          "path": [
+            "myComID"
+          ],
+          "type": "integer",
+          "declaredIn": "_APmav_base",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:23",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_myComID",
+          "cppType": "uint8_t",
+          "default": 0
+        },
+        {
+          "path": [
+            "mySysID"
+          ],
+          "type": "integer",
+          "declaredIn": "_APmav_base",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:22",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_mySysID",
+          "cppType": "uint8_t",
+          "default": 0
+        },
+        {
+          "path": [
+            "myType"
+          ],
+          "type": "integer",
+          "declaredIn": "_APmav_base",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:21",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_myType",
+          "cppType": "int",
+          "defaultExpression": "MAV_TYPE_GCS"
         },
         {
           "path": [
@@ -5986,6 +6023,30 @@
           "cppVariable": "m_name",
           "cppType": "string",
           "default": ""
+        },
+        {
+          "path": [
+            "targetComID"
+          ],
+          "type": "integer",
+          "declaredIn": "_APmav_base",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:25",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_targetComID",
+          "cppType": "uint8_t",
+          "default": 0
+        },
+        {
+          "path": [
+            "targetSysID"
+          ],
+          "type": "integer",
+          "declaredIn": "_APmav_base",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:24",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_targetSysID",
+          "cppType": "uint8_t",
+          "default": 0
         },
         {
           "path": [
@@ -6053,13 +6114,13 @@
       "dependencies": [
         {
           "path": [
-            "_Mavlink"
+            "MavlinkStream"
           ],
-          "targetClass": "_Mavlink",
-          "targetKind": "module",
+          "targetClass": "MavlinkStream",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_APmav_base",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:50",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:61",
           "required": true,
           "containers": []
         }
@@ -6098,11 +6159,11 @@
       "parameters": [
         {
           "path": [
-            "_Mavlink"
+            "MavlinkStream"
           ],
           "type": "string",
           "declaredIn": "_APmav_base",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:49",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:60",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -6149,7 +6210,7 @@
           ],
           "type": "number",
           "declaredIn": "_APmav_base",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:22",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:28",
           "typeEvidence": "declaration",
           "cppVariable": "t",
           "cppType": "double"
@@ -6160,7 +6221,7 @@
           ],
           "type": "number",
           "declaredIn": "_APmav_base",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:25",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:31",
           "typeEvidence": "declaration",
           "cppVariable": "t",
           "cppType": "double"
@@ -6171,7 +6232,7 @@
           ],
           "type": "object",
           "declaredIn": "_APmav_base",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:53"
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:64"
         },
         {
           "path": [
@@ -6181,7 +6242,7 @@
           ],
           "type": "integer",
           "declaredIn": "_APmav_base",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:63",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:74",
           "typeEvidence": "declaration",
           "cppVariable": "id",
           "cppType": "int",
@@ -6195,11 +6256,47 @@
           ],
           "type": "number",
           "declaredIn": "_APmav_base",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:65",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:76",
           "typeEvidence": "declaration",
           "cppVariable": "tInt",
           "cppType": "float",
           "default": 1
+        },
+        {
+          "path": [
+            "myComID"
+          ],
+          "type": "integer",
+          "declaredIn": "_APmav_base",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:23",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_myComID",
+          "cppType": "uint8_t",
+          "default": 0
+        },
+        {
+          "path": [
+            "mySysID"
+          ],
+          "type": "integer",
+          "declaredIn": "_APmav_base",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:22",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_mySysID",
+          "cppType": "uint8_t",
+          "default": 0
+        },
+        {
+          "path": [
+            "myType"
+          ],
+          "type": "integer",
+          "declaredIn": "_APmav_base",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:21",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_myType",
+          "cppType": "int",
+          "defaultExpression": "MAV_TYPE_GCS"
         },
         {
           "path": [
@@ -6212,6 +6309,30 @@
           "cppVariable": "m_name",
           "cppType": "string",
           "default": ""
+        },
+        {
+          "path": [
+            "targetComID"
+          ],
+          "type": "integer",
+          "declaredIn": "_APmav_base",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:25",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_targetComID",
+          "cppType": "uint8_t",
+          "default": 0
+        },
+        {
+          "path": [
+            "targetSysID"
+          ],
+          "type": "integer",
+          "declaredIn": "_APmav_base",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:24",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_targetSysID",
+          "cppType": "uint8_t",
+          "default": 0
         },
         {
           "path": [
@@ -6279,13 +6400,13 @@
       "dependencies": [
         {
           "path": [
-            "_Mavlink"
+            "MavlinkStream"
           ],
-          "targetClass": "_Mavlink",
-          "targetKind": "module",
+          "targetClass": "MavlinkStream",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_APmav_base",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:50",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:61",
           "required": true,
           "containers": []
         }
@@ -7984,7 +8105,7 @@
           ],
           "type": "string",
           "declaredIn": "_APmav_mission",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_mission.cpp:41",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_mission.cpp:42",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -8043,7 +8164,7 @@
           ],
           "type": "integer",
           "declaredIn": "_APmav_mission",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_mission.cpp:19",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_mission.cpp:20",
           "typeEvidence": "declaration",
           "cppVariable": "m_tOutSec",
           "cppType": "int",
@@ -8087,7 +8208,7 @@
           "targetKind": "module",
           "multiple": false,
           "declaredIn": "_APmav_mission",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_mission.cpp:42",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_mission.cpp:43",
           "required": true,
           "containers": []
         }
@@ -8591,11 +8712,11 @@
       "parameters": [
         {
           "path": [
-            "_Mavlink"
+            "MavlinkStream"
           ],
           "type": "string",
           "declaredIn": "_APmav_base",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:49",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:60",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -8642,7 +8763,7 @@
           ],
           "type": "number",
           "declaredIn": "_APmav_base",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:22",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:28",
           "typeEvidence": "declaration",
           "cppVariable": "t",
           "cppType": "double"
@@ -8653,7 +8774,7 @@
           ],
           "type": "number",
           "declaredIn": "_APmav_base",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:25",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:31",
           "typeEvidence": "declaration",
           "cppVariable": "t",
           "cppType": "double"
@@ -8664,7 +8785,7 @@
           ],
           "type": "object",
           "declaredIn": "_APmav_base",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:53"
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:64"
         },
         {
           "path": [
@@ -8674,7 +8795,7 @@
           ],
           "type": "integer",
           "declaredIn": "_APmav_base",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:63",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:74",
           "typeEvidence": "declaration",
           "cppVariable": "id",
           "cppType": "int",
@@ -8688,11 +8809,47 @@
           ],
           "type": "number",
           "declaredIn": "_APmav_base",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:65",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:76",
           "typeEvidence": "declaration",
           "cppVariable": "tInt",
           "cppType": "float",
           "default": 1
+        },
+        {
+          "path": [
+            "myComID"
+          ],
+          "type": "integer",
+          "declaredIn": "_APmav_base",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:23",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_myComID",
+          "cppType": "uint8_t",
+          "default": 0
+        },
+        {
+          "path": [
+            "mySysID"
+          ],
+          "type": "integer",
+          "declaredIn": "_APmav_base",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:22",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_mySysID",
+          "cppType": "uint8_t",
+          "default": 0
+        },
+        {
+          "path": [
+            "myType"
+          ],
+          "type": "integer",
+          "declaredIn": "_APmav_base",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:21",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_myType",
+          "cppType": "int",
+          "defaultExpression": "MAV_TYPE_GCS"
         },
         {
           "path": [
@@ -8705,6 +8862,30 @@
           "cppVariable": "m_name",
           "cppType": "string",
           "default": ""
+        },
+        {
+          "path": [
+            "targetComID"
+          ],
+          "type": "integer",
+          "declaredIn": "_APmav_base",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:25",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_targetComID",
+          "cppType": "uint8_t",
+          "default": 0
+        },
+        {
+          "path": [
+            "targetSysID"
+          ],
+          "type": "integer",
+          "declaredIn": "_APmav_base",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:24",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_targetSysID",
+          "cppType": "uint8_t",
+          "default": 0
         },
         {
           "path": [
@@ -8772,13 +8953,13 @@
       "dependencies": [
         {
           "path": [
-            "_Mavlink"
+            "MavlinkStream"
           ],
-          "targetClass": "_Mavlink",
-          "targetKind": "module",
+          "targetClass": "MavlinkStream",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_APmav_base",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:50",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_base.cpp:61",
           "required": true,
           "containers": []
         }
@@ -8835,6 +9016,18 @@
           "source": "src/Protocol/_ProtocolBase.cpp:48",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "MavlinkStream"
+          ],
+          "type": "string",
+          "declaredIn": "_APmav_RTCM",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_RTCM.cpp:35",
+          "typeEvidence": "declaration",
+          "cppVariable": "n",
+          "cppType": "string",
           "dependency": true
         },
         {
@@ -8898,18 +9091,6 @@
           "cppVariable": "tOutSec",
           "cppType": "double",
           "default": 10.0
-        },
-        {
-          "path": [
-            "_Mavlink"
-          ],
-          "type": "string",
-          "declaredIn": "_APmav_RTCM",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_RTCM.cpp:35",
-          "typeEvidence": "declaration",
-          "cppVariable": "n",
-          "cppType": "string",
-          "dependency": true
         },
         {
           "path": [
@@ -9040,10 +9221,10 @@
         },
         {
           "path": [
-            "_Mavlink"
+            "MavlinkStream"
           ],
-          "targetClass": "_Mavlink",
-          "targetKind": "module",
+          "targetClass": "MavlinkStream",
+          "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_APmav_RTCM",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_RTCM.cpp:36",
@@ -10677,7 +10858,7 @@
     {
       "name": "MavlinkStream",
       "category": "DataObject",
-      "source": "src/DataObject/MavlinkStream.h:53",
+      "source": "src/DataObject/MavlinkStream.h:69",
       "baseClasses": [
         "DataObjBase"
       ],
@@ -10719,15 +10900,15 @@
         },
         {
           "path": [
-            "nMsg"
+            "nMsgQueue"
           ],
           "type": "integer",
           "declaredIn": "MavlinkStream",
-          "source": "src/DataObject/MavlinkStream.cpp:26",
+          "source": "src/DataObject/MavlinkStream.cpp:77",
           "typeEvidence": "declaration",
-          "cppVariable": "m_nMsg",
-          "cppType": "int",
-          "default": 0
+          "cppVariable": "m_nMsgQueue",
+          "cppType": "size_t",
+          "default": 1024
         },
         {
           "path": [
@@ -11264,6 +11445,754 @@
         []
       ],
       "configurable": true
+    },
+    {
+      "name": "MavAttitude",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavAttitude.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavAttitudeQuaternion",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavAttitudeQuaternion.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavBatteryStatus",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavBatteryStatus.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavCommandAck",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavCommandAck.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavCommandInt",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavCommandInt.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavCommandLong",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavCommandLong.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavDistanceSensor",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavDistanceSensor.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavGlobalPositionINT",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavGlobalPositionINT.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavGlobalVisionPositionEstimate",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavGlobalVisionPositionEstimate.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavGpsInput",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavGpsInput.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavGpsRawINT",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavGpsRawINT.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavGpsRTCMdata",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavGpsRTCMdata.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavHeartbeat",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavHeartbeat.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavHighresIMU",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavHighresIMU.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavHomePosition",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavHomePosition.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavLandingTarget",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavLandingTarget.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavLocalPositionNED",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavLocalPositionNED.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavMissionAck",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavMissionAck.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavMissionClearAll",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavMissionClearAll.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavMissionCount",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavMissionCount.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavMissionCurrent",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavMissionCurrent.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavMissionItemInt",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavMissionItemInt.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavMissionItemReached",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavMissionItemReached.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavMissionRequestInt",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavMissionRequestInt.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavMissionRequestList",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavMissionRequestList.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavMissionSetCurrent",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavMissionSetCurrent.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavMountConfigure",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavMountConfigure.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavMountControl",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavMountControl.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavMountStatus",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavMountStatus.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavMsgBase",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavMsgBase.h:41",
+      "baseClasses": [],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavParamRequestRead",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavParamRequestRead.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavParamSet",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavParamSet.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavParamValue",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavParamValue.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavPositionTargetGlobalINT",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavPositionTargetGlobalINT.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavPositionTargetLocalNED",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavPositionTargetLocalNED.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavRadioStatus",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavRadioStatus.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavRawIMU",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavRawIMU.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavRcChannels",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavRcChannels.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavRcChannelsOverride",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavRcChannelsOverride.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavRequestDataStream",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavRequestDataStream.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavScaledIMU",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavScaledIMU.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavServoOutputRaw",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavServoOutputRaw.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavSetAttitudeTarget",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavSetAttitudeTarget.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavSetMode",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavSetMode.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavSetPositionTargetGlobalINT",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavSetPositionTargetGlobalINT.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavSetPositionTargetLocalNED",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavSetPositionTargetLocalNED.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavStatusText",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavStatusText.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavSysStatus",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavSysStatus.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavVisionPositionEstimate",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavVisionPositionEstimate.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavVisionSpeedEstimate",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavVisionSpeedEstimate.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
     },
     {
       "name": "_ArUco",
@@ -13267,7 +14196,7 @@
           ],
           "type": "string",
           "declaredIn": "_IObase",
-          "source": "src/IO/_IObase.cpp:54",
+          "source": "src/IO/_IObase.cpp:56",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
           "dependency": true
@@ -13278,7 +14207,7 @@
           ],
           "type": "string",
           "declaredIn": "_IObase",
-          "source": "src/IO/_IObase.cpp:60",
+          "source": "src/IO/_IObase.cpp:62",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
           "dependency": true
@@ -13396,7 +14325,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_IObase",
-          "source": "src/IO/_IObase.cpp:55",
+          "source": "src/IO/_IObase.cpp:57",
           "containers": []
         },
         {
@@ -13407,7 +14336,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_IObase",
-          "source": "src/IO/_IObase.cpp:61",
+          "source": "src/IO/_IObase.cpp:63",
           "containers": []
         }
       ],
@@ -13444,7 +14373,7 @@
           ],
           "type": "string",
           "declaredIn": "_IObase",
-          "source": "src/IO/_IObase.cpp:54",
+          "source": "src/IO/_IObase.cpp:56",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
           "dependency": true
@@ -13455,7 +14384,7 @@
           ],
           "type": "string",
           "declaredIn": "_IObase",
-          "source": "src/IO/_IObase.cpp:60",
+          "source": "src/IO/_IObase.cpp:62",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
           "dependency": true
@@ -13645,7 +14574,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_IObase",
-          "source": "src/IO/_IObase.cpp:55",
+          "source": "src/IO/_IObase.cpp:57",
           "containers": []
         },
         {
@@ -13656,7 +14585,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_IObase",
-          "source": "src/IO/_IObase.cpp:61",
+          "source": "src/IO/_IObase.cpp:63",
           "containers": []
         }
       ],
@@ -13698,7 +14627,7 @@
           ],
           "type": "string",
           "declaredIn": "_IObase",
-          "source": "src/IO/_IObase.cpp:54",
+          "source": "src/IO/_IObase.cpp:56",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
           "dependency": true
@@ -13709,7 +14638,7 @@
           ],
           "type": "string",
           "declaredIn": "_IObase",
-          "source": "src/IO/_IObase.cpp:60",
+          "source": "src/IO/_IObase.cpp:62",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
           "dependency": true
@@ -13851,7 +14780,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_IObase",
-          "source": "src/IO/_IObase.cpp:55",
+          "source": "src/IO/_IObase.cpp:57",
           "containers": []
         },
         {
@@ -13862,7 +14791,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_IObase",
-          "source": "src/IO/_IObase.cpp:61",
+          "source": "src/IO/_IObase.cpp:63",
           "containers": []
         }
       ],
@@ -14043,7 +14972,7 @@
           ],
           "type": "string",
           "declaredIn": "_IObase",
-          "source": "src/IO/_IObase.cpp:54",
+          "source": "src/IO/_IObase.cpp:56",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
           "dependency": true
@@ -14054,7 +14983,7 @@
           ],
           "type": "string",
           "declaredIn": "_IObase",
-          "source": "src/IO/_IObase.cpp:60",
+          "source": "src/IO/_IObase.cpp:62",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
           "dependency": true
@@ -14232,7 +15161,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_IObase",
-          "source": "src/IO/_IObase.cpp:55",
+          "source": "src/IO/_IObase.cpp:57",
           "containers": []
         },
         {
@@ -14243,7 +15172,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_IObase",
-          "source": "src/IO/_IObase.cpp:61",
+          "source": "src/IO/_IObase.cpp:63",
           "containers": []
         }
       ],
@@ -14285,7 +15214,7 @@
           ],
           "type": "string",
           "declaredIn": "_IObase",
-          "source": "src/IO/_IObase.cpp:54",
+          "source": "src/IO/_IObase.cpp:56",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
           "dependency": true
@@ -14296,7 +15225,7 @@
           ],
           "type": "string",
           "declaredIn": "_IObase",
-          "source": "src/IO/_IObase.cpp:60",
+          "source": "src/IO/_IObase.cpp:62",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
           "dependency": true
@@ -14414,7 +15343,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_IObase",
-          "source": "src/IO/_IObase.cpp:55",
+          "source": "src/IO/_IObase.cpp:57",
           "containers": []
         },
         {
@@ -14425,7 +15354,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_IObase",
-          "source": "src/IO/_IObase.cpp:61",
+          "source": "src/IO/_IObase.cpp:63",
           "containers": []
         }
       ],
@@ -14468,7 +15397,7 @@
           ],
           "type": "string",
           "declaredIn": "_IObase",
-          "source": "src/IO/_IObase.cpp:54",
+          "source": "src/IO/_IObase.cpp:56",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
           "dependency": true
@@ -14479,7 +15408,7 @@
           ],
           "type": "string",
           "declaredIn": "_IObase",
-          "source": "src/IO/_IObase.cpp:60",
+          "source": "src/IO/_IObase.cpp:62",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
           "dependency": true
@@ -14657,7 +15586,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_IObase",
-          "source": "src/IO/_IObase.cpp:55",
+          "source": "src/IO/_IObase.cpp:57",
           "containers": []
         },
         {
@@ -14668,7 +15597,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_IObase",
-          "source": "src/IO/_IObase.cpp:61",
+          "source": "src/IO/_IObase.cpp:63",
           "containers": []
         }
       ],
@@ -16022,7 +16951,7 @@
     {
       "name": "_Mavlink",
       "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:867",
+      "source": "src/Protocol/_Mavlink.h:14",
       "baseClasses": [
         "_ModuleBase"
       ],
@@ -16033,7 +16962,7 @@
           ],
           "type": "string",
           "declaredIn": "_Mavlink",
-          "source": "src/Protocol/_Mavlink.cpp:92",
+          "source": "src/Protocol/_Mavlink.cpp:71",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
           "dependency": true
@@ -16044,7 +16973,18 @@
           ],
           "type": "string",
           "declaredIn": "_Mavlink",
-          "source": "src/Protocol/_Mavlink.cpp:97",
+          "source": "src/Protocol/_Mavlink.cpp:76",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "MavlinkStream"
+          ],
+          "type": "string",
+          "declaredIn": "_Mavlink",
+          "source": "src/Protocol/_Mavlink.cpp:81",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
           "dependency": true
@@ -16090,7 +17030,7 @@
           ],
           "type": "integer",
           "declaredIn": "_Mavlink",
-          "source": "src/Protocol/_Mavlink.cpp:59",
+          "source": "src/Protocol/_Mavlink.cpp:35",
           "typeEvidence": "declaration",
           "cppVariable": "m_devComponentID",
           "cppType": "int",
@@ -16102,7 +17042,7 @@
           ],
           "type": "integer",
           "declaredIn": "_Mavlink",
-          "source": "src/Protocol/_Mavlink.cpp:58",
+          "source": "src/Protocol/_Mavlink.cpp:34",
           "typeEvidence": "declaration",
           "cppVariable": "m_devSystemID",
           "cppType": "int",
@@ -16114,7 +17054,7 @@
           ],
           "type": "integer",
           "declaredIn": "_Mavlink",
-          "source": "src/Protocol/_Mavlink.cpp:60",
+          "source": "src/Protocol/_Mavlink.cpp:36",
           "typeEvidence": "declaration",
           "cppVariable": "m_devType",
           "cppType": "int",
@@ -16126,7 +17066,7 @@
           ],
           "type": "integer",
           "declaredIn": "_Mavlink",
-          "source": "src/Protocol/_Mavlink.cpp:62",
+          "source": "src/Protocol/_Mavlink.cpp:38",
           "typeEvidence": "declaration",
           "cppVariable": "m_iMavComm",
           "cppType": "uint8_t",
@@ -16138,7 +17078,7 @@
           ],
           "type": "integer",
           "declaredIn": "_Mavlink",
-          "source": "src/Protocol/_Mavlink.cpp:55",
+          "source": "src/Protocol/_Mavlink.cpp:31",
           "typeEvidence": "declaration",
           "cppVariable": "m_myComponentID",
           "cppType": "int",
@@ -16150,7 +17090,7 @@
           ],
           "type": "integer",
           "declaredIn": "_Mavlink",
-          "source": "src/Protocol/_Mavlink.cpp:54",
+          "source": "src/Protocol/_Mavlink.cpp:30",
           "typeEvidence": "declaration",
           "cppVariable": "m_mySystemID",
           "cppType": "int",
@@ -16162,7 +17102,7 @@
           ],
           "type": "integer",
           "declaredIn": "_Mavlink",
-          "source": "src/Protocol/_Mavlink.cpp:56",
+          "source": "src/Protocol/_Mavlink.cpp:32",
           "typeEvidence": "declaration",
           "cppVariable": "m_myType",
           "cppType": "int",
@@ -16179,17 +17119,6 @@
           "cppVariable": "m_name",
           "cppType": "string",
           "default": ""
-        },
-        {
-          "path": [
-            "noRouteCmd"
-          ],
-          "type": "array",
-          "declaredIn": "_Mavlink",
-          "source": "src/Protocol/_Mavlink.cpp:121",
-          "typeEvidence": "declaration",
-          "cppVariable": "vNoRouteCmd",
-          "cppType": "vector<int>"
         },
         {
           "path": [
@@ -16221,15 +17150,31 @@
         },
         {
           "path": [
-            "vRoutings"
+            "threadR",
+            "FPS"
           ],
-          "type": "array",
-          "declaredIn": "_Mavlink",
-          "source": "src/Protocol/_Mavlink.cpp:103",
+          "type": "number",
+          "declaredIn": "_Thread",
+          "source": "src/Base/_Thread.cpp:60",
           "typeEvidence": "declaration",
-          "cppVariable": "vRoutings",
-          "cppType": "vector<string>",
-          "dependency": true
+          "cppVariable": "FPS",
+          "cppType": "float",
+          "default": 30,
+          "embeddedClass": "_Thread"
+        },
+        {
+          "path": [
+            "threadR",
+            "bLog"
+          ],
+          "type": "boolean",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:58",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_bLog",
+          "cppType": "bool",
+          "default": false,
+          "embeddedClass": "_Thread"
         }
       ],
       "dependencies": [
@@ -16241,7 +17186,8 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_Mavlink",
-          "source": "src/Protocol/_Mavlink.cpp:93",
+          "source": "src/Protocol/_Mavlink.cpp:72",
+          "required": true,
           "containers": []
         },
         {
@@ -16252,19 +17198,20 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_Mavlink",
-          "source": "src/Protocol/_Mavlink.cpp:98",
+          "source": "src/Protocol/_Mavlink.cpp:77",
+          "required": true,
           "containers": []
         },
         {
           "path": [
-            "vRoutings"
+            "MavlinkStream"
           ],
-          "targetClass": "_Mavlink",
-          "targetKind": "module",
-          "multiple": true,
+          "targetClass": "MavlinkStream",
+          "targetKind": "dataObject",
+          "multiple": false,
           "declaredIn": "_Mavlink",
-          "source": "src/Protocol/_Mavlink.cpp:109",
-          "extraction": "audited-adapter",
+          "source": "src/Protocol/_Mavlink.cpp:82",
+          "required": true,
           "containers": []
         }
       ],
@@ -16272,6 +17219,12 @@
         {
           "path": [
             "thread"
+          ],
+          "type": "object"
+        },
+        {
+          "path": [
+            "threadR"
           ],
           "type": "object"
         }
@@ -17871,514 +18824,6 @@
         ]
       ],
       "configurable": true
-    },
-    {
-      "name": "MavAttitude",
-      "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:122",
-      "baseClasses": [
-        "MavMsgBase"
-      ],
-      "parameters": [],
-      "dependencies": [],
-      "containers": [],
-      "diagnostics": [],
-      "creatable": false,
-      "buildConditions": [],
-      "configurable": false
-    },
-    {
-      "name": "MavAttitudeQuaternion",
-      "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:146",
-      "baseClasses": [
-        "MavMsgBase"
-      ],
-      "parameters": [],
-      "dependencies": [],
-      "containers": [],
-      "diagnostics": [],
-      "creatable": false,
-      "buildConditions": [],
-      "configurable": false
-    },
-    {
-      "name": "MavBatteryStatus",
-      "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:175",
-      "baseClasses": [
-        "MavMsgBase"
-      ],
-      "parameters": [],
-      "dependencies": [],
-      "containers": [],
-      "diagnostics": [],
-      "creatable": false,
-      "buildConditions": [],
-      "configurable": false
-    },
-    {
-      "name": "MavCommandAck",
-      "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:192",
-      "baseClasses": [
-        "MavMsgBase"
-      ],
-      "parameters": [],
-      "dependencies": [],
-      "containers": [],
-      "diagnostics": [],
-      "creatable": false,
-      "buildConditions": [],
-      "configurable": false
-    },
-    {
-      "name": "MavGlobalPositionINT",
-      "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:209",
-      "baseClasses": [
-        "MavMsgBase"
-      ],
-      "parameters": [],
-      "dependencies": [],
-      "containers": [],
-      "diagnostics": [],
-      "creatable": false,
-      "buildConditions": [],
-      "configurable": false
-    },
-    {
-      "name": "MavGpsRawINT",
-      "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:232",
-      "baseClasses": [
-        "MavMsgBase"
-      ],
-      "parameters": [],
-      "dependencies": [],
-      "containers": [],
-      "diagnostics": [],
-      "creatable": false,
-      "buildConditions": [],
-      "configurable": false
-    },
-    {
-      "name": "MavHeartbeat",
-      "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:256",
-      "baseClasses": [
-        "MavMsgBase"
-      ],
-      "parameters": [],
-      "dependencies": [],
-      "containers": [],
-      "diagnostics": [],
-      "creatable": false,
-      "buildConditions": [],
-      "configurable": false
-    },
-    {
-      "name": "MavHighresIMU",
-      "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:276",
-      "baseClasses": [
-        "MavMsgBase"
-      ],
-      "parameters": [],
-      "dependencies": [],
-      "containers": [],
-      "diagnostics": [],
-      "creatable": false,
-      "buildConditions": [],
-      "configurable": false
-    },
-    {
-      "name": "MavHomePosition",
-      "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:293",
-      "baseClasses": [
-        "MavMsgBase"
-      ],
-      "parameters": [],
-      "dependencies": [],
-      "containers": [],
-      "diagnostics": [],
-      "creatable": false,
-      "buildConditions": [],
-      "configurable": false
-    },
-    {
-      "name": "MavLocalPositionNED",
-      "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:310",
-      "baseClasses": [
-        "MavMsgBase"
-      ],
-      "parameters": [],
-      "dependencies": [],
-      "containers": [],
-      "diagnostics": [],
-      "creatable": false,
-      "buildConditions": [],
-      "configurable": false
-    },
-    {
-      "name": "MavMissionAck",
-      "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:429",
-      "baseClasses": [
-        "MavMsgBase"
-      ],
-      "parameters": [],
-      "dependencies": [],
-      "containers": [],
-      "diagnostics": [],
-      "creatable": false,
-      "buildConditions": [],
-      "configurable": false
-    },
-    {
-      "name": "MavMissionClearAll",
-      "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:463",
-      "baseClasses": [
-        "MavMsgBase"
-      ],
-      "parameters": [],
-      "dependencies": [],
-      "containers": [],
-      "diagnostics": [],
-      "creatable": false,
-      "buildConditions": [],
-      "configurable": false
-    },
-    {
-      "name": "MavMissionCount",
-      "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:334",
-      "baseClasses": [
-        "MavMsgBase"
-      ],
-      "parameters": [],
-      "dependencies": [],
-      "containers": [],
-      "diagnostics": [],
-      "creatable": false,
-      "buildConditions": [],
-      "configurable": false
-    },
-    {
-      "name": "MavMissionCurrent",
-      "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:354",
-      "baseClasses": [
-        "MavMsgBase"
-      ],
-      "parameters": [],
-      "dependencies": [],
-      "containers": [],
-      "diagnostics": [],
-      "creatable": false,
-      "buildConditions": [],
-      "configurable": false
-    },
-    {
-      "name": "MavMissionItemInt",
-      "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:412",
-      "baseClasses": [
-        "MavMsgBase"
-      ],
-      "parameters": [],
-      "dependencies": [],
-      "containers": [],
-      "diagnostics": [],
-      "creatable": false,
-      "buildConditions": [],
-      "configurable": false
-    },
-    {
-      "name": "MavMissionItemReached",
-      "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:480",
-      "baseClasses": [
-        "MavMsgBase"
-      ],
-      "parameters": [],
-      "dependencies": [],
-      "containers": [],
-      "diagnostics": [],
-      "creatable": false,
-      "buildConditions": [],
-      "configurable": false
-    },
-    {
-      "name": "MavMissionRequestInt",
-      "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:393",
-      "baseClasses": [
-        "MavMsgBase"
-      ],
-      "parameters": [],
-      "dependencies": [],
-      "containers": [],
-      "diagnostics": [],
-      "creatable": false,
-      "buildConditions": [],
-      "configurable": false
-    },
-    {
-      "name": "MavMissionRequestList",
-      "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:374",
-      "baseClasses": [
-        "MavMsgBase"
-      ],
-      "parameters": [],
-      "dependencies": [],
-      "containers": [],
-      "diagnostics": [],
-      "creatable": false,
-      "buildConditions": [],
-      "configurable": false
-    },
-    {
-      "name": "MavMissionSetCurrent",
-      "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:446",
-      "baseClasses": [
-        "MavMsgBase"
-      ],
-      "parameters": [],
-      "dependencies": [],
-      "containers": [],
-      "diagnostics": [],
-      "creatable": false,
-      "buildConditions": [],
-      "configurable": false
-    },
-    {
-      "name": "MavMountStatus",
-      "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:497",
-      "baseClasses": [
-        "MavMsgBase"
-      ],
-      "parameters": [],
-      "dependencies": [],
-      "containers": [],
-      "diagnostics": [],
-      "creatable": false,
-      "buildConditions": [],
-      "configurable": false
-    },
-    {
-      "name": "MavMsgBase",
-      "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:37",
-      "baseClasses": [],
-      "parameters": [],
-      "dependencies": [],
-      "containers": [],
-      "diagnostics": [],
-      "creatable": false,
-      "buildConditions": [],
-      "configurable": false
-    },
-    {
-      "name": "MavParamRequestRead",
-      "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:514",
-      "baseClasses": [
-        "MavMsgBase"
-      ],
-      "parameters": [],
-      "dependencies": [],
-      "containers": [],
-      "diagnostics": [],
-      "creatable": false,
-      "buildConditions": [],
-      "configurable": false
-    },
-    {
-      "name": "MavParamSet",
-      "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:531",
-      "baseClasses": [
-        "MavMsgBase"
-      ],
-      "parameters": [],
-      "dependencies": [],
-      "containers": [],
-      "diagnostics": [],
-      "creatable": false,
-      "buildConditions": [],
-      "configurable": false
-    },
-    {
-      "name": "MavParamValue",
-      "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:548",
-      "baseClasses": [
-        "MavMsgBase"
-      ],
-      "parameters": [],
-      "dependencies": [],
-      "containers": [],
-      "diagnostics": [],
-      "creatable": false,
-      "buildConditions": [],
-      "configurable": false
-    },
-    {
-      "name": "MavPositionTargetGlobalINT",
-      "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:582",
-      "baseClasses": [
-        "MavMsgBase"
-      ],
-      "parameters": [],
-      "dependencies": [],
-      "containers": [],
-      "diagnostics": [],
-      "creatable": false,
-      "buildConditions": [],
-      "configurable": false
-    },
-    {
-      "name": "MavPositionTargetLocalNED",
-      "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:565",
-      "baseClasses": [
-        "MavMsgBase"
-      ],
-      "parameters": [],
-      "dependencies": [],
-      "containers": [],
-      "diagnostics": [],
-      "creatable": false,
-      "buildConditions": [],
-      "configurable": false
-    },
-    {
-      "name": "MavRadioStatus",
-      "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:599",
-      "baseClasses": [
-        "MavMsgBase"
-      ],
-      "parameters": [],
-      "dependencies": [],
-      "containers": [],
-      "diagnostics": [],
-      "creatable": false,
-      "buildConditions": [],
-      "configurable": false
-    },
-    {
-      "name": "MavRawIMU",
-      "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:616",
-      "baseClasses": [
-        "MavMsgBase"
-      ],
-      "parameters": [],
-      "dependencies": [],
-      "containers": [],
-      "diagnostics": [],
-      "creatable": false,
-      "buildConditions": [],
-      "configurable": false
-    },
-    {
-      "name": "MavRcChannels",
-      "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:633",
-      "baseClasses": [
-        "MavMsgBase"
-      ],
-      "parameters": [],
-      "dependencies": [],
-      "containers": [],
-      "diagnostics": [],
-      "creatable": false,
-      "buildConditions": [],
-      "configurable": false
-    },
-    {
-      "name": "MavRcChannelsOverride",
-      "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:686",
-      "baseClasses": [
-        "MavMsgBase"
-      ],
-      "parameters": [],
-      "dependencies": [],
-      "containers": [],
-      "diagnostics": [],
-      "creatable": false,
-      "buildConditions": [],
-      "configurable": false
-    },
-    {
-      "name": "MavScaledIMU",
-      "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:814",
-      "baseClasses": [
-        "MavMsgBase"
-      ],
-      "parameters": [],
-      "dependencies": [],
-      "containers": [],
-      "diagnostics": [],
-      "creatable": false,
-      "buildConditions": [],
-      "configurable": false
-    },
-    {
-      "name": "MavServoOutputRaw",
-      "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:703",
-      "baseClasses": [
-        "MavMsgBase"
-      ],
-      "parameters": [],
-      "dependencies": [],
-      "containers": [],
-      "diagnostics": [],
-      "creatable": false,
-      "buildConditions": [],
-      "configurable": false
-    },
-    {
-      "name": "MavStatusText",
-      "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:780",
-      "baseClasses": [
-        "MavMsgBase"
-      ],
-      "parameters": [],
-      "dependencies": [],
-      "containers": [],
-      "diagnostics": [],
-      "creatable": false,
-      "buildConditions": [],
-      "configurable": false
-    },
-    {
-      "name": "MavSysStatus",
-      "category": "Protocol",
-      "source": "src/Protocol/_Mavlink.h:797",
-      "baseClasses": [
-        "MavMsgBase"
-      ],
-      "parameters": [],
-      "dependencies": [],
-      "containers": [],
-      "diagnostics": [],
-      "creatable": false,
-      "buildConditions": [],
-      "configurable": false
     },
     {
       "name": "_ROS_fastLio",
@@ -39346,9 +39791,9 @@
     ]
   },
   "audit": {
-    "sourceFiles": 340,
-    "classCount": 198,
-    "classDeclarations": 198,
+    "sourceFiles": 440,
+    "classCount": 214,
+    "classDeclarations": 214,
     "creatableClassCount": 124,
     "factoryClassesWithoutDeclaration": [
       "_TestJSON",
@@ -39437,6 +39882,106 @@
       "src/DataObject/IMUstream.h",
       "src/DataObject/LineFrame.cpp",
       "src/DataObject/LineFrame.h",
+      "src/DataObject/Mavlink/MavAttitude.cpp",
+      "src/DataObject/Mavlink/MavAttitude.h",
+      "src/DataObject/Mavlink/MavAttitudeQuaternion.cpp",
+      "src/DataObject/Mavlink/MavAttitudeQuaternion.h",
+      "src/DataObject/Mavlink/MavBatteryStatus.cpp",
+      "src/DataObject/Mavlink/MavBatteryStatus.h",
+      "src/DataObject/Mavlink/MavCommandAck.cpp",
+      "src/DataObject/Mavlink/MavCommandAck.h",
+      "src/DataObject/Mavlink/MavCommandInt.cpp",
+      "src/DataObject/Mavlink/MavCommandInt.h",
+      "src/DataObject/Mavlink/MavCommandLong.cpp",
+      "src/DataObject/Mavlink/MavCommandLong.h",
+      "src/DataObject/Mavlink/MavDistanceSensor.cpp",
+      "src/DataObject/Mavlink/MavDistanceSensor.h",
+      "src/DataObject/Mavlink/MavGlobalPositionINT.cpp",
+      "src/DataObject/Mavlink/MavGlobalPositionINT.h",
+      "src/DataObject/Mavlink/MavGlobalVisionPositionEstimate.cpp",
+      "src/DataObject/Mavlink/MavGlobalVisionPositionEstimate.h",
+      "src/DataObject/Mavlink/MavGpsInput.cpp",
+      "src/DataObject/Mavlink/MavGpsInput.h",
+      "src/DataObject/Mavlink/MavGpsRTCMdata.cpp",
+      "src/DataObject/Mavlink/MavGpsRTCMdata.h",
+      "src/DataObject/Mavlink/MavGpsRawINT.cpp",
+      "src/DataObject/Mavlink/MavGpsRawINT.h",
+      "src/DataObject/Mavlink/MavHeartbeat.cpp",
+      "src/DataObject/Mavlink/MavHeartbeat.h",
+      "src/DataObject/Mavlink/MavHighresIMU.cpp",
+      "src/DataObject/Mavlink/MavHighresIMU.h",
+      "src/DataObject/Mavlink/MavHomePosition.cpp",
+      "src/DataObject/Mavlink/MavHomePosition.h",
+      "src/DataObject/Mavlink/MavLandingTarget.cpp",
+      "src/DataObject/Mavlink/MavLandingTarget.h",
+      "src/DataObject/Mavlink/MavLocalPositionNED.cpp",
+      "src/DataObject/Mavlink/MavLocalPositionNED.h",
+      "src/DataObject/Mavlink/MavMissionAck.cpp",
+      "src/DataObject/Mavlink/MavMissionAck.h",
+      "src/DataObject/Mavlink/MavMissionClearAll.cpp",
+      "src/DataObject/Mavlink/MavMissionClearAll.h",
+      "src/DataObject/Mavlink/MavMissionCount.cpp",
+      "src/DataObject/Mavlink/MavMissionCount.h",
+      "src/DataObject/Mavlink/MavMissionCurrent.cpp",
+      "src/DataObject/Mavlink/MavMissionCurrent.h",
+      "src/DataObject/Mavlink/MavMissionItemInt.cpp",
+      "src/DataObject/Mavlink/MavMissionItemInt.h",
+      "src/DataObject/Mavlink/MavMissionItemReached.cpp",
+      "src/DataObject/Mavlink/MavMissionItemReached.h",
+      "src/DataObject/Mavlink/MavMissionRequestInt.cpp",
+      "src/DataObject/Mavlink/MavMissionRequestInt.h",
+      "src/DataObject/Mavlink/MavMissionRequestList.cpp",
+      "src/DataObject/Mavlink/MavMissionRequestList.h",
+      "src/DataObject/Mavlink/MavMissionSetCurrent.cpp",
+      "src/DataObject/Mavlink/MavMissionSetCurrent.h",
+      "src/DataObject/Mavlink/MavMountConfigure.cpp",
+      "src/DataObject/Mavlink/MavMountConfigure.h",
+      "src/DataObject/Mavlink/MavMountControl.cpp",
+      "src/DataObject/Mavlink/MavMountControl.h",
+      "src/DataObject/Mavlink/MavMountStatus.cpp",
+      "src/DataObject/Mavlink/MavMountStatus.h",
+      "src/DataObject/Mavlink/MavMsgBase.cpp",
+      "src/DataObject/Mavlink/MavMsgBase.h",
+      "src/DataObject/Mavlink/MavParamRequestRead.cpp",
+      "src/DataObject/Mavlink/MavParamRequestRead.h",
+      "src/DataObject/Mavlink/MavParamSet.cpp",
+      "src/DataObject/Mavlink/MavParamSet.h",
+      "src/DataObject/Mavlink/MavParamValue.cpp",
+      "src/DataObject/Mavlink/MavParamValue.h",
+      "src/DataObject/Mavlink/MavPositionTargetGlobalINT.cpp",
+      "src/DataObject/Mavlink/MavPositionTargetGlobalINT.h",
+      "src/DataObject/Mavlink/MavPositionTargetLocalNED.cpp",
+      "src/DataObject/Mavlink/MavPositionTargetLocalNED.h",
+      "src/DataObject/Mavlink/MavRadioStatus.cpp",
+      "src/DataObject/Mavlink/MavRadioStatus.h",
+      "src/DataObject/Mavlink/MavRawIMU.cpp",
+      "src/DataObject/Mavlink/MavRawIMU.h",
+      "src/DataObject/Mavlink/MavRcChannels.cpp",
+      "src/DataObject/Mavlink/MavRcChannels.h",
+      "src/DataObject/Mavlink/MavRcChannelsOverride.cpp",
+      "src/DataObject/Mavlink/MavRcChannelsOverride.h",
+      "src/DataObject/Mavlink/MavRequestDataStream.cpp",
+      "src/DataObject/Mavlink/MavRequestDataStream.h",
+      "src/DataObject/Mavlink/MavScaledIMU.cpp",
+      "src/DataObject/Mavlink/MavScaledIMU.h",
+      "src/DataObject/Mavlink/MavServoOutputRaw.cpp",
+      "src/DataObject/Mavlink/MavServoOutputRaw.h",
+      "src/DataObject/Mavlink/MavSetAttitudeTarget.cpp",
+      "src/DataObject/Mavlink/MavSetAttitudeTarget.h",
+      "src/DataObject/Mavlink/MavSetMode.cpp",
+      "src/DataObject/Mavlink/MavSetMode.h",
+      "src/DataObject/Mavlink/MavSetPositionTargetGlobalINT.cpp",
+      "src/DataObject/Mavlink/MavSetPositionTargetGlobalINT.h",
+      "src/DataObject/Mavlink/MavSetPositionTargetLocalNED.cpp",
+      "src/DataObject/Mavlink/MavSetPositionTargetLocalNED.h",
+      "src/DataObject/Mavlink/MavStatusText.cpp",
+      "src/DataObject/Mavlink/MavStatusText.h",
+      "src/DataObject/Mavlink/MavSysStatus.cpp",
+      "src/DataObject/Mavlink/MavSysStatus.h",
+      "src/DataObject/Mavlink/MavVisionPositionEstimate.cpp",
+      "src/DataObject/Mavlink/MavVisionPositionEstimate.h",
+      "src/DataObject/Mavlink/MavVisionSpeedEstimate.cpp",
+      "src/DataObject/Mavlink/MavVisionSpeedEstimate.h",
       "src/DataObject/MavlinkStream.cpp",
       "src/DataObject/MavlinkStream.h",
       "src/DataObject/PCLframe.cpp",
@@ -39696,8 +40241,8 @@
       "src/Vision/_VideoFile.h",
       "src/main.cpp"
     ],
-    "configReads": 644,
-    "resolvedReads": 632,
+    "configReads": 648,
+    "resolvedReads": 636,
     "moduleLookups": 123,
     "resolvedLookups": 119,
     "unresolvedReads": 12,
