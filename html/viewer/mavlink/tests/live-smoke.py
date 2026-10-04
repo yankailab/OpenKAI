@@ -104,6 +104,9 @@ def main():
     config["viewer"].update(host="127.0.0.1", port=port,
                             webRoot=str(ROOT / "html/viewer/mavlink"), modelsRoot=str(args.models_root))
     config["udpMavlink"]["portLocal"] = udp_port
+    # Keep the dedicated SITL link out of this synthetic telemetry test.
+    config["udpSitl"]["bON"] = False
+    config["mavlinkSitl"]["bON"] = False
     telemetry = Telemetry(udp_port)
     with tempfile.TemporaryDirectory(prefix="openkai-mavlink-live-") as temp:
         cfg = Path(temp) / "viewer.json"

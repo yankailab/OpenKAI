@@ -9,11 +9,12 @@ build/OpenKAI jsonCfg/WebMavlinkStream.json
 
 Open **http://localhost:8080/** and click **Start**. The embedded HTTP server
 serves the entire viewer, including Cesium and three.js. The example listens
-for MAVLink UDP packets on **14550**, filtering system **1**, component **1**.
+for viewer MAVLink UDP packets on **14552**, filtering system **1**, component **1**.
 Change `mavlink.devSystemID` / `devComponentID` for your vehicle. The sender must
 already stream telemetry; this viewer does not request message rates, send
-heartbeats, arm the vehicle, or issue commands. The example has no UDP transmit
-stream attached.
+heartbeats, arm the vehicle, or issue commands. The viewer's `udpMavlink` connection
+has no transmit stream attached. A separate `udpSitl` connection on **14551**
+provides the transport wiring for future OpenKAI handlers.
 
 For an existing OpenKAI application, copy the `viewer` object into its launch
 configuration and set `viewer.MavlinkStream` to its existing `MavlinkStream`
@@ -22,6 +23,53 @@ messages. The module is registered with `WITH_UNIVERSE=ON`, as are the existing
 web viewers. The standalone example also needs `WITH_IO=ON` and
 `WITH_PROTOCOL=ON`. `USE_WSSERVER` is not required for this viewer's Beast-based
 HTTP/WebSocket transport.
+
+## ArduCopter SITL and QGroundControl
+
+With Copter SITL already built in `/home/kai/dev/ardupilot`, run this in another
+terminal from the OpenKAI repository root:
+
+```sh
+docs/ArduPilot/run_web_mavlink_sitl.sh
+```
+
+The [launcher](../../../docs/ArduPilot/run_web_mavlink_sitl.sh) loads
+[WebMavlinkStream.parm](../../../jsonCfg/ardupilot/WebMavlinkStream.parm). Its
+`SIM_OPOS_*` parameters start the simulation near Tokyo Station's Marunouchi plaza
+at **35.6812, 139.7655**, heading north. Ground altitude **5 m MSL** is a chosen
+simulation value, not a surveyed elevation. The parameter file also sets the
+vehicle ID and telemetry rates. Map windows and UDP destinations are launch
+options; they cannot be configured in a `.parm` file. This launcher omits
+`--map` and `--console` and disables the implicit UDP outputs.
+
+| MAVProxy destination | Receiving application | Role |
+| --- | --- | --- |
+| `127.0.0.1:14550` | QGroundControl | Telemetry and commands |
+| `127.0.0.1:14551` | OpenKAI `udpSitl` → `mavlinkSitl` → `sitlVehicle` | Future bidirectional handlers |
+| `127.0.0.1:14552` | OpenKAI `udpMavlink` → `mavlink` → `vehicle` | Passive web visualization |
+
+Three destinations supply the two OpenKAI UDP connections plus QGC. OpenKAI and
+QGC bind the UDP listeners; MAVProxy sends to them and relays replies to SITL.
+Enable QGC's automatic UDP connection on port **14550**. The browser receives
+telemetry through **http://localhost:8080/** and WebSocket, with no UDP connection.
+The two OpenKAI decoders use separate MAVLink channels **1** and **0**.
+
+`udpSitl.bW2R:true` learns MAVProxy's return address from received packets.
+Future handlers should use `sitlVehicle`; the receive-only viewer uses `vehicle`.
+Command sending still requires completing the existing
+`MavMsgBase::getMsgQueue` TODO. When implementing handlers, pass sender system
+**200**, component **191** explicitly to the message setters: the decoder's
+configured `mySystemID` / `myComponentID` do not currently set encoded IDs.
+
+The launcher stores simulation state in `build/sitl-web-mavlink`. Existing
+`eeprom.bin` values can override parameter-file defaults. To reset this dedicated
+simulation's saved parameters, run `docs/ArduPilot/run_web_mavlink_sitl.sh -w`.
+`ARDUPILOT_DIR` and `SITL_RUN_DIR` override the checkout and state directory;
+additional arguments are passed to `sim_vehicle.py`. See the
+[development setup](../../../docs/ArduPilot/AP_dev_setup.md#webmavlinkstream-with-tokyo-station-sitl)
+for details and the official [SITL](https://ardupilot.org/dev/docs/using-sitl-for-ardupilot-testing.html)
+and [MAVProxy forwarding](https://ardupilot.org/mavproxy/docs/getting_started/forwarding.html)
+documentation.
 
 ## Map, models and offline use
 

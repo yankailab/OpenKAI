@@ -1,0 +1,25 @@
+# ArduCopter SITL defaults for WebMavlinkStream + QGroundControl.
+# Parameter names match the local ArduPilot 4.8.0-dev build.
+# Launch with docs/ArduPilot/run_web_mavlink_sitl.sh.
+# Map windows and UDP destinations are launcher/MAVProxy options, not parameters.
+
+# Approximate Tokyo Station Marunouchi plaza, west of the station building.
+# Latitude/longitude: degrees; altitude: metres AMSL; heading: degrees (north).
+# 5 m is the chosen simulation ground altitude, not a surveyed elevation.
+# Do not pass -L/--custom-location: CLI home overrides these initial coordinates.
+SIM_OPOS_LAT 35.681200
+SIM_OPOS_LNG 139.765500
+SIM_OPOS_ALT 5
+SIM_OPOS_HDG 0
+
+# Match both OpenKAI decoders (vehicle system 1, autopilot component 1).
+MAV_SYSID 1
+SERIAL0_PROTOCOL 2
+
+# First MAVLink link (SERIAL0 -> MAVProxy); rates in Hz.
+# MAVProxy fans this telemetry out to QGC and both OpenKAI UDP listeners.
+# --streamrate=-1 keeps MAVProxy from replacing these rates with its defaults.
+MAV1_POSITION 10
+MAV1_EXTRA1 20
+MAV1_EXT_STAT 2
+MAV1_EXTRA3 2

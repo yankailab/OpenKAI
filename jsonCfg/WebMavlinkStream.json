@@ -5,6 +5,57 @@
     "bLog": true,
     "bStdErr": true
   },
+  "udpSitl": {
+    "class": "_UDP",
+    "bON": true,
+    "bLog": false,
+    "thread": {
+      "FPS": 30
+    },
+    "threadR": {
+      "FPS": 100
+    },
+    "portLocal": 14551,
+    "bW2R": true,
+    "BytePacketStreamIn": "sitl_tx",
+    "BytePacketStreamOut": "sitl_rx"
+  },
+  "mavlinkSitl": {
+    "class": "_Mavlink",
+    "bON": true,
+    "bLog": false,
+    "thread": {
+      "FPS": 20
+    },
+    "threadR": {
+      "FPS": 100
+    },
+    "BytePacketStreamIn": "sitl_rx",
+    "BytePacketStreamOut": "sitl_tx",
+    "MavlinkStream": "sitlVehicle",
+    "devSystemID": 1,
+    "devComponentID": 1,
+    "mySystemID": 200,
+    "myComponentID": 191,
+    "iMavComm": 1
+  },
+  "sitlVehicle": {
+    "type": "dataObject",
+    "class": "MavlinkStream",
+    "nMsgQueue": 1024
+  },
+  "sitl_rx": {
+    "type": "dataObject",
+    "class": "BytePacketStream",
+    "nPacket": 512,
+    "nPbuf": 65536
+  },
+  "sitl_tx": {
+    "type": "dataObject",
+    "class": "BytePacketStream",
+    "nPacket": 512,
+    "nPbuf": 65536
+  },
   "udpMavlink": {
     "class": "_UDP",
     "bON": true,
@@ -15,7 +66,7 @@
     "threadR": {
       "FPS": 100
     },
-    "portLocal": 14550,
+    "portLocal": 14552,
     "bW2R": false,
     "BytePacketStreamOut": "mavlink_rx"
   },
