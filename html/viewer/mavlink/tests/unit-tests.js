@@ -11,8 +11,28 @@ export function runTests() {
   return testCases.map(({ name, run }) => { run(); return { name, passed: true }; });
 }
 
-import { assetUrl, fresh, normalizeConfig, parseMessage, socketUrl, validPosition } from '../js/protocol.js';
+import { assetUrl, fresh, normalizeConfig, parseMessage, socketUrl, validPosition, WORLD_IMAGERY_URL } from '../js/protocol.js';
 import { bodyToNed, modelToNed, modelToThree, resolveAltitude } from '../js/geo.js';
+import { tileCoverage } from '../js/tileCoverage.js';
+
+test('downloaded tile coverage preserves inclusive ranges and intentional holes', () => {
+  const contains = tileCoverage({ format: 'openkai-tile-coverage/1', minimumLevel: 2, maximumLevel: 3,
+    levels: { 2: { 1: [[0, 1], [3, 3]] }, 3: { 2: [[2, 5]] } } });
+  for (const tile of [[1, 0, 2], [1, 1, 2], [1, 3, 2], [2, 2, 3], [2, 5, 3]]) assert.ok(contains(...tile));
+  for (const tile of [[1, 2, 2], [0, 0, 2], [2, 6, 3], [2, 2, 4], [1, -1, 2], [1, 0.5, 2]])
+    assert.equal(contains(...tile), false);
+});
+
+test('downloaded coverage rejects malformed levels and out-of-range or overlapping coordinates', () => {
+  const valid = { format: 'openkai-tile-coverage/1', minimumLevel: 2, maximumLevel: 2, levels: { 2: { 1: [[0, 1]] } } };
+  for (const change of [
+    { format: 'other' }, { minimumLevel: -1 }, { maximumLevel: 24 }, { minimumLevel: 3 },
+    { levels: {} }, { levels: { '02': {} } }, { levels: { 2: { 4: [[0, 1]] } } },
+    { levels: { 2: { 1: [[-1, 1]] } } }, { levels: { 2: { 1: [[0, 4]] } } },
+    { levels: { 2: { 1: [[0, 2], [2, 3]] } } }, { levels: { 2: { 1: [[2, 1]] } } },
+    { levels: { 2: { 1: [[0.5, 1]] } } }, { levels: { 2: { 1: [[0, 1, 2]] } } },
+  ]) assert.throws(() => tileCoverage({ ...valid, ...change }));
+});
 
 const envelope = { protocol: 'openkai.mavlink', version: 1 };
 const attitude = (rollRad = 0, pitchRad = 0, yawRad = 0) => ({ valid: true, rollRad, pitchRad, yawRad });
@@ -86,6 +106,32 @@ test('endpoints preserve secure transport, IPv6 and URL-template tokens', () => 
   assert.throws(() => assetUrl('https://user:password@example.com/a', 'http://localhost/'));
   assert.equal(normalizeConfig({ staleAfterMs: 3600000 }).staleAfterMs, 3600000);
   assert.equal(normalizeConfig({ trailMaxPoints: 100000 }).trailMaxPoints, 20000);
+});
+
+test('online maps require explicit enablement and a supported provider', () => {
+  for (const onlineImagery of [undefined, null, [], true, { enabled: 'true' }, { enabled: true, provider: 'unknown' }])
+    assert.equal(normalizeConfig({ onlineImagery }).onlineImagery.enabled, false);
+  const enabled = normalizeConfig({ onlineImagery: { enabled: true } }).onlineImagery;
+  assert.equal(enabled.enabled, true);
+  assert.equal(enabled.provider, 'arcgis');
+  assert.equal(enabled.url, WORLD_IMAGERY_URL);
+  const custom = normalizeConfig({ onlineImagery: { enabled: true, provider: 'xyz', url: ' https://example.test/{z}/{x}/{y}.png ', credit: 'Example' } }).onlineImagery;
+  assert.equal(custom.url, 'https://example.test/{z}/{x}/{y}.png');
+  assert.equal(custom.credit, 'Example');
+  assert.equal(normalizeConfig({ onlineImagery: { enabled: true, provider: 'xyz' } }).onlineImagery.url, '');
+});
+
+test('online imagery levels remain bounded, ordered integers', () => {
+  const oversized = normalizeConfig({ onlineImagery: { minimumLevel: 100, maximumLevel: 99 } }).onlineImagery;
+  assert.equal(oversized.maximumLevel, 23);
+  assert.equal(oversized.minimumLevel, 23);
+  const invalid = normalizeConfig({ onlineImagery: { minimumLevel: -1, maximumLevel: NaN, credit: {} } }).onlineImagery;
+  assert.equal(invalid.minimumLevel, 0);
+  assert.equal(invalid.maximumLevel, 19);
+  assert.equal(invalid.credit, '');
+  const fractional = normalizeConfig({ onlineImagery: { minimumLevel: 8.5, maximumLevel: 4.5 } }).onlineImagery;
+  assert.equal(fractional.minimumLevel, 4);
+  assert.equal(fractional.maximumLevel, 4);
 });
 
 test('building detail defaults keep distant and peripheral tiles detailed while following', () => {

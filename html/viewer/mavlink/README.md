@@ -85,20 +85,84 @@ The local asset layout is:
 webMavlink/
   drone/multirotor.glb
   imagery/plateau-ortho-2024/{z}/{x}/{y}.png
-  plateau/tokyo-central/tileset.json
+  imagery/plateau-ortho-2024/coverage.json
+  imagery/gsi/{z}/{x}/{y}.png
+  imagery/gsi/coverage.json
+  plateau/tokyo-23wards/tileset.json
+  plateau/tokyo-23wards/{ward-code}/tileset.json
+  plateau/tokyo-central/...  # retained Chiyoda files, reused by the aggregate
   terrain/plateau/layer.json
   ... referenced PLATEAU tile content and attribution/manifest files
 ```
 
-The vendored Cesium distribution includes Natural Earth II imagery for the
-whole globe. High-resolution PLATEAU aerial photography and buildings cover
-central Tokyo. Beyond that coverage the globe still works
-offline at the Natural Earth resolution. No Cesium ion account, API token,
-CDN request, npm process, or separate web server is needed at runtime.
+Use the **Source** and **Type** dropdowns at the upper left to choose the map.
+Only one source/type is rendered at a time: switching removes the previous
+imagery instead of overlaying local and online tiles. Downloaded PLATEAU
+buildings stay visible with every choice, and the same terrain geometry remains
+in use. Cesium and three.js are served locally.
 
-The building cache contains **633 textured Chiyoda 2025 LOD2 tiles**, covering
-the entire source district (approximately **4.8 × 4.0 km**), including Tokyo
-Station, Marunouchi, Otemachi and western Chiyoda. The photographic surface uses
+| Source | Available types |
+| --- | --- |
+| Downloaded | PLATEAU satellite-style aerial photos; cached GSI map; terrain elevation colors |
+| Esri | Satellite; street map |
+| OpenStreetMap | Street map |
+| GSI | Elevation relief (Japan) |
+| Natural Earth | Offline world overview |
+
+The default is `viewer.scene.mapSource: "downloaded-satellite"`. The browser
+retains an explicitly chosen source through telemetry reconnects. Areas outside
+a downloaded source's coverage remain untextured; selecting an online source
+or Natural Earth changes the whole globe's map source. Failed online tiles also
+leave an untextured surface, without silently switching to another provider.
+
+`viewer.scene.downloadedMap` describes the optional cached GSI street-map tiles.
+Online options are enabled by `viewer.scene.onlineImagery`, which also configures
+the Esri satellite source:
+
+```json
+{
+  "enabled": true,
+  "provider": "arcgis",
+  "url": "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer",
+  "maximumLevel": 19
+}
+```
+
+This public [World Imagery service](https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer)
+works without an API key and supplies its imagery attribution to Cesium.
+Resolution varies by location and available source imagery. Requests go directly
+from the browser to the provider; online tiles are not downloaded into
+`modelsRoot`.
+
+Set `enabled` to `false` for strictly offline operation with no online map
+requests. Configurations without `onlineImagery` also remain offline. The
+viewer reports the selected source's availability in **Map & model status**.
+It retries failed connections after 5, 15, and 30 seconds, then at most once a minute, and retries
+immediately when the browser reports that it is back online. Restart the backend
+and refresh the viewer after changing the JSON configuration.
+
+Other Cesium-compatible ArcGIS MapServer URLs can use `provider: "arcgis"`.
+For an XYZ imagery service, use `provider: "xyz"`, a `url` containing
+`{z}/{x}/{y}`, `maximumLevel`, and the provider's attribution in `credit`.
+XYZ tiles must use Web Mercator and permit browser cross-origin requests.
+Choose a service URL intended for third-party map clients and retain its
+required attribution. Override `scene.mapSources.esriMap`, `.openStreetMap`, or
+`.gsiElevation` to configure those catalogue entries, or set an entry's
+`enabled: false` to omit it. Provider access requirements and usage terms apply.
+OpenStreetMap is used for interactive viewing with normal browser caching,
+according to its [tile policy](https://operations.osmfoundation.org/policies/tiles/).
+GSI relief follows its [published tile catalogue](https://maps.gsi.go.jp/development/ichiran.html).
+
+Downloaded elevation colors visualize the existing terrain's height, including
+its coarser coverage outside Tokyo. They are a terrain visualization, not newly
+downloaded elevation measurements. GSI elevation is a colored relief tile map;
+selecting it also leaves the terrain geometry unchanged.
+
+The building cache contains **10,065 building tiles for all 23 Tokyo wards**
+from the **2025 PLATEAU datasets**, totaling **15.35 GiB**. Each source combines
+textured LOD2 buildings with LOD1 buildings where detailed geometry is unavailable.
+The aggregate tileset shares one Cesium building cache across the wards and
+reuses the original 633 Chiyoda tiles. The photographic surface uses
 the **PLATEAU-Ortho 2024 layer at zoom levels 12–19**, with approximately
 **0.24 m per pixel** at Tokyo's latitude at the highest level. These are aerial
 orthophotos providing a satellite-style surface; the layer name is not a claim
@@ -106,31 +170,45 @@ that every photograph was captured in 2024. Level 19 is the highest supported
 by the selected endpoint; level 20 was checked and is unavailable, so no
 artificially upscaled higher levels are stored.
 
-The **10,495 photographic tiles** cover longitude **139.725–139.790**, latitude
-**35.665–35.710**, including a margin around Chiyoda, and occupy approximately
-**1.1 GiB**. The existing **208 elevation
-tiles** remain in use. The cache is local and bounded; it does not contain all
-Tokyo wards. Source URLs, coverage, file sizes and checksums are recorded in
-`asset-manifest.json`.
+The photographic selection contains **221,524 tile coordinates** intersecting
+the official MLIT N03 2025 boundaries of wards **13101–13123**. The bounding
+rectangle is **139.5627–139.9190° E, 35.5281–35.8178° N**. Original PNG pixels
+are retained: **221,515 photographs** were downloaded or reused; nine coastal
+coordinates return `Tile not found` from the provider. The same ward footprint
+selects **14,616 GSI street-map tiles**
+at levels 12–17, and the terrain cache covers the bounding rectangle through
+level 15, including ancestors and a margin (**5,431 terrain tiles**).
+The complete local asset folder, including the retained drone and source
+metadata, occupies approximately **38.35 GiB**.
+
+`scene.imagery.availableTilesUrl` and `scene.downloadedMap.availableTilesUrl`
+point to compact coverage files listing successfully cached coordinates. Areas
+outside the ward footprint and any source tiles returning 404 stay untextured
+without generating missing-file requests or disabling the selected layer.
+`source-missing-tiles.json` records unavailable source coordinates. Source URLs,
+actual downloaded counts, file sizes and checksums are in `asset-manifest.json`.
 
 To reproduce the downloaded assets on another machine, run:
 
 ```sh
-python3 html/viewer/mavlink/tools/download_assets.py --skip-vendor \
-  --models-root /home/kai/dev/models/webMavlink
+python3 -m venv /tmp/openkai-map-cache-venv
+/tmp/openkai-map-cache-venv/bin/pip install requests shapely
+/tmp/openkai-map-cache-venv/bin/python html/viewer/mavlink/tools/download_tokyo23.py \
+  --models-root /home/kai/dev/models/webMavlink --workers 32
 ```
 
-Python 3.9+ and `curl` are required only for setup. Omitting `--skip-vendor`
-also refreshes the pinned CesiumJS 1.138.0 and three.js r185 distributions,
-verifying their archive hashes. The downloader checks embedded building
-resources and PNG signatures, records per-file SHA-256 hashes in
-`asset-manifest.json`, and retains source/attribution information. Its default
-download budget is 2048 MiB. `--bbox WEST SOUTH EAST NORTH` and
-`--min-zoom` / `--max-zoom` customize the photographic cache; update
-`scene.imagery` to match the resulting manifest. Building and terrain coverage
-have independent `--buildings-bbox` and `--terrain-bbox` options. Their defaults
-select all Chiyoda buildings and preserve the original terrain area. The building
-source remains Chiyoda.
+The downloader resumes completed files, verifies PNG integrity and embedded
+building resources, and publishes each dataset only after its transfer succeeds.
+`--plan` fetches metadata and reports tile counts; `--only buildings`, `imagery`,
+`map` or `terrain` limits a resumed run. The default new-download budget is
+80 GiB, with a 5 GiB free-space reserve; adjust `--max-gib` and `--reserve-gib`
+if needed. `--inventory PATH` additionally verifies building byte counts and
+ZIP CRCs against a saved source inventory. The supplied drone model is retained.
+
+The original `download_assets.py` remains available for a smaller Chiyoda cache
+and for installing pinned CesiumJS 1.138.0 / three.js r185 libraries. It requires
+Python 3.9+ and `curl`, and has a default 2048 MiB budget. Its building source
+remains Chiyoda; use `download_tokyo23.py` for the full ward collection.
 
 For manual download, the [official Chiyoda 2025 dataset](https://www.geospatial.jp/ckan/dataset/plateau-13101-chiyoda-ku-2025)
 provides the PLATEAU city model and 3D Tiles resources. Prefer a prepared **3D
@@ -140,7 +218,8 @@ texture, not just the entry-point JSON. For photographs, use the
 [PLATEAU orthophoto documentation](https://docs.plateauview.mlit.go.jp/datasets/ortho/)
 and its [current tile catalog](https://tile.plateauview.mlit.go.jp/tiles/catalog.json),
 preserving `{z}/{x}/{y}.png` and the source attribution. The included downloader
-automates both operations for the configured area.
+automates both operations. The [official Tokyo LOD2 catalog](https://api.plateauview.mlit.go.jp/datacatalog/3dtiles/13-bldg-lod2-latest/tileset.json)
+provides the per-ward building entry points; the cache selects codes 13101–13123.
 
 The example uses locally cached [PLATEAU terrain](https://docs.plateauview.mlit.go.jp/datasets/terrain/)
 through `scene.terrain.url: "/models/terrain/plateau/"`. Its quantized-mesh
@@ -159,9 +238,9 @@ to 3D Tiles; Cesium cannot render CityGML directly.
 Building detail now uses a screen-space error of **2 pixels**, reduced from 8,
 and disables distance-based and viewport-edge detail relaxation. Camera motion
 does not suppress building tile requests. These settings preserve detail farther
-from the camera, including while following the aircraft; the full Chiyoda cache
-also removes the former small-area download limit. They do not extend geographic
-coverage beyond the source district.
+from the camera, including while following the aircraft; the full ward cache
+extends geographic coverage throughout Tokyo's 23 wards. Detail settings apply
+where building tiles have been downloaded.
 
 Tune these settings in `viewer.scene.buildingRendering`:
 
@@ -184,20 +263,63 @@ detail when the configured memory budget is reached.
 
 ## Position and attitude
 
-The map drone and the three.js attitude preview both load the same multirotor
-GLB. The generated model has a marked nose, four motors/propellers and landing
-gear. Raw model axes are **+X forward, +Y up, +Z right**, in metres. The viewer
+The map drone and the three.js attitude preview both load
+`/models/drone/multirotor.glb`, now converted from the supplied
+`/home/kai/dev/models/drone.step` (Hydrone White). The cardboard payload box is
+removed; the aircraft, gripping clamps and CAD colors are retained. The previous
+assembly with its box is backed up as `drone/multirotor-with-payload.glb`, and the
+original procedural model as `drone/multirotor-procedural.glb`.
+
+The GLB is approximately **5.44 MiB**, with 218,758 triangles. Its physical
+dimensions are **0.3547 m forward × 0.1530 m high × 0.4063 m wide**. The CAD's
+millimetres are converted to metres and native `−Y forward / +Z up` becomes
+**+X forward, +Y up, +Z right**. The original flight pivot near the rotor array
+is preserved when removing the box, keeping the attitude rotation center fixed.
+The attitude preview automatically frames the entire assembly; the map uses
+its physical dimensions with the existing distance-based visibility enlargement.
+
+The viewer
 explicitly transforms this frame into MAVLink body FRD (forward/right/down),
 then NED (north/east/down), then Earth-fixed coordinates. It disables Cesium's
 automatic glTF axis correction for this model. A zero attitude points north;
 positive yaw turns east, positive pitch raises the nose, and positive roll
 lowers the right side. Replacing the GLB requires matching these raw axes.
 
+The reusable converter requires an optional CAD environment only during setup:
+
+```sh
+python3 -m venv /tmp/openkai-step-venv
+/tmp/openkai-step-venv/bin/pip install cadquery-ocp==8.0.1.0.0 numpy
+/tmp/openkai-step-venv/bin/python html/viewer/mavlink/tools/convert_step.py \
+  --input /home/kai/dev/models/drone.step \
+  --exclude-hydrone-payload \
+  --output /home/kai/dev/models/webMavlink/drone/multirotor.glb
+```
+
+`--linear-deflection-mm` and `--angular-deflection-degrees` control tessellation;
+defaults are 0.15 mm and 20°. `--exclude-hydrone-payload` removes only the verified
+box from this supplied Hydrone assembly; omit it to export the complete assembly.
+The original STEP file is unchanged. The adjacent `multirotor.conversion.json`
+records source/output hashes, excluded geometry, scale, axes, bounds and mesh statistics. The source CAD's
+rights are retained; `drone/LICENSE` applies to the backed-up procedural model.
+Map-data refreshes preserve the installed GLB and its manifest metadata. A fresh
+asset setup without an existing model generates the procedural fallback until
+the STEP conversion is installed.
+
 `ATTITUDE_QUATERNION` and `ATTITUDE` are supported; the backend uses the newest
 valid sample and sends a normalized WXYZ quaternion plus radians for the panel.
-The map keeps a bounded trail and offers locate, follow, Tokyo overview,
-buildings visibility and trail controls. These are local viewing controls.
+The map keeps a bounded trail and offers locate, follow, FPV, Tokyo overview,
+map-source selection and trail controls. These are local viewing controls.
+The flight trail is **cobalt blue (`#0047AB`)**.
 Use **left-drag to orbit**, **right-drag to pan**, and the **mouse wheel to zoom**.
+
+**FPV**, immediately after Follow, places the camera at the aircraft's measured
+position and looks along its forward axis. Roll, pitch and yaw all affect the
+view, with a 70° field of view. FPV and Follow are mutually exclusive. The map's
+own drone model and marker are hidden in FPV, while the attitude preview remains
+visible. Mouse camera motion is disabled until FPV is exited. Stale or invalid
+position/attitude holds the last camera pose; fresh telemetry resumes tracking.
+Click FPV again, Follow, Locate drone or Tokyo to leave FPV.
 
 `GLOBAL_POSITION_INT.alt` is altitude above mean sea level, while Cesium uses
 height above the WGS84 ellipsoid. The viewer uses
@@ -260,6 +382,7 @@ cmake --build /tmp/openkai-http-tests -j2
 ctest --test-dir /tmp/openkai-http-tests --output-on-failure
 python3 test/run_web_mavlink_tests.py build
 python3 html/viewer/mavlink/tests/live-smoke.py --executable build/OpenKAI
+python3 html/viewer/mavlink/tests/imagery-smoke.py
 ```
 
 The integration test launches a temporary backend on loopback ports, injects
@@ -269,4 +392,10 @@ reconnection. It never connects to an autopilot. `--models-root` selects another
 asset directory; `--screenshot /tmp/mavlink.png` captures the actual viewer.
 Add `--overview-screenshot /tmp/chiyoda.png` to also verify and capture western
 Chiyoda buildings from a camera height of 3.5 km.
-Chrome's host resolver blocks internet access during this test.
+The telemetry test explicitly disables online imagery, and Chrome's host
+resolver blocks internet access during both browser tests. The imagery test
+uses loopback tile providers to verify exclusive source selection, downloaded
+coverage boundaries, selected-provider failure/recovery, and switching while
+requests are pending. The telemetry test also checks the source/type controls,
+unchanged building primitives, FPV world position and attitude, moving telemetry,
+stale-data hold and recovery, mouse locking, and camera settings restored on exit.

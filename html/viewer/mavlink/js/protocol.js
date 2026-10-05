@@ -2,6 +2,7 @@
 export const PROTOCOL = 'openkai.mavlink';
 export const VERSION = 1;
 export const STREAM_PATH = '/stream/mavlink';
+export const WORLD_IMAGERY_URL = 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer';
 export const finite = value => typeof value === 'number' && Number.isFinite(value);
 
 export function parseMessage(data) {
@@ -49,6 +50,9 @@ export function normalizeConfig(input = {}) {
   const view = input.initialView || {};
   const buildings = input.buildingRendering || {};
   const bounded = (value, fallback, min, max) => finite(value) ? Math.min(max, Math.max(min, value)) : fallback;
+  const online = input.onlineImagery && typeof input.onlineImagery === 'object' && !Array.isArray(input.onlineImagery) ? input.onlineImagery : {};
+  const onlineProvider = online.provider ?? 'arcgis';
+  const onlineMaximumLevel = Math.floor(bounded(online.maximumLevel, 19, 0, 23));
   return {
     ...input,
     staleAfterMs: finite(input.staleAfterMs) ? Math.min(3600000, Math.max(100, input.staleAfterMs)) : 3000,
@@ -63,6 +67,16 @@ export function normalizeConfig(input = {}) {
     drone: { url: '/models/drone/multirotor.glb', scale: 1, ...input.drone },
     altitude: { geoidSeparationM: null, ...input.altitude },
     buildings: Array.isArray(input.buildings) ? input.buildings.slice(0, 64) : [],
+    mapSource: typeof input.mapSource === 'string' && input.mapSource.trim() ? input.mapSource.trim() : 'downloaded-satellite',
+    onlineImagery: {
+      ...online,
+      enabled: online.enabled === true && ['arcgis', 'xyz'].includes(onlineProvider),
+      provider: onlineProvider,
+      url: typeof online.url === 'string' ? online.url.trim() : onlineProvider === 'arcgis' ? WORLD_IMAGERY_URL : '',
+      minimumLevel: Math.floor(bounded(online.minimumLevel, 0, 0, onlineMaximumLevel)),
+      maximumLevel: onlineMaximumLevel,
+      credit: typeof online.credit === 'string' ? online.credit : '',
+    },
     buildingRendering: {
       maximumScreenSpaceError: bounded(buildings.maximumScreenSpaceError, 2, 1, 64),
       dynamicScreenSpaceError: typeof buildings.dynamicScreenSpaceError === 'boolean' ? buildings.dynamicScreenSpaceError : false,

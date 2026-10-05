@@ -132,23 +132,40 @@
       },
       "imagery": {
         "url": "/models/imagery/plateau-ortho-2024/{z}/{x}/{y}.png",
+        "availableTilesUrl": "/models/imagery/plateau-ortho-2024/coverage.json",
         "minimumLevel": 12,
         "maximumLevel": 19,
         "rectangle": [
-          139.725,
-          35.665,
-          139.79,
-          35.71
+          139.5627,
+          35.5281,
+          139.919,
+          35.8178
         ],
         "credit": "東京都 / 国土交通省 Project PLATEAU / 国土地理院（航空写真）"
+      },
+      "mapSource": "downloaded-satellite",
+      "downloadedMap": {
+        "url": "/models/imagery/gsi/{z}/{x}/{y}.png",
+        "availableTilesUrl": "/models/imagery/gsi/coverage.json",
+        "minimumLevel": 12,
+        "maximumLevel": 17,
+        "rectangle": [139.5627, 35.5281, 139.919, 35.8178],
+        "credit": "地理院タイル（国土地理院）",
+        "creditUrl": "https://maps.gsi.go.jp/development/ichiran.html"
+      },
+      "onlineImagery": {
+        "enabled": true,
+        "provider": "arcgis",
+        "url": "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer",
+        "maximumLevel": 19
       },
       "terrain": {
         "url": "/models/terrain/plateau/"
       },
       "buildings": [
         {
-          "url": "/models/plateau/tokyo-central/tileset.json",
-          "credit": "東京都 / 国土交通省 Project PLATEAU — Chiyoda 2025"
+          "url": "/models/plateau/tokyo-23wards/tileset.json",
+          "credit": "東京都 / 国土交通省 Project PLATEAU — Tokyo 23 wards, 2025"
         }
       ],
       "altitude": {

@@ -20,6 +20,25 @@ export const map = new MapViewer($('#viewport'), sceneStatus, (text, approximate
   $('#height-status').textContent = text;
   $('#height-status').dataset.stale = String(approximate);
 });
+function syncMapSelectors(sources, selectedId) {
+  const selected = sources.find(source => source.id === selectedId);
+  const groups = [...new Map(sources.map(source => [source.sourceId, source.sourceLabel])).entries()];
+  $('#map-source').replaceChildren(...groups.map(([id, label]) => new Option(label, id)));
+  $('#map-source').value = selected?.sourceId || '';
+  const types = sources.filter(source => source.sourceId === selected?.sourceId);
+  $('#map-type').replaceChildren(...types.map(source => new Option(source.typeLabel, source.type)));
+  $('#map-type').value = selected?.type || '';
+  $('#map-source').disabled = !groups.length;
+  $('#map-type').disabled = types.length < 2;
+}
+map.onMapSourceChange = syncMapSelectors;
+syncMapSelectors(map.mapSources.sources, map.mapSources.selectedId);
+
+function syncCameraButtons() {
+  $('#follow').setAttribute('aria-pressed', String(map.follow));
+  $('#fpv').setAttribute('aria-pressed', String(map.fpv));
+  $('#navigation-hint').textContent = map.fpv ? 'FPV · aircraft position and forward view · Click FPV to exit' : 'Left drag to orbit · Right drag to pan · Wheel to zoom';
+}
 export let attitudePreview;
 try { attitudePreview = new AttitudeViewer($('#attitude-viewport'), sceneStatus); }
 catch (error) { sceneStatus('attitude', `Attitude preview unavailable: ${error.message}`, true); }
@@ -67,6 +86,7 @@ function render() {
   attitudePreview?.update(attitude, attitudeFresh);
   map.update(latest, elapsed);
   $('#center').disabled = !map.lastPosition;
+  syncCameraButtons();
   $('#sample-state').textContent = latest
     ? `Position ${position ? number((position.ageMs + elapsed) / 1000, 1, 's ago') : 'unavailable'} · Attitude ${attitude ? number((attitude.ageMs + elapsed) / 1000, 1, 's ago') : 'unavailable'}`
     : 'Waiting for MAVLink messages';
@@ -112,15 +132,26 @@ $('#connection').addEventListener('submit', event => {
   catch (error) { $('#status').textContent = error.message; $('#status').dataset.state = 'error'; }
 });
 $('#stop').addEventListener('click', () => connection.stop());
-$('#center').addEventListener('click', () => map.locate());
-for (const [id, update] of [ ['follow', value => map.setFollow(value)], ['buildings', value => map.setBuildings(value)], ['trail', value => map.setTrail(value)] ]) {
+$('#center').addEventListener('click', () => { map.setFpv(false); map.locate(); render(); });
+$('#follow').addEventListener('click', () => { map.setFollow(!map.follow); render(); });
+$('#fpv').addEventListener('click', () => { map.setFpv(!map.fpv); render(); });
+$('#map-source').addEventListener('change', event => {
+  const candidates = map.mapSources.sources.filter(source => source.sourceId === event.target.value);
+  const selected = candidates.find(source => source.type === $('#map-type').value) || candidates[0];
+  if (selected) map.mapSources.select(selected.id);
+});
+$('#map-type').addEventListener('change', event => {
+  const selected = map.mapSources.sources.find(source => source.sourceId === $('#map-source').value && source.type === event.target.value);
+  if (selected) map.mapSources.select(selected.id);
+});
+for (const [id, update] of [ ['trail', value => map.setTrail(value)] ]) {
   $(`#${id}`).addEventListener('click', event => {
     const pressed = event.currentTarget.getAttribute('aria-pressed') !== 'true';
     event.currentTarget.setAttribute('aria-pressed', String(pressed)); update(pressed);
   });
 }
 $('#clear-trail').addEventListener('click', () => map.clearTrail());
-$('#tokyo').addEventListener('click', () => { $('#follow').setAttribute('aria-pressed', 'false'); map.setFollow(false); map.goHome(); });
+$('#tokyo').addEventListener('click', () => { map.setFpv(false); map.setFollow(false); map.goHome(); render(); });
 document.addEventListener('visibilitychange', () => { if (!document.hidden) { map.viewer.resize(); render(); } });
 window.addEventListener('beforeunload', () => connection.stop());
 setInterval(render, 250); // Expire every message independently even if transport remains open.

@@ -1,5 +1,7 @@
 import { assetUrl, finite, fresh, normalizeConfig, validPosition } from './protocol.js';
 import { modelToNed, resolveAltitude } from './geo.js';
+import { MapSources } from './mapSources.js';
+import { FlightCamera } from './flightCamera.js';
 
 export class MapViewer {
   constructor(container, onStatus, onHeight) {
@@ -16,7 +18,9 @@ export class MapViewer {
     this.geoidCache = {};
     this.lastPlot = null;
     this.follow = false;
-    this.showBuildings = true;
+    this.fpv = false;
+    this.lastAttitude = null;
+    this.lastPoseFresh = false;
     this.showTrail = true;
     this.viewer = new C.Viewer(container, {
       baseLayer: false, baseLayerPicker: false, terrainProvider: new C.EllipsoidTerrainProvider(),
@@ -39,14 +43,11 @@ export class MapViewer {
       point: { pixelSize: 9, color: C.Color.fromCssColorString('#64dcb5'), outlineWidth: 2, outlineColor: C.Color.BLACK, disableDepthTestDistance: Infinity },
       label: { text: 'Aircraft', font: '12px sans-serif', showBackground: true, pixelOffset: new C.Cartesian2(0, -24), disableDepthTestDistance: Infinity },
     });
-    this.trailEntity = this.viewer.entities.add({ polyline: { positions: new C.CallbackProperty(() => this.trailPositions, false), width: 2, material: C.Color.fromCssColorString('#64dcb5') } });
+    this.trailEntity = this.viewer.entities.add({ polyline: { positions: new C.CallbackProperty(() => this.trailPositions, false), width: 2, material: C.Color.fromCssColorString('#0047ab') } });
     scene.renderError.addEventListener((_scene, error) => onStatus('renderer', `Rendering error: ${error.message}`, true));
-    // This low-resolution global texture ships with Cesium: no ion token or network fallback.
-    C.TileMapServiceImageryProvider.fromUrl(new URL('../vendor/cesium/Assets/Textures/NaturalEarthII/', import.meta.url).href).then(provider => {
-      this.viewer.imageryLayers.addImageryProvider(provider, 0);
-      onStatus('base', 'World map · local Natural Earth imagery');
-      scene.requestRender();
-    }).catch(error => onStatus('base', `World map unavailable: ${error.message}`, true));
+    this.flightCamera = new FlightCamera(this);
+    this.mapSources = new MapSources(this);
+    this.mapSources.configure(this.config, location.href);
     this.goHome();
   }
 
@@ -60,12 +61,11 @@ export class MapViewer {
     this.buildings = [];
     if (this.model) scene.primitives.remove(this.model);
     this.model = null;
-    if (this.overlay) this.viewer.imageryLayers.remove(this.overlay, true);
-    this.overlay = null;
     for (const credit of this.credits) this.viewer.creditDisplay.removeStaticCredit(credit);
     this.credits = [];
     this.viewer.terrainProvider = new C.EllipsoidTerrainProvider();
     this.clearTrail();
+    this.mapSources.configure(config, endpoint);
     const tasks = [];
     const current = () => generation === this.generation;
     const addCredit = text => {
@@ -74,25 +74,6 @@ export class MapViewer {
       const credit = new C.Credit(node.innerHTML, true);
       this.viewer.creditDisplay.addStaticCredit(credit); this.credits.push(credit);
     };
-
-    if (config.imagery?.url) tasks.push((async () => {
-      try {
-        const settings = config.imagery;
-        const rectangle = Array.isArray(settings.rectangle) && settings.rectangle.length === 4 && settings.rectangle.every(finite)
-          ? C.Rectangle.fromDegrees(...settings.rectangle) : undefined;
-        const provider = new C.UrlTemplateImageryProvider({
-          url: assetUrl(settings.url, endpoint), rectangle,
-          minimumLevel: Number.isInteger(settings.minimumLevel) ? settings.minimumLevel : 0,
-          maximumLevel: Number.isInteger(settings.maximumLevel) ? settings.maximumLevel : 18,
-          credit: typeof settings.credit === 'string' ? settings.credit : undefined,
-        });
-        if (!current()) return;
-        provider.errorEvent.addEventListener(() => this.onStatus('imagery', 'Tokyo imagery incomplete or unavailable; check downloaded tile coverage', true));
-        this.overlay = this.viewer.imageryLayers.addImageryProvider(provider);
-        this.onStatus('imagery', 'Tokyo imagery · configured tile coverage');
-      } catch (error) { if (current()) this.onStatus('imagery', `Tokyo imagery unavailable: ${error.message}`, true); }
-    })());
-    else this.onStatus('imagery', 'Tokyo imagery · not configured');
 
     if (config.terrain?.url) tasks.push((async () => {
       try {
@@ -123,7 +104,7 @@ export class MapViewer {
           showCreditsOnScreen: true,
         });
         if (!current()) { tileset.destroy(); return; }
-        tileset.show = this.showBuildings;
+        tileset.show = true;
         scene.primitives.add(tileset); this.buildings.push(tileset); addCredit(settings.credit);
         tileset.tileFailed.addEventListener(() => this.onStatus(key, `PLATEAU buildings ${index + 1} · some tile content is missing`, true));
         this.onStatus(key, `PLATEAU buildings ${index + 1} · ready`);
@@ -140,7 +121,6 @@ export class MapViewer {
           upAxis: C.Axis.Z, forwardAxis: C.Axis.X,
           scale: finite(config.drone.scale) && config.drone.scale > 0 ? config.drone.scale : 1,
           minimumPixelSize: 80, maximumScale: 200,
-          silhouetteColor: C.Color.fromCssColorString('#64dcb5').withAlpha(.8), silhouetteSize: 1.5,
         });
         if (!current()) { model.destroy(); return; }
         this.model = scene.primitives.add(model);
@@ -148,7 +128,7 @@ export class MapViewer {
         this.onStatus('model', 'Drone model · ready (enlarged at distance)');
       } catch (error) { if (current()) this.onStatus('model', `Drone model unavailable: ${error.message}`, true); }
     })());
-    this.goHome();
+    if (!this.fpv) this.goHome();
     await Promise.allSettled(tasks);
     if (current()) scene.requestRender();
   }
@@ -161,6 +141,10 @@ export class MapViewer {
       if (this.model) this.model.show = false;
       this.marker.show = false;
       this.lastPosition = null;
+      this.lastAttitude = null;
+      this.lastPoseFresh = false;
+      this.flightCamera.update(null, null, false);
+      if (this.fpv) this.onStatus('camera', 'FPV · waiting for fresh position and attitude');
       this.viewer.scene.requestRender();
       return false;
     }
@@ -172,12 +156,16 @@ export class MapViewer {
     const cartesian = C.Cartesian3.fromDegrees(position.longitudeDeg, position.latitudeDeg, altitude.heightM);
     this.lastPosition = cartesian;
     this.marker.position = cartesian;
-    this.marker.show = true;
+    this.marker.show = !this.fpv;
     this.marker.point.color = C.Color.fromCssColorString(positionFresh ? '#64dcb5' : '#edbb78');
     this.marker.label.text = positionFresh ? (attitudeFresh ? 'Aircraft' : 'Aircraft · attitude unavailable') : 'Last known position';
     const rotation = attitudeFresh ? modelToNed(message.attitude) : null;
+    this.lastAttitude = message.attitude;
+    this.lastPoseFresh = positionFresh && !!rotation;
+    this.flightCamera.update(cartesian, message.attitude, this.lastPoseFresh);
+    if (this.fpv) this.onStatus('camera', this.lastPoseFresh ? 'FPV · live aircraft position and attitude' : 'FPV · holding last view; position or attitude is stale');
     if (this.model) {
-      this.model.show = positionFresh && !!rotation;
+      this.model.show = positionFresh && !!rotation && !this.fpv;
       if (this.model.show) {
         const frame = C.Transforms.northEastDownToFixedFrame(cartesian);
         const local = C.Matrix4.fromRotationTranslation(C.Matrix3.fromRowMajorArray(rotation));
@@ -202,17 +190,37 @@ export class MapViewer {
     this.geoidCache = {};
     this.lastPlot = null;
     this.lastPosition = null;
+    this.lastAttitude = null;
+    this.lastPoseFresh = false;
+    this.flightCamera.reset();
     this.marker.show = false;
     if (this.model) this.model.show = false;
     this.clearTrail();
   }
   clearTrail() { this.trailPositions.length = 0; this.viewer.scene.requestRender(); }
-  setBuildings(show) { this.showBuildings = show; for (const tile of this.buildings) tile.show = show; this.viewer.scene.requestRender(); }
   setTrail(show) { this.showTrail = show; this.trailEntity.show = show; this.viewer.scene.requestRender(); }
   setFollow(follow) {
+    if (follow) this.setFpv(false);
     this.follow = follow;
     if (follow) this.locate();
     else this.viewer.camera.lookAtTransform(this.C.Matrix4.IDENTITY);
+    if (!this.fpv) this.onStatus('camera', follow ? 'Follow · tracking aircraft position' : 'Camera · orbit and pan');
+    this.viewer.scene.requestRender();
+  }
+  setFpv(enabled) {
+    if (this.fpv === enabled) return;
+    if (enabled) this.setFollow(false);
+    this.fpv = enabled;
+    this.flightCamera.setEnabled(enabled);
+    if (enabled) {
+      this.marker.show = false;
+      if (this.model) this.model.show = false;
+      this.flightCamera.update(this.lastPosition, this.lastAttitude, this.lastPoseFresh);
+      this.onStatus('camera', this.lastPoseFresh ? 'FPV · live aircraft position and attitude' : 'FPV · waiting for fresh position and attitude');
+    } else {
+      if (this.lastPosition) this.locate();
+      this.onStatus('camera', 'Camera · orbit and pan');
+    }
     this.viewer.scene.requestRender();
   }
   locate() {

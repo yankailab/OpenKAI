@@ -7,8 +7,9 @@ header { display: flex; align-items: center; flex-wrap: wrap; gap: 20px; padding
 .brand span { font-weight: 400; font-size: 14px; color: #8ba2b5; margin-left: 8px; }
 form { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 label { display: flex; align-items: center; gap: 6px; color: #aabac8; }
-input, button { font: inherit; border-radius: 5px; border: 1px solid #354659; padding: 7px 10px; }
-input { background: #090f17; color: #e2edf6; min-width: 0; }
+input, button, select { font: inherit; border-radius: 5px; border: 1px solid #354659; padding: 7px 10px; }
+input, select { background: #090f17; color: #e2edf6; min-width: 0; }
+select { cursor: pointer; }
 #host { width: 160px; } #port { width: 80px; }
 button { color: #dce6ed; background: #202f40; cursor: pointer; }
 button:hover { background: #30475d; }
@@ -22,6 +23,9 @@ main { position: relative; flex: 1; min-height: 0; overflow: hidden; }
 #viewport, #viewport canvas { width: 100%; height: 100%; display: block; }
 #map-controls { position: absolute; top: 16px; left: 16px; display: flex; flex-wrap: wrap; gap: 6px; max-width: calc(100% - 350px); }
 #map-controls button { font-size: 12px; background-color: #162330e8; }
+#map-selection { flex-basis: 100%; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 2px; }
+#map-selection label { padding: 4px 7px; border-radius: 5px; background: #162330ed; font-size: 12px; }
+#map-selection select { max-width: 210px; padding: 5px 8px; }
 #telemetry { position: absolute; right: 16px; top: 16px; width: 290px; max-height: calc(100% - 72px); overflow: auto; background: #101923ed; border: 1px solid #2c4151; border-radius: 8px; box-shadow: 0 8px 32px #0005; }
 .panel-heading { display: flex; align-items: center; justify-content: space-between; padding: 13px 14px; border-bottom: 1px solid #273744; font-weight: 600; }
 .badge { font-size: 10px; letter-spacing: .06em; color: #9dafbd; }
@@ -46,8 +50,8 @@ summary { cursor: pointer; } details p { line-height: 1.5; margin-bottom: 0; }
 #welcome { position: absolute; top: 44%; left: 0; right: 310px; text-align: center; pointer-events: none; font-size: 20px; color: #dce6ed; line-height: 1.8; text-shadow: 0 2px 6px #000; }
 #welcome small { font-size: 13px; color: #bed1df; }
 footer { position: absolute; bottom: 0; left: 0; right: 0; display: flex; justify-content: space-between; gap: 12px; padding: 10px 18px; background: #101923d9; color: #98aebf; font-size: 12px; pointer-events: none; }
-.cesium-viewer-bottom { bottom: 36px; max-width: calc(100% - 325px); }
+.cesium-viewer-bottom { bottom: 40px !important; max-width: calc(100% - 325px); }
 .cesium-credit-logoContainer img { max-width: 85px; }
-.cesium-widget-credits { color: #c0cbd5; }
+.cesium-widget-credits { color: #e0e9ee; background: #101923d9; border-radius: 3px; padding: 2px 4px; }
 @media (max-width: 900px) { header { gap: 10px; padding: 10px; } #status { width: 100%; margin: 0; } #telemetry { width: 245px; right: 10px; top: 10px; } #map-controls { top: 10px; left: 10px; max-width: calc(100% - 280px); } #welcome { right: 265px; font-size: 16px; } footer span { display: none; } }
 @media (max-width: 620px) { #telemetry { width: 210px; max-height: 48%; top: auto; bottom: 54px; } #attitude-viewport { height: 115px; } #map-controls { max-width: calc(100% - 20px); } #welcome { right: 0; top: 22%; } .cesium-viewer-bottom { max-width: calc(100% - 235px); } dl { font-size: 11px; gap: 8px; padding: 10px; } }

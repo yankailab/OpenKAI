@@ -366,8 +366,22 @@ def install_terrain(download, root, bbox, workers):
                 jobs.append((TERRAIN_URL + relative, target / relative))
 
     def fetch(job):
+        existed = job[1].is_file()
         path = download.get(*job)
-        path.write_bytes(localize_terrain(path.read_bytes()))
+        try:
+            localized = localize_terrain(path.read_bytes())
+        except (ValueError, EOFError, struct.error, zlib.error, gzip.BadGzipFile):
+            # A new incomplete source must not poison a later resume. Keep any
+            # pre-existing file intact if its format is unsupported.
+            if not existed:
+                path.unlink(missing_ok=True)
+            raise
+        temporary = path.with_suffix(path.suffix + '.tmp')
+        try:
+            temporary.write_bytes(localized)
+            temporary.replace(path)
+        finally:
+            temporary.unlink(missing_ok=True)
 
     with ThreadPoolExecutor(max_workers=workers) as executor:
         for index, _ in enumerate(executor.map(fetch, jobs), 1):
@@ -379,7 +393,12 @@ def install_terrain(download, root, bbox, workers):
     layer["maxzoom"] = 15
     layer["tiles"] = ["{z}/{x}/{y}.terrain"]
     layer["description"] = "Offline Tokyo subset; dynamic availability removed; other locations use coarse ancestors"
-    (target / "layer.json").write_text(json.dumps(layer, ensure_ascii=False, separators=(",", ":")) + "\n")
+    temporary = target / 'layer.json.tmp'
+    try:
+        temporary.write_text(json.dumps(layer, ensure_ascii=False, separators=(",", ":")) + "\n")
+        temporary.replace(target / 'layer.json')
+    finally:
+        temporary.unlink(missing_ok=True)
     return {"url": "/models/terrain/plateau/", "source": TERRAIN_URL,
             "rectangle": bbox, "maximumLevel": 15, "tiles": len(jobs),
             "heightDatum": "ellipsoidal (source geoid correction retained)",
@@ -420,14 +439,21 @@ def main():
     download = Downloader(args.max_mib * 1024 * 1024)
     if not args.skip_vendor:
         install_vendor(download)
-    create_model(root / "drone" / "multirotor.glb")
-    shutil.copyfile(VIEWER.parents[2] / "LICENSE", root / "drone" / "LICENSE")
     manifest_path = root / "asset-manifest.json"
     manifest = json.loads(manifest_path.read_text()) if manifest_path.exists() else {}
+    # Keep a user's converted CAD model when refreshing map data.
+    drone_path = root / "drone" / "multirotor.glb"
+    if not drone_path.exists():
+        create_model(drone_path)
+        shutil.copyfile(VIEWER.parents[2] / "LICENSE", root / "drone" / "LICENSE")
+        manifest["drone"] = {"url": "/models/drone/multirotor.glb",
+                             "axes": "+X forward, +Y up, +Z right", "units": "metres",
+                             "source": "Original OpenKAI procedural geometry", "license": "AGPL-3.0"}
+    elif "drone" not in manifest:
+        manifest["drone"] = {"url": "/models/drone/multirotor.glb",
+                             "source": "Existing user-supplied model; preserved during map refresh"}
     manifest.update({"format": "openkai-mavlink-assets/1", "cesiumVersion": "1.138.0",
-                     "threeVersion": "0.185.0", "drone": {"url": "/models/drone/multirotor.glb",
-                     "axes": "+X forward, +Y up, +Z right", "units": "metres",
-                     "source": "Original OpenKAI procedural geometry", "license": "AGPL-3.0"}})
+                     "threeVersion": "0.185.0"})
     natural = VIEWER / "vendor" / "cesium" / "Assets" / "Textures" / "NaturalEarthII"
     if natural.is_dir():
         shutil.copytree(natural, root / "imagery" / "natural-earth", dirs_exist_ok=True)
@@ -454,7 +480,8 @@ def main():
         "Offline subset, gzip decoded, dynamic availability removed.\n"
         "Global overview: Natural Earth II (public domain), distributed with CesiumJS.\n"
         "https://www.naturalearthdata.com/about/terms-of-use/\n"
-        "Drone: original OpenKAI geometry, AGPL-3.0; see drone/LICENSE.\n")
+        "Drone: " + manifest["drone"].get("source", "User-supplied model") + ".\n"
+        "See asset-manifest.json and any source-model documentation in drone/.\n")
     manifest["files"] = [{"path": str(p.relative_to(root)), "bytes": p.stat().st_size, "sha256": digest(p)}
                          for p in sorted(root.rglob("*")) if p.is_file() and p != manifest_path]
     manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n")
