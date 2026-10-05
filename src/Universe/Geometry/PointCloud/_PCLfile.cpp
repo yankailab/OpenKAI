@@ -1,11 +1,11 @@
 /*
- * _PCfile.cpp
+ * _PCLfile.cpp
  *
  *  Created on: Sept 3, 2020
  *      Author: yankai
  */
 
-#include "_PCfile.h"
+#include "_PCLfile.h"
 
 #include <cerrno>
 #include <cctype>
@@ -738,15 +738,15 @@ namespace
 namespace kai
 {
 
-	_PCfile::_PCfile()
+	_PCLfile::_PCLfile()
 	{
 	}
 
-	_PCfile::~_PCfile()
+	_PCLfile::~_PCLfile()
 	{
 	}
 
-	bool _PCfile::savePLY(const string &path, const vector<GEOMETRY_POINT> &points,
+	bool _PCLfile::savePLY(const string &path, const vector<GEOMETRY_POINT> &points,
 		string *error)
 	{
 		static_assert(sizeof(float) == 4 && std::numeric_limits<float>::is_iec559,
@@ -829,7 +829,7 @@ namespace kai
 		}
 	}
 
-	bool _PCfile::loadConfig(void)
+	bool _PCLfile::loadConfig(void)
 	{
 		IF_F(!this->_ReferenceFrame::loadConfig());
 		const json &j = *m_pJ;
@@ -839,7 +839,7 @@ namespace kai
 		return true;
 	}
 
-	bool _PCfile::saveConfig(bool bExport)
+	bool _PCLfile::saveConfig(bool bExport)
 	{
 		IF_F(!_ReferenceFrame::saveConfig(false));
 
@@ -850,7 +850,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _PCfile::link(InstanceMgr *pM)
+	bool _PCLfile::link(InstanceMgr *pM)
 	{
 		if (!_ReferenceFrame::link(pM))
 		{
@@ -865,12 +865,12 @@ namespace kai
 		return open();
 	}
 
-	bool _PCfile::check(void)
+	bool _PCLfile::check(void)
 	{
 		return m_pPCLout && _ReferenceFrame::check();
 	}
 
-	void _PCfile::clear(void)
+	void _PCLfile::clear(void)
 	{
 		if (m_pPCLout)
 		{
@@ -878,7 +878,7 @@ namespace kai
 		}
 	}
 
-	bool _PCfile::open(void)
+	bool _PCLfile::open(void)
 	{
 		IF_F(!m_pPCLout || m_vfName.empty());
 
@@ -914,13 +914,13 @@ namespace kai
 		return true;
 	}
 
-	bool _PCfile::start(void)
+	bool _PCLfile::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->startThread(getUpdate, this);
 	}
 
-	void _PCfile::update(void)
+	void _PCLfile::update(void)
 	{
 		while (m_pT->bRun())
 		{

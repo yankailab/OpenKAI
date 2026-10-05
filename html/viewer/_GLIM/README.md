@@ -157,7 +157,7 @@ Restart OpenKAI after changing those profile files; the editable controls apply
 on the next Start without replacing GLIM's process-global configuration.
 
 **Save point cloud** writes a binary little-endian XYZ/RGB PLY on the backend PC
-using `_PCfile::savePLY`. It snapshots all completed submaps plus retained
+using `_PCLfile::savePLY`. It snapshots all completed submaps plus retained
 unfinished frames at their current poses, including up to `nLiveFrames` of
 recent history. This export is independent of the display cloud's `nMapPoints`
 limit. It contains GLIM's processed points, not all raw sensor samples. Stop first

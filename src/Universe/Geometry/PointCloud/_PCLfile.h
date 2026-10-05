@@ -1,12 +1,12 @@
 /*
- * _PCfile.h
+ * _PCLfile.h
  *
  *  Created on: Sept 3, 2020
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Universe_Geometry_PointCloud_PCfile_H_
-#define OpenKAI_src_Universe_Geometry_PointCloud_PCfile_H_
+#ifndef OpenKAI_src_Universe_Geometry_PointCloud_PCLfile_H_
+#define OpenKAI_src_Universe_Geometry_PointCloud_PCLfile_H_
 
 #include "../../_ReferenceFrame.h"
 #include "../../../DataObject/PCLframe.h"
@@ -14,11 +14,11 @@
 namespace kai
 {
 
-	class _PCfile : public _ReferenceFrame
+	class _PCLfile : public _ReferenceFrame
 	{
 	public:
-		_PCfile();
-		virtual ~_PCfile();
+		_PCLfile();
+		virtual ~_PCLfile();
 
 		virtual bool loadConfig(void) override;
 		bool saveConfig(bool bExport) override;
@@ -37,7 +37,7 @@ namespace kai
 		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
-			((_PCfile *)This)->update();
+			((_PCLfile *)This)->update();
 			return NULL;
 		}
 

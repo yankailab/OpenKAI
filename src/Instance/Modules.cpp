@@ -31,7 +31,7 @@ namespace kai
 		ADD_MODULE(_OctreeBase);
 		ADD_MODULE(_OctreeGrid);
 		ADD_MODULE(_SelectableOctGrid);
-		ADD_MODULE(_PCfile);
+		ADD_MODULE(_PCLfile);
 		ADD_MODULE(_PCmerge);
 		ADD_MODULE(_PCsend);
 		ADD_MODULE(_PCrecv);

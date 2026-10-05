@@ -6,7 +6,7 @@
  */
 
 #include "_GLIM.h"
-#include "../Universe/Geometry/PointCloud/_PCfile.h"
+#include "../Universe/Geometry/PointCloud/_PCLfile.h"
 
 #include <filesystem>
 #include <glim/util/config.hpp>
@@ -717,7 +717,7 @@ namespace kai
 			collectMapPoints(points, 0, true, getTns());
 		}
 		if (points.empty()) { error = "No map points are available to save"; return false; }
-		IF_F(!_PCfile::savePLY(path, points, &error));
+		IF_F(!_PCLfile::savePLY(path, points, &error));
 		count = points.size();
 		return true;
 	}

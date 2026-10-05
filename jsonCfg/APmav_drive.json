@@ -183,7 +183,7 @@
 		"estD": 1
 	},
 	"pcFile": {
-		"class": "_PCfile",
+		"class": "_PCLfile",
 		"bON": false,
 		"bLog": true,
 		"thread": {

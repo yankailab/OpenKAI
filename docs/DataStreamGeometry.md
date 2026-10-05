@@ -30,7 +30,7 @@ DataObject link keys end in `In` for inputs and `Out` for outputs. The suffix de
 | `_Contour`, `_ArUco`, `_YOLO26detectONNX` | `RGBframeIn` | `BBoxStreamOut` |
 | `_SingleTracker` | `RGBframeIn`, target commands through `_TrackerBase` | `BBoxStreamOut` |
 | `_APmav_follow`, `_APmav_land` | `BBoxStreamIn`; optional `_TrackerBase` and `BBoxStreamTrackIn` | Existing autopilot controls |
-| `_PCfile`, `_PCrecv` | File or transport as configured | `PCLframeOut` |
+| `_PCLfile`, `_PCrecv` | File or transport as configured | `PCLframeOut` |
 | `_PCtransform` | `PCLframeIn` | `PCLframeOut` |
 | `_PCmerge` | `vPCLframesIn` array | `PCLframeOut` |
 | `_PCsend` | `PCLframeIn` | Existing transport module |
@@ -60,7 +60,7 @@ For example, a file, grid, and viewer can share one cloud without referring to t
 {
   "filePoints": { "type": "dataObject", "class": "PCLframe" },
   "pcFile": {
-    "class": "_PCfile",
+    "class": "_PCLfile",
     "PCLframeOut": "filePoints",
     "vfName": ["data/PointCloud/StanfordBunny/bun000.ply"]
   },

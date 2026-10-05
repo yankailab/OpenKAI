@@ -140,7 +140,7 @@ Replies echo the command/module/request ID, report `bSuccess` and optional
 `configFile`; point-cloud saves add `path` and `points`. `session` identifies the estimator lifecycle. `mapTimestampNs` and
 `submapTimestampNs` are decimal timestamps for the flat cloud and submap outputs.
 
-`savePointCloud` uses `_PCfile::savePLY` to write binary little-endian XYZ float32
+`savePointCloud` uses `_PCLfile::savePLY` to write binary little-endian XYZ float32
 and RGB uint8. It snapshots all completed submaps at their latest optimized
 poses plus retained unfinished frames, up to `nLiveFrames` of recent history.
 It bypasses `nMapPoints` and the optional display cloud; it still exports GLIM's

@@ -1,7 +1,7 @@
 import { CELL_BYTES, validateCellIDs } from './octreeCells.js';
 export const PROTOCOL_VERSION = 6;
 export const STREAM_TYPES = ['points', 'lines', 'cells'];
-export const MAX_FRAME_BYTES = 64 * 1024 * 1024;
+export const MAX_FRAME_BYTES = 256 * 1024 * 1024;
 const littleEndian = new Uint8Array(new Uint16Array([1]).buffer)[0] === 1;
 
 // One complete snapshot of one geometry type. Validate before returning any

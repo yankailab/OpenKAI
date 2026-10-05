@@ -216,7 +216,7 @@ def run(browser, editor):
             throw Error('Removed geometry base classes must not remain in the catalog');
         const producers = new OpenKAIModel(OPENKAI_SCHEMA);
         producers.addNode('PCLframe', 'points');
-        for (const name of ['_PCfile', '_PCtransform', '_PCmerge', '_PCrecv',
+        for (const name of ['_PCLfile', '_PCtransform', '_PCmerge', '_PCrecv',
                             '_Livox2', '_RoboSenseAiry', '_PCregistCol', '_LCalign']) {
             const definition = producers.getClass(name);
             if (JSON.stringify(definition.baseClasses) !== '["_ReferenceFrame"]')

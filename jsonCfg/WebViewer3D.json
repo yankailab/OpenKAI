@@ -7,16 +7,20 @@
   },
 
   "pcFile": {
-    "class": "_PCfile",
+    "class": "_PCLfile",
     "bON": true,
     "bLog": true,
     "thread": {
       "FPS": 1
     },
     "vfName": [
-      "data/PointCloud/StanfordBunny/bun000.ply"
+      "/home/kai/dev/models/nagano_sparse.ply"
     ],
     "PCLframeOut": "pcFilePoints"
+  },
+  "pcFilePoints": {
+    "type": "dataObject",
+    "class": "PCLframe"
   },
 
   "cam": {
@@ -47,7 +51,6 @@
     "btDepth": false,
     "bIR": false
   },
-
   "scPC": {
     "type": "dataObject",
     "class": "PCLframe"
@@ -82,7 +85,7 @@
     "host": "0.0.0.0",
     "port": 8080,
     "nClientMax": 8,
-    "nPbuf": 400000,
+    "nPbuf": 9000000,
     "nLbuf": 100000,
     "dTexpire": 0,
     "bAutoBound": true,
@@ -116,7 +119,7 @@
       },
       {
         "PCLframeIn": "pcFilePoints",
-        "nP": 4000000,
+        "nP": 9000000,
         "nL": 0,
         "matPointSize": 2
       }
@@ -170,10 +173,7 @@
       "pcFile"
     ]
   },
-  "pcFilePoints": {
-    "type": "dataObject",
-    "class": "PCLframe"
-  },
+
   "wsCmdServer_tx": {
     "type": "dataObject",
     "class": "BytePacketStream",

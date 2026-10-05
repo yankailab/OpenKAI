@@ -44,6 +44,15 @@ see [ImGUIviewer.md](3D/ImGUIviewer.md).
 sudo apt-get -y install libimage-exiftool-perl
 ```
 
+# (Optional) CUDA toolkit
+```bash
+wget https://developer.download.nvidia.com/compute/cuda/13.4.2/local_installers/cuda_13.4.2_linux.run
+sudo sh cuda_13.4.2_linux.run
+
+echo 'export PATH=/usr/local/cuda-13.4/bin:$PATH' >> ~/.bashrc
+echo 'export LD_LIBRARY_PATH=/usr/local/cuda-13.4/lib64:$LD_LIBRARY_PATH' >> ~/.bashrc
+source ~/.bashrc
+```
 
 # CMake
 ## Install from apt-get

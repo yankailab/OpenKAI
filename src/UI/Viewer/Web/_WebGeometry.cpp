@@ -72,7 +72,7 @@ namespace kai
 			for (const auto &source : m_sources.m_vGeometry) if (includes(source, stream.type))
 				bytes += webselectableoctgrid::ObjectBytes + webselectableoctgrid::vertexBytes(
 					stream.type == webselectableoctgrid::Type::Points ? size_t(source.m_nP) : size_t(source.m_nL) * 2);
-			IF_Le_F(bytes > webselectableoctgrid::MaxFrameBytes, string(webselectableoctgrid::name(stream.type)) + " stream exceeds 64 MiB; reduce its caps");
+			IF_Le_F(bytes > webselectableoctgrid::MaxFrameBytes, string(webselectableoctgrid::name(stream.type)) + " stream exceeds 256 MiB; reduce its caps");
 		}
 		return true;
 	}

@@ -69,7 +69,7 @@ cmake \
 make -j$(nproc)
 ```
 
-`USE_OPEN3D` is not required for the viewer or `_PCfile` PLY input. Optional
+`USE_OPEN3D` is not required for the viewer or `_PCLfile` PLY input. Optional
 Open3D-backed processing and registration modules remain separate.
 
 When using `IMGUI_DIR`, OpenKAI compiles ImGui and the selected backend sources directly. When using `IMGUI_INCLUDE_DIR` and `IMGUI_LIBRARIES`, OpenKAI links the core ImGui library and compiles backend sources if their `.cpp` files are available in `IMGUI_BACKENDS_DIR`.
@@ -151,7 +151,7 @@ point-cloud DataObject names.
 data/PointCloud/StanfordBunny/bun000.ply
 ```
 
-This sample uses `_PCfile` for PLY file I/O and publishes an independent
+This sample uses `_PCLfile` for PLY file I/O and publishes an independent
 `PCLframe`. The sample and runtime point/line viewers work without Open3D. The sample is `bun000.ply`, a 1.9 MB Stanford Bunny range scan mirror from the University of New Mexico public directory:
 
 ```bash

@@ -6,7 +6,7 @@
  */
 
 #include "_LCalign.h"
-#include "../Universe/Geometry/PointCloud/_PCfile.h"
+#include "../Universe/Geometry/PointCloud/_PCLfile.h"
 
 namespace kai
 {
@@ -349,7 +349,7 @@ namespace kai
 			{
 				m_pPCLout->get(points);
 			}
-			bool bR = m_pPCLout && _PCfile::savePLY(fPly, points);
+			bool bR = m_pPCLout && _PCLfile::savePLY(fPly, points);
 
 			NULL_(pJb);
 			json jr = json::object();

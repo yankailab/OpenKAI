@@ -78,7 +78,7 @@ namespace kai
 					bytes += webselectableoctgrid::ObjectBytes + webselectableoctgrid::vertexBytes(
 						type == webselectableoctgrid::Type::Points ? size_t(source.m_nP) : size_t(source.m_nL) * 2);
 			}
-			IF_Le_F(bytes > webselectableoctgrid::MaxFrameBytes, string(webselectableoctgrid::name(type)) + " stream exceeds 64 MiB; reduce its caps");
+			IF_Le_F(bytes > webselectableoctgrid::MaxFrameBytes, string(webselectableoctgrid::name(type)) + " stream exceeds 256 MiB; reduce its caps");
 		}
 		return true;
 	}

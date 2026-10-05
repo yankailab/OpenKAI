@@ -21,7 +21,7 @@ namespace kai::webselectableoctgrid
 		throw std::invalid_argument("Invalid geometry stream type");
 	}
 	constexpr size_t HeaderBytes = 32, ObjectBytes = 40, GridHeaderBytes = 40;
-	constexpr size_t CellBytes = sizeof(OCTGRID_CELL), MaxFrameBytes = 64 * 1024 * 1024;
+	constexpr size_t CellBytes = sizeof(OCTGRID_CELL), MaxFrameBytes = 256 * 1024 * 1024;
 	inline size_t vertexBytes(size_t count) { return (count * 15 + 3) & ~size_t(3); }
 
 	inline void u32(std::vector<uint8_t> &b, size_t at, uint32_t v)
@@ -53,7 +53,7 @@ namespace kai::webselectableoctgrid
 	{
 		if (b.size() < HeaderBytes || b[8] != uint32_t(type)) throw std::invalid_argument("Geometry type does not match stream");
 		if (count > UINT32_MAX || payloadBytes > MaxFrameBytes || b.size() + ObjectBytes + payloadBytes > MaxFrameBytes)
-			throw std::length_error("Geometry stream exceeds the 64 MiB frame limit");
+			throw std::length_error("Geometry stream exceeds the 256 MiB frame limit");
 		const size_t at = b.size(); b.resize(at + ObjectBytes);
 		u32(b, at, id); u32(b, at + 4, uint32_t(count));
 		f32(b, at + 8, pointSize); f32(b, at + 12, opacity);

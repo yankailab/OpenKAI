@@ -58,7 +58,7 @@
 		}
 	},
 	"pcf": {
-		"class": "_PCfile",
+		"class": "_PCLfile",
 		"bON": true,
 		"bLog": true,
 		"/_PCviewer": "pcv",
@@ -69,7 +69,7 @@
 			"/home/kai/dev/Open3D/examples/test_data/fragment.pcd"
 		],
 		"PCLframeOut": "pcfPCL",
-		"/migration": "The current _PCfile reader accepts PLY data. Convert the external PCD file to PLY and update vfName before use; the original path is preserved here.",
+		"/migration": "The current _PCLfile reader accepts PLY data. Convert the external PCD file to PLY and update vfName before use; the original path is preserved here.",
 		"/_Console": "OK_Console"
 	},
 	"tfPcf": {

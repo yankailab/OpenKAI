@@ -3,7 +3,7 @@
   "title": "OpenKAI editor class catalog",
   "description": "Source-derived editor metadata; not a JSON Schema validator. See SCHEMA.md.",
   "generator": "tools/generate-schema.py",
-  "sourceDigest": "b4c90fb10888beda3f8c1e0025b8b5a1cbb24336e276179c76aded61ed4697c9",
+  "sourceDigest": "a82ff949378324e0c168a08c36e58d82a8f104a1aa241036bd982935b693fb60",
   "categories": [
     "Actuator",
     "Actuator/Articulated",
@@ -15629,7 +15629,7 @@
     {
       "name": "WebSocketStream",
       "category": "IO",
-      "source": "src/IO/WebSocketStream.h:13",
+      "source": "src/IO/WebSocketStream.h:14",
       "baseClasses": [],
       "parameters": [],
       "dependencies": [],
@@ -15702,7 +15702,7 @@
     {
       "name": "Modules",
       "category": "Instance",
-      "source": "src/Instance/Modules.h:272",
+      "source": "src/Instance/Modules.h:273",
       "baseClasses": [],
       "parameters": [],
       "dependencies": [],
@@ -16597,7 +16597,7 @@
     {
       "name": "HttpServer",
       "category": "Net",
-      "source": "src/Net/HttpServer.h:20",
+      "source": "src/Net/HttpServer.h:22",
       "baseClasses": [],
       "parameters": [],
       "dependencies": [],
@@ -25640,6 +25640,198 @@
       "configurable": true
     },
     {
+      "name": "_WebMavlinkStream",
+      "category": "UI/Viewer/Web",
+      "source": "src/UI/Viewer/Web/_WebMavlinkStream.h:18",
+      "baseClasses": [
+        "_ModuleBase"
+      ],
+      "parameters": [
+        {
+          "path": [
+            "MavlinkStream"
+          ],
+          "type": "string",
+          "declaredIn": "_WebMavlinkStream",
+          "source": "src/UI/Viewer/Web/_WebMavlinkStream.cpp:22",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_streamName",
+          "cppType": "std::string"
+        },
+        {
+          "path": [
+            "bLog"
+          ],
+          "type": "boolean",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:58",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_bLog",
+          "cppType": "bool",
+          "default": false
+        },
+        {
+          "path": [
+            "bON"
+          ],
+          "type": "boolean",
+          "source": "src/Instance/InstanceMgr.cpp:createAll",
+          "declaredIn": "BASE",
+          "extraction": "audited-adapter",
+          "default": true,
+          "description": "false disables this instance; true enables it."
+        },
+        {
+          "path": [
+            "class"
+          ],
+          "type": "string",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:57",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_class",
+          "cppType": "string",
+          "default": ""
+        },
+        {
+          "path": [
+            "host"
+          ],
+          "type": "string",
+          "declaredIn": "_WebMavlinkStream",
+          "source": "src/UI/Viewer/Web/_WebMavlinkStream.cpp:18",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_host",
+          "cppType": "std::string",
+          "default": "0.0.0.0"
+        },
+        {
+          "path": [
+            "modelsRoot"
+          ],
+          "type": "string",
+          "declaredIn": "_WebMavlinkStream",
+          "source": "src/UI/Viewer/Web/_WebMavlinkStream.cpp:21",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_modelsRoot",
+          "cppType": "std::string",
+          "default": "/home/kai/dev/models/webMavlink"
+        },
+        {
+          "path": [
+            "nClientMax"
+          ],
+          "type": "integer",
+          "declaredIn": "_WebMavlinkStream",
+          "source": "src/UI/Viewer/Web/_WebMavlinkStream.cpp:23",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_maxClients",
+          "cppType": "int",
+          "default": 8
+        },
+        {
+          "path": [
+            "name"
+          ],
+          "type": "string",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:56",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_name",
+          "cppType": "string",
+          "default": ""
+        },
+        {
+          "path": [
+            "port"
+          ],
+          "type": "integer",
+          "declaredIn": "_WebMavlinkStream",
+          "source": "src/UI/Viewer/Web/_WebMavlinkStream.cpp:19",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_port",
+          "cppType": "int",
+          "default": 8080
+        },
+        {
+          "path": [
+            "staleAfterMs"
+          ],
+          "type": "integer",
+          "declaredIn": "_WebMavlinkStream",
+          "source": "src/UI/Viewer/Web/_WebMavlinkStream.cpp:24",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_staleAfterMs",
+          "cppType": "uint64_t",
+          "default": 3000
+        },
+        {
+          "path": [
+            "thread",
+            "FPS"
+          ],
+          "type": "number",
+          "declaredIn": "_Thread",
+          "source": "src/Base/_Thread.cpp:60",
+          "typeEvidence": "declaration",
+          "cppVariable": "FPS",
+          "cppType": "float",
+          "default": 30,
+          "embeddedClass": "_Thread"
+        },
+        {
+          "path": [
+            "thread",
+            "bLog"
+          ],
+          "type": "boolean",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:58",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_bLog",
+          "cppType": "bool",
+          "default": false,
+          "embeddedClass": "_Thread"
+        },
+        {
+          "path": [
+            "webRoot"
+          ],
+          "type": "string",
+          "declaredIn": "_WebMavlinkStream",
+          "source": "src/UI/Viewer/Web/_WebMavlinkStream.cpp:20",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_root",
+          "cppType": "std::string",
+          "default": "html/viewer/mavlink"
+        }
+      ],
+      "dependencies": [],
+      "containers": [
+        {
+          "path": [
+            "thread"
+          ],
+          "type": "object"
+        }
+      ],
+      "diagnostics": [
+        {
+          "source": "src/UI/Viewer/Web/_WebMavlinkStream.cpp:60",
+          "kind": "unresolved-module-reference",
+          "expression": "m_streamName"
+        }
+      ],
+      "creatable": true,
+      "instanceKind": "module",
+      "buildConditions": [
+        [
+          "ifdef WITH_UNIVERSE"
+        ]
+      ],
+      "configurable": true
+    },
+    {
       "name": "_WebSelectableOctGrid",
       "category": "UI/Viewer/Web",
       "source": "src/UI/Viewer/Web/_WebSelectableOctGrid.h:18",
@@ -26820,9 +27012,9 @@
       "configurable": true
     },
     {
-      "name": "_PCfile",
+      "name": "_PCLfile",
       "category": "Universe/Geometry/PointCloud",
-      "source": "src/Universe/Geometry/PointCloud/_PCfile.h:17",
+      "source": "src/Universe/Geometry/PointCloud/_PCLfile.h:17",
       "baseClasses": [
         "_ReferenceFrame"
       ],
@@ -26832,8 +27024,8 @@
             "PCLframeOut"
           ],
           "type": "string",
-          "declaredIn": "_PCfile",
-          "source": "src/Universe/Geometry/PointCloud/_PCfile.cpp:861",
+          "declaredIn": "_PCLfile",
+          "source": "src/Universe/Geometry/PointCloud/_PCLfile.cpp:861",
           "typeEvidence": "declaration",
           "cppVariable": "name",
           "cppType": "string",
@@ -26941,8 +27133,8 @@
             "vfName"
           ],
           "type": "array",
-          "declaredIn": "_PCfile",
-          "source": "src/Universe/Geometry/PointCloud/_PCfile.cpp:837",
+          "declaredIn": "_PCLfile",
+          "source": "src/Universe/Geometry/PointCloud/_PCLfile.cpp:837",
           "typeEvidence": "declaration",
           "cppVariable": "m_vfName",
           "cppType": "vector<string>"
@@ -26956,8 +27148,8 @@
           "targetClass": "PCLframe",
           "targetKind": "dataObject",
           "multiple": false,
-          "declaredIn": "_PCfile",
-          "source": "src/Universe/Geometry/PointCloud/_PCfile.cpp:862",
+          "declaredIn": "_PCLfile",
+          "source": "src/Universe/Geometry/PointCloud/_PCLfile.cpp:862",
           "required": true,
           "containers": []
         }
@@ -39791,10 +39983,10 @@
     ]
   },
   "audit": {
-    "sourceFiles": 440,
-    "classCount": 214,
-    "classDeclarations": 214,
-    "creatableClassCount": 124,
+    "sourceFiles": 444,
+    "classCount": 215,
+    "classDeclarations": 215,
+    "creatableClassCount": 125,
     "factoryClassesWithoutDeclaration": [
       "_TestJSON",
       "_TestWebSocket"
@@ -40130,11 +40322,15 @@
       "src/UI/Viewer/SelectableOctGridSources.h",
       "src/UI/Viewer/Web/WebGLIMProtocol.h",
       "src/UI/Viewer/Web/WebGeometryCache.h",
+      "src/UI/Viewer/Web/WebMavlinkProtocol.cpp",
+      "src/UI/Viewer/Web/WebMavlinkProtocol.h",
       "src/UI/Viewer/Web/WebSelectableOctGridProtocol.h",
       "src/UI/Viewer/Web/_WebGLIM.cpp",
       "src/UI/Viewer/Web/_WebGLIM.h",
       "src/UI/Viewer/Web/_WebGeometry.cpp",
       "src/UI/Viewer/Web/_WebGeometry.h",
+      "src/UI/Viewer/Web/_WebMavlinkStream.cpp",
+      "src/UI/Viewer/Web/_WebMavlinkStream.h",
       "src/UI/Viewer/Web/_WebSelectableOctGrid.cpp",
       "src/UI/Viewer/Web/_WebSelectableOctGrid.h",
       "src/UI/_Console.cpp",
@@ -40163,8 +40359,8 @@
       "src/Universe/Geometry/PointCloud/Registration/_PCregistGlobal.h",
       "src/Universe/Geometry/PointCloud/Registration/_PCregistICP.cpp",
       "src/Universe/Geometry/PointCloud/Registration/_PCregistICP.h",
-      "src/Universe/Geometry/PointCloud/_PCfile.cpp",
-      "src/Universe/Geometry/PointCloud/_PCfile.h",
+      "src/Universe/Geometry/PointCloud/_PCLfile.cpp",
+      "src/Universe/Geometry/PointCloud/_PCLfile.h",
       "src/Universe/Geometry/_GeometryViewerBase.cpp",
       "src/Universe/Geometry/_GeometryViewerBase.h",
       "src/Universe/Grid/_OctreeBase.cpp",
@@ -40241,13 +40437,13 @@
       "src/Vision/_VideoFile.h",
       "src/main.cpp"
     ],
-    "configReads": 648,
-    "resolvedReads": 636,
-    "moduleLookups": 123,
+    "configReads": 655,
+    "resolvedReads": 643,
+    "moduleLookups": 124,
     "resolvedLookups": 119,
     "unresolvedReads": 12,
-    "unresolvedLookups": 4,
-    "diagnosticsCount": 16,
+    "unresolvedLookups": 5,
+    "diagnosticsCount": 17,
     "diagnostics": [
       {
         "source": "src/UI/Viewer/SelectableOctGridSources.cpp:68",
@@ -40365,6 +40561,12 @@
         "key": "matPointSize",
         "resolution": "Covered by the viewer adapters in this generator.",
         "className": "SelectableOctGridSources"
+      },
+      {
+        "source": "src/UI/Viewer/Web/_WebMavlinkStream.cpp:60",
+        "kind": "unresolved-module-reference",
+        "expression": "m_streamName",
+        "className": "_WebMavlinkStream"
       },
       {
         "source": "src/Universe/Grid/_OctreeGrid.cpp:177",

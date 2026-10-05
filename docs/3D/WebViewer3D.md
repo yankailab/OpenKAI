@@ -35,7 +35,7 @@ compiled from headers;
 no Boost runtime library, wsServer, Open3D, ImGui, or desktop GL backend is needed
 for streaming. The current sample uses `_Scepter` camera geometry and octree
 cells; enable its camera build dependencies when running that configuration.
-The optional `_PCfile` source can load `data/PointCloud/StanfordBunny/bun000.ply`.
+The optional `_PCLfile` source can load `data/PointCloud/StanfordBunny/bun000.ply`.
 Run from the repository root so relative data paths resolve.
 
 Open `html/viewer/_SelectableOctGrid/index.html` directly in the browser, enter the backend IP
@@ -311,6 +311,12 @@ display label. Declare the named streams and connect producers to them as shown
 in [the DataObject migration guide](../DataStreamGeometry.md).
 Per-source limits are capped by the viewer's corresponding rendering
 limit; zero disables that output. A zero cell limit still publishes its root header.
+Point output takes the first `min(nPbuf, nP)` valid points, so a spatially ordered
+PLY can look cropped when this cap is too small. To display an entire file, set
+both the viewer `nPbuf` and its `vGeometry[].nP` to at least the PLY vertex count.
+For example, a 6,231,958-point cloud needs about 89.2 MiB for XYZ/RGB output;
+`nPbuf: 9000000` with a matching file-source `nP` accommodates it. The combined
+configured caps of all visible sources must still fit the frame limit.
 The removed `vReferenceFrame`, viewer `vGeometryBase`, `geometry`, and
 `_ReferenceFrame` entry aliases are rejected. Per-source caps use `nP`, `nL`,
 and `nC`, with no `nPbuf`/`nLbuf`/`nCbuf` entry aliases.
@@ -425,7 +431,7 @@ The browser allocates point/line objects for geometry sources and box instances
 for grid sources. It rejects a stream whose type conflicts with its source.
 Resources are released when the source's last stream disappears; source visibility
 and selected grid cells survive reconnects.
-Each type's configured worst-case snapshot is limited to 64 MiB; the viewer supports
+Each type's configured worst-case snapshot is limited to 256 MiB; the viewer supports
 1024 sources. The byte lengths below apply independently to each stream.
 
 For a cells-only viewer, set `nPbuf` and `nLbuf` to zero and include the grid source:
@@ -543,6 +549,16 @@ these records for selection and command sending. Rendering positions remain floa
 visually indistinguishable even though their 128-bit IDs remain exact.
 
 ## Verification
+
+Large-cloud regressions use an existing `WITH_UNIVERSE=ON` build and Node.js:
+
+```bash
+python3 test/run_web_geometry_tests.py build
+node --test test/UI/web_geometry_protocol.test.mjs
+```
+
+These check source caps, both backend viewers, complete point frames above
+64 MiB, all five browser decoders, and rejection above the 256 MiB limit.
 
 The standalone regression suite uses CMake, a C++17 compiler, Eigen, glog and
 Python 3. Chrome is needed for frontend checks.

@@ -213,7 +213,7 @@ if(WITH_UNIVERSE)
   src/Universe/Grid/_OctreeBase.cpp
 	src/Universe/Grid/_OctreeGrid.cpp
 	src/Universe/Grid/_SelectableOctGrid.cpp
-	src/Universe/Geometry/PointCloud/_PCfile.cpp
+	src/Universe/Geometry/PointCloud/_PCLfile.cpp
 	src/Universe/Geometry/PointCloud/Pipeline/_PCmerge.cpp
 	src/Universe/Geometry/PointCloud/Pipeline/_PCsend.cpp
 	src/Universe/Geometry/PointCloud/Pipeline/_PCrecv.cpp
@@ -427,7 +427,7 @@ if(WITH_SLAM)
   if(NOT WITH_UNIVERSE)
     list(APPEND OpenKAI_cpp
 		src/Universe/_ReferenceFrame.cpp
-		src/Universe/Geometry/PointCloud/_PCfile.cpp
+		src/Universe/Geometry/PointCloud/_PCLfile.cpp
     )
   endif()
   if(USE_GLIM)
