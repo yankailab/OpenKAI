@@ -36,7 +36,7 @@ class StreamReferenceSchemaTest(unittest.TestCase):
         self.assertEqual(set(self.schema["audit"]["factoryClassesWithoutDeclaration"]), registered.difference(self.classes))
 
     def test_data_object_factories_and_configuration_defaults(self):
-        names = {"BBoxStream", "BytePacketStream", "IMUstream", "LineFrame", "MavlinkStream", "PCLframe", "PCLmap",
+        names = {"BBoxStream", "BytePacketStream", "CANframeStream", "IMUstream", "LineFrame", "MavlinkStream", "PCLframe", "PCLmap",
                  "RGBframe", "RGBDframe", "SharedMemoryFrame", "UGLIDcellStream"}
         self.assertEqual(
             {name for name, entry in self.classes.items() if entry["category"] == "DataObject" and entry["creatable"]},
@@ -54,7 +54,7 @@ class StreamReferenceSchemaTest(unittest.TestCase):
                 guards = [["ifdef USE_OPENCV"]] if name in {"RGBframe", "RGBDframe"} else [[]]
                 self.assertEqual(record["buildConditions"], guards)
         self.assertFalse(self.classes["DataObjBase"]["creatable"])
-        for name in ("BBoxStream", "IMUstream"):
+        for name in ("BBoxStream", "CANframeStream", "IMUstream"):
             self.assertEqual(self.parameters(name)[("nBuf",)]["type"], "integer")
             self.assertEqual(self.parameters(name)[("nBuf",)]["default"], 1000)
         self.assertEqual(self.parameters("BBoxStream")[("vContainerDim",)]["type"], "array")
@@ -92,7 +92,8 @@ class StreamReferenceSchemaTest(unittest.TestCase):
         self.assertEqual(self.parameters("MavlinkStream")[("nMsgQueue",)]["default"], 1024)
 
     def test_io_threads_are_independently_configurable(self):
-        classes = ("_IObase", "_UDP", "_TCPclient", "_SerialPort", "_WebSocket", "_WebSocketServer")
+        classes = ("_IObase", "_UDP", "_TCPclient", "_SerialPort", "_WebSocket", "_WebSocketServer",
+                   "_SocketCAN", "_USR_CANET")
         for name in classes:
             with self.subTest(class_name=name):
                 parameters = self.parameters(name)
@@ -104,6 +105,16 @@ class StreamReferenceSchemaTest(unittest.TestCase):
                     self.assertEqual(parameters[(thread, "bLog")]["type"], "boolean")
                     self.assertNotIn((thread, "class"), parameters)
                     self.assertNotIn((thread, "name"), parameters)
+
+    def test_can_transports_use_frame_streams(self):
+        self.assertNotIn("_CANbase", self.classes)
+        for name in ("_SocketCAN", "_USR_CANET"):
+            with self.subTest(class_name=name):
+                self.assertEqual(self.classes[name]["baseClasses"], ["_ModuleBase"])
+                for key in ("CANframeStreamIn", "CANframeStreamOut"):
+                    dependency = self.dependencies(name)[(key,)]
+                    self.assertEqual(dependency["targetKind"], "dataObject")
+                    self.assertEqual(dependency["targetClass"], "CANframeStream")
 
     def test_realsense_validated_configuration_and_option_domains(self):
         parameters = self.parameters("_RealSense")

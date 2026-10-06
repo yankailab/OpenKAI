@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Run packet storage, duplex transport, and parser tests against an existing CMake build.
 
-Usage: python3 test/run_byte_packet_tests.py [build-directory] [--mavlink-only | --mavlink-receive-only]
+Usage: python3 test/run_byte_packet_tests.py [build-directory] [--can-only | --mavlink-only | --mavlink-receive-only]
 Build OpenKAI with WITH_IO=ON and WITH_PROTOCOL=ON before running this script.
 WITH_ARDUPILOT=ON additionally exercises the MAVLink stream consumers.
 --mavlink-receive-only checks receive/link paths while outgoing message queue
@@ -43,6 +43,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("build_directory", nargs="?", type=pathlib.Path, default=repo / "build")
     modes = parser.add_mutually_exclusive_group()
+    modes.add_argument("--can-only", action="store_true", help="run CAN codecs and independent worker regressions only")
     modes.add_argument("--mavlink-only", action="store_true", help="run MAVLink stream, codec, and consumer regressions only")
     modes.add_argument("--mavlink-receive-only", action="store_true", help="run MAVLink receive/link regressions without outgoing queue encoding")
     options = parser.parse_args()
@@ -52,6 +53,7 @@ def main():
     link_args = link_command(build)
     sources = [
         "test/Protocol/BytePacketProtocols.cpp",
+        "test/Protocol/CANframeStreams.cpp",
         "test/DataObject/BytePacketStream.cpp",
         "test/DataObject/MavlinkStream.cpp",
         "test/Autopilot/MavlinkStreams.cpp",
@@ -78,7 +80,9 @@ def main():
         link_args[link_args.index("-o") + 1] = executable
         subprocess.run(link_args, cwd=build, check=True)
         test_args = [executable]
-        if options.mavlink_only:
+        if options.can_only:
+            test_args.append("--can-only")
+        elif options.mavlink_only:
             test_args.append("--mavlink-only")
         elif options.mavlink_receive_only:
             test_args.append("--mavlink-receive-only")

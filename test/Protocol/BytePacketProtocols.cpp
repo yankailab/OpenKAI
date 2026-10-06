@@ -4,11 +4,11 @@
 
 #include "../../src/Protocol/_JSONbase.h"
 #include "../../src/Protocol/_Mavlink.h"
-#include "../../src/Protocol/_USR_CANET.h"
 #include <atomic>
 #include <cassert>
 #include <iostream>
 
+void runCANStreamTests();
 void runBytePacketStreamTests();
 void runMavlinkStreamTests(bool testEncoding);
 void runMavlinkConsumerTests(bool testEncoding);
@@ -126,37 +126,6 @@ namespace kai
 		cmd.clear();
 		assert(!reader.readCommand(&cmd));
 		assert(!reader.readCommand(&cmd));
-	}
-
-	void testCanPackets(void)
-	{
-		BytePacketStream input;
-		BytePacketStream output;
-		_PacketTest<_USR_CANET> receiver(&input);
-		_PacketTest<_USR_CANET> sender(nullptr, &output);
-		CAN_F sent;
-		sent.clear();
-		sent.m_ID = 0x123;
-		sent.m_nData = 2;
-		sent.m_pData[0] = 10;
-		sent.m_pData[1] = 20;
-		assert(sender.sendFrame(sent));
-		vector<BYTE_PACKET> packets;
-		output.getPackets(packets);
-		assert(packets.size() == 1 && packets[0].m_vB.size() == CANET_BUF_N);
-		const vector<uint8_t> &frame = packets[0].m_vB;
-		input.addPacket(vector<uint8_t>(frame.begin(), frame.begin() + 5));
-		CAN_F received;
-		assert(!receiver.readFrame(&received));
-		vector<uint8_t> tail(frame.begin() + 5, frame.end());
-		tail.insert(tail.end(), frame.begin(), frame.end());
-		input.addPacket(tail);
-		assert(receiver.readFrame(&received));
-		assert(received.m_nData == 2 && received.m_pData[0] == 10 && received.m_pData[1] == 20);
-		assert(receiver.readFrame(&received));
-		assert(received.m_nData == 2 && received.m_pData[0] == 10 && received.m_pData[1] == 20);
-		assert(!receiver.readFrame(&received));
-		assert(!receiver.readFrame(&received));
 	}
 
 	void testMavlinkPackets(void)
@@ -298,6 +267,12 @@ namespace kai
 
 int main(int argc, char **argv)
 {
+	if (argc > 1 && std::string(argv[1]) == "--can-only")
+	{
+		runCANStreamTests();
+		std::cout << "CAN stream codecs and worker regressions passed\n";
+		return 0;
+	}
 	const bool receiveOnly = argc > 1 && std::string(argv[1]) == "--mavlink-receive-only";
 	runMavlinkStreamTests(!receiveOnly);
 	runMavlinkConsumerTests(!receiveOnly);
@@ -321,7 +296,7 @@ int main(int argc, char **argv)
 #endif
 	kai::testJsonPackets();
 	kai::testBinaryPackets();
-	kai::testCanPackets();
+	runCANStreamTests();
 	std::cout << "BytePacketStream and MavlinkStream storage, transport, protocol, and consumer regressions passed\n";
 	return 0;
 }

@@ -3,7 +3,7 @@
   "title": "OpenKAI editor class catalog",
   "description": "Source-derived editor metadata; not a JSON Schema validator. See SCHEMA.md.",
   "generator": "tools/generate-schema.py",
-  "sourceDigest": "a82ff949378324e0c168a08c36e58d82a8f104a1aa241036bd982935b693fb60",
+  "sourceDigest": "83a680f75ab47ce4e9838e8f118931fb3b483fc57cff64272de9b4adec6627f0",
   "categories": [
     "Actuator",
     "Actuator/Articulated",
@@ -10462,7 +10462,7 @@
           ],
           "type": "integer",
           "declaredIn": "BBoxStream",
-          "source": "src/DataObject/BBoxStream.cpp:24",
+          "source": "src/DataObject/BBoxStream.cpp:25",
           "typeEvidence": "declaration",
           "cppVariable": "m_nBuf",
           "cppType": "uint32_t",
@@ -10497,7 +10497,7 @@
           ],
           "type": "array",
           "declaredIn": "BBoxStream",
-          "source": "src/DataObject/BBoxStream.cpp:25",
+          "source": "src/DataObject/BBoxStream.cpp:26",
           "typeEvidence": "declaration",
           "cppVariable": "m_vContainerDim",
           "cppType": "Vector3f",
@@ -10580,6 +10580,95 @@
           "cppVariable": "m_nPbuf",
           "cppType": "size_t",
           "default": 2000
+        },
+        {
+          "path": [
+            "name"
+          ],
+          "type": "string",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:56",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_name",
+          "cppType": "string",
+          "default": ""
+        },
+        {
+          "path": [
+            "type"
+          ],
+          "type": "string",
+          "source": "src/Instance/InstanceMgr.cpp:createAll",
+          "declaredIn": "DataObjBase",
+          "extraction": "audited-adapter",
+          "default": "dataObject",
+          "description": "Create an independent DataObject rather than a worker module."
+        }
+      ],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": true,
+      "instanceKind": "dataObject",
+      "buildConditions": [
+        []
+      ],
+      "configurable": true
+    },
+    {
+      "name": "CANframeStream",
+      "category": "DataObject",
+      "source": "src/DataObject/CANframeStream.h:37",
+      "baseClasses": [
+        "DataObjBase"
+      ],
+      "parameters": [
+        {
+          "path": [
+            "bLog"
+          ],
+          "type": "boolean",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:58",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_bLog",
+          "cppType": "bool",
+          "default": false
+        },
+        {
+          "path": [
+            "bON"
+          ],
+          "type": "boolean",
+          "source": "src/Instance/InstanceMgr.cpp:createAll",
+          "declaredIn": "BASE",
+          "extraction": "audited-adapter",
+          "default": true,
+          "description": "false disables this instance; true enables it."
+        },
+        {
+          "path": [
+            "class"
+          ],
+          "type": "string",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:57",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_class",
+          "cppType": "string",
+          "default": ""
+        },
+        {
+          "path": [
+            "nBuf"
+          ],
+          "type": "integer",
+          "declaredIn": "CANframeStream",
+          "source": "src/DataObject/CANframeStream.cpp:28",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_nBuf",
+          "cppType": "uint32_t",
+          "default": 1000
         },
         {
           "path": [
@@ -11372,7 +11461,7 @@
     {
       "name": "UGLIDcellStream",
       "category": "DataObject",
-      "source": "src/DataObject/UGLIDcellStream.h:15",
+      "source": "src/DataObject/UGLIDcellStream.h:44",
       "baseClasses": [
         "DataObjBase"
       ],
@@ -11411,6 +11500,18 @@
           "cppVariable": "m_class",
           "cppType": "string",
           "default": ""
+        },
+        {
+          "path": [
+            "nBuf"
+          ],
+          "type": "integer",
+          "declaredIn": "UGLIDcellStream",
+          "source": "src/DataObject/UGLIDcellStream.cpp:28",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_nBuf",
+          "cppType": "uint32_t",
+          "default": 1000
         },
         {
           "path": [
@@ -15642,7 +15743,7 @@
     {
       "name": "DataObjects",
       "category": "Instance",
-      "source": "src/Instance/DataObjects.h:36",
+      "source": "src/Instance/DataObjects.h:37",
       "baseClasses": [],
       "parameters": [],
       "dependencies": [],
@@ -16619,116 +16720,6 @@
       "creatable": false,
       "buildConditions": [],
       "configurable": false
-    },
-    {
-      "name": "_CANbase",
-      "category": "Protocol",
-      "source": "src/Protocol/_CANbase.h:29",
-      "baseClasses": [
-        "_ModuleBase"
-      ],
-      "parameters": [
-        {
-          "path": [
-            "bLog"
-          ],
-          "type": "boolean",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bLog",
-          "cppType": "bool",
-          "default": false
-        },
-        {
-          "path": [
-            "bON"
-          ],
-          "type": "boolean",
-          "source": "src/Instance/InstanceMgr.cpp:createAll",
-          "declaredIn": "BASE",
-          "extraction": "audited-adapter",
-          "default": true,
-          "description": "false disables this instance; true enables it."
-        },
-        {
-          "path": [
-            "class"
-          ],
-          "type": "string",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:57",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_class",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "nErrReconnect"
-          ],
-          "type": "integer",
-          "declaredIn": "_CANbase",
-          "source": "src/Protocol/_CANbase.cpp:19",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_nErrReconnect",
-          "cppType": "int",
-          "default": 1
-        },
-        {
-          "path": [
-            "name"
-          ],
-          "type": "string",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:56",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_name",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "thread",
-            "FPS"
-          ],
-          "type": "number",
-          "declaredIn": "_Thread",
-          "source": "src/Base/_Thread.cpp:60",
-          "typeEvidence": "declaration",
-          "cppVariable": "FPS",
-          "cppType": "float",
-          "default": 30,
-          "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "thread",
-            "bLog"
-          ],
-          "type": "boolean",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bLog",
-          "cppType": "bool",
-          "default": false,
-          "embeddedClass": "_Thread"
-        }
-      ],
-      "dependencies": [],
-      "containers": [
-        {
-          "path": [
-            "thread"
-          ],
-          "type": "object"
-        }
-      ],
-      "diagnostics": [],
-      "creatable": false,
-      "buildConditions": [],
-      "configurable": true
     },
     {
       "name": "_JSONbase",
@@ -18106,11 +18097,33 @@
     {
       "name": "_SocketCAN",
       "category": "Protocol",
-      "source": "src/Protocol/_SocketCAN.h:10",
+      "source": "src/Protocol/_SocketCAN.h:13",
       "baseClasses": [
-        "_CANbase"
+        "_ModuleBase"
       ],
       "parameters": [
+        {
+          "path": [
+            "CANframeStreamIn"
+          ],
+          "type": "string",
+          "declaredIn": "_SocketCAN",
+          "source": "src/Protocol/_SocketCAN.cpp:58",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "CANframeStreamOut"
+          ],
+          "type": "string",
+          "declaredIn": "_SocketCAN",
+          "source": "src/Protocol/_SocketCAN.cpp:63",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
         {
           "path": [
             "bLog"
@@ -18152,7 +18165,7 @@
           ],
           "type": "string",
           "declaredIn": "_SocketCAN",
-          "source": "src/Protocol/_SocketCAN.cpp:20",
+          "source": "src/Protocol/_SocketCAN.cpp:34",
           "typeEvidence": "declaration",
           "cppVariable": "m_ifName",
           "cppType": "string",
@@ -18163,8 +18176,8 @@
             "nErrReconnect"
           ],
           "type": "integer",
-          "declaredIn": "_CANbase",
-          "source": "src/Protocol/_CANbase.cpp:19",
+          "declaredIn": "_SocketCAN",
+          "source": "src/Protocol/_SocketCAN.cpp:35",
           "typeEvidence": "declaration",
           "cppVariable": "m_nErrReconnect",
           "cppType": "int",
@@ -18209,13 +18222,70 @@
           "cppType": "bool",
           "default": false,
           "embeddedClass": "_Thread"
+        },
+        {
+          "path": [
+            "threadR",
+            "FPS"
+          ],
+          "type": "number",
+          "declaredIn": "_Thread",
+          "source": "src/Base/_Thread.cpp:60",
+          "typeEvidence": "declaration",
+          "cppVariable": "FPS",
+          "cppType": "float",
+          "default": 30,
+          "embeddedClass": "_Thread"
+        },
+        {
+          "path": [
+            "threadR",
+            "bLog"
+          ],
+          "type": "boolean",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:58",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_bLog",
+          "cppType": "bool",
+          "default": false,
+          "embeddedClass": "_Thread"
         }
       ],
-      "dependencies": [],
+      "dependencies": [
+        {
+          "path": [
+            "CANframeStreamIn"
+          ],
+          "targetClass": "CANframeStream",
+          "targetKind": "dataObject",
+          "multiple": false,
+          "declaredIn": "_SocketCAN",
+          "source": "src/Protocol/_SocketCAN.cpp:59",
+          "containers": []
+        },
+        {
+          "path": [
+            "CANframeStreamOut"
+          ],
+          "targetClass": "CANframeStream",
+          "targetKind": "dataObject",
+          "multiple": false,
+          "declaredIn": "_SocketCAN",
+          "source": "src/Protocol/_SocketCAN.cpp:64",
+          "containers": []
+        }
+      ],
       "containers": [
         {
           "path": [
             "thread"
+          ],
+          "type": "object"
+        },
+        {
+          "path": [
+            "threadR"
           ],
           "type": "object"
         }
@@ -18233,9 +18303,9 @@
     {
       "name": "_USR_CANET",
       "category": "Protocol",
-      "source": "src/Protocol/_USR_CANET.h:13",
+      "source": "src/Protocol/_USR_CANET.h:14",
       "baseClasses": [
-        "_CANbase"
+        "_ModuleBase"
       ],
       "parameters": [
         {
@@ -18244,7 +18314,7 @@
           ],
           "type": "string",
           "declaredIn": "_USR_CANET",
-          "source": "src/Protocol/_USR_CANET.cpp:36",
+          "source": "src/Protocol/_USR_CANET.cpp:48",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
           "dependency": true
@@ -18255,7 +18325,29 @@
           ],
           "type": "string",
           "declaredIn": "_USR_CANET",
-          "source": "src/Protocol/_USR_CANET.cpp:41",
+          "source": "src/Protocol/_USR_CANET.cpp:53",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "CANframeStreamIn"
+          ],
+          "type": "string",
+          "declaredIn": "_USR_CANET",
+          "source": "src/Protocol/_USR_CANET.cpp:58",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "CANframeStreamOut"
+          ],
+          "type": "string",
+          "declaredIn": "_USR_CANET",
+          "source": "src/Protocol/_USR_CANET.cpp:63",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
           "dependency": true
@@ -18297,18 +18389,6 @@
         },
         {
           "path": [
-            "nErrReconnect"
-          ],
-          "type": "integer",
-          "declaredIn": "_CANbase",
-          "source": "src/Protocol/_CANbase.cpp:19",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_nErrReconnect",
-          "cppType": "int",
-          "default": 1
-        },
-        {
-          "path": [
             "name"
           ],
           "type": "string",
@@ -18346,6 +18426,34 @@
           "cppType": "bool",
           "default": false,
           "embeddedClass": "_Thread"
+        },
+        {
+          "path": [
+            "threadR",
+            "FPS"
+          ],
+          "type": "number",
+          "declaredIn": "_Thread",
+          "source": "src/Base/_Thread.cpp:60",
+          "typeEvidence": "declaration",
+          "cppVariable": "FPS",
+          "cppType": "float",
+          "default": 30,
+          "embeddedClass": "_Thread"
+        },
+        {
+          "path": [
+            "threadR",
+            "bLog"
+          ],
+          "type": "boolean",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:58",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_bLog",
+          "cppType": "bool",
+          "default": false,
+          "embeddedClass": "_Thread"
         }
       ],
       "dependencies": [
@@ -18357,7 +18465,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_USR_CANET",
-          "source": "src/Protocol/_USR_CANET.cpp:37",
+          "source": "src/Protocol/_USR_CANET.cpp:49",
           "containers": []
         },
         {
@@ -18368,7 +18476,29 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_USR_CANET",
-          "source": "src/Protocol/_USR_CANET.cpp:42",
+          "source": "src/Protocol/_USR_CANET.cpp:54",
+          "containers": []
+        },
+        {
+          "path": [
+            "CANframeStreamIn"
+          ],
+          "targetClass": "CANframeStream",
+          "targetKind": "dataObject",
+          "multiple": false,
+          "declaredIn": "_USR_CANET",
+          "source": "src/Protocol/_USR_CANET.cpp:59",
+          "containers": []
+        },
+        {
+          "path": [
+            "CANframeStreamOut"
+          ],
+          "targetClass": "CANframeStream",
+          "targetKind": "dataObject",
+          "multiple": false,
+          "declaredIn": "_USR_CANET",
+          "source": "src/Protocol/_USR_CANET.cpp:64",
           "containers": []
         }
       ],
@@ -18376,6 +18506,12 @@
         {
           "path": [
             "thread"
+          ],
+          "type": "object"
+        },
+        {
+          "path": [
+            "threadR"
           ],
           "type": "object"
         }
@@ -39986,7 +40122,7 @@
     "sourceFiles": 444,
     "classCount": 215,
     "classDeclarations": 215,
-    "creatableClassCount": 125,
+    "creatableClassCount": 126,
     "factoryClassesWithoutDeclaration": [
       "_TestJSON",
       "_TestWebSocket"
@@ -40068,6 +40204,8 @@
       "src/DataObject/BBoxStream.h",
       "src/DataObject/BytePacketStream.cpp",
       "src/DataObject/BytePacketStream.h",
+      "src/DataObject/CANframeStream.cpp",
+      "src/DataObject/CANframeStream.h",
       "src/DataObject/DataObjBase.cpp",
       "src/DataObject/DataObjBase.h",
       "src/DataObject/IMUstream.cpp",
@@ -40251,8 +40389,6 @@
       "src/Primitive/RingBuffer.h",
       "src/Primitive/UUID128.h",
       "src/Primitive/vLongBit.h",
-      "src/Protocol/_CANbase.cpp",
-      "src/Protocol/_CANbase.h",
       "src/Protocol/_JSONbase.cpp",
       "src/Protocol/_JSONbase.h",
       "src/Protocol/_Mavlink.cpp",
@@ -40437,10 +40573,10 @@
       "src/Vision/_VideoFile.h",
       "src/main.cpp"
     ],
-    "configReads": 655,
-    "resolvedReads": 643,
-    "moduleLookups": 124,
-    "resolvedLookups": 119,
+    "configReads": 661,
+    "resolvedReads": 649,
+    "moduleLookups": 128,
+    "resolvedLookups": 123,
     "unresolvedReads": 12,
     "unresolvedLookups": 5,
     "diagnosticsCount": 17,

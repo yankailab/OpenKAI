@@ -1,25 +1,25 @@
 /*
- * UGLIDcellStream.cpp
+ * CANframeStream.cpp
  *
  *  Created on: Sep 28, 2026
  *      Author: yankai
  */
 
-#include "UGLIDcellStream.h"
+#include "CANframeStream.h"
 
 namespace kai
 {
 
-	UGLIDcellStream::UGLIDcellStream()
+	CANframeStream::CANframeStream()
 	{
 		clear(m_nBuf);
 	}
 
-	UGLIDcellStream::~UGLIDcellStream()
+	CANframeStream::~CANframeStream()
 	{
 	}
 
-	bool UGLIDcellStream::loadConfig(void)
+	bool CANframeStream::loadConfig(void)
 	{
 		IF_F(!this->DataObjBase::loadConfig());
 		std::unique_lock lock(m_sMutex);
@@ -31,7 +31,7 @@ namespace kai
 		return clear(m_nBuf);
 	}
 
-	bool UGLIDcellStream::saveConfig(bool bExport)
+	bool CANframeStream::saveConfig(bool bExport)
 	{
 		IF_F(!this->DataObjBase::saveConfig(false));
 		{
@@ -44,7 +44,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool UGLIDcellStream::clear(size_t nBuf)
+	bool CANframeStream::clear(size_t nBuf)
 	{
 		std::unique_lock lock(m_sMutex);
 
@@ -56,8 +56,8 @@ namespace kai
 
 		IF_F(m_nBuf <= 0);
 
-		m_vCell.resize(m_nBuf);
-		for (UGLID_CELL_T &c : m_vCell)
+		m_vCframe.resize(m_nBuf);
+		for (CAN_FRAME &c : m_vCframe)
 		{
 			c.clear();
 		}
@@ -68,15 +68,15 @@ namespace kai
 		return true;
 	}
 
-	void UGLIDcellStream::add(const vector<UGLID_CELL_T> &vSrc, uint64_t tStamp)
+	void CANframeStream::add(const vector<CAN_FRAME> &vSrc, uint64_t tStamp)
 	{
 		IF_(vSrc.empty());
 
 		std::unique_lock lock(m_sMutex);
 
-		for (const UGLID_CELL_T &c : vSrc)
+		for (const CAN_FRAME &c : vSrc)
 		{
-			m_vCell[m_iBset] = c;
+			m_vCframe[m_iBset] = c;
 			if (++m_iBset == m_nBuf)
 				m_iBset = 0;
 		}
@@ -85,28 +85,28 @@ namespace kai
 		updateTstamp(tStamp);
 	}
 
-	uint64_t UGLIDcellStream::get(vector<UGLID_CELL_T> &vDest, uint64_t tStampFrom)
+	uint64_t CANframeStream::get(vector<CAN_FRAME> &vDest, uint64_t tStampFrom)
 	{
 		std::shared_lock lock(m_sMutex);
 
 		vDest.clear();
-		const size_t nCell = m_vCell.size();
-		vDest.reserve(nCell);
+		const size_t nFrame = m_vCframe.size();
+		vDest.reserve(nFrame);
 
-		for (size_t n = 0, iCell = m_iBset; n < nCell; ++n)
+		for (size_t n = 0, iFrame = m_iBset; n < nFrame; ++n)
 		{
-			const UGLID_CELL_T &c = m_vCell[iCell];
+			const CAN_FRAME &c = m_vCframe[iFrame];
 			if (c.m_tStamp > tStampFrom)
 				vDest.push_back(c);
 
-			if (++iCell == nCell)
-				iCell = 0;
+			if (++iFrame == nFrame)
+				iFrame = 0;
 		}
 
 		return getTstamp();
 	}
 
-	void UGLIDcellStream::console(void *pConsole)
+	void CANframeStream::console(void *pConsole)
 	{
 		NULL_(pConsole);
 		DataObjBase::console(pConsole);

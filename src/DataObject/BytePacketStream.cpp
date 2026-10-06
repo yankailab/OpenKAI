@@ -105,14 +105,14 @@ namespace kai
 		const size_t nPacket = m_vPacket.size();
 		vBp.reserve(nPacket);
 
-		for (size_t n = 0; n < nPacket; ++n)
+		for (size_t n = 0, iPacket = m_iPset; n < nPacket; ++n)
 		{
-			const size_t iPacket = (m_iPset + n) % nPacket;
 			const BYTE_PACKET &bp = m_vPacket[iPacket];
+			if (bp.m_tStamp > tStampFrom)
+				vBp.push_back(bp);
 
-			IF_CONT(bp.m_tStamp <= tStampFrom);
-
-			vBp.push_back(bp);
+			if (++iPacket == nPacket)
+				iPacket = 0;
 		}
 	}
 

@@ -9,6 +9,7 @@ namespace kai
 
 	BBoxStream::BBoxStream()
 	{
+		clear(m_nBuf);
 	}
 
 	BBoxStream::~BBoxStream()
@@ -24,7 +25,8 @@ namespace kai
 		jKv(j, "nBuf", m_nBuf);
 		jKv<float>(j, "vContainerDim", m_vContainerDim);
 
-		return true;
+		lock.unlock();
+		return clear(m_nBuf);
 	}
 
 	bool BBoxStream::saveConfig(bool bExport)
@@ -41,37 +43,66 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
+	bool BBoxStream::clear(size_t nBuf)
+	{
+		std::unique_lock lock(m_sMutex);
+
+		IF_F((nBuf > std::numeric_limits<int>::max()));
+		if (nBuf > 0)
+		{
+			m_nBuf = nBuf;
+		}
+
+		IF_F(m_nBuf <= 0);
+
+		m_vObj.resize(m_nBuf);
+		for (BBOX_OBJ &b : m_vObj)
+		{
+			b.clear();
+		}
+
+		m_iBset = 0;
+		// Keep the timestamp watermark so existing readers survive a clear.
+		updateTstamp();
+
+		return true;
+	}
+
 	void BBoxStream::add(const vector<BBOX_OBJ> &vSrc, uint64_t tStamp)
 	{
 		IF_(vSrc.empty());
 
 		std::unique_lock lock(m_sMutex);
-		const uint32_t nAdd = std::min(m_nBuf, (uint32_t)vSrc.size());
 
-		if (vSrc.size() >= m_nBuf)
+		for (const BBOX_OBJ &b : vSrc)
 		{
-			m_vObj.assign(vSrc.end() - nAdd, vSrc.end());
-		}
-		else
-		{
-			const size_t nRetain = m_nBuf - nAdd;
-			if (m_vObj.size() > nRetain)
-			{
-				m_vObj.erase(m_vObj.begin(), m_vObj.end() - nRetain);
-			}
-
-			m_vObj.insert(m_vObj.end(), vSrc.begin(), vSrc.end());
+			m_vObj[m_iBset] = b;
+			if (++m_iBset == m_nBuf)
+				m_iBset = 0;
 		}
 
 		// per element tStamp is given by the producer so we don't touch it here
-
 		updateTstamp(tStamp);
 	}
 
-	uint64_t BBoxStream::get(vector<BBOX_OBJ> &vDest)
+	uint64_t BBoxStream::get(vector<BBOX_OBJ> &vDest, uint64_t tStampFrom)
 	{
 		std::shared_lock lock(m_sMutex);
-		vDest = m_vObj;
+
+		vDest.clear();
+		const size_t nObj = m_vObj.size();
+		vDest.reserve(nObj);
+
+		for (size_t n = 0, iObj = m_iBset; n < nObj; ++n)
+		{
+			const BBOX_OBJ &b = m_vObj[iObj];
+			if (b.m_tStamp > tStampFrom)
+				vDest.push_back(b);
+
+			if (++iObj == nObj)
+				iObj = 0;
+		}
+
 		return getTstamp();
 	}
 

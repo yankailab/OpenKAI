@@ -11,6 +11,7 @@
 // Data streams
 #include "../DataObject/BBoxStream.h"
 #include "../DataObject/BytePacketStream.h"
+#include "../DataObject/CANframeStream.h"
 #include "../DataObject/IMUstream.h"
 #include "../DataObject/LineFrame.h"
 #include "../DataObject/MavlinkStream.h"

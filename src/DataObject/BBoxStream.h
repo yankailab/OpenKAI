@@ -158,15 +158,16 @@ namespace kai
 		bool loadConfig(void);
 		bool saveConfig(bool bExport = false);
 
-		// Append timestamped observations from one source; retain at most nBuf records.
+		bool clear(size_t nBuf);
 		void add(const vector<BBOX_OBJ> &vSrc, uint64_t tStamp = 0);
-		uint64_t get(vector<BBOX_OBJ> &vDest);
+		uint64_t get(vector<BBOX_OBJ> &vDest, uint64_t tStampFrom = 0);
 
 		void setContainerDim(const Vector3f &vDim);
 		Vector3f getContainerDim(void);
 
 	protected:
 		uint32_t m_nBuf = 1000;
+		size_t m_iBset = 0;
 		Vector3f m_vContainerDim = Vector3f::Zero(); // w,h,d, d=0 for 2D surface
 
 		vector<BBOX_OBJ> m_vObj;

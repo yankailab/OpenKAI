@@ -9,7 +9,7 @@ option(USE_CUDA "Use NVIDIA CUDA" OFF)
 option(USE_DYNAMIXEL "Use Dynamixel" OFF)
 option(USE_FEETECH "Use Feetech" OFF)
 option(USE_IMGUI "Use Dear ImGui 3D viewer" OFF)
-option(USE_GLIM "Use GLIM SLAM" ON)
+option(USE_GLIM "Use GLIM SLAM" OFF)
 option(USE_GLOG "Use glog" ON)
 option(USE_JETSON_INFERENCE "Use Jetson Inference" OFF)
 option(USE_OPEN3D "Use Open3D" OFF)
@@ -25,9 +25,8 @@ option(USE_WSSERVER "Use wsServer" OFF)
 option(USE_XDYNAMICS "Use XDynamics SDK" OFF)
 option(USE_XARM "Use xArm" OFF)
 
-option(WITH_DEFAULT_MODULES "" OFF)
+option(WITH_ALL_MODULES "" OFF)
 
-option(WITH_UNIVERSE "" OFF)
 option(WITH_ACTUATOR "" OFF)
 option(WITH_AUTOPILOT "" OFF)
 option(WITH_ARDUPILOT "" OFF)
@@ -47,6 +46,7 @@ option(WITH_SLAM "" OFF)
 option(WITH_SWARM "" OFF)
 option(WITH_TOOLS "Build calibration tools" OFF)
 option(WITH_UI "" OFF)
+option(WITH_UNIVERSE "" OFF)
 option(WITH_VISION "" OFF)
 option(WITH_TEST "Build with unit test modules" OFF)
 
@@ -72,11 +72,11 @@ add_compile_options(
     -MP
 )
 
-# Build-type-specific optimization
-set(CMAKE_C_FLAGS_DEBUG   "-O0 -g")
-set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
-set(CMAKE_C_FLAGS_RELEASE   "-O3 -march=native")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native")
+# Optimization follows CMAKE_BUILD_TYPE and CMAKE_<LANG>_FLAGS_<CONFIG>.
+option(ENABLE_NATIVE_ARCH "Optimize for the build machine's CPU" OFF)
+if(ENABLE_NATIVE_ARCH)
+    add_compile_options(-march=native)
+endif()
 
 set(OpenKAI_definitions "")
 set(OpenKAI_libDir /usr/lib /usr/local/lib)
@@ -105,6 +105,7 @@ list(APPEND OpenKAI_cpp
 list(APPEND OpenKAI_cpp
   src/DataObject/BBoxStream.cpp
   src/DataObject/BytePacketStream.cpp
+  src/DataObject/CANframeStream.cpp
   src/DataObject/DataObjBase.cpp
   src/DataObject/IMUstream.cpp
   src/DataObject/LineFrame.cpp
@@ -172,8 +173,8 @@ list(APPEND OpenKAI_cpp
 )
 endif()
 
-# Default modules
-if(WITH_DEFAULT_MODULES)
+# All modules
+if(WITH_ALL_MODULES)
   set(USE_OPENCV ON CACHE BOOL "" FORCE)
   set(USE_OPENCV_CONTRIB ON CACHE BOOL "" FORCE)
   set(WITH_ACTUATOR ON CACHE BOOL "" FORCE)

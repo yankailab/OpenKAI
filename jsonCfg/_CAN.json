@@ -57,8 +57,13 @@
 		"bON": true,
 		"bLog": true,
 		"thread": {
-			"FPS": 1
+			"FPS": 100
 		},
+		"threadR": {
+			"FPS": 100
+		},
+		"CANframeStreamIn": "canet_tx",
+		"CANframeStreamOut": "canet_rx",
 		"BytePacketStreamIn": "udp_rx",
 		"BytePacketStreamOut": "udp_tx",
 		"/BytePacketStreamIn": "tcp_rx",
@@ -69,9 +74,34 @@
 		"bON": false,
 		"bLog": true,
 		"thread": {
-			"FPS": 1
+			"FPS": 100
 		},
+		"threadR": {
+			"FPS": 100
+		},
+		"CANframeStreamIn": "socketcan_tx",
+		"CANframeStreamOut": "socketcan_rx",
 		"ifName": "can0"
+	},
+	"canet_tx": {
+		"type": "dataObject",
+		"class": "CANframeStream",
+		"nBuf": 1024
+	},
+	"canet_rx": {
+		"type": "dataObject",
+		"class": "CANframeStream",
+		"nBuf": 1024
+	},
+	"socketcan_tx": {
+		"type": "dataObject",
+		"class": "CANframeStream",
+		"nBuf": 1024
+	},
+	"socketcan_rx": {
+		"type": "dataObject",
+		"class": "CANframeStream",
+		"nBuf": 1024
 	},
 	"udp_tx": {
 		"type": "dataObject",

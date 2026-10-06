@@ -24,6 +24,7 @@ namespace kai
 
 		ADD_DATA_STREAM(BBoxStream);
 		ADD_DATA_STREAM(BytePacketStream);
+		ADD_DATA_STREAM(CANframeStream);
 		ADD_DATA_STREAM(IMUstream);
 		ADD_DATA_STREAM(LineFrame);
 		ADD_DATA_STREAM(MavlinkStream);
