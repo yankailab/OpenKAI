@@ -83,7 +83,7 @@ namespace kai
 		}
 
 		NULL_(m_pBpStreamOut);
-		m_pBpStreamOut->addPacket(vector<uint8_t>(pB, pB + PB_N_HDR + m_nCw * 2));
+		m_pBpStreamOut->add({{vector<uint8_t>(pB, pB + PB_N_HDR + m_nCw * 2), getTns()}});
 	}
 
 	void _PWMio::updateR(void)

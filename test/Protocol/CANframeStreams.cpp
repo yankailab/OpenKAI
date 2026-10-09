@@ -213,14 +213,14 @@ namespace
 		assert(codec.sendFrame());
 		assert(!codec.sendFrame());
 		vector<BYTE_PACKET> packets;
-		bytesOut.getPackets(packets);
+		bytesOut.get(packets);
 		assert(packets.size() == expected.size());
 		assert(packets[0].m_vB == vector<uint8_t>({2, 0, 0, 1, 0x23, 10, 11, 0, 0, 0, 0, 0, 0}));
 		assert(packets[1].m_vB == vector<uint8_t>({0x88, 0, 0x1a, 0xbc, 0xde, 10, 11, 12, 13, 14, 15, 16, 17}));
 		assert(packets[2].m_vB == vector<uint8_t>({0x40, 0, 0, 4, 0x56, 0, 0, 0, 0, 0, 0, 0, 0}));
 
 		const vector<uint8_t> &first = packets[0].m_vB;
-		bytesIn.addPacket(vector<uint8_t>(first.begin(), first.begin() + 5));
+		bytesIn.add({{vector<uint8_t>(first.begin(), first.begin() + 5), getTns()}});
 		assert(!codec.readFrame());
 		vector<uint8_t> tail(first.begin() + 5, first.end());
 		append(tail, packets[1].m_vB);
@@ -234,7 +234,7 @@ namespace
 		append(tail, malformed);
 		append(tail, packets[2].m_vB);
 		tail.insert(tail.end(), first.begin(), first.begin() + 2);
-		bytesIn.addPacket(tail);
+		bytesIn.add({{tail, getTns()}});
 		assert(codec.readFrame());
 		assert(!codec.readFrame());
 		vector<CAN_FRAME> decoded;
@@ -249,7 +249,7 @@ namespace
 			}
 		}
 		const uint64_t lastStamp = decoded.back().m_tStamp;
-		bytesIn.addPacket(vector<uint8_t>(first.begin() + 2, first.end()));
+		bytesIn.add({{vector<uint8_t>(first.begin() + 2, first.end()), getTns()}});
 		assert(codec.readFrame());
 		assert(!codec.readFrame());
 		assert(!codec.readFrame());
@@ -260,7 +260,7 @@ namespace
 		framesIn.add({frame(0x321, 9, 103), frame(0x800, 1, 104), frame(0x321, 1, 105)}, 10001);
 		assert(codec.sendFrame());
 		assert(!codec.sendFrame());
-		bytesOut.getPackets(packets);
+		bytesOut.get(packets);
 		assert(packets.size() == 4);
 		assert(packets.back().m_vB[0] == 1 && packets.back().m_vB[3] == 3 && packets.back().m_vB[4] == 0x21);
 	}
@@ -507,10 +507,10 @@ namespace
 		canet.setBytes(&bytesIn, &bytesOut);
 		canet.setStreams(&framesIn, &framesOut);
 		framesIn.add({frame(0x123, 2, 100)});
-		bytesIn.addPacket({2, 0, 0, 1, 0x23, 10, 11, 0, 0, 0, 0, 0, 0});
+		bytesIn.add({{{2, 0, 0, 1, 0x23, 10, 11, 0, 0, 0, 0, 0, 0}, getTns()}});
 		exerciseWorkers(canet);
 		vector<BYTE_PACKET> packets;
-		bytesOut.getPackets(packets);
+		bytesOut.get(packets);
 		assert(packets.size() == 1);
 		vector<CAN_FRAME> decoded;
 		framesOut.get(decoded);

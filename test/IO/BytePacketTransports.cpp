@@ -195,7 +195,7 @@ namespace
 	vector<uint8_t> streamBytes(BytePacketStream &stream)
 	{
 		vector<BYTE_PACKET> packets;
-		stream.getPackets(packets);
+		stream.get(packets);
 		vector<uint8_t> bytes;
 		for (const BYTE_PACKET &packet : packets)
 		{
@@ -263,7 +263,7 @@ namespace
 		size_t pausedWrites = transport.writePasses();
 		vector<uint8_t> sent = payload(1000);
 		vector<uint8_t> received = payload(750);
-		in.addPacket(sent);
+		in.add({{sent, getTns()}});
 		assert(::write(peerFd, received.data(), received.size()) == static_cast<ssize_t>(received.size()));
 		waitStreamBytes(out, received);
 		assert(transport.writePasses() == pausedWrites);
@@ -287,7 +287,7 @@ namespace
 		{
 			// Leave a payload larger than the socket/PTY buffers pending on TX.
 			sent = payload(256 * 1024);
-			in.addPacket(sent);
+			in.add({{sent, getTns()}});
 			pollfd descriptor{peerFd, POLLIN, 0};
 			assert(::poll(&descriptor, 1, 2000) == 1);
 			size_t previousWrites = transport.writePasses();
@@ -333,7 +333,7 @@ namespace
 		}
 		else
 		{
-			stream.addPacket(bytes);
+			stream.add({{bytes, getTns()}});
 			waitPeerBytes(peerFd, bytes);
 			assert(transport.readPasses() == 0);
 		}
@@ -465,11 +465,11 @@ namespace
 		assert(streamBytes(out) == received);
 
 		vector<uint8_t> expected = payload(256 * 1024);
-		in.addPacket(expected);
+		in.add({{expected, getTns()}});
 		transport.writePackets();
 		assert(transport.hasPartialWrite());
 		vector<uint8_t> suffix{99, 98, 97};
-		in.addPacket(suffix);
+		in.add({{suffix, getTns()}});
 		expected.insert(expected.end(), suffix.begin(), suffix.end());
 
 		received.clear();
@@ -508,12 +508,12 @@ namespace
 						reinterpret_cast<sockaddr *>(&local), sizeof(local)) == static_cast<ssize_t>(second.size()));
 		transport.readPackets();
 		vector<BYTE_PACKET> packets;
-		out.getPackets(packets);
+		out.get(packets);
 		assert(packets.size() == 2);
 		assert(packets[0].m_vB == first && packets[1].m_vB == second);
 
-		in.addPacket(first);
-		in.addPacket(second);
+		in.add({{first, getTns()}});
+		in.add({{second, getTns()}});
 		transport.writePackets();
 		uint8_t buf[8192];
 		ssize_t n = ::recv(peerFd, buf, sizeof(buf), 0);
@@ -552,7 +552,7 @@ namespace
 		assert(streamBytes(out) == expected);
 
 		expected = payload(128 * 1024);
-		in.addPacket(expected);
+		in.add({{expected, getTns()}});
 		transport.writePackets();
 		assert(transport.hasPartialWrite());
 		vector<uint8_t> received;

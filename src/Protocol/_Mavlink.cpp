@@ -122,7 +122,7 @@ namespace kai
 			for (mavlink_message_t msg : vMsg)
 			{
 				int nB = mavlink_msg_to_send_buffer(pB, &msg);
-				m_pBpStreamOut->addPacket(vector<uint8_t>(pB, pB + nB));
+				m_pBpStreamOut->add({{vector<uint8_t>(pB, pB + nB), getTns()}});
 
 				LOG_I("Packet added, MSG_ID = " + i2str((int)msg.msgid) + ", seq = " + i2str((int)msg.seq));
 			}
@@ -163,7 +163,7 @@ namespace kai
 
 		if (m_iPacketIn == m_vPacketIn.size())
 		{
-			m_pBpStreamIn->getPackets(m_vPacketIn, m_tLastBpStreamIn);
+			m_pBpStreamIn->get(m_vPacketIn, m_tLastBpStreamIn);
 			m_iPacketIn = 0;
 			m_iByteIn = 0;
 		}

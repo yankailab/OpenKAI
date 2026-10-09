@@ -10,6 +10,20 @@ cmake --build build/instance-tests
 ctest --test-dir build/instance-tests --output-on-failure
 ```
 
+# Typed stream and byte transport regression tests
+
+Build OpenKAI with `WITH_IO=ON` and `WITH_PROTOCOL=ON`, then run:
+
+```bash
+python3 test/run_byte_packet_tests.py build --streams-only
+```
+
+Checks all four `DataObjStream<T>` subclasses for timestamp preservation,
+filtering, wraparound, clearing, snapshot ownership, and concurrent byte packet
+access. Use `--byte-only` for the wider suite, including duplex transports,
+JSON/binary parsers, and CAN codecs. WebSocket checks run when
+`USE_WSSERVER=ON`. Both modes exclude MAVLink tests.
+
 # Eigen vector regression tests
 
 These checks cover vector configuration loading, geometry defaults, and bounding-box operations. They require Eigen 5 and glog.

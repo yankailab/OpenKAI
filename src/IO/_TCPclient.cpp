@@ -156,7 +156,7 @@ namespace kai
 			}
 			if (nR > 0)
 			{
-				m_pBpStreamOut->addPacket(vector<uint8_t>(pB, pB + nR));
+				m_pBpStreamOut->add({{vector<uint8_t>(pB, pB + nR), getTns()}});
 				continue;
 			}
 			if (nR < 0 && error == EINTR)
@@ -189,7 +189,7 @@ namespace kai
 		}
 
 		vector<BYTE_PACKET> vBp;
-		m_pBpStreamIn->getPackets(vBp, m_tLastBpStreamIn);
+		m_pBpStreamIn->get(vBp, m_tLastBpStreamIn);
 		for (const BYTE_PACKET &bp : vBp)
 		{
 			m_bpWrite = bp;

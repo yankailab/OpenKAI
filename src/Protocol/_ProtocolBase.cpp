@@ -109,7 +109,7 @@ namespace kai
 
 		if (m_iPacketIn == m_vPacketIn.size())
 		{
-			m_pBpStreamIn->getPackets(m_vPacketIn, m_tLastBpStreamIn);
+			m_pBpStreamIn->get(m_vPacketIn, m_tLastBpStreamIn);
 			m_iPacketIn = 0;
 			m_iByteIn = 0;
 		}

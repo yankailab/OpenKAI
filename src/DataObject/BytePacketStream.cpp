@@ -22,19 +22,19 @@ namespace kai
 
 	bool BytePacketStream::loadConfig(void)
 	{
-		IF_F(!this->DataObjBase::loadConfig());
+		IF_F(!this->DataObjStream::loadConfig());
 		json &j = *m_pJ;
 
 		jKv(j, "nPacket", m_nPacket);
 		jKv(j, "nPbuf", m_nPbuf);
-		IF_Le_F(m_nPacket <= 0 || m_nPbuf < 0, "Invalid BytePacketStream capacity");
+		IF_Le_F(m_nPacket <= 0, "Invalid BytePacketStream capacity");
 
 		return clear(m_nPacket, m_nPbuf);
 	}
 
 	bool BytePacketStream::saveConfig(bool bExport)
 	{
-		IF_F(!this->DataObjBase::saveConfig(false));
+		IF_F(!this->DataObjStream::saveConfig(false));
 		{
 			std::shared_lock lock(m_sMutex);
 			json &j = *m_pJ;
@@ -62,64 +62,25 @@ namespace kai
 			m_nPbuf = nPacketBuf;
 		}
 
-		IF_F(m_nPacket <= 0 || m_nPbuf < 0);
+		IF_F(m_nPacket <= 0);
 
-		m_vPacket.resize(m_nPacket);
-		for (BYTE_PACKET &bp : m_vPacket)
+		m_vElement.resize(m_nPacket);
+		for (BYTE_PACKET &bp : m_vElement)
 		{
 			bp.clear(m_nPbuf);
 		}
 
-		m_iPset = 0;
+		m_iBset = 0;
 		// Keep the timestamp watermark so existing readers survive a clear.
 		updateTstamp();
 
 		return true;
 	}
 
-	void BytePacketStream::addPacket(const vector<uint8_t> &vB, uint64_t tStamp)
-	{
-		IF_(vB.empty());
-
-		std::unique_lock lock(m_sMutex);
-		if (tStamp == 0)
-		{
-			tStamp = getTns();
-		}
-
-		// Timestamp cursors must distinguish every arrival, including equal or
-		// out-of-order producer timestamps and writes by multiple producers.
-		tStamp = std::max(tStamp, m_tLastPacket + 1);
-		m_vPacket[m_iPset].set(vB, tStamp);
-		m_tLastPacket = tStamp;
-
-		m_iPset = (m_iPset + 1) % m_vPacket.size();
-		updateTstamp(tStamp);
-	}
-
-	void BytePacketStream::getPackets(vector<BYTE_PACKET> &vBp, uint64_t tStampFrom)
-	{
-		std::shared_lock lock(m_sMutex);
-
-		vBp.clear();
-		const size_t nPacket = m_vPacket.size();
-		vBp.reserve(nPacket);
-
-		for (size_t n = 0, iPacket = m_iPset; n < nPacket; ++n)
-		{
-			const BYTE_PACKET &bp = m_vPacket[iPacket];
-			if (bp.m_tStamp > tStampFrom)
-				vBp.push_back(bp);
-
-			if (++iPacket == nPacket)
-				iPacket = 0;
-		}
-	}
-
 	void BytePacketStream::console(void *pConsole)
 	{
 		NULL_(pConsole);
-		DataObjBase::console(pConsole);
+		DataObjStream::console(pConsole);
 	}
 
 }

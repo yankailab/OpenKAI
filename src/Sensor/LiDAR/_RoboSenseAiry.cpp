@@ -105,7 +105,7 @@ namespace kai
         NULL_F(m_pBpStreamMsopIn);
 
         vector<BYTE_PACKET> vPacket;
-        m_pBpStreamMsopIn->getPackets(vPacket, m_tLastBpStreamMsopIn);
+        m_pBpStreamMsopIn->get(vPacket, m_tLastBpStreamMsopIn);
         for (const BYTE_PACKET &packet : vPacket)
         {
             m_tLastBpStreamMsopIn = packet.m_tStamp;
@@ -129,7 +129,7 @@ namespace kai
         NULL_F(m_pBpStreamDifopIn);
 
         vector<BYTE_PACKET> vPacket;
-        m_pBpStreamDifopIn->getPackets(vPacket, m_tLastBpStreamDifopIn);
+        m_pBpStreamDifopIn->get(vPacket, m_tLastBpStreamDifopIn);
         for (const BYTE_PACKET &packet : vPacket)
         {
             m_tLastBpStreamDifopIn = packet.m_tStamp;

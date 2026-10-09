@@ -235,7 +235,7 @@ namespace kai
 			vBytes[3] = (f.m_ID >> 8) & 0xFF;
 			vBytes[4] = f.m_ID & 0xFF;
 			memcpy(&vBytes[5], f.m_pData, f.m_nData);
-			m_pBpStreamOut->addPacket(vBytes);
+			m_pBpStreamOut->add({{vBytes, getTns()}});
 			bSent = true;
 
 			LOG_I("Sent: id=" + i2str(f.m_ID) + ", len=" + i2str(f.m_nData));
@@ -248,7 +248,7 @@ namespace kai
 		IF_F(!check() || !m_pBpStreamIn || !m_pCANframeOut);
 
 		vector<BYTE_PACKET> vPackets;
-		m_pBpStreamIn->getPackets(vPackets, m_tLastBpStreamIn);
+		m_pBpStreamIn->get(vPackets, m_tLastBpStreamIn);
 		for (const BYTE_PACKET &packet : vPackets)
 		{
 			m_vFrameBytes.insert(m_vFrameBytes.end(), packet.m_vB.begin(), packet.m_vB.end());

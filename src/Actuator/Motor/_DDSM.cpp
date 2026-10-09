@@ -106,7 +106,7 @@ namespace kai
 
 		for (int i = 0; i < 5; i++)
 		{
-			m_pBpStreamOut->addPacket(vector<uint8_t>(pB, pB + DDSM_CMD_NB));
+			m_pBpStreamOut->add({{vector<uint8_t>(pB, pB + DDSM_CMD_NB), getTns()}});
 		}
 
 		return true;
@@ -127,7 +127,7 @@ namespace kai
 		pB[7] = 0;
 		pB[8] = 0;
 		pB[9] = m_mode;
-		m_pBpStreamOut->addPacket(vector<uint8_t>(pB, pB + DDSM_CMD_NB));
+		m_pBpStreamOut->add({{vector<uint8_t>(pB, pB + DDSM_CMD_NB), getTns()}});
 		return true;
 	}
 
@@ -146,7 +146,7 @@ namespace kai
 		pB[7] = 0;
 		pB[8] = 0;
 		pB[9] = crc8_MAXIM(pB, 9);
-		m_pBpStreamOut->addPacket(vector<uint8_t>(pB, pB + DDSM_CMD_NB));
+		m_pBpStreamOut->add({{vector<uint8_t>(pB, pB + DDSM_CMD_NB), getTns()}});
 		return true;
 	}
 

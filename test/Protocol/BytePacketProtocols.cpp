@@ -10,6 +10,7 @@
 
 void runCANStreamTests();
 void runBytePacketStreamTests();
+void runDataObjStreamTests();
 void runMavlinkStreamTests(bool testEncoding);
 void runMavlinkConsumerTests(bool testEncoding);
 
@@ -50,7 +51,7 @@ namespace kai
 
 	void addText(BytePacketStream &stream, const string &text)
 	{
-		stream.addPacket(vector<uint8_t>(text.begin(), text.end()));
+		stream.add({{vector<uint8_t>(text.begin(), text.end()), getTns()}});
 	}
 
 	void testJsonPackets(void)
@@ -95,7 +96,7 @@ namespace kai
 		json message = {{"cmd", "test"}};
 		assert(reader.sendJson(message));
 		vector<BYTE_PACKET> packets;
-		output.getPackets(packets);
+		output.get(packets);
 		assert(packets.size() == 1);
 		assert(string(packets[0].m_vB.begin(), packets[0].m_vB.end()) == message.dump());
 	}
@@ -106,11 +107,11 @@ namespace kai
 		_PacketTest<_ProtocolBase> reader(&input);
 		PROTOCOL_CMD cmd;
 		cmd.clear();
-		input.addPacket({PB_BEGIN, 7, 2});
+		input.add({{{PB_BEGIN, 7, 2}, getTns()}});
 		assert(!reader.readCommand(&cmd));
 
 		// A split header followed by a complete frame and a partial next frame.
-		input.addPacket({0, 11, 12, PB_BEGIN, 8, 0, 0, PB_BEGIN, 9, 1, 0});
+		input.add({{{0, 11, 12, PB_BEGIN, 8, 0, 0, PB_BEGIN, 9, 1, 0}, getTns()}});
 		assert(reader.readCommand(&cmd));
 		assert(cmd.m_cmd == 7 && cmd.m_nPayload == 2);
 		assert(cmd.m_pB[PB_N_HDR] == 11 && cmd.m_pB[PB_N_HDR + 1] == 12);
@@ -120,7 +121,7 @@ namespace kai
 		cmd.clear();
 		assert(!reader.readCommand(&cmd));
 
-		input.addPacket({42});
+		input.add({{{42}, getTns()}});
 		assert(reader.readCommand(&cmd));
 		assert(cmd.m_cmd == 9 && cmd.m_nPayload == 1 && cmd.m_pB[PB_N_HDR] == 42);
 		cmd.clear();
@@ -138,12 +139,12 @@ namespace kai
 		uint8_t encoded[MAVLINK_MAX_PACKET_LEN];
 		const size_t length = mavlink_msg_to_send_buffer(encoded, &sent);
 		const vector<uint8_t> frame(encoded, encoded + length);
-		input.addPacket(vector<uint8_t>(frame.begin(), frame.begin() + 4));
+		input.add({{vector<uint8_t>(frame.begin(), frame.begin() + 4), getTns()}});
 		mavlink_message_t received;
 		assert(!receiver.readMavlink(&received));
 		vector<uint8_t> tail(frame.begin() + 4, frame.end());
 		tail.insert(tail.end(), frame.begin(), frame.end());
-		input.addPacket(tail);
+		input.add({{tail, getTns()}});
 		assert(receiver.readMavlink(&received));
 		assert(received.msgid == MAVLINK_MSG_ID_HEARTBEAT && received.sysid == 1 && received.compid == 2);
 		assert(receiver.readMavlink(&received));
@@ -223,21 +224,21 @@ namespace kai
 			MAV_AUTOPILOT_ARDUPILOTMEGA, 0, 99, MAV_STATE_ACTIVE);
 		uint8_t frame[MAVLINK_MAX_PACKET_LEN];
 		const size_t length = mavlink_msg_to_send_buffer(frame, &heartbeat);
-		bytesIn->addPacket(vector<uint8_t>(frame, frame + 4));
-		bytesIn->addPacket(vector<uint8_t>(frame + 4, frame + length));
+		bytesIn->add({{vector<uint8_t>(frame, frame + 4), getTns()}});
+		bytesIn->add({{vector<uint8_t>(frame + 4, frame + length), getTns()}});
 		assert(codec.start());
 
 		vector<BYTE_PACKET> packets;
 		const uint64_t deadline = getTns() + 2 * NSEC_SEC;
 		do
 		{
-			bytesOut->getPackets(packets);
+			bytesOut->get(packets);
 			if (packets.size() == expectedPackets && heartbeats == 1)
 				break;
 			::usleep(1000);
 		} while (getTns() < deadline);
 		codec.joinWorkers();
-		bytesOut->getPackets(packets);
+		bytesOut->get(packets);
 		assert(packets.size() == expectedPackets && heartbeats == 1);
 		assert(stream->get<MavHeartbeat>()->get().custom_mode == 99);
 		for (size_t i = 0; i < packets.size(); ++i)
@@ -267,6 +268,13 @@ namespace kai
 
 int main(int argc, char **argv)
 {
+	if (argc > 1 && std::string(argv[1]) == "--streams-only")
+	{
+		runDataObjStreamTests();
+		runBytePacketStreamTests();
+		std::cout << "DataObjStream timestamp, storage, and concurrency regressions passed\n";
+		return 0;
+	}
 	if (argc > 1 && std::string(argv[1]) == "--can-only")
 	{
 		runCANStreamTests();
@@ -274,10 +282,14 @@ int main(int argc, char **argv)
 		return 0;
 	}
 	const bool receiveOnly = argc > 1 && std::string(argv[1]) == "--mavlink-receive-only";
-	runMavlinkStreamTests(!receiveOnly);
-	runMavlinkConsumerTests(!receiveOnly);
-	kai::testMavlinkPackets();
-	kai::testMavlinkWorkers(!receiveOnly);
+	const bool byteOnly = argc > 1 && std::string(argv[1]) == "--byte-only";
+	if (!byteOnly)
+	{
+		runMavlinkStreamTests(!receiveOnly);
+		runMavlinkConsumerTests(!receiveOnly);
+		kai::testMavlinkPackets();
+		kai::testMavlinkWorkers(!receiveOnly);
+	}
 	if (receiveOnly)
 	{
 		std::cout << "MAVLink receive, configuration, and parser regressions passed; "
@@ -289,6 +301,7 @@ int main(int argc, char **argv)
 		std::cout << "MavlinkStream storage, codec, and consumer regressions passed\n";
 		return 0;
 	}
+	runDataObjStreamTests();
 	runBytePacketStreamTests();
 	kai::runBytePacketTransportTests();
 #ifdef USE_WSSERVER
@@ -297,7 +310,8 @@ int main(int argc, char **argv)
 	kai::testJsonPackets();
 	kai::testBinaryPackets();
 	runCANStreamTests();
-	std::cout << "BytePacketStream and MavlinkStream storage, transport, protocol, and consumer regressions passed\n";
+	std::cout << (byteOnly ? "DataObjStream, byte transport, and non-MAVLink protocol regressions passed\n"
+		: "DataObjStream and MavlinkStream storage, transport, protocol, and consumer regressions passed\n");
 	return 0;
 }
 

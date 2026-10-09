@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src__DataStream__UGLIDcellStream__H_
 #define OpenKAI_src__DataStream__UGLIDcellStream__H_
 
-#include "DataObjBase.h"
+#include "DataObjStream.h"
 #include "../Primitive/UUID128.h"
 
 namespace kai
@@ -41,7 +41,7 @@ namespace kai
 		}
 	};
 
-	class UGLIDcellStream : public DataObjBase
+	class UGLIDcellStream : public DataObjStream<UGLID_CELL_T>
 	{
 	public:
 		UGLIDcellStream();
@@ -52,16 +52,9 @@ namespace kai
 		bool saveConfig(bool bExport = false);
 
 		bool clear(size_t nBuf);
-		void add(const vector<UGLID_CELL_T> &vSrc, uint64_t tStamp = 0);
-		uint64_t get(vector<UGLID_CELL_T> &vDest, uint64_t tStampFrom = 0);
 
 	protected:
 		uint32_t m_nBuf = 1000;
-		size_t m_iBset = 0;
-
-		vector<UGLID_CELL_T> m_vCell;
-
-		std::shared_mutex m_sMutex;
 	};
 
 }

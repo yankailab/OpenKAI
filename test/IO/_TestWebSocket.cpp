@@ -62,7 +62,7 @@ namespace kai
             IF_CONT(!pStreamIn || !pStreamOut);
 
             vector<BYTE_PACKET> vBp;
-            pStreamIn->getPackets(vBp, m_tLastBpStreamIn);
+            pStreamIn->get(vBp, m_tLastBpStreamIn);
             for (const BYTE_PACKET &bp : vBp)
             {
                 m_tLastBpStreamIn = bp.m_tStamp;
@@ -72,7 +72,7 @@ namespace kai
                 j["t"] = li2str(m_pT->getTfromNs());
 
                 string msg = j.dump();
-                pStreamOut->addPacket(vector<uint8_t>(msg.begin(), msg.end()));
+                pStreamOut->add({{vector<uint8_t>(msg.begin(), msg.end()), getTns()}});
             }
         }
     }

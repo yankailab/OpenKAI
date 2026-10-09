@@ -107,6 +107,7 @@ list(APPEND OpenKAI_cpp
   src/DataObject/BytePacketStream.cpp
   src/DataObject/CANframeStream.cpp
   src/DataObject/DataObjBase.cpp
+  src/DataObject/DataObjStream.cpp
   src/DataObject/IMUstream.cpp
   src/DataObject/LineFrame.cpp
   src/DataObject/MavlinkStream.cpp

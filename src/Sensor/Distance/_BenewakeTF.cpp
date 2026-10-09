@@ -78,7 +78,7 @@ namespace kai
 		if (m_iByteIn == m_vBytesIn.size())
 		{
 			vector<BYTE_PACKET> vPacket;
-			m_pBpStreamIn->getPackets(vPacket, m_tLastBpStreamIn);
+			m_pBpStreamIn->get(vPacket, m_tLastBpStreamIn);
 			m_vBytesIn.clear();
 			m_iByteIn = 0;
 			for (const BYTE_PACKET &packet : vPacket)

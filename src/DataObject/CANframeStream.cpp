@@ -21,7 +21,7 @@ namespace kai
 
 	bool CANframeStream::loadConfig(void)
 	{
-		IF_F(!this->DataObjBase::loadConfig());
+		IF_F(!this->DataObjStream::loadConfig());
 		std::unique_lock lock(m_sMutex);
 		json &j = *m_pJ;
 
@@ -33,7 +33,7 @@ namespace kai
 
 	bool CANframeStream::saveConfig(bool bExport)
 	{
-		IF_F(!this->DataObjBase::saveConfig(false));
+		IF_F(!this->DataObjStream::saveConfig(false));
 		{
 			std::shared_lock lock(m_sMutex);
 			json &j = *m_pJ;
@@ -56,8 +56,8 @@ namespace kai
 
 		IF_F(m_nBuf <= 0);
 
-		m_vCframe.resize(m_nBuf);
-		for (CAN_FRAME &c : m_vCframe)
+		m_vElement.resize(m_nBuf);
+		for (CAN_FRAME &c : m_vElement)
 		{
 			c.clear();
 		}
@@ -68,48 +68,10 @@ namespace kai
 		return true;
 	}
 
-	void CANframeStream::add(const vector<CAN_FRAME> &vSrc, uint64_t tStamp)
-	{
-		IF_(vSrc.empty());
-
-		std::unique_lock lock(m_sMutex);
-
-		for (const CAN_FRAME &c : vSrc)
-		{
-			m_vCframe[m_iBset] = c;
-			if (++m_iBset == m_nBuf)
-				m_iBset = 0;
-		}
-
-		// Per-element timestamps are supplied by the producer.
-		updateTstamp(tStamp);
-	}
-
-	uint64_t CANframeStream::get(vector<CAN_FRAME> &vDest, uint64_t tStampFrom)
-	{
-		std::shared_lock lock(m_sMutex);
-
-		vDest.clear();
-		const size_t nFrame = m_vCframe.size();
-		vDest.reserve(nFrame);
-
-		for (size_t n = 0, iFrame = m_iBset; n < nFrame; ++n)
-		{
-			const CAN_FRAME &c = m_vCframe[iFrame];
-			if (c.m_tStamp > tStampFrom)
-				vDest.push_back(c);
-
-			if (++iFrame == nFrame)
-				iFrame = 0;
-		}
-
-		return getTstamp();
-	}
-
 	void CANframeStream::console(void *pConsole)
 	{
 		NULL_(pConsole);
-		DataObjBase::console(pConsole);
+		DataObjStream::console(pConsole);
 	}
 
 }

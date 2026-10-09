@@ -87,7 +87,7 @@ namespace kai
 
         string msg = j.dump() + m_msgFinishSend;
         NULL_F(m_pBpStreamOut);
-        m_pBpStreamOut->addPacket(vector<uint8_t>(msg.begin(), msg.end()));
+        m_pBpStreamOut->add({{vector<uint8_t>(msg.begin(), msg.end()), getTns()}});
         return true;
     }
 

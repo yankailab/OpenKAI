@@ -136,7 +136,7 @@ namespace kai
 
 			if (pM->m_tLastSent != tLr)
 			{
-				m_pBpStreamOut->addPacket(vector<uint8_t>(pM->m_pB, pM->m_pB + pM->m_nB));
+				m_pBpStreamOut->add({{vector<uint8_t>(pM->m_pB, pM->m_pB + pM->m_nB), getTns()}});
 
 				pM->m_tLastSent = tLr;
 				pM->m_ieSend.reset(tNow);
@@ -147,7 +147,7 @@ namespace kai
 
 			IF_CONT(pM->m_tOutRecv.bTout(tNow));
 			IF_CONT(!pM->m_ieSend.update(tNow, false));
-			m_pBpStreamOut->addPacket(vector<uint8_t>(pM->m_pB, pM->m_pB + pM->m_nB));
+			m_pBpStreamOut->add({{vector<uint8_t>(pM->m_pB, pM->m_pB + pM->m_nB), getTns()}});
 
 			pM->m_tLastSent = tLr;
 			pM->m_ieSend.reset(tNow);

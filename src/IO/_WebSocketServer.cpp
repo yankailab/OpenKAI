@@ -157,7 +157,7 @@ namespace kai
 			if (m_pBpStreamIn && !vClient.empty())
 			{
 				vector<BYTE_PACKET> vBp;
-				m_pBpStreamIn->getPackets(vBp, m_tLastBpStreamIn);
+				m_pBpStreamIn->get(vBp, m_tLastBpStreamIn);
 				for (const BYTE_PACKET &bp : vBp)
 				{
 					if (!m_pT->bRun() || !sendPacket(vClient.front()->m_wsConn, bp))
@@ -182,7 +182,7 @@ namespace kai
 				}
 
 				vector<BYTE_PACKET> vBp;
-				pStream->getPackets(vBp, pClient->m_tLastBpStreamIn);
+				pStream->get(vBp, pClient->m_tLastBpStreamIn);
 				for (const BYTE_PACKET &bp : vBp)
 				{
 					if (!m_pT->bRun() || !sendPacket(pClient->m_wsConn, bp))
@@ -371,12 +371,12 @@ namespace kai
 		BytePacketStream *pStream = pClient->m_pWS->getBytePacketStreamOut();
 		if (pStream)
 		{
-			pStream->addPacket(vB);
+			pStream->add({{vB, getTns()}});
 		}
 		// The server stream retains the former default-client routing.
 		if (m_pBpStreamOut && bDefaultClient)
 		{
-			m_pBpStreamOut->addPacket(vB);
+			m_pBpStreamOut->add({{vB, getTns()}});
 		}
 
 		LOG_I("Received message: " + string(reinterpret_cast<const char *>(msg), size) + ", size: " + i2str(size) + ", type: " + i2str(type) + ", from: " + string(ws_getaddress(client)));

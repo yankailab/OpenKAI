@@ -143,7 +143,7 @@ namespace kai
 
 			if (nR >= 0)
 			{
-				m_pBpStreamOut->addPacket(vector<uint8_t>(pB, pB + nR));
+				m_pBpStreamOut->add({{vector<uint8_t>(pB, pB + nR), getTns()}});
 				LOG_I("Received " + i2str(nR) + " bytes from ip:" + string(inet_ntoa(sender.sin_addr)) + ", port:" + i2str(ntohs(sender.sin_port)));
 				continue;
 			}
@@ -165,7 +165,7 @@ namespace kai
 		NULL_(m_pBpStreamIn);
 
 		vector<BYTE_PACKET> vBp;
-		m_pBpStreamIn->getPackets(vBp, m_tLastBpStreamIn);
+		m_pBpStreamIn->get(vBp, m_tLastBpStreamIn);
 		for (const BYTE_PACKET &bp : vBp)
 		{
 			if (m_pT && !m_pT->bRun())

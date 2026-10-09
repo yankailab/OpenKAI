@@ -102,6 +102,69 @@ namespace kai
 		_IObase::close();
 	}
 
+	void _SerialPort::writePackets(void)
+	{
+		uint64_t generation = m_connectionGeneration;
+		if (m_writeConnectionGeneration != generation)
+		{
+			// A reconnect restarts the pending packet; only the writer owns its offset.
+			m_iWrite = 0;
+			m_writeConnectionGeneration = generation;
+		}
+
+		IF_(!writePending() || !m_pBpStreamIn);
+
+		vector<BYTE_PACKET> vBp;
+		m_pBpStreamIn->get(vBp, m_tLastBpStreamIn);
+		for (const BYTE_PACKET &bp : vBp)
+		{
+			m_bpWrite = bp;
+			IF_(!writePending());
+		}
+	}
+
+	bool _SerialPort::writePending(void)
+	{
+		while (m_iWrite < m_bpWrite.m_vB.size())
+		{
+			IF_F(m_pT && !m_pT->bRun())
+
+			ssize_t nW;
+			int error;
+			{
+				std::shared_lock<std::shared_mutex> lock(m_connectionMutex);
+				IF_F(!bOpen() || m_fd < 0 || m_writeConnectionGeneration != m_connectionGeneration);
+
+				nW = ::write(m_fd,
+								m_bpWrite.m_vB.data() + m_iWrite,
+								m_bpWrite.m_vB.size() - m_iWrite);
+				error = errno;
+			}
+
+			IF_CONT(nW < 0 && error == EINTR);
+
+			if (nW < 0 && error != EAGAIN && error != EWOULDBLOCK)
+			{
+				LOG_E("write error: " + i2str(error));
+				closeConnection(m_writeConnectionGeneration);
+				return false;
+			}
+			
+			IF_F(nW <= 0);
+
+			m_iWrite += static_cast<size_t>(nW);
+			LOG_I("write: " + i2str(nW) + " bytes");
+		}
+
+		if (m_bpWrite.m_tStamp > m_tLastBpStreamIn)
+		{
+			m_tLastBpStreamIn = m_bpWrite.m_tStamp;
+		}
+		m_bpWrite.clear();
+		m_iWrite = 0;
+		return true;
+	}
+
 	void _SerialPort::readPackets(void)
 	{
 		if (!m_pBpStreamOut)
@@ -132,7 +195,7 @@ namespace kai
 			}
 			if (nR > 0)
 			{
-				m_pBpStreamOut->addPacket(vector<uint8_t>(pB, pB + nR));
+				m_pBpStreamOut->add({{vector<uint8_t>(pB, pB + nR), getTns()}});
 				continue;
 			}
 			if (nR < 0 && error == EINTR)
@@ -146,81 +209,6 @@ namespace kai
 			}
 			return;
 		}
-	}
-
-	void _SerialPort::writePackets(void)
-	{
-		uint64_t generation = m_connectionGeneration;
-		if (m_writeConnectionGeneration != generation)
-		{
-			// A reconnect restarts the pending packet; only the writer owns its offset.
-			m_iWrite = 0;
-			m_writeConnectionGeneration = generation;
-		}
-		if (!writePending() || !m_pBpStreamIn)
-		{
-			return;
-		}
-
-		vector<BYTE_PACKET> vBp;
-		m_pBpStreamIn->getPackets(vBp, m_tLastBpStreamIn);
-		for (const BYTE_PACKET &bp : vBp)
-		{
-			m_bpWrite = bp;
-			if (!writePending())
-			{
-				break;
-			}
-		}
-	}
-
-	bool _SerialPort::writePending(void)
-	{
-		while (m_iWrite < m_bpWrite.m_vB.size())
-		{
-			if (m_pT && !m_pT->bRun())
-			{
-				return false;
-			}
-
-			ssize_t nW;
-			int error;
-			{
-				std::shared_lock<std::shared_mutex> lock(m_connectionMutex);
-				if (!bOpen() || m_fd < 0 || m_writeConnectionGeneration != m_connectionGeneration)
-				{
-					return false;
-				}
-				nW = ::write(m_fd, m_bpWrite.m_vB.data() + m_iWrite,
-							  m_bpWrite.m_vB.size() - m_iWrite);
-				error = errno;
-			}
-			if (nW < 0 && error == EINTR)
-			{
-				continue;
-			}
-			if (nW < 0 && error != EAGAIN && error != EWOULDBLOCK)
-			{
-				LOG_E("write error: " + i2str(error));
-				closeConnection(m_writeConnectionGeneration);
-				return false;
-			}
-			if (nW <= 0)
-			{
-				return false;
-			}
-
-			m_iWrite += static_cast<size_t>(nW);
-			LOG_I("write: " + i2str(nW) + " bytes");
-		}
-
-		if (m_bpWrite.m_tStamp > m_tLastBpStreamIn)
-		{
-			m_tLastBpStreamIn = m_bpWrite.m_tStamp;
-		}
-		m_bpWrite.clear();
-		m_iWrite = 0;
-		return true;
 	}
 
 	bool _SerialPort::setup(void)

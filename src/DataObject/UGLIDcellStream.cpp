@@ -21,7 +21,7 @@ namespace kai
 
 	bool UGLIDcellStream::loadConfig(void)
 	{
-		IF_F(!this->DataObjBase::loadConfig());
+		IF_F(!this->DataObjStream::loadConfig());
 		std::unique_lock lock(m_sMutex);
 		json &j = *m_pJ;
 
@@ -33,7 +33,7 @@ namespace kai
 
 	bool UGLIDcellStream::saveConfig(bool bExport)
 	{
-		IF_F(!this->DataObjBase::saveConfig(false));
+		IF_F(!this->DataObjStream::saveConfig(false));
 		{
 			std::shared_lock lock(m_sMutex);
 			json &j = *m_pJ;
@@ -56,8 +56,8 @@ namespace kai
 
 		IF_F(m_nBuf <= 0);
 
-		m_vCell.resize(m_nBuf);
-		for (UGLID_CELL_T &c : m_vCell)
+		m_vElement.resize(m_nBuf);
+		for (UGLID_CELL_T &c : m_vElement)
 		{
 			c.clear();
 		}
@@ -68,48 +68,10 @@ namespace kai
 		return true;
 	}
 
-	void UGLIDcellStream::add(const vector<UGLID_CELL_T> &vSrc, uint64_t tStamp)
-	{
-		IF_(vSrc.empty());
-
-		std::unique_lock lock(m_sMutex);
-
-		for (const UGLID_CELL_T &c : vSrc)
-		{
-			m_vCell[m_iBset] = c;
-			if (++m_iBset == m_nBuf)
-				m_iBset = 0;
-		}
-
-		// Per-element timestamps are supplied by the producer.
-		updateTstamp(tStamp);
-	}
-
-	uint64_t UGLIDcellStream::get(vector<UGLID_CELL_T> &vDest, uint64_t tStampFrom)
-	{
-		std::shared_lock lock(m_sMutex);
-
-		vDest.clear();
-		const size_t nCell = m_vCell.size();
-		vDest.reserve(nCell);
-
-		for (size_t n = 0, iCell = m_iBset; n < nCell; ++n)
-		{
-			const UGLID_CELL_T &c = m_vCell[iCell];
-			if (c.m_tStamp > tStampFrom)
-				vDest.push_back(c);
-
-			if (++iCell == nCell)
-				iCell = 0;
-		}
-
-		return getTstamp();
-	}
-
 	void UGLIDcellStream::console(void *pConsole)
 	{
 		NULL_(pConsole);
-		DataObjBase::console(pConsole);
+		DataObjStream::console(pConsole);
 	}
 
 }

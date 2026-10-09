@@ -320,7 +320,7 @@ namespace kai
         LIVOX2_CMD cmd;
         cmd.init(LVX2_CMD_DISCOVER, LVX2_CMD_REQ, 0);
         cmd.calcCRC();
-        m_pBpStreamDeviceQueryOut->addPacket(vector<uint8_t>((uint8_t *)&cmd, (uint8_t *)&cmd + cmd.length));
+        m_pBpStreamDeviceQueryOut->add({{vector<uint8_t>((uint8_t *)&cmd, (uint8_t *)&cmd + cmd.length), getTns()}});
     }
 
     void _Livox2::updateRdeviceQuery(void)
@@ -330,7 +330,7 @@ namespace kai
             m_pTdeviceQueryR->autoFPS();
 
             vector<BYTE_PACKET> vPacket;
-            m_pBpStreamDeviceQueryIn->getPackets(vPacket, m_tLastBpStreamDeviceQueryIn);
+            m_pBpStreamDeviceQueryIn->get(vPacket, m_tLastBpStreamDeviceQueryIn);
             for (const BYTE_PACKET &packet : vPacket)
             {
                 m_tLastBpStreamDeviceQueryIn = packet.m_tStamp;
@@ -420,7 +420,7 @@ namespace kai
         cmd.addData((uint16_t)kKeyHmsCode);
 
         cmd.calcCRC();
-        m_pBpStreamCtrlCmdOut->addPacket(vector<uint8_t>((uint8_t *)&cmd, (uint8_t *)&cmd + cmd.length));
+        m_pBpStreamCtrlCmdOut->add({{vector<uint8_t>((uint8_t *)&cmd, (uint8_t *)&cmd + cmd.length), getTns()}});
     }
 
     void _Livox2::setLvxPCLdataType(void)
@@ -438,7 +438,7 @@ namespace kai
         cmd.addData((uint8_t)m_lvxCfg.m_pclDataType);
 
         cmd.calcCRC();
-        m_pBpStreamCtrlCmdOut->addPacket(vector<uint8_t>((uint8_t *)&cmd, (uint8_t *)&cmd + cmd.length));
+        m_pBpStreamCtrlCmdOut->add({{vector<uint8_t>((uint8_t *)&cmd, (uint8_t *)&cmd + cmd.length), getTns()}});
     }
 
     void _Livox2::setLvxPattern(void)
@@ -456,7 +456,7 @@ namespace kai
         cmd.addData((uint8_t)m_lvxCfg.m_patternMode);
 
         cmd.calcCRC();
-        m_pBpStreamCtrlCmdOut->addPacket(vector<uint8_t>((uint8_t *)&cmd, (uint8_t *)&cmd + cmd.length));
+        m_pBpStreamCtrlCmdOut->add({{vector<uint8_t>((uint8_t *)&cmd, (uint8_t *)&cmd + cmd.length), getTns()}});
     }
 
     void _Livox2::setLvxHost(void)
@@ -491,7 +491,7 @@ namespace kai
         cmd.addData((uint16_t)0);
 
         cmd.calcCRC();
-        m_pBpStreamCtrlCmdOut->addPacket(vector<uint8_t>((uint8_t *)&cmd, (uint8_t *)&cmd + cmd.length));
+        m_pBpStreamCtrlCmdOut->add({{vector<uint8_t>((uint8_t *)&cmd, (uint8_t *)&cmd + cmd.length), getTns()}});
     }
 
     void _Livox2::setLvxFrameRate(void)
@@ -509,7 +509,7 @@ namespace kai
         cmd.addData((uint8_t)m_lvxCfg.m_frameRate);
 
         cmd.calcCRC();
-        m_pBpStreamCtrlCmdOut->addPacket(vector<uint8_t>((uint8_t *)&cmd, (uint8_t *)&cmd + cmd.length));
+        m_pBpStreamCtrlCmdOut->add({{vector<uint8_t>((uint8_t *)&cmd, (uint8_t *)&cmd + cmd.length), getTns()}});
     }
 
     void _Livox2::setLvxDetectMode(void)
@@ -527,7 +527,7 @@ namespace kai
         cmd.addData((uint8_t)m_lvxCfg.m_detectMode);
 
         cmd.calcCRC();
-        m_pBpStreamCtrlCmdOut->addPacket(vector<uint8_t>((uint8_t *)&cmd, (uint8_t *)&cmd + cmd.length));
+        m_pBpStreamCtrlCmdOut->add({{vector<uint8_t>((uint8_t *)&cmd, (uint8_t *)&cmd + cmd.length), getTns()}});
     }
 
     void _Livox2::setLvxWorkModeAfterBoot(void)
@@ -545,7 +545,7 @@ namespace kai
         cmd.addData((uint8_t)m_lvxCfg.m_workModeAfterBoot);
 
         cmd.calcCRC();
-        m_pBpStreamCtrlCmdOut->addPacket(vector<uint8_t>((uint8_t *)&cmd, (uint8_t *)&cmd + cmd.length));
+        m_pBpStreamCtrlCmdOut->add({{vector<uint8_t>((uint8_t *)&cmd, (uint8_t *)&cmd + cmd.length), getTns()}});
     }
 
     void _Livox2::setLvxWorkMode(void)
@@ -563,7 +563,7 @@ namespace kai
         cmd.addData((uint8_t)m_lvxCfg.m_workMode);
 
         cmd.calcCRC();
-        m_pBpStreamCtrlCmdOut->addPacket(vector<uint8_t>((uint8_t *)&cmd, (uint8_t *)&cmd + cmd.length));
+        m_pBpStreamCtrlCmdOut->add({{vector<uint8_t>((uint8_t *)&cmd, (uint8_t *)&cmd + cmd.length), getTns()}});
     }
 
     void _Livox2::setLvxIMUdataEn(void)
@@ -581,7 +581,7 @@ namespace kai
         cmd.addData((uint8_t)m_lvxCfg.m_imuDataEn);
 
         cmd.calcCRC();
-        m_pBpStreamCtrlCmdOut->addPacket(vector<uint8_t>((uint8_t *)&cmd, (uint8_t *)&cmd + cmd.length));
+        m_pBpStreamCtrlCmdOut->add({{vector<uint8_t>((uint8_t *)&cmd, (uint8_t *)&cmd + cmd.length), getTns()}});
     }
 
     void _Livox2::updateRctrlCmd(void)
@@ -591,7 +591,7 @@ namespace kai
             m_pTctrlCmdR->autoFPS();
 
             vector<BYTE_PACKET> vPacket;
-            m_pBpStreamCtrlCmdIn->getPackets(vPacket, m_tLastBpStreamCtrlCmdIn);
+            m_pBpStreamCtrlCmdIn->get(vPacket, m_tLastBpStreamCtrlCmdIn);
             for (const BYTE_PACKET &packet : vPacket)
             {
                 m_tLastBpStreamCtrlCmdIn = packet.m_tStamp;
@@ -719,7 +719,7 @@ namespace kai
             m_pTpushCmdR->autoFPS();
 
             vector<BYTE_PACKET> vPacket;
-            m_pBpStreamPushCmdIn->getPackets(vPacket, m_tLastBpStreamPushCmdIn);
+            m_pBpStreamPushCmdIn->get(vPacket, m_tLastBpStreamPushCmdIn);
             for (const BYTE_PACKET &packet : vPacket)
             {
                 m_tLastBpStreamPushCmdIn = packet.m_tStamp;
@@ -745,7 +745,7 @@ namespace kai
             m_pTpclR->autoFPS();
 
             vector<BYTE_PACKET> vPacket;
-            m_pBpStreamPclIn->getPackets(vPacket, m_tLastBpStreamPclIn);
+            m_pBpStreamPclIn->get(vPacket, m_tLastBpStreamPclIn);
             for (const BYTE_PACKET &packet : vPacket)
             {
                 m_tLastBpStreamPclIn = packet.m_tStamp;
@@ -828,7 +828,7 @@ namespace kai
             m_pTimuR->autoFPS();
 
             vector<BYTE_PACKET> vPacket;
-            m_pBpStreamImuIn->getPackets(vPacket, m_tLastBpStreamImuIn);
+            m_pBpStreamImuIn->get(vPacket, m_tLastBpStreamImuIn);
             for (const BYTE_PACKET &packet : vPacket)
             {
                 m_tLastBpStreamImuIn = packet.m_tStamp;

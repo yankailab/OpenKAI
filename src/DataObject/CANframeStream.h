@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src__DataStream__CANframeStream__H_
 #define OpenKAI_src__DataStream__CANframeStream__H_
 
-#include "DataObjBase.h"
+#include "DataObjStream.h"
 
 #define CAN_FRAME_BUF_N 64
 
@@ -34,7 +34,7 @@ namespace kai
 		}
 	};
 
-	class CANframeStream : public DataObjBase
+	class CANframeStream : public DataObjStream<CAN_FRAME>
 	{
 	public:
 		CANframeStream();
@@ -45,16 +45,9 @@ namespace kai
 		bool saveConfig(bool bExport = false);
 
 		bool clear(size_t nBuf);
-		void add(const vector<CAN_FRAME> &vSrc, uint64_t tStamp = 0);
-		uint64_t get(vector<CAN_FRAME> &vDest, uint64_t tStampFrom = 0);
 
 	protected:
 		uint32_t m_nBuf = 1000;
-		size_t m_iBset = 0;
-
-		vector<CAN_FRAME> m_vCframe;
-
-		std::shared_mutex m_sMutex;
 	};
 
 }

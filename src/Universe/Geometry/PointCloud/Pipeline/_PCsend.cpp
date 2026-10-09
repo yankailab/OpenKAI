@@ -115,7 +115,7 @@ namespace kai
 				pcstream::packUint(pPoint + 24, point.m_tStamp, 8);
 			}
 
-			m_pBpStreamOut->addPacket(vector<uint8_t>(pBytes, pBytes + bytes));
+			m_pBpStreamOut->add({{vector<uint8_t>(pBytes, pBytes + bytes), getTns()}});
 			first += count;
 		}
 		while (first < m_vPoints.size() && m_pT->bRun());

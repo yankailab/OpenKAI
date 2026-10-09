@@ -83,7 +83,7 @@ namespace kai
 				continue;
 			}
 
-			m_pBpStreamIn->getPackets(vPackets, m_tLastBpStreamIn);
+			m_pBpStreamIn->get(vPackets, m_tLastBpStreamIn);
 			for (const BYTE_PACKET &packet : vPackets)
 			{
 				for (uint8_t byte : packet.m_vB)

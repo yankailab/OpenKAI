@@ -18,7 +18,7 @@ namespace kai
 
 	bool BBoxStream::loadConfig(void)
 	{
-		IF_F(!this->DataObjBase::loadConfig());
+		IF_F(!this->DataObjStream::loadConfig());
 		std::unique_lock lock(m_sMutex);
 		json &j = *m_pJ;
 
@@ -31,7 +31,7 @@ namespace kai
 
 	bool BBoxStream::saveConfig(bool bExport)
 	{
-		IF_F(!this->DataObjBase::saveConfig(false));
+		IF_F(!this->DataObjStream::saveConfig(false));
 		{
 			std::shared_lock lock(m_sMutex);
 			json &j = *m_pJ;
@@ -55,8 +55,8 @@ namespace kai
 
 		IF_F(m_nBuf <= 0);
 
-		m_vObj.resize(m_nBuf);
-		for (BBOX_OBJ &b : m_vObj)
+		m_vElement.resize(m_nBuf);
+		for (BBOX_OBJ &b : m_vElement)
 		{
 			b.clear();
 		}
@@ -66,44 +66,6 @@ namespace kai
 		updateTstamp();
 
 		return true;
-	}
-
-	void BBoxStream::add(const vector<BBOX_OBJ> &vSrc, uint64_t tStamp)
-	{
-		IF_(vSrc.empty());
-
-		std::unique_lock lock(m_sMutex);
-
-		for (const BBOX_OBJ &b : vSrc)
-		{
-			m_vObj[m_iBset] = b;
-			if (++m_iBset == m_nBuf)
-				m_iBset = 0;
-		}
-
-		// per element tStamp is given by the producer so we don't touch it here
-		updateTstamp(tStamp);
-	}
-
-	uint64_t BBoxStream::get(vector<BBOX_OBJ> &vDest, uint64_t tStampFrom)
-	{
-		std::shared_lock lock(m_sMutex);
-
-		vDest.clear();
-		const size_t nObj = m_vObj.size();
-		vDest.reserve(nObj);
-
-		for (size_t n = 0, iObj = m_iBset; n < nObj; ++n)
-		{
-			const BBOX_OBJ &b = m_vObj[iObj];
-			if (b.m_tStamp > tStampFrom)
-				vDest.push_back(b);
-
-			if (++iObj == nObj)
-				iObj = 0;
-		}
-
-		return getTstamp();
 	}
 
 	void BBoxStream::setContainerDim(const Vector3f &vDim)

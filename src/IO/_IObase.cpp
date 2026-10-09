@@ -170,6 +170,10 @@ namespace kai
 		}
 	}
 
+	void _IObase::writePackets(void)
+	{
+	}
+
 	void _IObase::updateR(void)
 	{
 		while (m_pTr->bRun())
@@ -184,10 +188,6 @@ namespace kai
 	}
 
 	void _IObase::readPackets(void)
-	{
-	}
-
-	void _IObase::writePackets(void)
 	{
 	}
 

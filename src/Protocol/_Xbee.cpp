@@ -87,7 +87,7 @@ namespace kai
         f.encode(pB, nB);
 
         NULL_(m_pBpStreamOut);
-        m_pBpStreamOut->addPacket(vector<uint8_t>(f.m_pF, f.m_pF + f.m_nF));
+        m_pBpStreamOut->add({{vector<uint8_t>(f.m_pF, f.m_pF + f.m_nF), getTns()}});
     }
 
     void _Xbee::updateR(void)

@@ -2,6 +2,30 @@
 
 Images, depth, points, lines, maps, detections, tracked boxes, and IMU samples are owned by independent DataObjects. `*Frame` classes replace complete payloads with `set(...)` and copy them with `get(...)`. `*Stream` classes append timestamped elements with `add(...)` and copy retained histories with `get(...)`. Detection and tracking outputs use `BBoxStream`; IMU channels use `IMUstream`. Consumers resolve a DataObject name through `InstanceMgr::findDataObject` instead of calling a producer module. `OCTREE_CELL` and selectable-grid cell interfaces remain grid-owned.
 
+`BBoxStream`, `BytePacketStream`, `CANframeStream`, and `UGLIDcellStream` inherit
+`DataObjStream<T>` with `BBOX_OBJ`, `BYTE_PACKET`, `CAN_FRAME`, and `UGLID_CELL_T`
+elements, respectively. Their shared `add(const vector<T>&, tStamp = 0)` copies
+elements into a bounded ring without changing element timestamps. The optional
+timestamp updates only the stream's `m_tStamp`; zero uses the current backend
+time. `get(vector<T>&, tStampFrom = 0)` copies retained elements whose `m_tStamp`
+is strictly greater than `tStampFrom`, in arrival order, and returns the stream's
+update timestamp under the same lock. Reads are non-destructive.
+
+Producers supply element timestamps, including byte packet timestamps:
+
+```cpp
+BYTE_PACKET packet;
+packet.set(bytes, getTns());
+packetStream.add({packet});
+vector<BYTE_PACKET> packets;
+uint64_t streamTimestamp = packetStream.get(packets, lastPacketTimestamp);
+```
+
+The returned stream timestamp is separate from the element cursor. Consumers
+advance that cursor from the elements they process. Producers that require
+incremental delivery must coordinate increasing, nonzero element timestamps;
+the stream preserves duplicate, zero, and out-of-order timestamps as supplied.
+
 Declare each DataObject as a top-level launch object. DataObjects have no worker thread:
 
 ```json

@@ -26,7 +26,7 @@ namespace
 	static size_t packetCount(BytePacketStream &stream)
 	{
 		vector<BYTE_PACKET> packets;
-		stream.getPackets(packets);
+		stream.get(packets);
 		return packets.size();
 	}
 
@@ -110,7 +110,7 @@ namespace
 		}
 		assert(packetCount(output) == 1);
 		output.clear();
-		input.addPacket(vector<uint8_t>(16 * 1024 * 1024, 'x'));
+		input.add({{vector<uint8_t>(16 * 1024 * 1024, 'x'), getTns()}});
 		pollfd pollFd{fd, POLLIN, 0};
 		assert(poll(&pollFd, 1, 1000) > 0);
 		usleep(50000);
