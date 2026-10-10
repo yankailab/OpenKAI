@@ -13,16 +13,13 @@ namespace kai
 	MavServoOutputRaw::MavServoOutputRaw()
 	{
 		m_id = MAVLINK_MSG_ID_SERVO_OUTPUT_RAW;
-
-		clearMsgQueue();
 	}
 
-	void MavServoOutputRaw::add(mavlink_servo_output_raw_t &msg, uint8_t mySysID, uint8_t myComID)
+	const MAV_MSG_TSTAMP& MavServoOutputRaw::add(mavlink_servo_output_raw_t &msg, uint8_t mySysID, uint8_t myComID)
 	{
-		mavlink_message_t msgT;
-		mavlink_msg_servo_output_raw_encode(mySysID, myComID, &msgT, &msg);
+		mavlink_msg_servo_output_raw_encode(mySysID, myComID, &m_msgT.m_msgT, &msg);
 
-		addMsgQueue(msgT);
+		return m_msgT;
 	}
 
 	void MavServoOutputRaw::decode(const mavlink_message_t &msg)

@@ -197,7 +197,7 @@ namespace kai
 			mavlink_set_mode_t D{};
 			D.base_mode = MAV_MODE_FLAG_CUSTOM_MODE_ENABLED;
 			D.custom_mode = m_customMode;
-			m_pMavStream->set<MavSetMode>(D);
+			m_pMavStream->add<MavSetMode>(D);
 		}
 
 		uint64_t tNow = getTns();
@@ -209,7 +209,7 @@ namespace kai
 			heartbeat.type = m_myType;
 			heartbeat.autopilot = MAV_AUTOPILOT_INVALID;
 			heartbeat.system_status = MAV_STATE_ACTIVE;
-			m_pMavStream->set<MavHeartbeat>(heartbeat);
+			m_pMavStream->add<MavHeartbeat>(heartbeat);
 		}
 
 		if (m_ieSendMsgInt.update(tNow))
@@ -242,8 +242,8 @@ namespace kai
 	{
 		IF_(!check());
 
-		m_pMavStream->set<MavMountControl>(m.m_control);
-		m_pMavStream->set<MavMountConfigure>(m.m_config);
+		m_pMavStream->add<MavMountControl>(m.m_control);
+		m_pMavStream->add<MavMountConfigure>(m.m_config);
 
 		mavlink_param_set_t D{};
 		D.param_type = MAV_PARAM_TYPE_INT8;
@@ -252,12 +252,12 @@ namespace kai
 		D.param_value = m.m_config.stab_pitch;
 		id = "MNT_STAB_TILT";
 		strcpy(D.param_id, id.c_str());
-		m_pMavStream->set<MavParamSet>(D);
+		m_pMavStream->add<MavParamSet>(D);
 
 		D.param_value = m.m_config.stab_roll;
 		id = "MNT_STAB_ROLL";
 		strcpy(D.param_id, id.c_str());
-		m_pMavStream->set<MavParamSet>(D);
+		m_pMavStream->add<MavParamSet>(D);
 	}
 
 	int _APmav_base::getGPSfixType(void)

@@ -13,16 +13,13 @@ namespace kai
 	MavStatusText::MavStatusText()
 	{
 		m_id = MAVLINK_MSG_ID_STATUSTEXT;
-
-		clearMsgQueue();
 	}
 
-	void MavStatusText::add(mavlink_statustext_t &msg, uint8_t mySysID, uint8_t myComID)
+	const MAV_MSG_TSTAMP& MavStatusText::add(mavlink_statustext_t &msg, uint8_t mySysID, uint8_t myComID)
 	{
-		mavlink_message_t msgT;
-		mavlink_msg_statustext_encode(mySysID, myComID, &msgT, &msg);
+		mavlink_msg_statustext_encode(mySysID, myComID, &m_msgT.m_msgT, &msg);
 
-		addMsgQueue(msgT);
+		return m_msgT;
 	}
 
 	void MavStatusText::decode(const mavlink_message_t &msg)

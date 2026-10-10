@@ -13,16 +13,13 @@ namespace kai
 	MavGpsRawINT::MavGpsRawINT()
 	{
 		m_id = MAVLINK_MSG_ID_GPS_RAW_INT;
-
-		clearMsgQueue();
 	}
 
-	void MavGpsRawINT::add(mavlink_gps_raw_int_t &msg, uint8_t mySysID, uint8_t myComID)
+	const MAV_MSG_TSTAMP& MavGpsRawINT::add(mavlink_gps_raw_int_t &msg, uint8_t mySysID, uint8_t myComID)
 	{
-		mavlink_message_t msgT;
-		mavlink_msg_gps_raw_int_encode(mySysID, myComID, &msgT, &msg);
+		mavlink_msg_gps_raw_int_encode(mySysID, myComID, &m_msgT.m_msgT, &msg);
 
-		addMsgQueue(msgT);
+		return m_msgT;
 	}
 
 	void MavGpsRawINT::decode(const mavlink_message_t &msg)

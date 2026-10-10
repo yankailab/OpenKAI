@@ -116,7 +116,9 @@ namespace kai
 			m_pT->autoFPS();
 			IF_CONT(!m_pMavStream || !m_pBpStreamOut);
 
-			m_tLastMavStreamIn = m_pMavStream->getEncodedMsgs(vMsg, m_tLastMavStreamIn);
+			uint64_t tMsgLast = m_pMavStream->getEncodedMsgs(vMsg, m_tLastMavStreamIn);
+			if (tMsgLast > m_tLastMavStreamIn)
+				m_tLastMavStreamIn = tMsgLast;
 
 			uint8_t pB[MAVLINK_MAX_PACKET_LEN];
 			for (mavlink_message_t msg : vMsg)

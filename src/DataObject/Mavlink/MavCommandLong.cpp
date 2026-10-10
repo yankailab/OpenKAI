@@ -13,16 +13,13 @@ namespace kai
 	MavCommandLong::MavCommandLong()
 	{
 		m_id = MAVLINK_MSG_ID_COMMAND_LONG;
-
-		clearMsgQueue();
 	}
 
-	void MavCommandLong::add(mavlink_command_long_t &msg, uint8_t mySysID, uint8_t myComID)
+	const MAV_MSG_TSTAMP& MavCommandLong::add(mavlink_command_long_t &msg, uint8_t mySysID, uint8_t myComID)
 	{
-		mavlink_message_t msgT;
-		mavlink_msg_command_long_encode(mySysID, myComID, &msgT, &msg);
+		mavlink_msg_command_long_encode(mySysID, myComID, &m_msgT.m_msgT, &msg);
 
-		addMsgQueue(msgT);
+		return m_msgT;
 	}
 
 	void MavCommandLong::decode(const mavlink_message_t &msg)

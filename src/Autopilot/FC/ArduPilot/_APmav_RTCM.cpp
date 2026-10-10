@@ -88,31 +88,41 @@ namespace kai
 
 	bool _APmav_RTCM::writeMavlink(RTCM_MSG *pM)
 	{
+		NULL_F(pM);
 		IF_F(!check());
+		IF_F(pM->m_nB == 0 || pM->m_nB > sizeof(pM->m_pB));
 
-		mavlink_gps_rtcm_data_t D{};
-		D.flags = (pM->m_nB > GPS_DATA_FRAG_N) ? 1 : 0;
-
-		int iB = 0;
+		const bool bFragmented = pM->m_nB > GPS_DATA_FRAG_N &&
+			pM->m_nB <= 4 * GPS_DATA_FRAG_N;
 		uint8_t iFrag = 0;
-		// uint8_t iSeq = 0;
-		while (iB < pM->m_nB)
+		for (size_t iB = 0; iB < pM->m_nB;)
 		{
-			int nB = pM->m_nB - iB;
-			if (nB > GPS_DATA_FRAG_N)
-				nB = GPS_DATA_FRAG_N;
+			mavlink_gps_rtcm_data_t D{};
+			D.flags = m_iSeq << 3;
+			if (bFragmented)
+				D.flags |= 1 | (iFrag << 1);
+			D.len = std::min<size_t>(GPS_DATA_FRAG_N, pM->m_nB - iB);
+			memcpy(D.data, pM->m_pB + iB, D.len);
+			m_pMavStream->add<MavGpsRTCMdata>(D);
+			iB += D.len;
+			++iFrag;
 
-			D.flags &= 0x01;
-			D.flags |= ((iFrag++) & 0x03) << 1;
-			D.flags |= ((m_iSeq) & 0x1F) << 3;
-			D.len = nB;
-			memcpy(D.data, &pM->m_pB[iB], nB);
-			iB += nB;
-
-			m_pMavStream->set<MavGpsRTCMdata>(D);
+			// Payloads over 720 bytes use ordered, unfragmented chunks for the GPS byte stream.
+			if (!bFragmented)
+				m_iSeq = (m_iSeq + 1) & 0x1F;
 		}
 
-		m_iSeq = (m_iSeq + 1) & 0x1F;
+		if (bFragmented)
+		{
+			// A short fragment terminates the sequence unless all four fragments are full.
+			if (pM->m_nB % GPS_DATA_FRAG_N == 0 && iFrag < 4)
+			{
+				mavlink_gps_rtcm_data_t D{};
+				D.flags = (m_iSeq << 3) | (iFrag << 1) | 1;
+				m_pMavStream->add<MavGpsRTCMdata>(D);
+			}
+			m_iSeq = (m_iSeq + 1) & 0x1F;
+		}
 
 		return true;
 	}

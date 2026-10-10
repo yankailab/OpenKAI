@@ -34,16 +34,13 @@ namespace kai
 		m_msg.chan17_raw = UINT16_MAX;
 		m_msg.chan18_raw = UINT16_MAX;
 		m_msg.rssi = 255;
-
-		clearMsgQueue();
 	}
 
-	void MavRcChannels::add(mavlink_rc_channels_t &msg, uint8_t mySysID, uint8_t myComID)
+	const MAV_MSG_TSTAMP& MavRcChannels::add(mavlink_rc_channels_t &msg, uint8_t mySysID, uint8_t myComID)
 	{
-		mavlink_message_t msgT;
-		mavlink_msg_rc_channels_encode(mySysID, myComID, &msgT, &msg);
+		mavlink_msg_rc_channels_encode(mySysID, myComID, &m_msgT.m_msgT, &msg);
 
-		addMsgQueue(msgT);
+		return m_msgT;
 	}
 
 	void MavRcChannels::decode(const mavlink_message_t &msg)

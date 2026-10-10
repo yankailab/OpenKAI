@@ -13,16 +13,13 @@ namespace kai
 	MavParamSet::MavParamSet()
 	{
 		m_id = MAVLINK_MSG_ID_PARAM_SET;
-
-		clearMsgQueue();
 	}
 
-	void MavParamSet::add(mavlink_param_set_t &msg, uint8_t mySysID, uint8_t myComID)
+	const MAV_MSG_TSTAMP& MavParamSet::add(mavlink_param_set_t &msg, uint8_t mySysID, uint8_t myComID)
 	{
-		mavlink_message_t msgT;
-		mavlink_msg_param_set_encode(mySysID, myComID, &msgT, &msg);
+		mavlink_msg_param_set_encode(mySysID, myComID, &m_msgT.m_msgT, &msg);
 
-		addMsgQueue(msgT);
+		return m_msgT;
 	}
 
 	void MavParamSet::decode(const mavlink_message_t &msg)

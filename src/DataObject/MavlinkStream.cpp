@@ -63,6 +63,7 @@ namespace kai
 		m_vpMsgRegistry.push_back(&m_scaledIMU);
 		m_vpMsgRegistry.push_back(&m_visionPositionEstimate);
 		m_vpMsgRegistry.push_back(&m_visionSpeedEstimate);
+		clearMsgQueue();
 	}
 
 	MavlinkStream::~MavlinkStream()
@@ -74,9 +75,10 @@ namespace kai
 		IF_F(!this->DataObjBase::loadConfig());
 		json &j = *m_pJ;
 
-		jKv(j, "nMsgQueue", m_nMsgQueue);
-
-		clearMsgQueue(m_nMsgQueue);
+		size_t nMsgQueue = m_nMsgQueue;
+		jKv(j, "nMsgQueue", nMsgQueue);
+		IF_Le_F(nMsgQueue == 0, "Invalid MAVLink message queue capacity");
+		clearMsgQueue(nMsgQueue);
 
 		return true;
 	}
@@ -101,8 +103,7 @@ namespace kai
 		{
 			IF_CONT(pM->getID() != msg.msgid);
 
-			// decode and call callbacks,
-			// Mavlink messages with fragmented sequences will be handled inside each message class
+			// Deliver each segment synchronously; callers assemble fragmented messages.
 			pM->decode(msg);
 
 			LOG_I("Decoded MSG_ID: " + i2str(msg.msgid));
@@ -147,19 +148,24 @@ namespace kai
 		m_vMsgQueue.clear();
 		m_iMqSet = 0;
 
-		if(nMb > 0)
+		if (nMb > 0)
 		{
 			m_nMsgQueue = nMb;
-			m_vMsgQueue.reserve(m_nMsgQueue);
 		}
+		m_vMsgQueue.resize(m_nMsgQueue);
+		// Preserve m_tLastQueued so existing readers survive a clear or resize.
 	}
 
-	void MavlinkStream::addMsgQueue(MavMsgBase* pMb)
+	void MavlinkStream::addMsgQueueLocked(const MAV_MSG_TSTAMP &mT)
 	{
-		NULL_(pMb);
+		MAV_MSG_TSTAMP &queued = m_vMsgQueue[m_iMqSet];
 
-		std::unique_lock lock(m_sMutexMq);
-		m_vMsgQueue.push_back(pMb);
+		queued.m_msgT = mT.m_msgT;
+		queued.m_tStamp = std::max(getTns(), m_tLastQueued + 1);
+		m_tLastQueued = queued.m_tStamp;
+
+		if (++m_iMqSet == m_vMsgQueue.size())
+			m_iMqSet = 0;
 	}
 
 	uint64_t MavlinkStream::getEncodedMsgs(vector<mavlink_message_t> &vMsg, uint64_t tStampFrom)
@@ -167,13 +173,19 @@ namespace kai
 		std::shared_lock lock(m_sMutexMq);
 
 		vMsg.clear();
-		uint64_t tLatest = 0;
-		for (MavMsgBase* pM : m_vMsgQueue)
+		uint64_t tLatest = tStampFrom;
+		IF__(m_tLastQueued <= tStampFrom, tLatest);
+		size_t iMsg = m_iMqSet;
+		for (size_t n = 0; n < m_vMsgQueue.size(); ++n)
 		{
-			uint64_t tLast = pM->getMsgQueue(vMsg, tStampFrom);	// fragmented sequences from each message class will be flatten and copied into vMsg
-
-			if(tLast > tLatest)
-				tLatest = tLast;
+			const MAV_MSG_TSTAMP &mT = m_vMsgQueue[iMsg];
+			if (mT.m_tStamp > tStampFrom)
+			{
+				vMsg.push_back(mT.m_msgT);
+				tLatest = mT.m_tStamp;
+			}
+			if (++iMsg == m_vMsgQueue.size())
+				iMsg = 0;
 		}
 
 		return tLatest;
@@ -193,7 +205,7 @@ namespace kai
 		D.param6 = 0;
 		D.param7 = 0;
 
-		set<MavCommandLong>(D, mySysID, myComID);
+		add<MavCommandLong>(D, mySysID, myComID);
 
 		LOG_I("cmdLongComponentArmDisarm: " + i2str(bArm));
 	}
@@ -211,7 +223,7 @@ namespace kai
 		D.param6 = 0;
 		D.param7 = 0;
 
-		set<MavCommandLong>(D, mySysID, myComID);
+		add<MavCommandLong>(D, mySysID, myComID);
 
 		LOG_I("cmdLongFlightTermination: " + i2str(bTerminate));
 	}
@@ -229,7 +241,7 @@ namespace kai
 		D.param6 = 0;
 		D.param7 = 0;
 
-		set<MavCommandLong>(D, mySysID, myComID);
+		add<MavCommandLong>(D, mySysID, myComID);
 
 		LOG_I("cmdLongDoSetMode: " + i2str(mode));
 	}
@@ -247,7 +259,7 @@ namespace kai
 		D.param6 = 0;
 		D.param7 = 0;
 
-		set<MavCommandLong>(D, mySysID, myComID);
+		add<MavCommandLong>(D, mySysID, myComID);
 
 		LOG_I("cmdLongDoSetPositionYawTrust: yaw=" + f2str(yaw) + ", speed=" + f2str(speed) + ", yawMode=" + f2str(yawMode));
 	}
@@ -265,7 +277,7 @@ namespace kai
 		D.param6 = 0;
 		D.param7 = 0;
 
-		set<MavCommandLong>(D, mySysID, myComID);
+		add<MavCommandLong>(D, mySysID, myComID);
 
 		LOG_I(
 			"cmdLongDoSetServo: servo=" + i2str((int)iServo) + " pwm=" + i2str(PWM));
@@ -284,7 +296,7 @@ namespace kai
 		D.param6 = 0;
 		D.param7 = 0;
 
-		set<MavCommandLong>(D, mySysID, myComID);
+		add<MavCommandLong>(D, mySysID, myComID);
 
 		LOG_I(
 			"cmdLongDoSetRelay: relay=" + i2str((int)iRelay) + " relay=" + i2str((int)bRelay));
@@ -303,7 +315,7 @@ namespace kai
 		D.param6 = lon;
 		D.param7 = alt;
 
-		set<MavCommandLong>(D, mySysID, myComID);
+		add<MavCommandLong>(D, mySysID, myComID);
 
 		LOG_I("cmdLongSetHome");
 	}
@@ -321,7 +333,7 @@ namespace kai
 		D.param6 = 0;
 		D.param7 = 0;
 
-		set<MavCommandLong>(D, mySysID, myComID);
+		add<MavCommandLong>(D, mySysID, myComID);
 
 		LOG_I("cmdLongGetHomePosition");
 	}
@@ -339,7 +351,7 @@ namespace kai
 		D.param6 = 0;
 		D.param7 = alt;
 
-		set<MavCommandLong>(D, mySysID, myComID);
+		add<MavCommandLong>(D, mySysID, myComID);
 
 		LOG_I("cmdNavTakeoff");
 	}
@@ -357,7 +369,7 @@ namespace kai
 		D.param6 = 0;
 		D.param7 = 0;
 
-		set<MavCommandLong>(D, mySysID, myComID);
+		add<MavCommandLong>(D, mySysID, myComID);
 
 		LOG_I("cmdNavRTL");
 	}
@@ -375,7 +387,7 @@ namespace kai
 		D.param6 = 0;
 		D.param7 = responseTarget;
 
-		set<MavCommandLong>(D, mySysID, myComID);
+		add<MavCommandLong>(D, mySysID, myComID);
 
 		LOG_I("cmdSetMessageTarget id = " + i2str((int)id) + ", interval = " + i2str((int)interval) + ", responseTarget = " + i2str((int)responseTarget));
 	}

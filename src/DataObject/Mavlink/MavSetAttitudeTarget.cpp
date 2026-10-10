@@ -13,16 +13,13 @@ namespace kai
 	MavSetAttitudeTarget::MavSetAttitudeTarget()
 	{
 		m_id = MAVLINK_MSG_ID_SET_ATTITUDE_TARGET;
-
-		clearMsgQueue();
 	}
 
-	void MavSetAttitudeTarget::add(mavlink_set_attitude_target_t &msg, uint8_t mySysID, uint8_t myComID)
+	const MAV_MSG_TSTAMP& MavSetAttitudeTarget::add(mavlink_set_attitude_target_t &msg, uint8_t mySysID, uint8_t myComID)
 	{
-		mavlink_message_t msgT;
-		mavlink_msg_set_attitude_target_encode(mySysID, myComID, &msgT, &msg);
+		mavlink_msg_set_attitude_target_encode(mySysID, myComID, &m_msgT.m_msgT, &msg);
 
-		addMsgQueue(msgT);
+		return m_msgT;
 	}
 
 	void MavSetAttitudeTarget::decode(const mavlink_message_t &msg)

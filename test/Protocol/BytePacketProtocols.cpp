@@ -172,6 +172,9 @@ namespace kai
 			if (m_pTr)
 				m_pTr->join();
 		}
+
+		uint64_t sendCursor() const { return m_tLastMavStreamIn; }
+		uint64_t receiveCursor() const { return m_tLastBpStreamIn; }
 	};
 
 	void countDecodedHeartbeat(void *, void *pContext)
@@ -216,7 +219,7 @@ namespace kai
 			servo.command = MAV_CMD_DO_SET_SERVO;
 			servo.param1 = 1;
 			servo.param2 = 1200;
-			stream->set<MavCommandLong>(servo, 255, 190);
+			stream->add<MavCommandLong>(servo, 255, 190);
 		}
 		const size_t expectedPackets = testEncoding ? 1 : 0;
 		mavlink_message_t heartbeat{};
@@ -225,7 +228,8 @@ namespace kai
 		uint8_t frame[MAVLINK_MAX_PACKET_LEN];
 		const size_t length = mavlink_msg_to_send_buffer(frame, &heartbeat);
 		bytesIn->add({{vector<uint8_t>(frame, frame + 4), getTns()}});
-		bytesIn->add({{vector<uint8_t>(frame + 4, frame + length), getTns()}});
+		const uint64_t receiveTimestamp = getTns();
+		bytesIn->add({{vector<uint8_t>(frame + 4, frame + length), receiveTimestamp}});
 		assert(codec.start());
 
 		vector<BYTE_PACKET> packets;
@@ -237,10 +241,14 @@ namespace kai
 				break;
 			::usleep(1000);
 		} while (getTns() < deadline);
+		// Leave both workers running through idle polls to catch replay and cursor mixups.
+		::usleep(50000);
 		codec.joinWorkers();
 		bytesOut->get(packets);
 		assert(packets.size() == expectedPackets && heartbeats == 1);
 		assert(stream->get<MavHeartbeat>()->get().custom_mode == 99);
+		assert(codec.receiveCursor() == receiveTimestamp);
+		assert((codec.sendCursor() > 0) == testEncoding);
 		for (size_t i = 0; i < packets.size(); ++i)
 		{
 			mavlink_message_t parser{}, decoded{};

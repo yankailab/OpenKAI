@@ -13,16 +13,13 @@ namespace kai
 	MavPositionTargetLocalNED::MavPositionTargetLocalNED()
 	{
 		m_id = MAVLINK_MSG_ID_POSITION_TARGET_LOCAL_NED;
-
-		clearMsgQueue();
 	}
 
-	void MavPositionTargetLocalNED::add(mavlink_position_target_local_ned_t &msg, uint8_t mySysID, uint8_t myComID)
+	const MAV_MSG_TSTAMP& MavPositionTargetLocalNED::add(mavlink_position_target_local_ned_t &msg, uint8_t mySysID, uint8_t myComID)
 	{
-		mavlink_message_t msgT;
-		mavlink_msg_position_target_local_ned_encode(mySysID, myComID, &msgT, &msg);
+		mavlink_msg_position_target_local_ned_encode(mySysID, myComID, &m_msgT.m_msgT, &msg);
 
-		addMsgQueue(msgT);
+		return m_msgT;
 	}
 
 	void MavPositionTargetLocalNED::decode(const mavlink_message_t &msg)

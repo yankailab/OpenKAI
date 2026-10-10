@@ -33,7 +33,6 @@ namespace kai
 	{
 	}
 
-
 	bool MavMsgBase::bValid(void)
 	{
 		return m_tStamp > 0;
@@ -123,30 +122,5 @@ namespace kai
 		std::lock_guard<std::recursive_mutex> lock(m_cbMutex);
 		m_vCbRecv.clear();
 	}
-
-
-	void MavMsgBase::clearMsgQueue(size_t nM)
-	{
-		std::unique_lock lock(m_sMutexMq);
-
-		m_vMsgT.clear();
-		m_vMsgT.resize(std::max<size_t>(nM, 1));
-		m_iMset = 0;
-	}
-
-	void MavMsgBase::addMsgQueue(mavlink_message_t& msgT)
-	{
-		std::unique_lock lock(m_sMutexMq);
-
-		m_vMsgT[m_iMset].m_msgT = msgT;
-		m_vMsgT[m_iMset].m_tStamp = getTns();
-		m_iMset = (m_iMset + 1) % m_vMsgT.size();
-	}
-
-	uint64_t MavMsgBase::getMsgQueue(vector<mavlink_message_t>& vMsg, uint64_t tStampFrom)
-	{
-		//TODO:
-	}
-
 
 }

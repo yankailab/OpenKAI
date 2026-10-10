@@ -18,10 +18,12 @@ namespace kai
 		MavGlobalVisionPositionEstimate();
 
 		// for send message to IO
-		void add(mavlink_global_vision_position_estimate_t &msg, uint8_t mySysID, uint8_t myComID);
+		const MAV_MSG_TSTAMP& add(mavlink_global_vision_position_estimate_t &msg, uint8_t mySysID, uint8_t myComID);
 
 		// for decode message received from IO
 		void decode(const mavlink_message_t &msg);
+
+		const mavlink_global_vision_position_estimate_t &get() const { return m_msg; }
 
 	protected:
 		mavlink_global_vision_position_estimate_t m_msg{};

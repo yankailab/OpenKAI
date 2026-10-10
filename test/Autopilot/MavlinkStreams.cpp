@@ -4,6 +4,7 @@
 #include "../../src/Autopilot/FC/ArduPilot/_APmav_RTCM.h"
 #include <cassert>
 #include <cmath>
+#include <array>
 
 namespace
 {
@@ -26,6 +27,44 @@ namespace
 	{
 	public:
 		using _APmav_RTCM::writeMavlink;
+	};
+
+	struct RTCMAssembly
+	{
+		vector<uint8_t> bytes;
+		std::array<vector<uint8_t>, 4> fragments;
+		unsigned received = 0;
+		unsigned fragmentCount = 0;
+		unsigned sequence = 0;
+		unsigned callbacks = 0;
+
+		static void receive(void *message, void *context)
+		{
+			auto &self = *static_cast<RTCMAssembly *>(context);
+			const auto &part = static_cast<MavGpsRTCMdata *>(message)->get();
+			assert(part.len <= sizeof(part.data));
+			++self.callbacks;
+			if (!(part.flags & 1))
+			{
+				assert(self.received == 0);
+				self.bytes.insert(self.bytes.end(), part.data, part.data + part.len);
+				return;
+			}
+			const unsigned fragment = (part.flags >> 1) & 3;
+			if (self.received == 0) self.sequence = part.flags >> 3;
+			assert(self.sequence == unsigned(part.flags >> 3));
+			assert(!(self.received & (1U << fragment)));
+			self.fragments[fragment].assign(part.data, part.data + part.len);
+			self.received |= 1U << fragment;
+			if (part.len < sizeof(part.data)) self.fragmentCount = fragment + 1;
+			else if (self.received == 15) self.fragmentCount = 4;
+			if (self.fragmentCount && self.received == (1U << self.fragmentCount) - 1)
+			{
+				for (unsigned i = 0; i < self.fragmentCount; ++i)
+					self.bytes.insert(self.bytes.end(), self.fragments[i].begin(), self.fragments[i].end());
+				self.received = self.fragmentCount = 0;
+			}
+		}
 	};
 
 	void testAutopilotStreams(bool testEncoding)
@@ -149,27 +188,73 @@ namespace
 		if (!testEncoding)
 			return;
 
-		RTCM_MSG correction;
-		correction.init();
-		correction.m_nB = 400;
-		for (size_t i = 0; i < correction.m_nB; ++i)
-			correction.m_pB[i] = static_cast<uint8_t>(i);
-		assert(rtcm.writeMavlink(&correction));
-		Messages queued;
-		stream->getEncodedMsgs(queued);
-		assert(queued.size() == 3);
-		size_t offset = 0;
-		for (size_t i = 0; i < queued.size(); ++i)
+		uint64_t cursor = 0;
+		unsigned sequence = 0;
+		const vector<unsigned> lengths = {1, 179, 180, 181, 359, 360, 400,
+			539, 540, 541, 719, 720, 721, 900, 1029};
+		// Two passes also exercise the five-bit sequence number wrapping.
+		for (unsigned iteration = 0; iteration < lengths.size() * 2; ++iteration)
 		{
-			const mavlink_message_t &encoded = queued[i];
-			mavlink_gps_rtcm_data_t fragment{};
-			mavlink_msg_gps_rtcm_data_decode(&encoded, &fragment);
-			assert(fragment.flags == (1 | (i << 1)));
-			assert(fragment.len == (i < 2 ? 180 : 40));
-			assert(memcmp(fragment.data, correction.m_pB + offset, fragment.len) == 0);
-			offset += fragment.len;
+			const unsigned length = lengths[iteration % lengths.size()];
+			RTCM_MSG correction;
+			correction.init();
+			correction.m_nB = length;
+			for (size_t i = 0; i < length; ++i)
+				correction.m_pB[i] = static_cast<uint8_t>(i + iteration);
+			assert(rtcm.writeMavlink(&correction));
+			Messages queued;
+			const uint64_t next = stream->getEncodedMsgs(queued, cursor);
+			assert(next > cursor);
+			cursor = next;
+			const bool fragmented = length > 180 && length <= 720;
+			const unsigned expectedPackets = (length + 179) / 180 +
+				(fragmented && length < 720 && length % 180 == 0);
+			assert(queued.size() == expectedPackets);
+			size_t offset = 0;
+			for (size_t i = 0; i < queued.size(); ++i)
+			{
+				mavlink_gps_rtcm_data_t fragment{};
+				mavlink_msg_gps_rtcm_data_decode(&queued[i], &fragment);
+				const unsigned seq = fragmented ? sequence : (sequence + i) & 31;
+				assert(fragment.flags == ((seq << 3) | (fragmented ? 1 | (i << 1) : 0)));
+				assert(fragment.len == std::min<size_t>(180, length - offset));
+				assert(memcmp(fragment.data, correction.m_pB + offset, fragment.len) == 0);
+				offset += fragment.len;
+			}
+			assert(offset == length);
+			sequence = (sequence + (fragmented ? 1 : expectedPackets)) & 31;
+
+			MavlinkStream receiver;
+			RTCMAssembly assembly;
+			receiver.get<MavGpsRTCMdata>()->addCbRecv(RTCMAssembly::receive, &assembly);
+			// Fragment IDs allow caller-side assembly even when those frames arrive out of order.
+			if (fragmented) std::reverse(queued.begin(), queued.end());
+			mavlink_message_t parser{}, decoded{};
+			mavlink_status_t parserStatus{}, status{};
+			for (const auto &encoded : queued)
+			{
+				uint8_t bytes[MAVLINK_MAX_PACKET_LEN];
+				const size_t nBytes = mavlink_msg_to_send_buffer(bytes, &encoded);
+				unsigned complete = 0;
+				for (size_t i = 0; i < nBytes; ++i)
+					if (mavlink_frame_char_buffer(&parser, &parserStatus, bytes[i], &decoded, &status) == MAVLINK_FRAMING_OK)
+					{
+						assert(receiver.decode(decoded));
+						++complete;
+					}
+				assert(complete == 1);
+			}
+			assert(assembly.callbacks == expectedPackets && assembly.received == 0);
+			assert(assembly.bytes == vector<uint8_t>(correction.m_pB, correction.m_pB + length));
+			assert(receiver.getEncodedMsgs(queued) == 0 && queued.empty());
+			assert(stream->getEncodedMsgs(queued, cursor) == cursor && queued.empty());
 		}
-		assert(offset == correction.m_nB);
+		RTCM_MSG invalid;
+		invalid.init();
+		assert(!rtcm.writeMavlink(nullptr));
+		assert(!rtcm.writeMavlink(&invalid));
+		invalid.m_nB = RTCM_N_BUF + 1;
+		assert(!rtcm.writeMavlink(&invalid));
 	}
 }
 

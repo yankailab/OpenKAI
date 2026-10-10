@@ -13,16 +13,13 @@ namespace kai
 	MavGlobalVisionPositionEstimate::MavGlobalVisionPositionEstimate()
 	{
 		m_id = MAVLINK_MSG_ID_GLOBAL_VISION_POSITION_ESTIMATE;
-
-		clearMsgQueue();
 	}
 
-	void MavGlobalVisionPositionEstimate::add(mavlink_global_vision_position_estimate_t &msg, uint8_t mySysID, uint8_t myComID)
+	const MAV_MSG_TSTAMP& MavGlobalVisionPositionEstimate::add(mavlink_global_vision_position_estimate_t &msg, uint8_t mySysID, uint8_t myComID)
 	{
-		mavlink_message_t msgT;
-		mavlink_msg_global_vision_position_estimate_encode(mySysID, myComID, &msgT, &msg);
+		mavlink_msg_global_vision_position_estimate_encode(mySysID, myComID, &m_msgT.m_msgT, &msg);
 
-		addMsgQueue(msgT);
+		return m_msgT;
 	}
 
 	void MavGlobalVisionPositionEstimate::decode(const mavlink_message_t &msg)

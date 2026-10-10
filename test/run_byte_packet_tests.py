@@ -4,8 +4,7 @@
 Usage: python3 test/run_byte_packet_tests.py [build-directory] [--streams-only | --byte-only | --can-only | --mavlink-only | --mavlink-receive-only]
 Build OpenKAI with WITH_IO=ON and WITH_PROTOCOL=ON before running this script.
 WITH_ARDUPILOT=ON additionally exercises the MAVLink stream consumers.
---mavlink-receive-only checks receive/link paths while outgoing message queue
-encoding in MavMsgBase is unfinished; it does not validate sending or fragments.
+--mavlink-receive-only checks receive/link paths without outgoing queue tests.
 """
 
 import argparse

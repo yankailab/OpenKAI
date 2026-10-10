@@ -18,10 +18,12 @@ namespace kai
 		MavDistanceSensor();
 
 		// for send message to IO
-		void add(mavlink_distance_sensor_t &msg, uint8_t mySysID, uint8_t myComID);
+		const MAV_MSG_TSTAMP& add(mavlink_distance_sensor_t &msg, uint8_t mySysID, uint8_t myComID);
 
 		// for decode message received from IO
 		void decode(const mavlink_message_t &msg);
+
+		const mavlink_distance_sensor_t &get() const { return m_msg; }
 
 	protected:
 		mavlink_distance_sensor_t m_msg{};

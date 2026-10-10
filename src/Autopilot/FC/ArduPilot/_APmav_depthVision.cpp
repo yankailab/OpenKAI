@@ -128,7 +128,7 @@ namespace kai
 			D.orientation = pR->m_orientation;
 			D.covariance = 255;
 
-			pMavlink->set<MavDistanceSensor>(D);
+			pMavlink->add<MavDistanceSensor>(D);
 			LOG_I("orient: " + i2str(pR->m_orientation) + " minD: " + f2str(pR->m_minD));
 		}
 	}

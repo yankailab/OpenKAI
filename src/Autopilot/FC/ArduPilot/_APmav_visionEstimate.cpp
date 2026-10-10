@@ -214,7 +214,7 @@ namespace kai
 		// m_Dpos.yaw = vRPY(2);
 		// memcpy(m_Dpos.covariance, vCov, sizeof(float) * 21);
 		// m_Dpos.reset_counter = m_iReset;
-		// m_pAP->getMavlinkStream()->set<MavVisionPositionEstimate>(m_Dpos);
+		// m_pAP->getMavlinkStream()->add<MavVisionPositionEstimate>(m_Dpos);
 	}
 
 	void _APmav_visionEstimate::sendSpeedEstimate(void)
@@ -236,7 +236,7 @@ namespace kai
 		// m_Dspd.z = V_aeroRef_aeroBody(2, 3);
 		// memcpy(m_Dspd.covariance, vCov2, sizeof(float) * 9);
 		// m_Dpos.reset_counter = m_iReset;
-		// m_pAP->getMavlinkStream()->set<MavVisionSpeedEstimate>(m_Dspd);
+		// m_pAP->getMavlinkStream()->add<MavVisionSpeedEstimate>(m_Dspd);
 	}
 
 	void _APmav_visionEstimate::console(void *pConsole)

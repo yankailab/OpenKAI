@@ -18,7 +18,7 @@ namespace kai
 		MavLocalPositionNED();
 
 		// for send message to IO
-		void add(mavlink_local_position_ned_t &msg, uint8_t mySysID, uint8_t myComID);
+		const MAV_MSG_TSTAMP& add(mavlink_local_position_ned_t &msg, uint8_t mySysID, uint8_t myComID);
 
 		// for decode message received from IO
 		void decode(const mavlink_message_t &msg);

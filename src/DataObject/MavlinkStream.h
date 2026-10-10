@@ -92,13 +92,13 @@ namespace kai
 		}
 
 		// Send to IO
-		// each message class has its own internal queue, for Mavlink message with fragmented sequences just call the same setter multiple times
+		// Each call queues one encoded message; callers split fragmented sequences.
 		template <typename T, typename M>
-		void set(M msg, uint8_t mySysID = 0, uint8_t myComID = 0)
+		void add(M msg, uint8_t mySysID = 0, uint8_t myComID = 0)
 		{
+			std::unique_lock lock(m_sMutexMq);
 			T* pT = get<T>();
-			pT->add(msg, mySysID, myComID);
-			addMsgQueue(pT);
+			addMsgQueueLocked(pT->add(msg, mySysID, myComID));
 		}
 
 		// helpers for command long
@@ -228,12 +228,10 @@ namespace kai
 
 	protected:
 		std::recursive_mutex m_receiveMutex;
-		// caller add msg into the queue to be written to IO
-		void addMsgQueue(MavMsgBase *pMb);
 		void clearMsgQueue(size_t nMb = 0);
 
 		std::shared_mutex m_sMutexMq;
-		std::vector<MavMsgBase *> m_vMsgQueue; // ring buffer. message from each class pointer will be sent as a batch, not necessary to preserve the send order among different classes
+		std::vector<MAV_MSG_TSTAMP> m_vMsgQueue; // Retains the newest m_nMsgQueue messages in enqueue order.
 		size_t m_nMsgQueue = 1024;
 		size_t m_iMqSet = 0;
 		uint64_t m_tLastQueued = 0;
@@ -292,6 +290,10 @@ namespace kai
 		MavScaledIMU m_scaledIMU;
 		MavVisionPositionEstimate m_visionPositionEstimate;
 		MavVisionSpeedEstimate m_visionSpeedEstimate;
+
+	private:
+		// Caller holds m_sMutexMq from encoding through publication.
+		void addMsgQueueLocked(const MAV_MSG_TSTAMP& mT);
 	};
 }
 #endif

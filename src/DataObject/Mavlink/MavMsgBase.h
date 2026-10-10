@@ -20,6 +20,7 @@
 
 #include "../DataObjBase.h"
 #include <mutex>
+#include <shared_mutex>
 
 namespace kai
 {
@@ -66,11 +67,6 @@ namespace kai
 		void clearCbRecv(CbMavMsg pCb, void *pInst);
 		void clearAllCbRecv(void);
 
-		// internal message queue
-		void clearMsgQueue(size_t nM = 1);
-		void addMsgQueue(mavlink_message_t& msgT);
-		uint64_t getMsgQueue(vector<mavlink_message_t>& vMsg, uint64_t tStampFrom = 0);
-
 	protected:
 		// general
 		uint32_t m_id = 0x7fffffff;
@@ -85,10 +81,8 @@ namespace kai
 		vector<MavCallback> m_vCbRecv;
 		std::recursive_mutex m_cbMutex;
 
-		// msg queue
-		std::recursive_mutex m_sMutexMq;
-		vector<MAV_MSG_TSTAMP> m_vMsgT{};
-		size_t m_iMset = 0;
+		// Encoding scratch buffer; MavlinkStream serializes access and timestamps its queued copy.
+		MAV_MSG_TSTAMP m_msgT{};
 	};
 
 }
