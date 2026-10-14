@@ -3,6 +3,7 @@
 
 Usage: python3 test/run_distance_sensor_tests.py [build-directory]
 Build OpenKAI with WITH_SENSOR=ON and compile_commands.json enabled first.
+Enable USE_LIBMODBUS=ON to include the Leddar tests.
 """
 
 import json
@@ -23,6 +24,7 @@ def main():
     with tempfile.TemporaryDirectory(prefix="openkai-distance-") as temp:
         obj = str(pathlib.Path(temp) / "distance-tests.o")
         args = shlex.split(entry["command"])
+        use_modbus = "-DUSE_MODBUS" in args
         args[args.index("-o") + 1] = obj
         args[args.index("-c") + 1] = str(repo / "test/Sensor/DistanceSensors.cpp")
         if "-MF" in args:
@@ -34,8 +36,9 @@ def main():
         args[index] = obj
         executable = str(pathlib.Path(temp) / "distance-tests")
         args[args.index("-o") + 1] = executable
-        for name in ["modbus_read_input_registers", "modbus_send_raw_request", "modbus_receive_confirmation"]:
-            args.append("-Wl,--wrap=" + name)
+        if use_modbus:
+            for name in ["modbus_read_input_registers", "modbus_send_raw_request", "modbus_receive_confirmation"]:
+                args.append("-Wl,--wrap=" + name)
         subprocess.run(args, cwd=build, check=True)
         subprocess.run([executable], cwd=repo, check=True, timeout=30)
 

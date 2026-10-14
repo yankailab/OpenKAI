@@ -19,7 +19,12 @@ namespace
 	class Stream : public MavlinkStream
 	{
 	public:
-		size_t pending() const { return m_vMsgQueue.size(); }
+		size_t pending()
+		{
+			vector<mavlink_message_t> messages;
+			getEncodedMsgs(messages);
+			return messages.size();
+		}
 	};
 	bool near(const json &value, double expected) { return std::abs(value.get<double>() - expected) < 1e-6; }
 	json frame(Stream &stream, uint64_t now = getTns()) { return webmavlink::telemetry(stream, 7, now, 1234, 3000); }

@@ -2,7 +2,6 @@
 #define OpenKAI_src_Navigation__GeoFence_H_
 
 #include "../Protocol/_JSONbase.h"
-#include "../Autopilot/FC/ArduPilot/_APmav_base.h"
 
 namespace kai
 {

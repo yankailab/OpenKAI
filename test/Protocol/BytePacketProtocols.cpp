@@ -3,7 +3,9 @@
 #ifdef OPENKAI_BYTE_PACKET_PROTOCOL_TEST
 
 #include "../../src/Protocol/_JSONbase.h"
+#ifdef USE_MAVLINK
 #include "../../src/Protocol/_Mavlink.h"
+#endif
 #include <atomic>
 #include <cassert>
 #include <iostream>
@@ -43,10 +45,12 @@ namespace kai
 			return this->recvJson(pText);
 		}
 
+#ifdef USE_MAVLINK
 		bool readMavlink(mavlink_message_t *pMsg)
 		{
 			return this->readMessage(pMsg);
 		}
+#endif
 	};
 
 	void addText(BytePacketStream &stream, const string &text)
@@ -129,6 +133,7 @@ namespace kai
 		assert(!reader.readCommand(&cmd));
 	}
 
+#ifdef USE_MAVLINK
 	void testMavlinkPackets(void)
 	{
 		BytePacketStream input;
@@ -265,6 +270,7 @@ namespace kai
 			assert(command.target_system == 1 && command.target_component == 2);
 		}
 	}
+#endif
 }
 
 #ifdef USE_WSSERVER
@@ -289,8 +295,9 @@ int main(int argc, char **argv)
 		std::cout << "CAN stream codecs and worker regressions passed\n";
 		return 0;
 	}
-	const bool receiveOnly = argc > 1 && std::string(argv[1]) == "--mavlink-receive-only";
+#ifdef USE_MAVLINK
 	const bool byteOnly = argc > 1 && std::string(argv[1]) == "--byte-only";
+	const bool receiveOnly = argc > 1 && std::string(argv[1]) == "--mavlink-receive-only";
 	if (!byteOnly)
 	{
 		runMavlinkStreamTests(!receiveOnly);
@@ -309,6 +316,15 @@ int main(int argc, char **argv)
 		std::cout << "MavlinkStream storage, codec, and consumer regressions passed\n";
 		return 0;
 	}
+#else
+	const bool byteOnly = true;
+	if (argc > 1 && (std::string(argv[1]) == "--mavlink-only" ||
+		std::string(argv[1]) == "--mavlink-receive-only"))
+	{
+		std::cerr << "MAVLink tests require a build with USE_MAVLINK=ON\n";
+		return 1;
+	}
+#endif
 	runDataObjStreamTests();
 	runBytePacketStreamTests();
 	kai::runBytePacketTransportTests();

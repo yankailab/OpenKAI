@@ -26,7 +26,9 @@
 #include "../Universe/Geometry/_GeometryViewerBase.h"
 #include "../UI/Viewer/Web/_WebSelectableOctGrid.h"
 #include "../UI/Viewer/Web/_WebGeometry.h"
+#ifdef USE_MAVLINK
 #include "../UI/Viewer/Web/_WebMavlinkStream.h"
+#endif
 
 #ifdef USE_OPEN3D
 #include "../Universe/Geometry/PointCloud/Pipeline/_PCcrop.h"
@@ -46,12 +48,14 @@
 #endif
 
 #ifdef WITH_ACTUATOR
+#ifdef USE_LIBMODBUS
 #include "../Actuator/_IAI.h"
 #include "../Actuator/_OrientalMotor.h"
 #include "../Actuator/_HYMCU_RS485.h"
 #include "../Actuator/Motor/_ZLAC8015.h"
 #include "../Actuator/Motor/_ZLAC8015D.h"
 #include "../Actuator/Motor/_ZDmotor.h"
+#endif
 #include "../Actuator/Motor/_DDSM.h"
 #ifdef USE_FEETECH
 #include "../Actuator/_Feetech.h"
@@ -66,7 +70,7 @@
 #include "../Autopilot/Ground/_ApDrive.h"
 #endif
 
-#ifdef WITH_ARDUPILOT
+#if defined(WITH_ARDUPILOT) && defined(USE_MAVLINK)
 #include "../Autopilot/FC/ArduPilot/_APmav_base.h"
 #include "../Autopilot/FC/ArduPilot/_APmav_copter.h"
 #include "../Autopilot/FC/ArduPilot/_APmav_rover.h"
@@ -78,7 +82,6 @@
 #include "../Autopilot/FC/ArduPilot/_APmav_servo.h"
 #include "../Autopilot/FC/ArduPilot/_APmav_drive.h"
 #ifdef USE_OPENCV
-#include "../Autopilot/FC/ArduPilot/_APmav_RTCM.h"
 #include "../Autopilot/FC/ArduPilot/_APmav_depthVision.h"
 #ifdef USE_OPENCV_CONTRIB
 #include "../Autopilot/FC/ArduPilot/_APmav_follow.h"
@@ -88,6 +91,7 @@
 #ifdef WITH_SWARM
 #endif
 #ifdef WITH_NAVIGATION
+#include "../Autopilot/FC/ArduPilot/_APmav_RTCM.h"
 #include "../Autopilot/FC/ArduPilot/_APmav_visionEstimate.h"
 #endif // nav
 #endif // WITH_ARDUPILOT
@@ -123,7 +127,9 @@
 #endif
 
 #ifdef WITH_IO
+#ifdef USE_LIBMODBUS
 #include "../IO/_ADIO_EBYTE.h"
+#endif
 #include "../IO/_TCPserver.h"
 #include "../IO/_TCPclient.h"
 #include "../IO/_SerialPort.h"
@@ -159,12 +165,17 @@
 #include "../Protocol/_SocketCAN.h"
 #include "../Protocol/_JSONbase.h"
 #include "../Protocol/_WSconsole.h"
+#ifdef USE_MAVLINK
 #include "../Protocol/_Mavlink.h"
+#endif
 #include "../Protocol/_PWMio.h"
 #include "../Protocol/_ProtocolBase.h"
-#include "../Protocol/_Modbus.h"
 #include "../Protocol/_SBus.h"
 #include "../Protocol/_Xbee.h"
+#endif
+
+#if defined(USE_LIBMODBUS) && (defined(WITH_PROTOCOL) || defined(WITH_ACTUATOR) || defined(WITH_IO))
+#include "../Protocol/_Modbus.h"
 #endif
 
 #ifdef WITH_SOLVER
@@ -178,7 +189,9 @@
 
 #ifdef WITH_SENSOR
 #include "../Sensor/_IMUbase.h"
+#ifdef USE_LIBMODBUS
 #include "../Sensor/Distance/_LeddarVu.h"
+#endif
 #include "../Sensor/Distance/_TOFsense.h"
 #include "../Sensor/Distance/_BenewakeTF.h"
 #if defined(WITH_UNIVERSE)

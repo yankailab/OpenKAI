@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run MAVLink viewer tests against a WITH_UNIVERSE=ON CMake build.
+"""Run MAVLink viewer tests against a WITH_UNIVERSE=ON, USE_MAVLINK=ON CMake build.
 
 Usage: python3 test/run_web_mavlink_tests.py build [--no-network]
 The network tests use loopback sockets and verify both WebSocket transport modes.

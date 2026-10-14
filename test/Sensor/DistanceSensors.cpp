@@ -2,7 +2,9 @@
 
 #include "../../src/Sensor/Distance/_BenewakeTF.h"
 #include "../../src/Sensor/Distance/_TOFsense.h"
+#ifdef USE_LIBMODBUS
 #include "../../src/Sensor/Distance/_LeddarVu.h"
+#endif
 #include <cassert>
 #include <chrono>
 #include <iostream>
@@ -13,6 +15,7 @@ namespace
 	using namespace kai;
 	using namespace std::chrono_literals;
 
+#ifdef USE_LIBMODBUS
 	std::mutex responseMutex;
 	vector<uint16_t> registerResponse;
 	vector<uint8_t> fastResponse;
@@ -28,6 +31,7 @@ namespace
 			assert(m_pMb);
 		}
 	};
+#endif
 
 	struct Streams
 	{
@@ -204,6 +208,7 @@ namespace
 		streams.expectUnchanged(stamp);
 	}
 
+#ifdef USE_LIBMODBUS
 	void setRegisters(vector<uint16_t> response)
 	{
 		std::lock_guard lock(responseMutex);
@@ -271,6 +276,8 @@ namespace
 		}
 	}
 
+#endif
+
 	void testConfiguration(void)
 	{
 		Streams streams;
@@ -294,6 +301,7 @@ namespace
 	}
 }
 
+#ifdef USE_LIBMODBUS
 extern "C" int __wrap_modbus_read_input_registers(modbus_t *, int, int count, uint16_t *dest)
 {
 	std::lock_guard lock(responseMutex);
@@ -326,12 +334,16 @@ extern "C" int __wrap_modbus_receive_confirmation(modbus_t *, uint8_t *dest)
 	return size;
 }
 
+#endif
+
 int main()
 {
 	testBenewake();
 	testTOFsense();
+#ifdef USE_LIBMODBUS
 	testLeddarRegisters();
 	testLeddarFast();
+#endif
 	testConfiguration();
 	std::cout << "Distance sensor packet, geometry, validity, and configuration tests passed\n";
 }

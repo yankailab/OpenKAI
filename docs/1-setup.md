@@ -195,6 +195,33 @@ sudo udevadm trigger
 ```
 
 
+# (Optional) libmodbus
+Build and install [libmodbus](https://github.com/stephane/libmodbus) independently
+when using Modbus devices. The default installation prefix is `/usr/local`:
+headers are installed under `/usr/local/include/modbus` and libraries under
+`/usr/local/lib`.
+
+```bash
+sudo apt-get install autoconf automake libtool
+git clone --depth 1 https://github.com/stephane/libmodbus.git
+cd libmodbus
+./autogen.sh
+./configure
+make -j$(nproc)
+sudo make install
+sudo ldconfig
+```
+
+For `_LeddarVu`, keep `bUse0x41=false` (the default) with upstream libmodbus.
+The optional `0x41` mode requires a custom Leddar response-length patch;
+
+
+# (Optional) MAVLink
+```bash
+git clone --depth 1 https://github.com/mavlink/c_library_v2.git
+```
+
+
 # (Optional) wsServer
 ```bash
 git clone --depth 1 https://github.com/Theldus/wsServer

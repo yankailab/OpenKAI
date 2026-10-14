@@ -12,6 +12,8 @@ option(USE_IMGUI "Use Dear ImGui 3D viewer" OFF)
 option(USE_GLIM "Use GLIM SLAM" OFF)
 option(USE_GLOG "Use glog" ON)
 option(USE_JETSON_INFERENCE "Use Jetson Inference" OFF)
+option(USE_LIBMODBUS "Use libmodbus" OFF)
+option(USE_MAVLINK "Use MAVLink" OFF)
 option(USE_OPEN3D "Use Open3D" OFF)
 option(USE_OPENCL "Use OpenCL" OFF)
 option(USE_OPENCV "Use OpenCV" OFF)
@@ -49,12 +51,6 @@ option(WITH_UI "" OFF)
 option(WITH_UNIVERSE "" OFF)
 option(WITH_VISION "" OFF)
 option(WITH_TEST "Build with unit test modules" OFF)
-
-set(IMGUI_BACKEND "GLFW" CACHE STRING "Dear ImGui platform backend: GLFW or SDL2")
-set_property(CACHE IMGUI_BACKEND PROPERTY STRINGS GLFW SDL2)
-set(IMGUI_RENDERER "OPENGL" CACHE STRING "Dear ImGui renderer backend: OPENGL or OPENGLES")
-set_property(CACHE IMGUI_RENDERER PROPERTY STRINGS OPENGL OPENGLES)
-set(IMGUI_DIR "imgui" CACHE PATH "Dear ImGui source root containing imgui.cpp and backends/")
 
 # Eigen 5 retains the Eigen3 package name and Eigen3::Eigen target.
 find_package(Eigen3 5 REQUIRED CONFIG)
@@ -110,6 +106,14 @@ list(APPEND OpenKAI_cpp
   src/DataObject/DataObjStream.cpp
   src/DataObject/IMUstream.cpp
   src/DataObject/LineFrame.cpp
+  src/DataObject/PCLframe.cpp
+  src/DataObject/PCLmap.cpp
+  src/DataObject/SharedMemoryFrame.cpp
+  src/DataObject/UGLIDcellStream.cpp
+)
+
+if(USE_MAVLINK)
+  list(APPEND OpenKAI_cpp
   src/DataObject/MavlinkStream.cpp
   src/DataObject/Mavlink/MavMsgBase.cpp
   src/DataObject/Mavlink/MavAttitude.cpp
@@ -161,11 +165,8 @@ list(APPEND OpenKAI_cpp
   src/DataObject/Mavlink/MavScaledIMU.cpp
   src/DataObject/Mavlink/MavVisionPositionEstimate.cpp
   src/DataObject/Mavlink/MavVisionSpeedEstimate.cpp
-  src/DataObject/PCLframe.cpp
-  src/DataObject/PCLmap.cpp
-  src/DataObject/SharedMemoryFrame.cpp
-  src/DataObject/UGLIDcellStream.cpp
-)
+  )
+endif()
 
 if(USE_OPENCV)
 list(APPEND OpenKAI_cpp
@@ -209,8 +210,6 @@ if(WITH_UNIVERSE)
 	src/UI/Viewer/Web/_WebSelectableOctGrid.cpp
 	src/UI/Viewer/SelectableOctGridSources.cpp
 	src/UI/Viewer/Web/_WebGeometry.cpp
-	src/UI/Viewer/Web/_WebMavlinkStream.cpp
-	src/UI/Viewer/Web/WebMavlinkProtocol.cpp
 	src/Universe/_ReferenceFrame.cpp
   src/Universe/Grid/_OctreeBase.cpp
 	src/Universe/Grid/_OctreeGrid.cpp
@@ -223,18 +222,25 @@ if(WITH_UNIVERSE)
 	src/Universe/Geometry/_GeometryViewerBase.cpp
   )
 
-    if(WITH_UI)
-      if(USE_IMGUI)
-        list(APPEND OpenKAI_cpp
+  if(USE_MAVLINK)
+    list(APPEND OpenKAI_cpp
+      src/UI/Viewer/Web/_WebMavlinkStream.cpp
+      src/UI/Viewer/Web/WebMavlinkProtocol.cpp
+    )
+  endif()
+
+  if(WITH_UI)
+    if(USE_IMGUI)
+      list(APPEND OpenKAI_cpp
 			src/UI/Viewer/ImGUI/_ImGUIselectableOctGrid.cpp
 			src/UI/Viewer/ImGUI/ImGUIglRenderer.cpp
 			src/UI/Viewer/ImGUI/ImGUIbackend.cpp
-        )
-      endif() # imgui
-    endif() # gui
+      )
+    endif() # imgui
+  endif() # ui
 
-    if(USE_OPEN3D)
-      list(APPEND OpenKAI_cpp
+  if(USE_OPEN3D)
+    list(APPEND OpenKAI_cpp
 		src/Universe/Geometry/PointCloud/Pipeline/_PCcrop.cpp
 		src/Universe/Geometry/PointCloud/Pipeline/_PCremove.cpp
 		src/Universe/Geometry/PointCloud/Pipeline/_PCdownSample.cpp
@@ -242,21 +248,25 @@ if(WITH_UNIVERSE)
 		src/Universe/Geometry/PointCloud/Registration/_PCregistICP.cpp
 		src/Universe/Geometry/PointCloud/Registration/_PCregistGlobal.cpp
       )
-    endif()
+  endif()
 endif()
 
 if(WITH_ACTUATOR)
   add_definitions(-DWITH_ACTUATOR)
   list(APPEND OpenKAI_cpp
 	src/Actuator/_ActuatorBase.cpp
-	src/Actuator/_IAI.cpp
-	src/Actuator/_OrientalMotor.cpp
-	src/Actuator/_HYMCU_RS485.cpp
-	src/Actuator/Motor/_ZLAC8015.cpp
-	src/Actuator/Motor/_ZLAC8015D.cpp
-	src/Actuator/Motor/_ZDmotor.cpp
 	src/Actuator/Motor/_DDSM.cpp
   )
+  if(USE_LIBMODBUS)
+    list(APPEND OpenKAI_cpp
+		src/Actuator/_IAI.cpp
+		src/Actuator/_OrientalMotor.cpp
+		src/Actuator/_HYMCU_RS485.cpp
+		src/Actuator/Motor/_ZLAC8015.cpp
+		src/Actuator/Motor/_ZLAC8015D.cpp
+		src/Actuator/Motor/_ZDmotor.cpp
+    )
+  endif()
   if(USE_FEETECH)
     add_definitions(-DUSE_FEETECH)
     list(APPEND OpenKAI_cpp
@@ -277,6 +287,8 @@ endif()
 if(WITH_AUTOPILOT)
   add_definitions(-DWITH_AUTOPILOT)
   file(GLOB_RECURSE Autopilot_cpp src/Autopilot/*.cpp src/Autopilot/*.cc src/Autopilot/*.c)
+  # ArduPilot sources are selected with their dependencies below.
+  list(FILTER Autopilot_cpp EXCLUDE REGEX "/FC/ArduPilot/")
   list(APPEND OpenKAI_cpp
 	${Autopilot_cpp}
 	src/Autopilot/Ground/_ApDrive.cpp
@@ -284,7 +296,7 @@ if(WITH_AUTOPILOT)
 
 endif()
 
-if(WITH_ARDUPILOT)
+if(WITH_ARDUPILOT AND USE_MAVLINK)
   add_definitions(-DWITH_ARDUPILOT)
   list(APPEND OpenKAI_cpp
   	src/Autopilot/FC/ArduPilot/_APmav_base.cpp
@@ -375,7 +387,6 @@ endif()
 if(WITH_IO)
   add_definitions(-DWITH_IO)
   list(APPEND OpenKAI_cpp
-	src/IO/_ADIO_EBYTE.cpp
 	src/IO/_ADIObase.cpp
 	src/IO/_IObase.cpp
 	src/IO/_SerialPort.cpp
@@ -383,6 +394,9 @@ if(WITH_IO)
 	src/IO/_TCPserver.cpp
 	src/IO/_UDP.cpp
   )
+  if(USE_LIBMODBUS)
+    list(APPEND OpenKAI_cpp src/IO/_ADIO_EBYTE.cpp)
+  endif()
   if(USE_WSSERVER)
     add_definitions(-DUSE_WSSERVER)
     list(APPEND OpenKAI_cpp
@@ -458,16 +472,13 @@ endif()
 if(WITH_PROTOCOL)
   add_definitions(-DWITH_PROTOCOL)
   file(GLOB_RECURSE Protocol_cpp src/Protocol/*.cpp src/Protocol/*.cc src/Protocol/*.c)
+  # The Modbus wrapper is added with its dependency below.
+  list(REMOVE_ITEM Protocol_cpp "${CMAKE_CURRENT_SOURCE_DIR}/src/Protocol/_Modbus.cpp")
+  if(NOT USE_MAVLINK)
+    list(REMOVE_ITEM Protocol_cpp "${CMAKE_CURRENT_SOURCE_DIR}/src/Protocol/_Mavlink.cpp")
+  endif()
   list(APPEND OpenKAI_cpp
 	${Protocol_cpp}
-  )
-  file(GLOB_RECURSE Dependencies_mdb src/Dependencies/libmodbus/*.cpp src/Dependencies/libmodbus/*.c)
-  list(APPEND OpenKAI_cpp
-	${Dependencies_mdb}
-  )
-  file(GLOB_RECURSE Dependencies_mvl src/Dependencies/c_library_v2/*.cpp src/Dependencies/c_library_v2/*.c)
-  list(APPEND OpenKAI_cpp
-	${Dependencies_mvl}
   )
 endif()
 
@@ -497,10 +508,12 @@ if(WITH_SENSOR)
   add_definitions(-DWITH_SENSOR)
   list(APPEND OpenKAI_cpp
 	src/Sensor/_IMUbase.cpp
-	src/Sensor/Distance/_LeddarVu.cpp
 	src/Sensor/Distance/_TOFsense.cpp
 	src/Sensor/Distance/_BenewakeTF.cpp
   )
+  if(USE_LIBMODBUS)
+    list(APPEND OpenKAI_cpp src/Sensor/Distance/_LeddarVu.cpp)
+  endif()
   if(WITH_UNIVERSE)
     list(APPEND OpenKAI_cpp
 		src/Sensor/LiDAR/_Livox2.cpp
@@ -659,6 +672,11 @@ endif()
 
 if(USE_IMGUI)
   add_definitions(-DUSE_IMGUI)
+  set(IMGUI_BACKEND "GLFW" CACHE STRING "Dear ImGui platform backend: GLFW or SDL2")
+  set_property(CACHE IMGUI_BACKEND PROPERTY STRINGS GLFW SDL2)
+  set(IMGUI_RENDERER "OPENGL" CACHE STRING "Dear ImGui renderer backend: OPENGL or OPENGLES")
+  set_property(CACHE IMGUI_RENDERER PROPERTY STRINGS OPENGL OPENGLES)
+  set(IMGUI_DIR "imgui" CACHE PATH "Dear ImGui source root containing imgui.cpp and backends/")
 
   string(TOUPPER "${IMGUI_BACKEND}" IMGUI_BACKEND_UPPER)
   string(TOUPPER "${IMGUI_RENDERER}" IMGUI_RENDERER_UPPER)
@@ -759,6 +777,26 @@ endif()
 if(USE_M4RI)
   add_definitions(-DUSE_M4RI)
   set(OpenKAI_lib ${OpenKAI_lib} m4ri)
+endif()
+
+
+if(USE_MAVLINK)
+  add_definitions(-DUSE_MAVLINK)
+  set(MAVLINK_DIR "c_library_v2" CACHE PATH "MAVLink c_library_v2 root containing ardupilotmega/mavlink.h")
+  list(APPEND OpenKAI_include "${MAVLINK_DIR}")
+endif()
+
+
+if(USE_LIBMODBUS)
+  find_path(MODBUS_INCLUDE_DIR NAMES modbus.h PATH_SUFFIXES modbus REQUIRED)
+  find_library(MODBUS_LIBRARY NAMES modbus REQUIRED)
+  add_definitions(-DUSE_MODBUS)
+  list(APPEND OpenKAI_include ${MODBUS_INCLUDE_DIR})
+  list(APPEND OpenKAI_lib ${MODBUS_LIBRARY})
+  # Actuator and I/O drivers also need the wrapper without WITH_PROTOCOL.
+  if(WITH_PROTOCOL OR WITH_ACTUATOR OR WITH_IO)
+    list(APPEND OpenKAI_cpp src/Protocol/_Modbus.cpp)
+  endif()
 endif()
 
 if(USE_OPEN3D)
@@ -914,10 +952,14 @@ endif() # build_as_lib
 
 target_link_libraries(OpenKAI ${OpenKAI_lib})
 
-if(WITH_UNIVERSE)
+if(WITH_UNIVERSE AND USE_MAVLINK)
   add_custom_command(TARGET OpenKAI POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-      "${PROJECT_SOURCE_DIR}/html/viewer/mavlink" "$<TARGET_FILE_DIR:OpenKAI>/html/viewer/mavlink"
+      "${PROJECT_SOURCE_DIR}/html/viewer/mavlink" "$<TARGET_FILE_DIR:OpenKAI>/html/viewer/mavlink")
+endif()
+
+if(WITH_UNIVERSE)
+  add_custom_command(TARGET OpenKAI POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
       "${PROJECT_SOURCE_DIR}/html/viewer/_SelectableOctGrid" "$<TARGET_FILE_DIR:OpenKAI>/html/viewer/_SelectableOctGrid"
     COMMAND ${CMAKE_COMMAND} -E copy_directory

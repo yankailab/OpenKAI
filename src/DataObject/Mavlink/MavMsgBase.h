@@ -12,8 +12,8 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Waddress-of-packed-member"
 #endif
-#include "../../Dependencies/c_library_v2/ardupilotmega/mavlink.h"
-#include "../../Dependencies/c_library_v2/mavlink_conversions.h"
+#include <ardupilotmega/mavlink.h>
+#include <mavlink_conversions.h>
 #if defined(__GNUC__)
 #pragma GCC diagnostic pop
 #endif

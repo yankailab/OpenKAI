@@ -39,7 +39,9 @@ namespace kai
 		ADD_MODULE(_GeometryViewerBase);
 		ADD_MODULE(_WebSelectableOctGrid);
 		ADD_MODULE(_WebGeometry);
+#ifdef USE_MAVLINK
 		ADD_MODULE(_WebMavlinkStream);
+#endif
 
 #ifdef USE_OPEN3D
 		ADD_MODULE(_PCcrop);
@@ -58,12 +60,14 @@ namespace kai
 #endif
 
 #ifdef WITH_ACTUATOR
+#ifdef USE_LIBMODBUS
 		ADD_MODULE(_IAI);
 		ADD_MODULE(_OrientalMotor);
 		ADD_MODULE(_HYMCU_RS485);
 		ADD_MODULE(_ZLAC8015);
 		ADD_MODULE(_ZLAC8015D);
 		ADD_MODULE(_ZDmotor);
+#endif
 		ADD_MODULE(_DDSM);
 #ifdef USE_FEETECH
 		ADD_MODULE(_Feetech);
@@ -78,7 +82,7 @@ namespace kai
 		ADD_MODULE(_ApDrive);
 #endif
 
-#ifdef WITH_ARDUPILOT
+#if defined(WITH_ARDUPILOT) && defined(USE_MAVLINK)
 		ADD_MODULE(_APmav_base);
 		ADD_MODULE(_APmav_copter);
 		ADD_MODULE(_APmav_rover);
@@ -90,7 +94,6 @@ namespace kai
 		ADD_MODULE(_APmav_servo);
 		ADD_MODULE(_APmav_drive);
 #ifdef USE_OPENCV
-		ADD_MODULE(_APmav_RTCM);
 		ADD_MODULE(_APmav_depthVision);
 #ifdef USE_OPENCV_CONTRIB
 		ADD_MODULE(_APmav_follow);
@@ -98,6 +101,7 @@ namespace kai
 #endif // opencv_contrib
 #endif // opencv
 #ifdef WITH_NAVIGATION
+		ADD_MODULE(_APmav_RTCM);
 		ADD_MODULE(_APmav_visionEstimate);
 #endif // nav
 #endif // apMavlink
@@ -133,7 +137,9 @@ namespace kai
 #endif
 
 #ifdef WITH_IO
+#ifdef USE_LIBMODBUS
 		ADD_MODULE(_ADIO_EBYTE);
+#endif
 		ADD_MODULE(_SerialPort);
 		ADD_MODULE(_TCPserver);
 		ADD_MODULE(_TCPclient);
@@ -169,12 +175,17 @@ namespace kai
 		ADD_MODULE(_USR_CANET);
 		ADD_MODULE(_JSONbase);
 		ADD_MODULE(_WSconsole);
+#ifdef USE_MAVLINK
 		ADD_MODULE(_Mavlink);
-		ADD_MODULE(_Modbus);
+#endif
 		ADD_MODULE(_SBus);
 		ADD_MODULE(_PWMio);
 		ADD_MODULE(_ProtocolBase);
 		ADD_MODULE(_Xbee);
+#endif
+
+#if defined(USE_LIBMODBUS) && (defined(WITH_PROTOCOL) || defined(WITH_ACTUATOR) || defined(WITH_IO))
+		ADD_MODULE(_Modbus);
 #endif
 
 #ifdef WITH_SOLVER
@@ -190,7 +201,9 @@ namespace kai
 		ADD_MODULE(_IMUbase);
 		ADD_MODULE(_BenewakeTF);
 		ADD_MODULE(_TOFsense);
+#ifdef USE_LIBMODBUS
 		ADD_MODULE(_LeddarVu);
+#endif
 #if defined(WITH_UNIVERSE)
 		ADD_MODULE(_Livox2);
 		ADD_MODULE(_RoboSenseAiry);

@@ -19,8 +19,10 @@ provides the transport wiring for future OpenKAI handlers.
 For an existing OpenKAI application, copy the `viewer` object into its launch
 configuration and set `viewer.MavlinkStream` to its existing `MavlinkStream`
 data object. It can share that object with other consumers without consuming
-messages. The module is registered with `WITH_UNIVERSE=ON`, as are the existing
-web viewers. The standalone example also needs `WITH_IO=ON` and
+messages. The module is registered with `WITH_UNIVERSE=ON` and `USE_MAVLINK=ON`.
+Set `MAVLINK_DIR` to an external `c_library_v2` checkout; see the
+[MAVLink setup](../../../docs/1-setup.md#optional-mavlink).
+The standalone example also needs `WITH_IO=ON` and
 `WITH_PROTOCOL=ON`. `USE_WSSERVER` is not required for this viewer's Beast-based
 HTTP/WebSocket transport.
 

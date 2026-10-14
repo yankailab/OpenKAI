@@ -3,7 +3,8 @@
 
 Usage: python3 test/run_byte_packet_tests.py [build-directory] [--streams-only | --byte-only | --can-only | --mavlink-only | --mavlink-receive-only]
 Build OpenKAI with WITH_IO=ON and WITH_PROTOCOL=ON before running this script.
-WITH_ARDUPILOT=ON additionally exercises the MAVLink stream consumers.
+USE_MAVLINK=ON includes the MAVLink tests; WITH_ARDUPILOT=ON and
+WITH_NAVIGATION=ON additionally exercise the MAVLink stream consumers.
 --mavlink-receive-only checks receive/link paths without outgoing queue tests.
 """
 
@@ -51,17 +52,23 @@ def main():
     build = options.build_directory.resolve()
     entries = json.loads((build / "compile_commands.json").read_text())
     entry = next(item for item in entries if item["file"].endswith("/src/Protocol/_ProtocolBase.cpp"))
+    use_mavlink = "-DUSE_MAVLINK" in shlex.split(entry["command"])
+    if (options.mavlink_only or options.mavlink_receive_only) and not use_mavlink:
+        parser.error("MAVLink tests require a build with USE_MAVLINK=ON")
     link_args = link_command(build)
     sources = [
         "test/Protocol/BytePacketProtocols.cpp",
         "test/Protocol/CANframeStreams.cpp",
         "test/DataObject/BytePacketStream.cpp",
         "test/DataObject/DataObjStream.cpp",
-        "test/DataObject/MavlinkStream.cpp",
-        "test/Autopilot/MavlinkStreams.cpp",
         "test/IO/BytePacketTransports.cpp",
         "test/IO/BytePacketWebSocket.cpp",
     ]
+    if use_mavlink:
+        sources.extend([
+            "test/DataObject/MavlinkStream.cpp",
+            "test/Autopilot/MavlinkStreams.cpp",
+        ])
     with tempfile.TemporaryDirectory(prefix="openkai-byte-packets-") as temp:
         test_objects = []
         for index, source in enumerate(sources):
