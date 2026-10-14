@@ -3,32 +3,51 @@
  *      Author: yankai
  */
 #include "_TOFsense.h"
+#include "DistancePoint.h"
+#include "../../UI/_Console.h"
 
 namespace kai
 {
 
 	_TOFsense::_TOFsense()
 	{
-		m_nDiv = 1;
 	}
 
 	_TOFsense::~_TOFsense()
 	{
+		if (m_pT)
+		{
+			m_pT->join();
+		}
+		DEL_ARRAY(m_frame.m_pB);
 	}
 
 	bool _TOFsense::loadConfig(void)
 	{
-		IF_F(!this->_DistSensorBase::loadConfig());
+		IF_F(!this->_ModuleBase::loadConfig());
+		const json &j = *m_pJ;
+
+		jKv<float>(j, "vRange", m_vRange);
+		IF_F(!m_vRange.allFinite() || m_vRange.x() < 0 || m_vRange.x() >= m_vRange.y());
+
+		jKv(j, "nDiv", m_nDiv);
+		IF_F(m_nDiv <= 0 || m_nDiv > 256);
+		jKv(j, "fovH", m_fovH);
+		IF_F(!std::isfinite(m_fovH) || m_fovH <= 0 || m_fovH > 360);
+		m_vPoints.assign(m_nDiv, GEOMETRY_POINT());
 
 		m_frame.init(16);
-		m_bReady = 1;
 
 		return true;
 	}
 
 	bool _TOFsense::saveConfig(bool bExport)
 	{
-		IF_F(!_DistSensorBase::saveConfig(false));
+		IF_F(!_ModuleBase::saveConfig(false));
+		json &j = *m_pJ;
+		j["vRange"] = {m_vRange.x(), m_vRange.y()};
+		j["nDiv"] = m_nDiv;
+		j["fovH"] = m_fovH;
 
 		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
@@ -36,13 +55,18 @@ namespace kai
 
 	bool _TOFsense::link(InstanceMgr *pM)
 	{
-		IF_F(!this->_DistSensorBase::link(pM));
+		IF_F(!this->_ModuleBase::link(pM));
 		const json &j = *m_pJ;
 
 		string n = "";
 		jKv(j, "BytePacketStreamIn", n);
 		m_pBpStreamIn = dynamic_cast<BytePacketStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
 		IF_Le_F(!m_pBpStreamIn, "BytePacketStreamIn not found: " + n);
+
+		n.clear();
+		jKv(j, "PCLframeOut", n);
+		m_pPCLout = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+		IF_Le_F(!m_pPCLout, "PCLframeOut not found: " + n);
 
 		return true;
 	}
@@ -57,7 +81,7 @@ namespace kai
 	{
 		while (m_pT->bRun())
 		{
-			if (!m_pBpStreamIn)
+			if (!m_pBpStreamIn || !m_pPCLout)
 			{
 				m_pT->sleepT(NSEC_SEC);
 				continue;
@@ -132,16 +156,29 @@ namespace kai
 		m_frame.reset();
 		IF_(!cs);
 
-		this->input(rf.id,
-					int24Value((uint8_t *)&rf.distance) * 0.001,
-					rf.signalStrength);
+		IF_(!m_pPCLout || rf.id >= m_vPoints.size());
+
+		uint64_t tStamp = getTns();
+		float d = int24Value((uint8_t *)&rf.distance) * 0.001f;
+		if (rf.distanceStatus != 0)
+		{
+			d = -1;
+		}
+		m_vPoints[rf.id] = distancePoint(d, rf.signalStrength, rf.id, m_nDiv,
+			m_fovH, m_vRange, tStamp);
+		m_pPCLout->set(m_vPoints, tStamp);
 	}
 
 	int32_t _TOFsense::int24Value(uint8_t *pD)
 	{
 		NULL__(pD, -1);
 
-		return (int32_t)(pD[0] << 8 | pD[1] << 16 | pD[2] << 24) / 256;
+		int32_t value = pD[0] | (pD[1] << 8) | (pD[2] << 16);
+		if (value & 0x800000)
+		{
+			value -= 0x1000000;
+		}
+		return value;
 	}
 
 	uint8_t _TOFsense::verifyCheckSum(const uint8_t *data, size_t dataLength)
@@ -154,30 +191,21 @@ namespace kai
 		return sum == data[dataLength - 1];
 	}
 
-	DIST_SENSOR_TYPE _TOFsense::type(void)
-	{
-		return ds_TOFsense;
-	}
-
 	void _TOFsense::console(void *pConsole)
 	{
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);
 
-		_Console *pC = (_Console *)pConsole;
-		string msg;
-		msg += "nDiv=" + i2str(m_nDiv);
-		pC->addMsg(msg);
-
-		int i;
-		msg = "";
-		for (i = 0; i < m_nDiv; i++)
+		NULL_(m_pPCLout);
+		vector<GEOMETRY_POINT> points;
+		m_pPCLout->get(points);
+		string msg = "nDiv=" + i2str(points.size());
+		for (const GEOMETRY_POINT &point : points)
 		{
-			DIST_SENSOR_DIV *pD = &m_pDiv[i];
-			msg += " | " + f2str(pD->d()) + " (" + f2str(pD->a()) + ")";
+			float d = point.m_tStamp ? point.m_vP.norm() : -1;
+			msg += " | " + f2str(d) + " (" + f2str(point.m_vC.x()) + ")";
 		}
-		msg += " |";
-		pC->addMsg(msg);
+		((_Console *)pConsole)->addMsg(msg + " |");
 	}
 
 }

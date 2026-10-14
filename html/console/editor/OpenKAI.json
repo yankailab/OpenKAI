@@ -3,7 +3,7 @@
   "title": "OpenKAI editor class catalog",
   "description": "Source-derived editor metadata; not a JSON Schema validator. See SCHEMA.md.",
   "generator": "tools/generate-schema.py",
-  "sourceDigest": "83a680f75ab47ce4e9838e8f118931fb3b483fc57cff64272de9b4adec6627f0",
+  "sourceDigest": "e076518c5367b80f5d15e5be583737da914846fdcade2b41182b5a2d4237e144",
   "categories": [
     "Actuator",
     "Actuator/Articulated",
@@ -7521,6 +7521,17 @@
         },
         {
           "path": [
+            "PCLframeIn"
+          ],
+          "type": "string",
+          "declaredIn": "_APmav_land",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_land.cpp:103",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
             "PIDalt"
           ],
           "type": "string",
@@ -7570,18 +7581,6 @@
           "type": "string",
           "declaredIn": "_APmav_move",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_move.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "n",
-          "cppType": "string",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_DistSensorBase"
-          ],
-          "type": "string",
-          "declaredIn": "_APmav_land",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_land.cpp:103",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -7982,6 +7981,17 @@
         },
         {
           "path": [
+            "PCLframeIn"
+          ],
+          "targetClass": "PCLframe",
+          "targetKind": "dataObject",
+          "multiple": false,
+          "declaredIn": "_APmav_land",
+          "source": "src/Autopilot/FC/ArduPilot/_APmav_land.cpp:104",
+          "containers": []
+        },
+        {
+          "path": [
             "PIDalt"
           ],
           "targetClass": "PID",
@@ -8034,17 +8044,6 @@
           "declaredIn": "_APmav_move",
           "source": "src/Autopilot/FC/ArduPilot/_APmav_move.cpp:59",
           "required": true,
-          "containers": []
-        },
-        {
-          "path": [
-            "_DistSensorBase"
-          ],
-          "targetClass": "_DistSensorBase",
-          "targetKind": "module",
-          "multiple": false,
-          "declaredIn": "_APmav_land",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_land.cpp:104",
           "containers": []
         },
         {
@@ -10418,7 +10417,7 @@
       "category": "DataObject",
       "source": "src/DataObject/BBoxStream.h:152",
       "baseClasses": [
-        "DataObjBase"
+        "DataObjStream"
       ],
       "parameters": [
         {
@@ -10519,7 +10518,7 @@
       "category": "DataObject",
       "source": "src/DataObject/BytePacketStream.h:63",
       "baseClasses": [
-        "DataObjBase"
+        "DataObjStream"
       ],
       "parameters": [
         {
@@ -10620,7 +10619,7 @@
       "category": "DataObject",
       "source": "src/DataObject/CANframeStream.h:37",
       "baseClasses": [
-        "DataObjBase"
+        "DataObjStream"
       ],
       "parameters": [
         {
@@ -10710,6 +10709,80 @@
       "source": "src/DataObject/DataObjBase.h:18",
       "baseClasses": [
         "BASE"
+      ],
+      "parameters": [
+        {
+          "path": [
+            "bLog"
+          ],
+          "type": "boolean",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:58",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_bLog",
+          "cppType": "bool",
+          "default": false
+        },
+        {
+          "path": [
+            "bON"
+          ],
+          "type": "boolean",
+          "source": "src/Instance/InstanceMgr.cpp:createAll",
+          "declaredIn": "BASE",
+          "extraction": "audited-adapter",
+          "default": true,
+          "description": "false disables this instance; true enables it."
+        },
+        {
+          "path": [
+            "class"
+          ],
+          "type": "string",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:57",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_class",
+          "cppType": "string",
+          "default": ""
+        },
+        {
+          "path": [
+            "name"
+          ],
+          "type": "string",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:56",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_name",
+          "cppType": "string",
+          "default": ""
+        },
+        {
+          "path": [
+            "type"
+          ],
+          "type": "string",
+          "source": "src/Instance/InstanceMgr.cpp:createAll",
+          "declaredIn": "DataObjBase",
+          "extraction": "audited-adapter",
+          "default": "dataObject",
+          "description": "Create an independent DataObject rather than a worker module."
+        }
+      ],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": true
+    },
+    {
+      "name": "DataObjStream",
+      "category": "DataObject",
+      "source": "src/DataObject/DataObjStream.h:17",
+      "baseClasses": [
+        "DataObjBase"
       ],
       "parameters": [
         {
@@ -10993,11 +11066,11 @@
           ],
           "type": "integer",
           "declaredIn": "MavlinkStream",
-          "source": "src/DataObject/MavlinkStream.cpp:77",
+          "source": "src/DataObject/MavlinkStream.cpp:79",
           "typeEvidence": "declaration",
-          "cppVariable": "m_nMsgQueue",
+          "cppVariable": "nMsgQueue",
           "cppType": "size_t",
-          "default": 1024
+          "defaultExpression": "m_nMsgQueue"
         },
         {
           "path": [
@@ -11463,7 +11536,7 @@
       "category": "DataObject",
       "source": "src/DataObject/UGLIDcellStream.h:44",
       "baseClasses": [
-        "DataObjBase"
+        "DataObjStream"
       ],
       "parameters": [
         {
@@ -11985,7 +12058,7 @@
     {
       "name": "MavMsgBase",
       "category": "DataObject/Mavlink",
-      "source": "src/DataObject/Mavlink/MavMsgBase.h:41",
+      "source": "src/DataObject/Mavlink/MavMsgBase.h:42",
       "baseClasses": [],
       "parameters": [],
       "dependencies": [],
@@ -20296,9 +20369,9 @@
     {
       "name": "_BenewakeTF",
       "category": "Sensor/Distance",
-      "source": "src/Sensor/Distance/_BenewakeTF.h:41",
+      "source": "src/Sensor/Distance/_BenewakeTF.h:43",
       "baseClasses": [
-        "_DistSensorBase"
+        "_ModuleBase"
       ],
       "parameters": [
         {
@@ -20307,7 +20380,18 @@
           ],
           "type": "string",
           "declaredIn": "_BenewakeTF",
-          "source": "src/Sensor/Distance/_BenewakeTF.cpp:43",
+          "source": "src/Sensor/Distance/_BenewakeTF.cpp:54",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "PCLframeOut"
+          ],
+          "type": "string",
+          "declaredIn": "_BenewakeTF",
+          "source": "src/Sensor/Distance/_BenewakeTF.cpp:59",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
           "dependency": true
@@ -20337,30 +20421,6 @@
         },
         {
           "path": [
-            "calibOffset"
-          ],
-          "type": "number",
-          "declaredIn": "_DistSensorBase",
-          "source": "src/Sensor/Distance/_DistSensorBase.cpp:40",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_calibOffset",
-          "cppType": "float",
-          "default": 0.0
-        },
-        {
-          "path": [
-            "calibScale"
-          ],
-          "type": "number",
-          "declaredIn": "_DistSensorBase",
-          "source": "src/Sensor/Distance/_DistSensorBase.cpp:39",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_calibScale",
-          "cppType": "float",
-          "default": 1.0
-        },
-        {
-          "path": [
             "class"
           ],
           "type": "string",
@@ -20370,66 +20430,6 @@
           "cppVariable": "m_class",
           "cppType": "string",
           "default": ""
-        },
-        {
-          "path": [
-            "fovH"
-          ],
-          "type": "number",
-          "declaredIn": "_DistSensorBase",
-          "source": "src/Sensor/Distance/_DistSensorBase.cpp:30",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_fovH",
-          "cppType": "float",
-          "default": 360
-        },
-        {
-          "path": [
-            "fovV"
-          ],
-          "type": "number",
-          "declaredIn": "_DistSensorBase",
-          "source": "src/Sensor/Distance/_DistSensorBase.cpp:32",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_fovV",
-          "cppType": "float",
-          "default": 0.1
-        },
-        {
-          "path": [
-            "nAvr"
-          ],
-          "type": "integer",
-          "declaredIn": "_DistSensorBase",
-          "source": "src/Sensor/Distance/_DistSensorBase.cpp:43",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_nAvr",
-          "cppType": "int",
-          "default": 0
-        },
-        {
-          "path": [
-            "nDiv"
-          ],
-          "type": "integer",
-          "declaredIn": "_DistSensorBase",
-          "source": "src/Sensor/Distance/_DistSensorBase.cpp:34",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_nDiv",
-          "cppType": "int",
-          "default": 1
-        },
-        {
-          "path": [
-            "nMed"
-          ],
-          "type": "integer",
-          "declaredIn": "_DistSensorBase",
-          "source": "src/Sensor/Distance/_DistSensorBase.cpp:42",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_nMed",
-          "cppType": "int",
-          "default": 0
         },
         {
           "path": [
@@ -20476,8 +20476,8 @@
             "vRange"
           ],
           "type": "array",
-          "declaredIn": "_DistSensorBase",
-          "source": "src/Sensor/Distance/_DistSensorBase.cpp:38",
+          "declaredIn": "_BenewakeTF",
+          "source": "src/Sensor/Distance/_BenewakeTF.cpp:30",
           "typeEvidence": "declaration",
           "cppVariable": "m_vRange",
           "cppType": "Vector2f",
@@ -20493,7 +20493,19 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_BenewakeTF",
-          "source": "src/Sensor/Distance/_BenewakeTF.cpp:44",
+          "source": "src/Sensor/Distance/_BenewakeTF.cpp:55",
+          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
+            "PCLframeOut"
+          ],
+          "targetClass": "PCLframe",
+          "targetKind": "dataObject",
+          "multiple": false,
+          "declaredIn": "_BenewakeTF",
+          "source": "src/Sensor/Distance/_BenewakeTF.cpp:60",
           "required": true,
           "containers": []
         }
@@ -20517,214 +20529,32 @@
       "configurable": true
     },
     {
-      "name": "_DistSensorBase",
+      "name": "_LeddarVu",
       "category": "Sensor/Distance",
-      "source": "src/Sensor/Distance/_DistSensorBase.h:91",
+      "source": "src/Sensor/Distance/_LeddarVu.h:20",
       "baseClasses": [
         "_ModuleBase"
       ],
       "parameters": [
         {
           "path": [
-            "bLog"
-          ],
-          "type": "boolean",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bLog",
-          "cppType": "bool",
-          "default": false
-        },
-        {
-          "path": [
-            "bON"
-          ],
-          "type": "boolean",
-          "source": "src/Instance/InstanceMgr.cpp:createAll",
-          "declaredIn": "BASE",
-          "extraction": "audited-adapter",
-          "default": true,
-          "description": "false disables this instance; true enables it."
-        },
-        {
-          "path": [
-            "calibOffset"
-          ],
-          "type": "number",
-          "declaredIn": "_DistSensorBase",
-          "source": "src/Sensor/Distance/_DistSensorBase.cpp:40",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_calibOffset",
-          "cppType": "float",
-          "default": 0.0
-        },
-        {
-          "path": [
-            "calibScale"
-          ],
-          "type": "number",
-          "declaredIn": "_DistSensorBase",
-          "source": "src/Sensor/Distance/_DistSensorBase.cpp:39",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_calibScale",
-          "cppType": "float",
-          "default": 1.0
-        },
-        {
-          "path": [
-            "class"
+            "PCLframeOut"
           ],
           "type": "string",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:57",
+          "declaredIn": "_LeddarVu",
+          "source": "src/Sensor/Distance/_LeddarVu.cpp:95",
           "typeEvidence": "declaration",
-          "cppVariable": "m_class",
+          "cppVariable": "n",
           "cppType": "string",
-          "default": ""
+          "dependency": true
         },
-        {
-          "path": [
-            "fovH"
-          ],
-          "type": "number",
-          "declaredIn": "_DistSensorBase",
-          "source": "src/Sensor/Distance/_DistSensorBase.cpp:30",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_fovH",
-          "cppType": "float",
-          "default": 360
-        },
-        {
-          "path": [
-            "fovV"
-          ],
-          "type": "number",
-          "declaredIn": "_DistSensorBase",
-          "source": "src/Sensor/Distance/_DistSensorBase.cpp:32",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_fovV",
-          "cppType": "float",
-          "default": 0.1
-        },
-        {
-          "path": [
-            "nAvr"
-          ],
-          "type": "integer",
-          "declaredIn": "_DistSensorBase",
-          "source": "src/Sensor/Distance/_DistSensorBase.cpp:43",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_nAvr",
-          "cppType": "int",
-          "default": 0
-        },
-        {
-          "path": [
-            "nDiv"
-          ],
-          "type": "integer",
-          "declaredIn": "_DistSensorBase",
-          "source": "src/Sensor/Distance/_DistSensorBase.cpp:34",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_nDiv",
-          "cppType": "int",
-          "default": 1
-        },
-        {
-          "path": [
-            "nMed"
-          ],
-          "type": "integer",
-          "declaredIn": "_DistSensorBase",
-          "source": "src/Sensor/Distance/_DistSensorBase.cpp:42",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_nMed",
-          "cppType": "int",
-          "default": 0
-        },
-        {
-          "path": [
-            "name"
-          ],
-          "type": "string",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:56",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_name",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "thread",
-            "FPS"
-          ],
-          "type": "number",
-          "declaredIn": "_Thread",
-          "source": "src/Base/_Thread.cpp:60",
-          "typeEvidence": "declaration",
-          "cppVariable": "FPS",
-          "cppType": "float",
-          "default": 30,
-          "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "thread",
-            "bLog"
-          ],
-          "type": "boolean",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bLog",
-          "cppType": "bool",
-          "default": false,
-          "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "vRange"
-          ],
-          "type": "array",
-          "declaredIn": "_DistSensorBase",
-          "source": "src/Sensor/Distance/_DistSensorBase.cpp:38",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vRange",
-          "cppType": "Vector2f",
-          "defaultExpression": "Vector2f(0, FLT_MAX)"
-        }
-      ],
-      "dependencies": [],
-      "containers": [
-        {
-          "path": [
-            "thread"
-          ],
-          "type": "object"
-        }
-      ],
-      "diagnostics": [],
-      "creatable": false,
-      "buildConditions": [],
-      "configurable": true
-    },
-    {
-      "name": "_LeddarVu",
-      "category": "Sensor/Distance",
-      "source": "src/Sensor/Distance/_LeddarVu.h:19",
-      "baseClasses": [
-        "_DistSensorBase"
-      ],
-      "parameters": [
         {
           "path": [
             "bAutoLightSrcPwr"
           ],
           "type": "boolean",
           "declaredIn": "_LeddarVu",
-          "source": "src/Sensor/Distance/_LeddarVu.cpp:40",
+          "source": "src/Sensor/Distance/_LeddarVu.cpp:50",
           "typeEvidence": "declaration",
           "cppVariable": "m_bAutoLightSrcPwr",
           "cppType": "bool",
@@ -20736,7 +20566,7 @@
           ],
           "type": "boolean",
           "declaredIn": "_LeddarVu",
-          "source": "src/Sensor/Distance/_LeddarVu.cpp:41",
+          "source": "src/Sensor/Distance/_LeddarVu.cpp:51",
           "typeEvidence": "declaration",
           "cppVariable": "m_bDemergeObj",
           "cppType": "bool",
@@ -20771,7 +20601,7 @@
           ],
           "type": "boolean",
           "declaredIn": "_LeddarVu",
-          "source": "src/Sensor/Distance/_LeddarVu.cpp:45",
+          "source": "src/Sensor/Distance/_LeddarVu.cpp:55",
           "typeEvidence": "declaration",
           "cppVariable": "m_bOvershootManagement",
           "cppType": "bool",
@@ -20783,7 +20613,7 @@
           ],
           "type": "boolean",
           "declaredIn": "_LeddarVu",
-          "source": "src/Sensor/Distance/_LeddarVu.cpp:43",
+          "source": "src/Sensor/Distance/_LeddarVu.cpp:53",
           "typeEvidence": "declaration",
           "cppVariable": "m_bPrecision",
           "cppType": "bool",
@@ -20795,7 +20625,7 @@
           ],
           "type": "boolean",
           "declaredIn": "_LeddarVu",
-          "source": "src/Sensor/Distance/_LeddarVu.cpp:44",
+          "source": "src/Sensor/Distance/_LeddarVu.cpp:54",
           "typeEvidence": "declaration",
           "cppVariable": "m_bSaturationCompensation",
           "cppType": "bool",
@@ -20807,7 +20637,7 @@
           ],
           "type": "boolean",
           "declaredIn": "_LeddarVu",
-          "source": "src/Sensor/Distance/_LeddarVu.cpp:42",
+          "source": "src/Sensor/Distance/_LeddarVu.cpp:52",
           "typeEvidence": "declaration",
           "cppVariable": "m_bStaticNoiseRemoval",
           "cppType": "bool",
@@ -20819,7 +20649,7 @@
           ],
           "type": "boolean",
           "declaredIn": "_LeddarVu",
-          "source": "src/Sensor/Distance/_LeddarVu.cpp:32",
+          "source": "src/Sensor/Distance/_LeddarVu.cpp:44",
           "typeEvidence": "declaration",
           "cppVariable": "m_bUse0x41",
           "cppType": "bool",
@@ -20831,35 +20661,11 @@
           ],
           "type": "integer",
           "declaredIn": "_LeddarVu",
-          "source": "src/Sensor/Distance/_LeddarVu.cpp:30",
+          "source": "src/Sensor/Distance/_LeddarVu.cpp:42",
           "typeEvidence": "declaration",
           "cppVariable": "m_baud",
           "cppType": "int",
           "default": 115200
-        },
-        {
-          "path": [
-            "calibOffset"
-          ],
-          "type": "number",
-          "declaredIn": "_DistSensorBase",
-          "source": "src/Sensor/Distance/_DistSensorBase.cpp:40",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_calibOffset",
-          "cppType": "float",
-          "default": 0.0
-        },
-        {
-          "path": [
-            "calibScale"
-          ],
-          "type": "number",
-          "declaredIn": "_DistSensorBase",
-          "source": "src/Sensor/Distance/_DistSensorBase.cpp:39",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_calibScale",
-          "cppType": "float",
-          "default": 1.0
         },
         {
           "path": [
@@ -20878,8 +20684,8 @@
             "fovH"
           ],
           "type": "number",
-          "declaredIn": "_DistSensorBase",
-          "source": "src/Sensor/Distance/_DistSensorBase.cpp:30",
+          "declaredIn": "_LeddarVu",
+          "source": "src/Sensor/Distance/_LeddarVu.cpp:36",
           "typeEvidence": "declaration",
           "cppVariable": "m_fovH",
           "cppType": "float",
@@ -20887,23 +20693,11 @@
         },
         {
           "path": [
-            "fovV"
-          ],
-          "type": "number",
-          "declaredIn": "_DistSensorBase",
-          "source": "src/Sensor/Distance/_DistSensorBase.cpp:32",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_fovV",
-          "cppType": "float",
-          "default": 0.1
-        },
-        {
-          "path": [
             "lightSrcPwr"
           ],
           "type": "integer",
           "declaredIn": "_LeddarVu",
-          "source": "src/Sensor/Distance/_LeddarVu.cpp:39",
+          "source": "src/Sensor/Distance/_LeddarVu.cpp:49",
           "typeEvidence": "declaration",
           "cppVariable": "m_lightSrcPwr",
           "cppType": "uint16_t",
@@ -20915,7 +20709,7 @@
           ],
           "type": "integer",
           "declaredIn": "_LeddarVu",
-          "source": "src/Sensor/Distance/_LeddarVu.cpp:36",
+          "source": "src/Sensor/Distance/_LeddarVu.cpp:46",
           "typeEvidence": "declaration",
           "cppVariable": "m_nAccumulationsExpo",
           "cppType": "uint16_t",
@@ -20923,23 +20717,11 @@
         },
         {
           "path": [
-            "nAvr"
-          ],
-          "type": "integer",
-          "declaredIn": "_DistSensorBase",
-          "source": "src/Sensor/Distance/_DistSensorBase.cpp:43",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_nAvr",
-          "cppType": "int",
-          "default": 0
-        },
-        {
-          "path": [
             "nDiv"
           ],
           "type": "integer",
-          "declaredIn": "_DistSensorBase",
-          "source": "src/Sensor/Distance/_DistSensorBase.cpp:34",
+          "declaredIn": "_LeddarVu",
+          "source": "src/Sensor/Distance/_LeddarVu.cpp:34",
           "typeEvidence": "declaration",
           "cppVariable": "m_nDiv",
           "cppType": "int",
@@ -20947,23 +20729,11 @@
         },
         {
           "path": [
-            "nMed"
-          ],
-          "type": "integer",
-          "declaredIn": "_DistSensorBase",
-          "source": "src/Sensor/Distance/_DistSensorBase.cpp:42",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_nMed",
-          "cppType": "int",
-          "default": 0
-        },
-        {
-          "path": [
             "nOversamplingsExpo"
           ],
           "type": "integer",
           "declaredIn": "_LeddarVu",
-          "source": "src/Sensor/Distance/_LeddarVu.cpp:37",
+          "source": "src/Sensor/Distance/_LeddarVu.cpp:47",
           "typeEvidence": "declaration",
           "cppVariable": "m_nOversamplingsExpo",
           "cppType": "uint16_t",
@@ -20975,7 +20745,7 @@
           ],
           "type": "integer",
           "declaredIn": "_LeddarVu",
-          "source": "src/Sensor/Distance/_LeddarVu.cpp:38",
+          "source": "src/Sensor/Distance/_LeddarVu.cpp:48",
           "typeEvidence": "declaration",
           "cppVariable": "m_nPoint",
           "cppType": "uint16_t",
@@ -20999,7 +20769,7 @@
           ],
           "type": "integer",
           "declaredIn": "_LeddarVu",
-          "source": "src/Sensor/Distance/_LeddarVu.cpp:46",
+          "source": "src/Sensor/Distance/_LeddarVu.cpp:56",
           "typeEvidence": "declaration",
           "cppVariable": "m_oprMode",
           "cppType": "uint16_t",
@@ -21011,7 +20781,7 @@
           ],
           "type": "string",
           "declaredIn": "_LeddarVu",
-          "source": "src/Sensor/Distance/_LeddarVu.cpp:29",
+          "source": "src/Sensor/Distance/_LeddarVu.cpp:41",
           "typeEvidence": "declaration",
           "cppVariable": "m_port",
           "cppType": "string",
@@ -21019,35 +20789,11 @@
         },
         {
           "path": [
-            "showOriginOffsetX"
-          ],
-          "type": "number",
-          "declaredIn": "_LeddarVu",
-          "source": "src/Sensor/Distance/_LeddarVu.cpp:33",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_showOriginOffsetX",
-          "cppType": "float",
-          "default": 0.5
-        },
-        {
-          "path": [
-            "showOriginOffsetY"
-          ],
-          "type": "number",
-          "declaredIn": "_LeddarVu",
-          "source": "src/Sensor/Distance/_LeddarVu.cpp:34",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_showOriginOffsetY",
-          "cppType": "float",
-          "default": 0.5
-        },
-        {
-          "path": [
             "slaveAddr"
           ],
           "type": "integer",
           "declaredIn": "_LeddarVu",
-          "source": "src/Sensor/Distance/_LeddarVu.cpp:31",
+          "source": "src/Sensor/Distance/_LeddarVu.cpp:43",
           "typeEvidence": "declaration",
           "cppVariable": "m_slaveAddr",
           "cppType": "int",
@@ -21086,15 +20832,28 @@
             "vRange"
           ],
           "type": "array",
-          "declaredIn": "_DistSensorBase",
-          "source": "src/Sensor/Distance/_DistSensorBase.cpp:38",
+          "declaredIn": "_LeddarVu",
+          "source": "src/Sensor/Distance/_LeddarVu.cpp:38",
           "typeEvidence": "declaration",
           "cppVariable": "m_vRange",
           "cppType": "Vector2f",
           "defaultExpression": "Vector2f(0, FLT_MAX)"
         }
       ],
-      "dependencies": [],
+      "dependencies": [
+        {
+          "path": [
+            "PCLframeOut"
+          ],
+          "targetClass": "PCLframe",
+          "targetKind": "dataObject",
+          "multiple": false,
+          "declaredIn": "_LeddarVu",
+          "source": "src/Sensor/Distance/_LeddarVu.cpp:96",
+          "required": true,
+          "containers": []
+        }
+      ],
       "containers": [
         {
           "path": [
@@ -21116,9 +20875,9 @@
     {
       "name": "_TOFsense",
       "category": "Sensor/Distance",
-      "source": "src/Sensor/Distance/_TOFsense.h:58",
+      "source": "src/Sensor/Distance/_TOFsense.h:60",
       "baseClasses": [
-        "_DistSensorBase"
+        "_ModuleBase"
       ],
       "parameters": [
         {
@@ -21127,7 +20886,18 @@
           ],
           "type": "string",
           "declaredIn": "_TOFsense",
-          "source": "src/Sensor/Distance/_TOFsense.cpp:43",
+          "source": "src/Sensor/Distance/_TOFsense.cpp:62",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "PCLframeOut"
+          ],
+          "type": "string",
+          "declaredIn": "_TOFsense",
+          "source": "src/Sensor/Distance/_TOFsense.cpp:67",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
           "dependency": true
@@ -21157,30 +20927,6 @@
         },
         {
           "path": [
-            "calibOffset"
-          ],
-          "type": "number",
-          "declaredIn": "_DistSensorBase",
-          "source": "src/Sensor/Distance/_DistSensorBase.cpp:40",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_calibOffset",
-          "cppType": "float",
-          "default": 0.0
-        },
-        {
-          "path": [
-            "calibScale"
-          ],
-          "type": "number",
-          "declaredIn": "_DistSensorBase",
-          "source": "src/Sensor/Distance/_DistSensorBase.cpp:39",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_calibScale",
-          "cppType": "float",
-          "default": 1.0
-        },
-        {
-          "path": [
             "class"
           ],
           "type": "string",
@@ -21196,8 +20942,8 @@
             "fovH"
           ],
           "type": "number",
-          "declaredIn": "_DistSensorBase",
-          "source": "src/Sensor/Distance/_DistSensorBase.cpp:30",
+          "declaredIn": "_TOFsense",
+          "source": "src/Sensor/Distance/_TOFsense.cpp:35",
           "typeEvidence": "declaration",
           "cppVariable": "m_fovH",
           "cppType": "float",
@@ -21205,51 +20951,15 @@
         },
         {
           "path": [
-            "fovV"
-          ],
-          "type": "number",
-          "declaredIn": "_DistSensorBase",
-          "source": "src/Sensor/Distance/_DistSensorBase.cpp:32",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_fovV",
-          "cppType": "float",
-          "default": 0.1
-        },
-        {
-          "path": [
-            "nAvr"
-          ],
-          "type": "integer",
-          "declaredIn": "_DistSensorBase",
-          "source": "src/Sensor/Distance/_DistSensorBase.cpp:43",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_nAvr",
-          "cppType": "int",
-          "default": 0
-        },
-        {
-          "path": [
             "nDiv"
           ],
           "type": "integer",
-          "declaredIn": "_DistSensorBase",
-          "source": "src/Sensor/Distance/_DistSensorBase.cpp:34",
+          "declaredIn": "_TOFsense",
+          "source": "src/Sensor/Distance/_TOFsense.cpp:33",
           "typeEvidence": "declaration",
           "cppVariable": "m_nDiv",
           "cppType": "int",
           "default": 1
-        },
-        {
-          "path": [
-            "nMed"
-          ],
-          "type": "integer",
-          "declaredIn": "_DistSensorBase",
-          "source": "src/Sensor/Distance/_DistSensorBase.cpp:42",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_nMed",
-          "cppType": "int",
-          "default": 0
         },
         {
           "path": [
@@ -21296,8 +21006,8 @@
             "vRange"
           ],
           "type": "array",
-          "declaredIn": "_DistSensorBase",
-          "source": "src/Sensor/Distance/_DistSensorBase.cpp:38",
+          "declaredIn": "_TOFsense",
+          "source": "src/Sensor/Distance/_TOFsense.cpp:30",
           "typeEvidence": "declaration",
           "cppVariable": "m_vRange",
           "cppType": "Vector2f",
@@ -21313,7 +21023,19 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_TOFsense",
-          "source": "src/Sensor/Distance/_TOFsense.cpp:44",
+          "source": "src/Sensor/Distance/_TOFsense.cpp:63",
+          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
+            "PCLframeOut"
+          ],
+          "targetClass": "PCLframe",
+          "targetKind": "dataObject",
+          "multiple": false,
+          "declaredIn": "_TOFsense",
+          "source": "src/Sensor/Distance/_TOFsense.cpp:68",
           "required": true,
           "containers": []
         }
@@ -40119,7 +39841,7 @@
     ]
   },
   "audit": {
-    "sourceFiles": 444,
+    "sourceFiles": 445,
     "classCount": 215,
     "classDeclarations": 215,
     "creatableClassCount": 126,
@@ -40208,6 +39930,8 @@
       "src/DataObject/CANframeStream.h",
       "src/DataObject/DataObjBase.cpp",
       "src/DataObject/DataObjBase.h",
+      "src/DataObject/DataObjStream.cpp",
+      "src/DataObject/DataObjStream.h",
       "src/DataObject/IMUstream.cpp",
       "src/DataObject/IMUstream.h",
       "src/DataObject/LineFrame.cpp",
@@ -40417,10 +40141,9 @@
       "src/SLAM/_GLIM.h",
       "src/SLAM/_SLAMbase.cpp",
       "src/SLAM/_SLAMbase.h",
+      "src/Sensor/Distance/DistancePoint.h",
       "src/Sensor/Distance/_BenewakeTF.cpp",
       "src/Sensor/Distance/_BenewakeTF.h",
-      "src/Sensor/Distance/_DistSensorBase.cpp",
-      "src/Sensor/Distance/_DistSensorBase.h",
       "src/Sensor/Distance/_LeddarVu.cpp",
       "src/Sensor/Distance/_LeddarVu.h",
       "src/Sensor/Distance/_TOFsense.cpp",
@@ -40575,8 +40298,8 @@
     ],
     "configReads": 661,
     "resolvedReads": 649,
-    "moduleLookups": 128,
-    "resolvedLookups": 123,
+    "moduleLookups": 131,
+    "resolvedLookups": 126,
     "unresolvedReads": 12,
     "unresolvedLookups": 5,
     "diagnosticsCount": 17,

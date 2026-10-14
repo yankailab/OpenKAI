@@ -62,6 +62,8 @@ DataObject link keys end in `In` for inputs and `Out` for outputs. The suffix de
 | `_LCalign` | `PCLframeIn`, `RGBframeIn` | `PCLframeOut` |
 | `_PCregistICP`, `_PCregistGlobal` | `PCLframeSrcIn`, `PCLframeTgtIn` | Existing registration result |
 | `_OctreeGrid`, `_SelectableOctGrid` | `vPCLframesIn` array | Existing cell interface |
+| `_BenewakeTF`, `_TOFsense` | `BytePacketStreamIn` | `PCLframeOut` |
+| `_LeddarVu` | Modbus device | `PCLframeOut` |
 | `_Livox2` | Existing UDP modules | `PCLframeOut`; optional `IMUstreamOut` |
 | `_RoboSenseAiry` | Existing UDP modules | `PCLframeOut` |
 | `_SLAMbase`, `_GLIM` | `PCLframeIn`; optional `IMUstreamIn` | `_GLIM`: optional `PCLframeOut` and `PCLmapOut` |
@@ -249,6 +251,31 @@ does not increase occupancy counts or refresh cell lifetime. Set `dTexpireCell`
 to zero for persistent occupancy from a static file. Changing the grid root
 clears occupancy and allows the current frame to be consumed once under the
 new root.
+
+Distance drivers (`_BenewakeTF`, `_TOFsense`, `_LeddarVu`) publish raw readings
+through a required `PCLframeOut` DataObject. Each division occupies one
+`GEOMETRY_POINT` slot; TOFsense indexes slots by sensor ID and retains the latest
+reading of each ID. Positions are in meters in the horizontal XY plane, with +X
+forward and Z zero. For division `i`, the angle is
+`((i + 0.5) / nDiv - 0.5) * fovH` degrees. A single beam points along +X.
+`m_vC.x()` contains amplitude (Benewake/TOFsense signal strength, or Leddar
+amplitude divided by 64); the other color components are zero.
+
+Frame updates and valid points use host reception timestamps in nanoseconds.
+Unseen, out-of-range (`vRange` is lower-inclusive, upper-exclusive), and invalid
+TOFsense status readings have zero position and zero point timestamp, retaining
+their division slot. Consumers must check the point timestamp before reading
+the position. A scalar consumer reads `points.front().m_vP.norm()` after checking
+that the frame is nonempty and the first point is valid. `_APmav_land` now links
+its distance input using `PCLframeIn` instead of a sensor module reference.
+
+Distance drivers no longer expose source type or scalar aggregation APIs. The
+old `nMed`/`nAvr` filtering settings are removed because output uses raw distances;
+`fovV`, `calibScale`, and `calibOffset` previously did not affect these readings
+and are no longer loaded. `nDiv` and `fovH` apply to TOFsense and LeddarVu;
+Benewake always publishes one beam. Leddar's register and `0x41` read modes both
+publish complete frames; `0x41` keeps the nearest valid return per division and
+invalidates divisions without detections.
 
 Livox assembles packets with the same device `frame_cnt`, then copies the completed cloud into its `PCLframe` when the next frame starts. `nMaxFramePoints` bounds that assembly buffer (default 100000); excess points in that frame are discarded. Clearing the driver also discards its pending unpublished frame. Its `IMUstream` output is independent of the cloud frame.
 

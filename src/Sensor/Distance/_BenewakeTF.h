@@ -8,7 +8,8 @@
 #ifndef OpenKAI_src_Sensor__BenewakeTF_H_
 #define OpenKAI_src_Sensor__BenewakeTF_H_
 
-#include "_DistSensorBase.h"
+#include "../../Base/_ModuleBase.h"
+#include "../../DataObject/PCLframe.h"
 #include "../../DataObject/BytePacketStream.h"
 
 #define BENEWAKE_BEGIN 0x59
@@ -20,10 +21,11 @@ namespace kai
 	{
 		uint8_t m_header;
 		int m_iB;
-		uint8_t *m_pB;
+		uint8_t *m_pB = nullptr;
 
 		void init(int nB)
 		{
+			DEL_ARRAY(m_pB);
 			reset();
 
 			if (nB <= 0)
@@ -38,7 +40,7 @@ namespace kai
 		}
 	};
 
-	class _BenewakeTF : public _DistSensorBase
+	class _BenewakeTF : public _ModuleBase
 	{
 	public:
 		_BenewakeTF();
@@ -50,7 +52,6 @@ namespace kai
 		virtual bool start(void);
 		virtual void console(void *pConsole);
 
-		DIST_SENSOR_TYPE type(void);
 		uint8_t verifyCheckSum(const uint8_t *data, size_t dataLength);
 
 	private:
@@ -65,6 +66,9 @@ namespace kai
 		}
 
 	protected:
+		PCLframe *m_pPCLout = nullptr;
+		Vector2f m_vRange = Vector2f(0, FLT_MAX);
+
 		BytePacketStream *m_pBpStreamIn = nullptr;
 		uint64_t m_tLastBpStreamIn = 0;
 		vector<uint8_t> m_vBytesIn;

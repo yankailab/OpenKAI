@@ -8,7 +8,8 @@
 #ifndef OpenKAI_src_Sensor__TOFsense_H_
 #define OpenKAI_src_Sensor__TOFsense_H_
 
-#include "_DistSensorBase.h"
+#include "../../Base/_ModuleBase.h"
+#include "../../DataObject/PCLframe.h"
 #include "../../DataObject/BytePacketStream.h"
 
 #define NLINK_BEGIN 0x57
@@ -24,10 +25,11 @@ namespace kai
 	{
 		uint8_t m_header;
 		int m_iB;
-		uint8_t *m_pB;
+		uint8_t *m_pB = nullptr;
 
 		void init(int nB)
 		{
+			DEL_ARRAY(m_pB);
 			reset();
 
 			if (nB <= 0)
@@ -55,7 +57,7 @@ namespace kai
 		uint8_t checkSum;
 	};
 
-	class _TOFsense : public _DistSensorBase
+	class _TOFsense : public _ModuleBase
 	{
 	public:
 		_TOFsense();
@@ -67,7 +69,6 @@ namespace kai
 		virtual bool start(void);
 		virtual void console(void *pConsole);
 
-		DIST_SENSOR_TYPE type(void);
 		int32_t int24Value(uint8_t *pD);
 		uint8_t verifyCheckSum(const uint8_t *data, size_t dataLength);
 
@@ -83,6 +84,12 @@ namespace kai
 		}
 
 	protected:
+		PCLframe *m_pPCLout = nullptr;
+		Vector2f m_vRange = Vector2f(0, FLT_MAX);
+		int m_nDiv = 1;
+		float m_fovH = 360;
+		vector<GEOMETRY_POINT> m_vPoints;
+
 		BytePacketStream *m_pBpStreamIn = nullptr;
 		uint64_t m_tLastBpStreamIn = 0;
 		vector<uint8_t> m_vBytesIn;

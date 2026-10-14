@@ -3,32 +3,43 @@
  *      Author: yankai
  */
 #include "_BenewakeTF.h"
+#include "DistancePoint.h"
+#include "../../UI/_Console.h"
 
 namespace kai
 {
 
 	_BenewakeTF::_BenewakeTF()
 	{
-		m_nDiv = 1;
 	}
 
 	_BenewakeTF::~_BenewakeTF()
 	{
+		if (m_pT)
+		{
+			m_pT->join();
+		}
+		DEL_ARRAY(m_frame.m_pB);
 	}
 
 	bool _BenewakeTF::loadConfig(void)
 	{
-		IF_F(!this->_DistSensorBase::loadConfig());
+		IF_F(!this->_ModuleBase::loadConfig());
+		const json &j = *m_pJ;
+
+		jKv<float>(j, "vRange", m_vRange);
+		IF_F(!m_vRange.allFinite() || m_vRange.x() < 0 || m_vRange.x() >= m_vRange.y());
 
 		m_frame.init(9);
-		m_bReady = true;
 
 		return true;
 	}
 
 	bool _BenewakeTF::saveConfig(bool bExport)
 	{
-		IF_F(!_DistSensorBase::saveConfig(false));
+		IF_F(!_ModuleBase::saveConfig(false));
+		json &j = *m_pJ;
+		j["vRange"] = {m_vRange.x(), m_vRange.y()};
 
 		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
@@ -36,13 +47,18 @@ namespace kai
 
 	bool _BenewakeTF::link(InstanceMgr *pM)
 	{
-		IF_F(!this->_DistSensorBase::link(pM));
+		IF_F(!this->_ModuleBase::link(pM));
 		const json &j = *m_pJ;
 
 		string n = "";
 		jKv(j, "BytePacketStreamIn", n);
 		m_pBpStreamIn = dynamic_cast<BytePacketStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
 		IF_Le_F(!m_pBpStreamIn, "BytePacketStreamIn not found: " + n);
+
+		n.clear();
+		jKv(j, "PCLframeOut", n);
+		m_pPCLout = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+		IF_Le_F(!m_pPCLout, "PCLframeOut not found: " + n);
 
 		return true;
 	}
@@ -57,7 +73,7 @@ namespace kai
 	{
 		while (m_pT->bRun())
 		{
-			if (!m_pBpStreamIn)
+			if (!m_pBpStreamIn || !m_pPCLout)
 			{
 				m_pT->sleepT(NSEC_SEC);
 				continue;
@@ -119,16 +135,15 @@ namespace kai
 
 	void _BenewakeTF::handleCMD(void)
 	{
-		// uint8_t cs = verifyCheckSum(m_frame.m_pB, 9);
-		//		IF_(!cs);
-		uint16_t d = m_frame.m_pB[2];
-		d |= m_frame.m_pB[3] << 8;
-		float df = d * 0.01;
-
-		this->input(0,
-					df,
-					0);
+		bool bValid = m_frame.m_pB[1] == BENEWAKE_BEGIN && verifyCheckSum(m_frame.m_pB, 9);
+		uint16_t d = m_frame.m_pB[2] | (m_frame.m_pB[3] << 8);
+		uint16_t a = m_frame.m_pB[4] | (m_frame.m_pB[5] << 8);
 		m_frame.reset();
+		IF_(!bValid || !m_pPCLout);
+
+		uint64_t tStamp = getTns();
+		GEOMETRY_POINT point = distancePoint(d * 0.01f, a, 0, 1, 0, m_vRange, tStamp);
+		m_pPCLout->set({point}, tStamp);
 	}
 
 	uint8_t _BenewakeTF::verifyCheckSum(const uint8_t *data, size_t dataLength)
@@ -141,30 +156,21 @@ namespace kai
 		return sum == data[dataLength - 1];
 	}
 
-	DIST_SENSOR_TYPE _BenewakeTF::type(void)
-	{
-		return ds_BenewakeTF;
-	}
-
 	void _BenewakeTF::console(void *pConsole)
 	{
 		NULL_(pConsole);
 		this->_ModuleBase::console(pConsole);
 
-		_Console *pC = (_Console *)pConsole;
-		string msg;
-		msg += "nDiv=" + i2str(m_nDiv);
-		pC->addMsg(msg);
-
-		int i;
-		msg = "";
-		for (i = 0; i < m_nDiv; i++)
+		NULL_(m_pPCLout);
+		vector<GEOMETRY_POINT> points;
+		m_pPCLout->get(points);
+		string msg = "nDiv=" + i2str(points.size());
+		for (const GEOMETRY_POINT &point : points)
 		{
-			DIST_SENSOR_DIV *pD = &m_pDiv[i];
-			msg += " | " + f2str(pD->d()) + " (" + f2str(pD->a()) + ")";
+			float d = point.m_tStamp ? point.m_vP.norm() : -1;
+			msg += " | " + f2str(d) + " (" + f2str(point.m_vC.x()) + ")";
 		}
-		msg += " |";
-		pC->addMsg(msg);
+		((_Console *)pConsole)->addMsg(msg + " |");
 	}
 
 }

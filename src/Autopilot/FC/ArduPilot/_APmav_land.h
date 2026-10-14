@@ -3,7 +3,7 @@
 
 #include "_APmav_follow.h"
 #include "../../../Utility/utilEvent.h"
-#include "../../../Sensor/Distance/_DistSensorBase.h"
+#include "../../../DataObject/PCLframe.h"
 
 namespace kai
 {
@@ -51,7 +51,7 @@ namespace kai
 		}
 
 	protected:
-		_DistSensorBase* m_pDS = nullptr;
+		PCLframe *m_pPCLin = nullptr;
 		Vector2f m_vDSrange = Vector2f::Zero();
 
 		vector<AP_LAND_TAG> m_vTags;

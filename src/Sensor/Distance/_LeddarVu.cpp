@@ -3,17 +3,22 @@
  *      Author: yankai
  */
 #include "_LeddarVu.h"
+#include "DistancePoint.h"
+#include "../../UI/_Console.h"
 
 namespace kai
 {
 
 	_LeddarVu::_LeddarVu()
 	{
-		m_nDiv = 8;
 	}
 
 	_LeddarVu::~_LeddarVu()
 	{
+		if (m_pT)
+		{
+			m_pT->join();
+		}
 		if (m_pMb)
 		{
 			modbus_close(m_pMb);
@@ -23,15 +28,20 @@ namespace kai
 
 	bool _LeddarVu::loadConfig(void)
 	{
-		IF_F(!this->_DistSensorBase::loadConfig());
+		IF_F(!this->_ModuleBase::loadConfig());
 		const json &j = *m_pJ;
+
+		jKv(j, "nDiv", m_nDiv);
+		IF_F(m_nDiv <= 0 || m_nDiv > LEDDAR_MAX_DETECTIONS);
+		jKv(j, "fovH", m_fovH);
+		IF_F(!std::isfinite(m_fovH) || m_fovH <= 0 || m_fovH > 360);
+		jKv<float>(j, "vRange", m_vRange);
+		IF_F(!m_vRange.allFinite() || m_vRange.x() < 0 || m_vRange.x() >= m_vRange.y());
 
 		jKv(j, "port", m_port);
 		jKv(j, "baud", m_baud);
 		jKv(j, "slaveAddr", m_slaveAddr);
 		jKv(j, "bUse0x41", m_bUse0x41);
-		jKv(j, "showOriginOffsetX", m_showOriginOffsetX);
-		jKv(j, "showOriginOffsetY", m_showOriginOffsetY);
 
 		jKv(j, "nAccumulationsExpo", m_nAccumulationsExpo);
 		jKv(j, "nOversamplingsExpo", m_nOversamplingsExpo);
@@ -50,15 +60,16 @@ namespace kai
 
 	bool _LeddarVu::saveConfig(bool bExport)
 	{
-		IF_F(!_DistSensorBase::saveConfig(false));
+		IF_F(!_ModuleBase::saveConfig(false));
 
 		json &j = *m_pJ;
+		j["nDiv"] = m_nDiv;
+		j["fovH"] = m_fovH;
+		j["vRange"] = {m_vRange.x(), m_vRange.y()};
 		j["port"] = m_port;
 		j["baud"] = m_baud;
 		j["slaveAddr"] = m_slaveAddr;
 		j["bUse0x41"] = m_bUse0x41;
-		j["showOriginOffsetX"] = m_showOriginOffsetX;
-		j["showOriginOffsetY"] = m_showOriginOffsetY;
 		j["nAccumulationsExpo"] = m_nAccumulationsExpo;
 		j["nOversamplingsExpo"] = m_nOversamplingsExpo;
 		j["nPoint"] = m_nPoint;
@@ -73,6 +84,19 @@ namespace kai
 
 		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
+	}
+
+	bool _LeddarVu::link(InstanceMgr *pM)
+	{
+		IF_F(!_ModuleBase::link(pM));
+		const json &j = *m_pJ;
+
+		string n;
+		jKv(j, "PCLframeOut", n);
+		m_pPCLout = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
+		IF_Le_F(!m_pPCLout, "PCLframeOut not found: " + n);
+
+		return true;
 	}
 
 	bool _LeddarVu::start(void)
@@ -215,47 +239,37 @@ namespace kai
 			acOpt |= 1 << 5;
 		modbus_write_register(m_pMb, 6, acOpt);
 
-		m_bReady = 1;
-
 		return true;
 	}
 
 	bool _LeddarVu::updateLidar(void)
 	{
-		NULL_F(m_pMb);
+		IF_F(!m_pMb || !m_pPCLout);
 
-		const int N_REGISTERS = 15 + m_nDiv * 2;
-		uint16_t reg[N_REGISTERS];
+		const int nRegisters = 15 + m_nDiv * 2;
+		vector<uint16_t> reg(nRegisters);
+		int nRead = modbus_read_input_registers(m_pMb, 1, nRegisters, reg.data());
+		IF_F(nRead != nRegisters || reg[0] == 0);
+		// The response layout must match the configured division count.
+		IF_F(reg[1] != m_nDiv);
 
-		int nRead = modbus_read_input_registers(m_pMb, 1, N_REGISTERS, reg);
-		IF_F(nRead != N_REGISTERS);
-		IF_F(reg[0] == 0);
-
-		m_nDiv = reg[1];
 		m_nDetection = reg[10];
 		m_lightSrcPwr = reg[11];
-		//	m_tStamp = reg[13] + (reg[14] << 16);
-
-		const static float BASE_D = 1.0 / 100.0;
-		const static float BASE_A = 1.0 / 64.0;
-
-		int i;
-		for (i = 0; i < m_nDiv; i++)
+		uint64_t tStamp = getTns();
+		vector<GEOMETRY_POINT> points(m_nDiv);
+		for (int i = 0; i < m_nDiv; i++)
 		{
-			this->input(i * m_dDeg,
-						(float)reg[15 + i] * BASE_D,
-						(float)reg[15 + m_nDiv + i] * BASE_A);
-			//		m_pSegment[i].dDistance = (float) reg[15 + i] * BASE_D;
-			//		m_pSegment[i].dAmplitude = (float) reg[15 + N_SEGMENT + i] * BASE_A;
-			//		m_pSegment[i].flags = reg[15 + 2 * N_SEGMENT + i];
+			float d = reg[15 + i] * 0.01f;
+			float a = reg[15 + m_nDiv + i] / 64.0f;
+			points[i] = distancePoint(d, a, i, m_nDiv, m_fovH, m_vRange, tStamp);
 		}
-
+		m_pPCLout->set(points, tStamp);
 		return true;
 	}
 
 	bool _LeddarVu::updateLidarFast(void)
 	{
-		NULL_F(m_pMb);
+		IF_F(!m_pMb || !m_pPCLout);
 
 		// This version of the ReadDetections function uses the 0x41 function code.
 		// It reduces the overhead and is the recommended way of reading measurements.
@@ -280,40 +294,30 @@ namespace kai
 			return false;
 		}
 
-		// const static float BASE_D = 1.0 / 100.0;
-		// const static float BASE_A = 1.0 / 64.0;
-		m_nDetection = rsp[2];
+		const int nDetection = rsp[2];
+		IF_F(nDetection > LEDDAR_MAX_DETECTIONS || iResponseLength < 3 + nDetection * 5);
 
-		if (iResponseLength >= 3 + (signed)m_nDetection * 5)
+		uint64_t tStamp = getTns();
+		vector<GEOMETRY_POINT> points(m_nDiv);
+		for (int i = 0; i < nDetection; i++)
 		{
-			for (uint32_t u = 0; (u < m_nDetection) && (u < LEDDAR_MAX_DETECTIONS); u++)
-			{
-				// uint8_t *pDetection = rsp + 3 + 5 * u;
-				//			m_pSegment[u].dDistance = (pDetection[0] + (pDetection[1] << 8)) * BASE_D;
-				//			m_pSegment[u].dAmplitude = (pDetection[2] + (pDetection[3] << 8)) * BASE_A;
+			const uint8_t *pDetection = rsp + 3 + 5 * i;
+			int iDiv = pDetection[4] >> 4;
+			IF_CONT(iDiv >= m_nDiv);
 
-				//			tabDetections[u].channel = pDetection[4] >> 4;
-				//			tabDetections[u].flags = pDetection[4] & 0x0F;
-			}
-
-			if (iResponseLength >= 3 + (signed)m_nDetection * 5 + 6)
+			float d = (pDetection[0] | (pDetection[1] << 8)) * 0.01f;
+			float a = (pDetection[2] | (pDetection[3] << 8)) / 64.0f;
+			GEOMETRY_POINT point = distancePoint(d, a, iDiv, m_nDiv, m_fovH, m_vRange, tStamp);
+			// Retain the nearest valid return when a channel has multiple detections.
+			if (!points[iDiv].m_tStamp || (point.m_tStamp &&
+				point.m_vP.squaredNorm() < points[iDiv].m_vP.squaredNorm()))
 			{
-				// uint8_t *pTrailer = rsp + 3 + 5 * m_nDetection;
-				//			uTimestamp = pTrailer[0] + (pTrailer[1] << 8) + (pTrailer[2] << 16) + (pTrailer[3] << 24);
+				points[iDiv] = point;
 			}
 		}
-		else
-		{
-			printf("Not enough data received (length=%i)\n", iResponseLength);
-			return false;
-		}
-
+		m_nDetection = nDetection;
+		m_pPCLout->set(points, tStamp);
 		return true;
-	}
-
-	DIST_SENSOR_TYPE _LeddarVu::type(void)
-	{
-		return ds_LeddarVu;
 	}
 
 	void _LeddarVu::console(void *pConsole)
@@ -330,14 +334,16 @@ namespace kai
 		msg += ", tStamp=" + i2str((int)m_pT->getTfromNs());
 		pC->addMsg(msg);
 
+		NULL_(m_pPCLout);
+		vector<GEOMETRY_POINT> points;
+		m_pPCLout->get(points);
 		msg = "";
-		for (int i = 0; i < m_nDiv; i++)
+		for (const GEOMETRY_POINT &point : points)
 		{
-			DIST_SENSOR_DIV *pD = &m_pDiv[i];
-			msg += " | " + f2str(pD->d()) + " (" + f2str(pD->a()) + ")";
+			float d = point.m_tStamp ? point.m_vP.norm() : -1;
+			msg += " | " + f2str(d) + " (" + f2str(point.m_vC.x()) + ")";
 		}
-		msg += " |";
-		pC->addMsg(msg);
+		pC->addMsg(msg + " |");
 	}
 
 }

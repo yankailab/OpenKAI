@@ -9,14 +9,15 @@
 #define OpenKAI_src_Sensor__LeddarVu_H_
 
 #include "../../Dependencies/libmodbus/modbus.h"
-#include "_DistSensorBase.h"
+#include "../../Base/_ModuleBase.h"
+#include "../../DataObject/PCLframe.h"
 
 #define LEDDAR_MAX_DETECTIONS 16
 
 namespace kai
 {
 
-	class _LeddarVu : public _DistSensorBase
+	class _LeddarVu : public _ModuleBase
 	{
 	public:
 		_LeddarVu();
@@ -24,10 +25,9 @@ namespace kai
 
 		virtual bool loadConfig(void) override;
 		bool saveConfig(bool bExport) override;
+		bool link(InstanceMgr *pM) override;
 		virtual bool start(void);
 		virtual void console(void *pConsole);
-
-		DIST_SENSOR_TYPE type(void);
 
 	private:
 		bool open(void);
@@ -41,6 +41,11 @@ namespace kai
 		}
 
 	protected:
+		PCLframe *m_pPCLout = nullptr;
+		Vector2f m_vRange = Vector2f(0, FLT_MAX);
+		int m_nDiv = 8;
+		float m_fovH = 360;
+
 		modbus_t *m_pMb = nullptr;
 		string m_port = "";
 		int m_baud = 115200;
@@ -49,8 +54,6 @@ namespace kai
 		int m_slaveAddr = 1;
 		// True to use command 0x41 to fetch data; otherwise, we use the standard Modbus registers:
 		bool m_bUse0x41 = false;
-		float m_showOriginOffsetX = 0.5;
-		float m_showOriginOffsetY = 0.5;
 
 		uint16_t m_nDetection = 0;
 

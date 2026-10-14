@@ -497,7 +497,6 @@ if(WITH_SENSOR)
   add_definitions(-DWITH_SENSOR)
   list(APPEND OpenKAI_cpp
 	src/Sensor/_IMUbase.cpp
-	src/Sensor/Distance/_DistSensorBase.cpp
 	src/Sensor/Distance/_LeddarVu.cpp
 	src/Sensor/Distance/_TOFsense.cpp
 	src/Sensor/Distance/_BenewakeTF.cpp

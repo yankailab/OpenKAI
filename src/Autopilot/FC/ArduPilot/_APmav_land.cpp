@@ -100,8 +100,8 @@ namespace kai
 		const json &j = *m_pJ;
 
 		string n = "";
-		jKv(j, "_DistSensorBase", n);
-		m_pDS = (_DistSensorBase *)pM->findModule(n);
+		jKv(j, "PCLframeIn", n);
+		m_pPCLin = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
 
 		return true;
 	}
@@ -114,7 +114,7 @@ namespace kai
 
 	bool _APmav_land::check(void)
 	{
-		NULL_F(m_pDS);
+		NULL_F(m_pPCLin);
 
 		return this->_APmav_follow::check();
 	}
