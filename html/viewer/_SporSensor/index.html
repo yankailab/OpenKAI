@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OpenKAI · SporSensor viewer</title>
+  <link rel="stylesheet" href="css/viewer.css">
+  <script defer src="js/wsCmdHandler.js"></script>
+  <script defer src="js/wsCmdBase.js"></script>
+  <script defer src="js/launcher.js"></script>
+</head>
+<body>
+  <header>
+    <a class="brand" href="./"><img src="img/OK.png" alt="OpenKAI" width="1300" height="315"> <span>SporSensor viewer</span></a>
+    <form id="connection">
+      <label>IP / host <input id="host" value="127.0.0.1" required spellcheck="false" autocomplete="off"></label>
+      <label>Stream port <input id="port" type="number" min="1" max="65535" value="8080" required></label>
+      <button id="start" type="submit">Start</button>
+      <button id="stop" type="button" disabled>Stop</button>
+    </form>
+    <output id="status" role="status">Ready</output>
+  </header>
+  <div id="workspace">
+    <main>
+      <div id="viewport" aria-label="Interactive 3D scene"></div>
+      <div id="welcome">Connect to your OpenKAI backend<br><small>Live laser profiles and SporSensor controls</small></div>
+      <div id="viewActions" class="actions"><button id="fitView" type="button">Fit profile</button><button id="resetView" type="button">Reset view</button></div>
+      <footer><span>Drag to orbit · Right drag to pan · Scroll to zoom</span><output id="stats">Waiting for geometry</output></footer>
+    </main>
+    <aside id="controlPanel" aria-label="Scanner controls">
+      <h2>Scanner controls</h2>
+      <details open><summary>Command connection</summary>
+        <label>Command port <input id="cmdPort" type="number" min="1" max="65535" value="7890"></label>
+        <label>Scanner module <input id="cameraModule" value="sporSensor" spellcheck="false"></label>
+        <div class="actions"><button id="cmdConnect">Connect</button><button id="cmdDisconnect" disabled>Disconnect</button></div>
+      </details>
+      <div class="actions"><button id="getConfig" disabled>Refresh config</button><button id="saveConfig" disabled>Save config</button></div>
+      <output id="configStatus" role="status">Connect to load scanner parameters</output>
+      <p class="hint">Edits apply immediately. Save config stores parameters in the launch JSON. Blank optional values preserve the sensor setting. Close SLK before configuring this sensor.</p>
+      <details id="sensorStatus"><summary>Sensor status</summary><pre id="sensorState">Connect to read sensor status.</pre></details>
+      <fieldset id="sensorActions" disabled>
+        <details><summary>Acquisition and SDK actions</summary>
+          <div id="actionButtons" class="actions"></div>
+          <label>Model GUID <input id="modelGuid" placeholder="Parameter model GUID" spellcheck="false"></label>
+          <label>Device ID <input id="modelDeviceId" placeholder="Active sensor" spellcheck="false"></label>
+          <button id="readModel" type="button">Read model</button>
+        </details>
+      </fieldset>
+      <fieldset id="cameraFields" disabled><div id="configSections"></div></fieldset>
+      <details id="inspectionPanel" hidden><summary>Sensor configuration snapshot</summary><pre id="inspectionState"></pre></details>
+      <details><summary>Command log</summary><textarea id="cmdState" readonly aria-label="Command log"></textarea></details>
+    </aside>
+  </div>
+</body>
+</html>

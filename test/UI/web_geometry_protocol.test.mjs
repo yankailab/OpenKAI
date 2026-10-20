@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-const viewers = ['_SelectableOctGrid', '_GeometryBase', '_Scepter', '_Orbbec', '_RealSense'];
+const viewers = ['_SelectableOctGrid', '_GeometryBase', '_Scepter', '_Orbbec', '_RealSense', '_SporSensor'];
 const protocols = await Promise.all(viewers.map(async name => ({
   name, ...await import(`../../html/viewer/${name}/js/protocol.js`),
 })));

@@ -23,6 +23,7 @@ option(USE_ORBBEC "Use Orbbec" OFF)
 option(USE_REALSENSE "Use Intel RealSense" OFF)
 option(USE_ROS "Use ROS" OFF)
 option(USE_SCEPTER_SDK "Use Scepter SDK" OFF)
+option(USE_SPOR_SENSOR_SDK "Use Spor laser line scanner SDK" OFF)
 option(USE_WSSERVER "Use wsServer" OFF)
 option(USE_XDYNAMICS "Use XDynamics SDK" OFF)
 option(USE_XARM "Use xArm" OFF)
@@ -514,6 +515,28 @@ if(WITH_SENSOR)
   if(USE_LIBMODBUS)
     list(APPEND OpenKAI_cpp src/Sensor/Distance/_LeddarVu.cpp)
   endif()
+  if(USE_SPOR_SENSOR_SDK)
+    set(SporSensorSDK_ROOT "${PROJECT_SOURCE_DIR}/../SporSensorSDK" CACHE PATH "SporSensorSDK source directory")
+    if(NOT EXISTS "${SporSensorSDK_ROOT}/include/spor/settings.hpp")
+      message(FATAL_ERROR "Set SporSensorSDK_ROOT to the SporSensorSDK source directory")
+    endif()
+    # Build the portable SDK from source without its standalone tools and tests.
+    add_library(OpenKAI_SporSensorSDK STATIC
+      "${SporSensorSDK_ROOT}/src/control.cpp"
+      "${SporSensorSDK_ROOT}/src/profile.cpp"
+      "${SporSensorSDK_ROOT}/src/stream.cpp"
+      "${SporSensorSDK_ROOT}/src/json.cpp"
+      "${SporSensorSDK_ROOT}/src/ui.cpp"
+      "${SporSensorSDK_ROOT}/src/settings.cpp")
+    target_include_directories(OpenKAI_SporSensorSDK PUBLIC "${SporSensorSDK_ROOT}/include")
+    target_compile_features(OpenKAI_SporSensorSDK PUBLIC cxx_std_17)
+    set_target_properties(OpenKAI_SporSensorSDK PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    find_package(Threads REQUIRED)
+    target_link_libraries(OpenKAI_SporSensorSDK PUBLIC Threads::Threads)
+    add_definitions(-DUSE_SPOR_SENSOR_SDK)
+    list(APPEND OpenKAI_cpp src/Sensor/LineScanner/_SporSensor.cpp)
+    list(APPEND OpenKAI_lib OpenKAI_SporSensorSDK)
+  endif()
   if(WITH_UNIVERSE)
     list(APPEND OpenKAI_cpp
 		src/Sensor/LiDAR/_Livox2.cpp
@@ -971,7 +994,9 @@ if(WITH_UNIVERSE)
     COMMAND ${CMAKE_COMMAND} -E copy_directory
       "${PROJECT_SOURCE_DIR}/html/viewer/_GLIM" "$<TARGET_FILE_DIR:OpenKAI>/html/viewer/_GLIM"
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-      "${PROJECT_SOURCE_DIR}/html/viewer/_Scepter" "$<TARGET_FILE_DIR:OpenKAI>/html/viewer/_Scepter")
+      "${PROJECT_SOURCE_DIR}/html/viewer/_Scepter" "$<TARGET_FILE_DIR:OpenKAI>/html/viewer/_Scepter"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+      "${PROJECT_SOURCE_DIR}/html/viewer/_SporSensor" "$<TARGET_FILE_DIR:OpenKAI>/html/viewer/_SporSensor")
 endif()
 
 # Optional ROS2 configs
@@ -995,6 +1020,7 @@ if(WITH_UNIVERSE)
   install(DIRECTORY html/viewer/_RealSense DESTINATION ${CMAKE_INSTALL_BINDIR}/html/viewer)
   install(DIRECTORY html/viewer/_GLIM DESTINATION ${CMAKE_INSTALL_BINDIR}/html/viewer)
   install(DIRECTORY html/viewer/_Scepter DESTINATION ${CMAKE_INSTALL_BINDIR}/html/viewer)
+  install(DIRECTORY html/viewer/_SporSensor DESTINATION ${CMAKE_INSTALL_BINDIR}/html/viewer)
 endif()
 set_target_properties(OpenKAI PROPERTIES
   VERSION ${PROJECT_VERSION})

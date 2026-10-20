@@ -201,6 +201,9 @@ namespace kai
 		ADD_MODULE(_IMUbase);
 		ADD_MODULE(_BenewakeTF);
 		ADD_MODULE(_TOFsense);
+#ifdef USE_SPOR_SENSOR_SDK
+		ADD_MODULE(_SporSensor);
+#endif
 #ifdef USE_LIBMODBUS
 		ADD_MODULE(_LeddarVu);
 #endif

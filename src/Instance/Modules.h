@@ -194,6 +194,9 @@
 #endif
 #include "../Sensor/Distance/_TOFsense.h"
 #include "../Sensor/Distance/_BenewakeTF.h"
+#ifdef USE_SPOR_SENSOR_SDK
+#include "../Sensor/LineScanner/_SporSensor.h"
+#endif
 #if defined(WITH_UNIVERSE)
 #include "../Sensor/LiDAR/_Livox2.h"
 #include "../Sensor/LiDAR/_RoboSenseAiry.h"
