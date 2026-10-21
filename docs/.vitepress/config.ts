@@ -14,7 +14,7 @@ export default defineConfig({
   srcExclude: ['public/**', '**/node_modules/**'],
   sitemap: { hostname: 'https://docs.openkai.tech' },
   head: [
-    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
+    ['link', { rel: 'icon', type: 'image/png', href: '/favicon.png' }],
     ['meta', { name: 'theme-color', content: '#008bc8' }],
   ],
   themeConfig: {
