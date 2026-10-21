@@ -6,9 +6,11 @@ pan, and scroll to zoom. The viewer shows point clouds and lines with a connecti
 bar and statistics. Camera pose, automatic fitting, and the reference grid come
 from the backend configuration.
 
-The backend serves this directory, including the vendored three.js assets; no
-npm, CDN, or separate web server is required. Enable `WITH_UNIVERSE` when building
-OpenKAI. CMake copies and installs both web viewers.
+The backend serves this directory, including the vendored three.js assets, and
+mounts `../../common/` at `/common/` for shared styles, scripts and the logo. Keep
+that relative layout when copying the viewer. No npm, CDN, or separate web server
+is required. Enable `WITH_UNIVERSE` when building OpenKAI. CMake copies and
+installs the web viewers and their shared assets.
 
 ```json
 "viewer": {

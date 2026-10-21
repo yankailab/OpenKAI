@@ -238,6 +238,7 @@ Netmask: 255.255.255.0
 Gateway: 192.168.1.1
 
 
+
 # (Optional) ScepterSDK
 ```bash
 git clone --depth 1 https://github.com/ScepterSW/ScepterSDK.git
@@ -262,12 +263,6 @@ autoreconf --install
 make
 make check
 sudo make install
-```
-
-
-# (Optional) OpenKAI extra modules
-```bash
-git clone --depth 1 https://github.com/yankailab/OpenKAI_exm.git
 ```
 
 

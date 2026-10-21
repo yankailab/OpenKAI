@@ -1,4 +1,5 @@
 #include "_WebGLIM.h"
+#include "WebAssets.h"
 #include <boost/asio/post.hpp>
 #include <boost/beast/core.hpp>
 #include <boost/beast/websocket.hpp>
@@ -353,7 +354,8 @@ namespace kai
 		m_stream = std::make_unique<webglim::Stream>(m_http->context(), hello(), m_maxClients);
 		m_tStamp = UINT64_MAX;
 		std::string error;
-		IF_Le_F(!m_http->start(m_host, uint16_t(m_port), m_root, m_stream->upgradeHandler(), &error), error);
+		IF_Le_F(!m_http->start(m_host, uint16_t(m_port), m_root, m_stream->upgradeHandler(), &error,
+			32, webviewer::commonAssets(m_root)), error);
 		m_running = true;
 		m_pT->run();
 		try

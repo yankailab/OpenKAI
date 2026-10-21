@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Run SporSensor configuration and profile conversion regressions without hardware.
 
-Usage: python3 test/run_spor_sensor_tests.py [build-directory]
+Usage: python3 test/run_spor_sensor_tests.py [build-directory] [--fixtures-dir path]
 Build OpenKAI with WITH_SENSOR=ON, USE_SPOR_SENSOR_SDK=ON, and
-CMAKE_EXPORT_COMPILE_COMMANDS=ON first. Captured profiles are read from the SDK's
-tests/data directory; no connection to the sensor or loopback sockets is made.
+CMAKE_EXPORT_COMPILE_COMMANDS=ON first. Captured profiles are read separately from
+the SDK source checkout's tests/data directory; no connection to the sensor or
+loopback sockets is made.
 """
 
 import argparse
@@ -24,6 +25,12 @@ def main():
     repo = pathlib.Path(__file__).resolve().parents[1]
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("build_directory", nargs="?", type=pathlib.Path, default=repo / "build")
+    parser.add_argument(
+        "--fixtures-dir",
+        type=pathlib.Path,
+        default=repo.parent / "SporSensorSDK" / "tests" / "data",
+        help="captured profile directory (default: ../SporSensorSDK/tests/data)",
+    )
     options = parser.parse_args()
     build = options.build_directory.resolve()
     entries = json.loads((build / "compile_commands.json").read_text())
@@ -33,14 +40,7 @@ def main():
     )
     if entry is None:
         parser.error("Build OpenKAI with WITH_SENSOR=ON and USE_SPOR_SENSOR_SDK=ON first")
-    sdk_root = None
-    for line in (build / "CMakeCache.txt").read_text().splitlines():
-        if line.startswith("SporSensorSDK_ROOT:PATH="):
-            sdk_root = pathlib.Path(line.split("=", 1)[1])
-            break
-    if sdk_root is None:
-        parser.error("SporSensorSDK_ROOT was not found in CMakeCache.txt")
-    fixtures = sdk_root / "tests/data"
+    fixtures = options.fixtures_dir.resolve()
     for name in ("profile-brightness-v2.6.0.2.bin", "profile-invalid-v2.6.0.2.bin"):
         if not (fixtures / name).is_file():
             parser.error(f"SDK regression fixture is missing: {fixtures / name}")

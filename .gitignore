@@ -1,3 +1,4 @@
+# Existing project exclusions
 /data/output/*.*log
 /Debug/
 /Release/
@@ -12,3 +13,62 @@ null.d
 !.gitignore
 *.log
 
+# CMake build directories and generated metadata
+/build-*/
+/build_*/
+/cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+install_manifest.txt
+CTestTestfile.cmake
+Testing/
+compile_commands.json
+/Makefile
+/test/Net/Makefile
+build.ninja
+rules.ninja
+.ninja_deps
+.ninja_log
+
+# Compiled binaries and coverage output
+/OpenKAI
+/OpenKAI-[0-9]*
+*.o
+*.a
+*.so
+*.so.*
+*.dylib
+*.dll
+*.exe
+*.gcda
+*.gcno
+*.gcov
+
+# Python caches, virtual environments, and test output
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# JavaScript dependencies and coverage output
+node_modules/
+.npm/
+coverage/
+
+# Local tool caches, temporary editor files, and OS metadata
+.cache/
+*.swp
+*.swo
+.DS_Store
+._*
+Thumbs.db
+Desktop.ini
+
+# Keep .vscode/ and *.code-workspace files trackable for shared development setup.

@@ -1,0 +1,12 @@
+/* Shared colors, typography, branding, and controls for every web UI. */
+:root { color-scheme: dark; font: 14px system-ui, sans-serif; color: #dce6ed; background: #090c11; }
+* { box-sizing: border-box; }
+body { margin: 0; display: flex; flex-direction: column; }
+header { display: flex; align-items: center; flex-wrap: wrap; gap: 20px; padding: 14px 20px; background: #111923; }
+.brand { display: inline-flex; align-items: center; color: #fff; font-weight: 650; font-size: 19px; white-space: nowrap; }
+.brand img { display: block; width: auto; height: 32px; }
+.brand span { font-weight: 400; font-size: 14px; margin-left: 8px; }
+input, button { font: inherit; border-radius: 5px; border: 1px solid #354659; padding: 7px 10px; }
+input { background: #090f17; color: #e2edf6; min-width: 0; }
+button { color: #dce6ed; background: #202f40; cursor: pointer; }
+button:disabled { opacity: .4; cursor: default; }

@@ -1,9 +1,12 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-const viewers = ['_SelectableOctGrid', '_GeometryBase', '_Scepter', '_Orbbec', '_RealSense', '_SporSensor'];
-const protocols = await Promise.all(viewers.map(async name => ({
-  name, ...await import(`../../html/viewer/${name}/js/protocol.js`),
+const sources = [
+  ['_SelectableOctGrid', '../../html/viewer/_SelectableOctGrid/js/protocol.js'],
+  ['shared geometry viewers', '../../html/common/js/geometryProtocol.js'],
+];
+const protocols = await Promise.all(sources.map(async ([name, path]) => ({
+  name, ...await import(path),
 })));
 const pointCount = 6_231_958; // nagano_sparse.ply exceeds the former 64 MiB frame limit.
 const frameBytes = 72 + Math.ceil(pointCount * 15 / 4) * 4;

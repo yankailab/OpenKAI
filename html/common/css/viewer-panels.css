@@ -1,0 +1,28 @@
+/* Shared sidebar controls and responsive workspace for panel-based viewers. */
+#workspace { display: grid; flex: 1; min-height: 0; }
+#workspace main { min-width: 0; }
+aside { overflow: auto; padding: 16px; background: #111923; scrollbar-width: thin; }
+#controlPanel { border-left: 1px solid #253242; }
+h2 { font-size: 16px; margin: 0 0 16px; }
+aside label { display: flex; justify-content: space-between; margin: 10px 0; font-size: 12px; }
+aside input { width: 130px; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+.actions button { flex: 1; white-space: nowrap; }
+.hint { color: #8299ac; font-size: 11px; line-height: 1.55; }
+aside output { display: block; font-size: 12px; color: #89d6bf; overflow-wrap: anywhere; }
+details { border-top: 1px solid #28394b; padding: 12px 0; }
+summary { cursor: pointer; font-size: 13px; font-weight: 600; }
+fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+select, textarea { color: #dce6ed; background: #090f17; border: 1px solid #354659; border-radius: 5px; padding: 7px; font: inherit; }
+textarea { resize: vertical; font: 11px ui-monospace, monospace; }
+#cmdState { width: 100%; min-height: 150px; margin-top: 10px; }
+@media (max-width: 1050px) {
+  aside { padding: 10px; }
+  footer span { display: none; }
+}
+@media (max-width: 760px) {
+  body { height: auto; min-height: 100dvh; }
+  #workspace { display: flex; flex-direction: column; }
+  #workspace main { order: -1; flex: none; height: 50dvh; }
+  aside { overflow: visible; }
+}

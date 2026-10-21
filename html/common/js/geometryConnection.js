@@ -1,5 +1,5 @@
-import { PROTOCOL_VERSION } from './protocol.js';
-// Geometry transport only. Application JSON commands use wsCmdBase.js.
+import { PROTOCOL_VERSION } from './geometryProtocol.js';
+// Independent geometry connections with one render credit per frame.
 export class GeometryConnection {
   constructor({ type, onHello, onFrame, onStatus, onReset }) {
     Object.assign(this, { type, onHello, onFrame, onStatus, onReset });

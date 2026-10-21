@@ -1,0 +1,5 @@
+/* Shared generated sensor controls for Orbbec, RealSense, Scepter, and SporSensor. */
+.control { padding: 9px 0; border-bottom: 1px solid #203040; }
+.control label { display: block; margin: 0 0 6px; color: #c3d5e4; overflow-wrap: anywhere; }
+.control input, .control select, .control textarea { width: 100%; }
+.control small { display: block; color: #8299ac; margin-top: 5px; }

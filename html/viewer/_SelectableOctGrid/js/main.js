@@ -1,4 +1,4 @@
-import { GeometryConnection } from './wsStreamBase.js';
+import { GeometryConnection } from '../../../common/js/geometryConnection.js';
 import { decodeFrame, STREAM_TYPES } from './protocol.js';
 import { Viewer3D } from './viewer3D.js';
 

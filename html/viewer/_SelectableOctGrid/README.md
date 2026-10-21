@@ -5,15 +5,17 @@ Streaming uses port `8080` by default; the independent command connection uses
 port `7890`, editable in the geometry panel. **Start** connects all geometry and command sockets; **Stop**
 disconnects them. The Commands panel also has independent Connect/Disconnect
 buttons and a bounded `cmdState` console.
-The backend serves this directory itself. No npm, CDN, or extra web server is
+The backend serves this directory and mounts `../../common/` at `/common/`.
+Keep that relative layout when copying the viewer. No npm, CDN, or extra web server is
 required. The full setup, configuration and wire format are documented in
 [`docs/3D/WebViewer3D.md`](../../../docs/3D/WebViewer3D.md).
 
-- `css/`: viewer styles
-- `js/wsStreamBase.js`: one independent connection and flow control per geometry type
-- `js/wsCmdBase.js`: command connection, `wsSendCmd()` and console status
+- `css/`: viewer-specific styles; shared theme and layout are in `../../common/css/`
+- `../../common/js/geometryConnection.js`: one independent connection and flow control per geometry type
+- `../../common/js/wsCmdBase.js`: command connection, `wsSendCmd()` and console status
 - `js/wsCmdHandler.js`: JSON reply assembly and page-specific `handleCmd()`
-- Other `js/` files: launcher, binary decoder, renderer and application wiring
+- `../../common/js/viewerLauncher.js`: local-file launcher and endpoint validation
+- Other `js/` files: binary decoder, renderer and application wiring
 - `vendor/`: pinned three.js and OrbitControls, with their license
 
 Keep application commands out of the stream transport. Add UI controls that call

@@ -36,6 +36,14 @@ class Browser(browser_tools.Browser):
 
 
 class QuietHandler(http.server.SimpleHTTPRequestHandler):
+    def translate_path(self, path):
+        local = Path(super().translate_path(path))
+        try:
+            shared = local.relative_to(Path(self.directory) / "common")
+        except ValueError:
+            return str(local)
+        return str(ROOT / "html/common" / shared)
+
     def log_message(self, *_):
         pass
 

@@ -4,8 +4,9 @@
 the same copying `PCLframe` and `LineFrame` DataObjects as `_ImGUIselectableOctGrid`, plus compact
 `_SelectableOctGrid::get(OCTGRID_CELLS*)` snapshots. The C++ process
 serves the browser application and three independent binary WebSockets on one port. A separate
-WebSocket connects JSON application commands to `_WSconsole`. All browser
-assets, including a pinned three.js release, are in `html/viewer/_SelectableOctGrid/`.
+WebSocket connects JSON application commands to `_WSconsole`. Viewer-specific
+assets, including a pinned three.js release, are in `html/viewer/_SelectableOctGrid/`;
+shared styles, scripts and the logo are in `html/common/`.
 There is no browser-side installation, npm build, CDN, or separate web server.
 
 The viewer and its `WebSelectableOctGridProtocol.h` header live in
@@ -51,10 +52,12 @@ The launcher redirects because browsers restrict ES modules loaded from
 See the [three.js installation guide](https://threejs.org/manual/en/installation.html).
 
 CMake copies the frontend next to the executable as `html/viewer/_SelectableOctGrid/` after
-building and installs it under `bin/html/viewer/_SelectableOctGrid/`. By default the viewer
+building and installs it under `bin/html/viewer/_SelectableOctGrid/`, with `html/common/`
+alongside the viewer tree in both cases. The backend mounts shared assets at `/common/`.
+By default the viewer
 looks in the working directory and then beside the executable on Linux. Set
 `webRoot` explicitly for other deployment layouts. Copy the complete frontend
-directory with the executable when deploying offline.
+directory and preserve its `../../common/` path when deploying offline.
 
 ## JSON command connection
 
@@ -372,9 +375,9 @@ shared wire/solid geometry and one GPU instance per cell.
 | `src/UI/Viewer/Web/WebSelectableOctGridProtocol.h` | Versioned little-endian binary encoding |
 | `src/UI/Viewer/SelectableOctGridSources.*` | Shared source configuration and separate typed geometry/grid lists |
 | `src/UI/Viewer/Web/_WebSelectableOctGrid.*` | Framework configuration, collection, filtering and snapshot publication |
-| `html/viewer/_SelectableOctGrid/js/launcher.js` | Local-file launcher and endpoint validation |
-| `html/viewer/_SelectableOctGrid/js/wsStreamBase.js` | Geometry connection, protocol greeting, automatic reconnect and stream acknowledgements |
-| `html/viewer/_SelectableOctGrid/js/wsCmdBase.js` | Independent JSON command socket, sending and console status |
+| `html/common/js/viewerLauncher.js` | Local-file launcher and endpoint validation |
+| `html/common/js/geometryConnection.js` | Geometry connection, protocol greeting, automatic reconnect and stream acknowledgements |
+| `html/common/js/wsCmdBase.js` | Independent JSON command socket, sending and console status |
 | `html/viewer/_SelectableOctGrid/js/wsCmdHandler.js` | Reply buffering and page-specific JSON command handlers |
 | `html/viewer/_SelectableOctGrid/js/protocol.js` | Frame validation and typed-array views |
 | `html/viewer/_SelectableOctGrid/js/viewer3D.js` | Three.js scene, GPU buffers, camera and rendering |

@@ -43,7 +43,7 @@ python3 html/console/editor/tools/generate-schema.py
 python3 html/console/editor/tools/generate-schema.py --check
 ```
 
-All runtime assets are within this directory. Python is only used to maintain the catalog and run development checks; the editor itself uses plain HTML, CSS, and JavaScript with no third-party libraries or CDN requests.
+Editor-specific assets are within this directory; the shared theme and logo are in `../../common/`. Keep that relative layout when copying or serving the editor. Python is only used to maintain the catalog and run development checks; the editor itself uses plain HTML, CSS, and JavaScript with no third-party libraries or CDN requests.
 
 ## Verification
 
@@ -69,7 +69,8 @@ node --test html/console/editor/tests/model.test.js
 
 | Path | Purpose |
 | --- | --- |
-| `index.html`, `css/editor.css`, `img/OK.png` | Layout and viewer theme |
+| `index.html`, `css/editor.css` | Editor layout and styles |
+| `../../common/css/`, `../../common/img/OK.png` | Shared UI theme and logo |
 | `js/editor.js` | Library, graph, inspector, history, import/export |
 | `js/model.js` | Config preservation, names, dependencies, validation |
 | `OpenKAI.json` | Class catalog with source evidence |

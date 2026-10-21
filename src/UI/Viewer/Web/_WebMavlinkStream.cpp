@@ -1,4 +1,5 @@
 #include "_WebMavlinkStream.h"
+#include "WebAssets.h"
 #include "WebMavlinkProtocol.h"
 #include "../../../IO/WebSocketStream.h"
 #include "../../_Console.h"
@@ -77,7 +78,7 @@ namespace kai
 		m_http.reset(new HttpServer);
 		m_transport.reset(new WebSocketStream(m_http->context(), webmavlink::hello(m_scene, m_staleAfterMs).dump(),
 			m_maxClients, WebSocketStream::Mode::TextPush));
-		HttpServer::Mounts mounts;
+		auto mounts = webviewer::commonAssets(m_root);
 		if (!m_modelsRoot.empty() && std::filesystem::is_directory(m_modelsRoot))
 			mounts.emplace_back("/models", m_modelsRoot);
 		else

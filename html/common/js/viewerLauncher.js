@@ -29,7 +29,7 @@
     });
   } else {
     document.querySelector('#start').disabled = true;
-    import('./main.js').catch(error => {
+    import(new URL('js/main.js', document.baseURI).href).catch(error => {
       document.querySelector('#status').textContent = `Viewer could not load: ${error.message}`;
     });
   }

@@ -1,4 +1,5 @@
 #include "_WebSelectableOctGrid.h"
+#include "WebAssets.h"
 #include "../../../Instance/InstanceMgr.h"
 #include "../../../IO/WebSocketStream.h"
 #include <algorithm>
@@ -125,7 +126,8 @@ namespace kai
 			routes.emplace_back(string("/stream/") + webselectableoctgrid::name(stream.type), stream.transport.get());
 		}
 		std::string error;
-		IF_Le_F(!m_http->start(m_host, uint16_t(m_port), m_root, WebSocketStream::routes(routes), &error), error);
+		IF_Le_F(!m_http->start(m_host, uint16_t(m_port), m_root, WebSocketStream::routes(routes), &error,
+			32, webviewer::commonAssets(m_root)), error);
 		m_running = true;
 		m_pT->run();
 		try

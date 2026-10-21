@@ -4,14 +4,25 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>OpenKAI · Orbbec viewer</title>
+  <link rel="stylesheet" href="../../common/css/theme.css">
+  <link rel="stylesheet" href="../../common/css/viewer.css">
+  <link rel="stylesheet" href="../../common/css/point-cloud.css">
+  <link rel="stylesheet" href="../../common/css/viewer-panels.css">
+  <link rel="stylesheet" href="../../common/css/sensor-controls.css">
   <link rel="stylesheet" href="css/viewer.css">
+  <script type="importmap">
+    {"imports": {
+      "three": "./vendor/three.module.min.js",
+      "three/addons/controls/OrbitControls.js": "./vendor/OrbitControls.js"
+    }}
+  </script>
   <script defer src="js/wsCmdHandler.js"></script>
-  <script defer src="js/wsCmdBase.js"></script>
-  <script defer src="js/launcher.js"></script>
+  <script defer src="../../common/js/wsCmdBase.js"></script>
+  <script defer src="../../common/js/viewerLauncher.js"></script>
 </head>
 <body>
   <header>
-    <a class="brand" href="./"><img src="img/OK.png" alt="OpenKAI" width="1300" height="315"> <span>Orbbec viewer</span></a>
+    <a class="brand" href="./"><img src="../../common/img/OK.png" alt="OpenKAI" width="1300" height="315"> <span>Orbbec viewer</span></a>
     <form id="connection">
       <label>IP / host <input id="host" value="127.0.0.1" required spellcheck="false" autocomplete="off"></label>
       <label>Stream port <input id="port" type="number" min="1" max="65535" value="8080" required></label>

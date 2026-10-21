@@ -1,6 +1,6 @@
-import * as THREE from '../vendor/three.module.min.js';
-import { STREAM_TYPES } from './protocol.js';
-import { OrbitControls } from '../vendor/OrbitControls.js';
+import * as THREE from 'three';
+import { STREAM_TYPES } from './geometryProtocol.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 export class Viewer3D {
   constructor(container) {

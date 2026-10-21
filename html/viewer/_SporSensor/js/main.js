@@ -1,7 +1,7 @@
 import { SporSensorControls } from './sporSensorControls.js';
-import { GeometryConnection } from './wsStreamBase.js';
-import { decodeFrame, STREAM_TYPES } from './protocol.js';
-import { Viewer3D } from './viewer3D.js';
+import { GeometryConnection } from '../../../common/js/geometryConnection.js';
+import { decodeFrame, STREAM_TYPES } from '../../../common/js/geometryProtocol.js';
+import { Viewer3D } from '../../../common/js/geometryViewer3D.js';
 
 const $ = selector => document.querySelector(selector);
 const viewer = new Viewer3D($('#viewport'));

@@ -4,6 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>OpenKAI · MAVLink viewer</title>
+  <link rel="stylesheet" href="../../common/css/theme.css">
+  <link rel="stylesheet" href="../../common/css/viewer.css">
   <link rel="stylesheet" href="vendor/cesium/Widgets/widgets.css">
   <link rel="stylesheet" href="css/viewer.css">
   <script>window.CESIUM_BASE_URL = './vendor/cesium/';</script>
@@ -13,7 +15,7 @@
 </head>
 <body>
   <header>
-    <a class="brand" href="./"><img src="img/OK.png" alt="OpenKAI" width="1300" height="315"><span>MAVLink viewer</span></a>
+    <a class="brand" href="./"><img src="../../common/img/OK.png" alt="OpenKAI" width="1300" height="315"><span>MAVLink viewer</span></a>
     <form id="connection">
       <label>IP / host <input id="host" value="127.0.0.1" required spellcheck="false" autocomplete="off"></label>
       <label>Stream port <input id="port" type="number" min="1" max="65535" value="8080" required></label>

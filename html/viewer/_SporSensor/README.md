@@ -1,16 +1,19 @@
 # OpenKAI SporSensor viewer
 
-Build OpenKAI with the local C++17 SDK and launch the supplied configuration:
+Build OpenKAI with the system-installed SporSensorSDK CMake package and launch
+the supplied configuration:
 
 ```sh
 cmake -S . -B build \
   -DWITH_SENSOR=ON -DWITH_UNIVERSE=ON \
   -DWITH_IO=ON -DWITH_PROTOCOL=ON -DUSE_WSSERVER=ON \
-  -DUSE_SPOR_SENSOR_SDK=ON \
-  -DSporSensorSDK_ROOT=/home/kai/dev/SporSensorSDK
+  -DUSE_SPOR_SENSOR_SDK=ON
 cmake --build build -j 4
 build/OpenKAI jsonCfg/SporSensor.json
 ```
+
+For an SDK installed outside the system search paths, pass its installation
+prefix with `-DCMAKE_PREFIX_PATH=/path/to/install`.
 
 Open `http://localhost:8080/` and click **Start**. The supplied VS Code launch
 configuration launches the same JSON. Opening this folder's `index.html` directly
@@ -126,3 +129,9 @@ Backend configuration tests and the live sensor/browser integration check:
 python3 test/run_spor_sensor_tests.py build
 python3 test/Sensor/LineScanner/live.py build/OpenKAI
 ```
+
+The backend regression tests require `CMAKE_EXPORT_COMPILE_COMMANDS=ON` and
+captured profiles from the SDK source checkout, separate from the installed
+headers and library. The default fixture directory is
+`../SporSensorSDK/tests/data`; use `--fixtures-dir /path/to/tests/data` when the
+captures are elsewhere.
