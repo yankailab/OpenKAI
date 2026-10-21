@@ -62,4 +62,10 @@ Coming soon.
 
 
 # Setup & Install
-Refer to [setup](./docs/setup.md).
+Read the [OpenKAI Guide](https://docs.openkai.tech) or the
+[setup and installation source](./docs/1-setup.md).
+
+The documentation site is generated from the Markdown files in `docs/` with
+VitePress and published by GitHub Actions. See
+[contributing to the documentation](./docs/contribute/docs.md) for local preview
+and editing instructions.

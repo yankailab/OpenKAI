@@ -563,18 +563,7 @@ node --test test/UI/web_geometry_protocol.test.mjs
 These check source caps, both backend viewers, complete point frames above
 64 MiB, all five browser decoders, and rejection above the 256 MiB limit.
 
-The standalone regression suite uses CMake, a C++17 compiler, Eigen, glog and
-Python 3. Chrome is needed for frontend checks.
-
-```bash
-cmake -S test/DataObject -B /tmp/openkai-stream-tests
-cmake --build /tmp/openkai-stream-tests -j2
-ctest --test-dir /tmp/openkai-stream-tests --output-on-failure
-python3 html/viewer/tests/run.py /tmp/openkai-stream-tests/viewer_cache_test
-```
-
-The C++ viewer checks cover timestamp-based cache reuse, equal-timestamp no-ops,
-empty publications, filtering, caps and expiry boundaries. Browser checks decode
-actual C++ point/line frames, reject unsupported protocol versions, and exercise
-both viewers' geometry update paths, including independent empty clears. See
-[`html/viewer/tests`](../../html/viewer/tests/README.md) for details.
+See the [C++ geometry regression runner](https://github.com/yankailab/OpenKAI/blob/master/test/run_web_geometry_tests.py),
+[backend checks](https://github.com/yankailab/OpenKAI/blob/master/test/UI/WebGeometry.cpp), and
+[browser protocol tests](https://github.com/yankailab/OpenKAI/blob/master/test/UI/web_geometry_protocol.test.mjs)
+for the current suite.

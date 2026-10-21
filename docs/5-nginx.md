@@ -31,7 +31,7 @@ sudo nano /etc/nginx/sites-available/OpenKAI
 ```
 
 Paste this:
-```Nginx
+```nginx
 server {
     listen 80;
     listen [::]:80;

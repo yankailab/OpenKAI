@@ -1,5 +1,6 @@
+# Setup and installation
 
-# Update your system
+## Update your system
 ```bash
 sudo apt-get update
 sudo apt-get upgrade
@@ -8,28 +9,28 @@ sudo rasp-config
 ```
 
 
-# Install prerequisites
+## Install prerequisites
 ```bash
 sudo apt-get -y install build-essential cmake cmake-curses-gui git uuid-dev ncurses-dev libcurl4 curl libssl-dev libuvc-dev libusb-1.0-0-dev ninja-build
 ```
 
-## (Optional) Boost
+### (Optional) Boost
 ```bash
 sudo apt install --no-install-recommends libboost-dev libboost-system-dev libboost-thread-dev libboost-filesystem-dev
 ```
 
-## (Optional) Video stream in/out functions
+### (Optional) Video stream in/out functions
 ```bash
 sudo apt-get -y install --no-install-recommends libunwind-dev gstreamer1.0-0 gstreamer1.0-plugins-base libgstreamer1.0-0 libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-tools gstreamer1.0-alsa libv4l-dev v4l-utils libjpeg-dev libpng-dev libtiff-dev libavcodec-dev libavformat-dev libxvidcore-dev x264
 ```
 
-## (Optional) Desktop renderings
-### OpenCV GTK windows and GStreamer desktop video sinks
+### (Optional) Desktop renderings
+#### OpenCV GTK windows and GStreamer desktop video sinks
 ```bash
 sudo apt-get -y install libgtk-3-dev gstreamer1.0-x gstreamer1.0-gtk3
 ```
 
-### ImGUI with GLFW and desktop OpenGL
+#### ImGUI with GLFW and desktop OpenGL
 For `USE_IMGUI=ON`, `IMGUI_BACKEND=GLFW`, and `IMGUI_RENDERER=OPENGL`,
 ```bash
 sudo apt-get -y install libglfw3-dev libgl1-mesa-dev libglew-dev
@@ -39,12 +40,12 @@ For SDL2/OpenGL ES dependencies and configuration,
 see [ImGUIviewer.md](3D/ImGUIviewer.md).
 
 
-## (Optional) Jpeg exif editing
+### (Optional) Jpeg exif editing
 ```bash
 sudo apt-get -y install libimage-exiftool-perl
 ```
 
-# (Optional) CUDA toolkit
+## (Optional) CUDA toolkit
 ```bash
 wget https://developer.download.nvidia.com/compute/cuda/13.4.2/local_installers/cuda_13.4.2_linux.run
 sudo sh cuda_13.4.2_linux.run
@@ -54,12 +55,12 @@ echo 'export LD_LIBRARY_PATH=/usr/local/cuda-13.4/lib64:$LD_LIBRARY_PATH' >> ~/.
 source ~/.bashrc
 ```
 
-# CMake
-## Install from apt-get
+## CMake
+### Install from apt-get
 ```bash
 sudo apt-get install cmake
 ```
-## (Optional) Build from source for the latest
+### (Optional) Build from source for the latest
 ```bash
 wget https://github.com/Kitware/CMake/releases/download/v3.31.12/cmake-3.31.12.tar.gz
 tar xvf cmake-3.31.12.tar.gz
@@ -72,7 +73,7 @@ bash
 ```
 
 
-# Eigen 5
+## Eigen 5
 OpenKAI requires Eigen 5.x and builds with C++17. If Eigen 5 is already installed
 with its CMake package, skip the installation commands.
 
@@ -92,7 +93,7 @@ sudo cmake --install build
 ```
 
 
-# (Optional) RealSense
+## (Optional) RealSense
 ```bash
 sudo apt-get install libusb-1.0-0-dev libusb-dev libudev-dev
 
@@ -120,7 +121,7 @@ sudo uhubctl -a cycle -l 2 -p 1-4
 ```
 
 
-# (Optional) gphoto2
+## (Optional) gphoto2
 ```bash
 sudo apt-get install -y build-essential libltdl-dev libusb-1.0-0-dev libexif-dev udev libpopt-dev libudev-dev pkg-config git automake autoconf autopoint gettext libtool wget
 
@@ -169,15 +170,15 @@ gphoto2 --abilities
 ```
 
 
-# (Optional) YOLO
+## (Optional) YOLO
 See [YOLO26detectONNX.md](YOLO26detectONNX.md) for ONNX Runtime setup and `_YOLO26detectONNX` build/config notes.
 
 
-# (Optional) OpenCV
+## (Optional) OpenCV
 See [opencv.md](opencv.md) for OpenCV build/config notes.
 
 
-# (Optional) OrbbecSDK_v2
+## (Optional) OrbbecSDK_v2
 ```bash
 git clone --depth 1 https://github.com/orbbec/OrbbecSDK_v2.git
 cd OrbbecSDK_v2
@@ -195,7 +196,7 @@ sudo udevadm trigger
 ```
 
 
-# (Optional) libmodbus
+## (Optional) libmodbus
 Build and install [libmodbus](https://github.com/stephane/libmodbus) independently
 when using Modbus devices. The default installation prefix is `/usr/local`:
 headers are installed under `/usr/local/include/modbus` and libraries under
@@ -216,13 +217,13 @@ For `_LeddarVu`, keep `bUse0x41=false` (the default) with upstream libmodbus.
 The optional `0x41` mode requires a custom Leddar response-length patch;
 
 
-# (Optional) MAVLink
+## (Optional) MAVLink
 ```bash
 git clone --depth 1 https://github.com/mavlink/c_library_v2.git
 ```
 
 
-# (Optional) wsServer
+## (Optional) wsServer
 ```bash
 git clone --depth 1 https://github.com/Theldus/wsServer
 cd wsServer/
@@ -231,7 +232,7 @@ sudo make install
 ```
 
 
-# (Optional) Livox
+## (Optional) Livox
 In direct connection mode configure the host ip
 IP: 192.168.1.50
 Netmask: 255.255.255.0
@@ -239,7 +240,7 @@ Gateway: 192.168.1.1
 
 
 
-# (Optional) ScepterSDK
+## (Optional) ScepterSDK
 ```bash
 git clone --depth 1 https://github.com/ScepterSW/ScepterSDK.git
 set +H
@@ -253,7 +254,7 @@ Netmask: 255.255.255.0
 Gateway: 192.168.100.1
 
 
-# (Optional) M4RI
+## (Optional) M4RI
 ```bash
 sudo apt-get install autoconf automake libtool
 git clone --depth 1 https://github.com/malb/m4ri.git
@@ -266,7 +267,7 @@ sudo make install
 ```
 
 
-# OpenKAI
+## OpenKAI
 ```bash
 sudo apt-get -y install libunwind-dev libgoogle-glog-dev libevent-dev gsl-bin libgsl0-dev
 git clone --depth 1 https://github.com/yankailab/OpenKAI.git

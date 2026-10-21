@@ -73,7 +73,7 @@ cmake --build build -j
 ./build/OpenKAI jsonCfg/YOLO26depthEst.json
 ```
 
-[The example configuration](../jsonCfg/YOLO26depthEst.json) connects a camera to the estimator and previews RGB and estimated depth in `_OCVwindow`. `_D2RGB` colorizes the depth for display; the data outputs retain metric float values. Select the camera device and replace its example intrinsics with your camera calibration before using the cloud for geometry.
+[The example configuration](https://github.com/yankailab/OpenKAI/blob/master/jsonCfg/YOLO26depthEst.json) connects a camera to the estimator and previews RGB and estimated depth in `_OCVwindow`. `_D2RGB` colorizes the depth for display; the data outputs retain metric float values. Select the camera device and replace its example intrinsics with your camera calibration before using the cloud for geometry.
 
 ## Data and calibration
 

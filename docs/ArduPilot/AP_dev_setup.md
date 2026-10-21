@@ -81,11 +81,11 @@ docs/ArduPilot/run_web_mavlink_sitl.sh
 ```
 
 Launch QGroundControl with automatic UDP connection enabled on **14550**.
-Open **http://localhost:8080/** and click **Start** for visualization. Use QGC to
+Open `http://localhost:8080/` and click **Start** for visualization. Use QGC to
 send commands; the browser viewer is read-only.
 
-The [launcher](run_web_mavlink_sitl.sh) loads
-[WebMavlinkStream.parm](../../jsonCfg/ardupilot/WebMavlinkStream.parm) with
+The [launcher](https://github.com/yankailab/OpenKAI/blob/master/docs/ArduPilot/run_web_mavlink_sitl.sh) loads
+[WebMavlinkStream.parm](https://github.com/yankailab/OpenKAI/blob/master/jsonCfg/ardupilot/WebMavlinkStream.parm) with
 `--add-param-file`. The file sets `SIM_OPOS_LAT=35.6812` and
 `SIM_OPOS_LNG=139.7655`, approximately Tokyo Station's Marunouchi plaza,
 `SIM_OPOS_ALT=5` m MSL and `SIM_OPOS_HDG=0` degrees (north). The altitude is a
@@ -108,7 +108,7 @@ forwards telemetry to them and relays replies. The web viewer then publishes
 over HTTP/WebSocket on **8080**. `--mavproxy-args '--streamrate=-1'` leaves the
 parameter-file stream rates in place; QGC may request different rates.
 
-In [WebMavlinkStream.json](../../jsonCfg/WebMavlinkStream.json), `udpSitl` connects
+In [WebMavlinkStream.json](https://github.com/yankailab/OpenKAI/blob/master/jsonCfg/WebMavlinkStream.json), `udpSitl` connects
 `sitl_rx` / `sitl_tx` through `mavlinkSitl` to `sitlVehicle`. Its `bW2R:true`
 learns MAVProxy's return address when telemetry arrives. Future handlers should
 use this stream. The existing `vehicle` stream remains dedicated to visualization;
@@ -133,7 +133,7 @@ Additional launcher arguments are passed to `sim_vehicle.py`; `-w` resets the
 selected directory's saved parameters. Rebuild ArduPilot separately after
 changing its code.
 
-See the [viewer guide](../../html/viewer/mavlink/README.md) for model assets and
+See the [viewer guide](https://github.com/yankailab/OpenKAI/blob/master/html/viewer/mavlink/README.md) for model assets and
 MSL/ellipsoid height alignment, and the official
 [SITL usage](https://ardupilot.org/dev/docs/using-sitl-for-ardupilot-testing.html)
 and [MAVProxy forwarding](https://ardupilot.org/mavproxy/docs/getting_started/forwarding.html)

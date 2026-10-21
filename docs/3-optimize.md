@@ -1,4 +1,6 @@
-# Clean-up
+# System optimization
+
+## Clean-up
 
 Raspberry pi OS
 
@@ -80,7 +82,7 @@ sudo apt -y remove --purge libreoffice* yelp thunderbird rhythmbox
 
 ```
 
-# clear system logs
+## clear system logs
 ```bash
 sudo systemctl stop rsyslog
 sudo systemctl disable rsyslog.service
@@ -90,7 +92,7 @@ sudo systemctl mask systemd-journald.service
 sudo truncate /var/log/*.log --size 0
 ```
 
-# Delete snap
+## Delete snap
 https://www.baeldung.com/linux/snap-remove-disable
 ```bash
 snap --version
@@ -114,7 +116,7 @@ sudo apt-mark hold snapd
 rm -rf ~/snap/
 ```
 
-# Preventing Snap Installation Through the apt Command
+## Preventing Snap Installation Through the apt Command
 ```bash
 sudo cat <<EOF | sudo tee /etc/apt/preferences.d/nosnap.pref
 Package: snapd
@@ -128,12 +130,12 @@ sudo rm -rf /var/snap
 sudo rm -rf /var/lib/snapd
 ```
 
-# Clear bash history
+## Clear bash history
 ```bash
 history -c && history -w
 ```
 
-# Ubuntu power mode
+## Ubuntu power mode
 ```bash
 cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors
 cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor

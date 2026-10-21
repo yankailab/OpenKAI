@@ -1,0 +1,39 @@
+/* Keep VitePress's documentation layout and use the OpenKAI wordmark's blue. */
+:root {
+  --vp-c-brand-1: #0079ae;
+  --vp-c-brand-2: #008bc8;
+  --vp-c-brand-3: #008bc8;
+  --vp-c-brand-soft: rgba(0, 139, 200, 0.12);
+  --vp-button-brand-bg: #0079ae;
+  --vp-button-brand-hover-bg: #006b9a;
+  --vp-button-brand-active-bg: #005c85;
+  --vp-home-hero-name-color: #008bc8;
+}
+
+.dark {
+  --vp-c-brand-1: #56c4f3;
+  --vp-c-brand-2: #20a8e3;
+  --vp-c-brand-3: #008bc8;
+  --vp-c-brand-soft: rgba(0, 139, 200, 0.18);
+  --vp-button-brand-bg: #0079ae;
+  --vp-button-brand-hover-bg: #008bc8;
+  --vp-button-brand-active-bg: #006b9a;
+}
+
+.VPNavBarTitle .logo {
+  height: 25px;
+  width: auto;
+}
+
+.VPHero .image-src {
+  max-width: 420px;
+  width: 100%;
+  height: auto;
+}
+
+/* A static home content layout keeps server and client rendering identical. */
+.openkai-home-content {
+  max-width: 1152px;
+  margin: 0 auto;
+  padding: 32px 24px 64px;
+}

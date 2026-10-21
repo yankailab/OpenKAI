@@ -1,0 +1,21 @@
+{
+  "name": "openkai-docs",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "OpenKAI documentation built with VitePress",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview"
+  },
+  "devDependencies": {
+    "vitepress": "1.6.4"
+  },
+  "overrides": {
+    "vite": "6.4.5"
+  }
+}

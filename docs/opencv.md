@@ -1,6 +1,6 @@
 # (Optional) OpenCV
 
-Install [Eigen 5](setup.md#eigen-5) first. Both configurations below select its
+Install [Eigen 5](1-setup.md#eigen-5) first. Both configurations below select its
 installed CMake package; adjust `Eigen3_DIR` if using another installation prefix.
 
 ## General CMake configs for x86-64 machines

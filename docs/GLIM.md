@@ -35,7 +35,7 @@ An unmatched gyro sample waits for a later acceleration sample; SLAM does not
 extrapolate or bridge acceleration outages longer than 100 ms.
 
 
-The Orbbec CPU odometry example requires an IMU. Run `build/OpenKAI jsonCfg/GLIM_scepter.json` for Scepter cameras without an IMU. Its isolated [glim_scepter profile](../jsonCfg/glim_scepter/README.md) selects CT odometry, disables `enable_imu` in both mapping configs, and uses identity sensor extrinsics. The map starts in the first camera's optical frame, without gravity alignment. No IMU module or synthetic inertial samples are needed. The shared frontend, WSconsole controls, submap stream and PLY export work with both profiles. The adapter checks the selected estimator's IMU requirement at startup.
+The Orbbec CPU odometry example requires an IMU. Run `build/OpenKAI jsonCfg/GLIM_scepter.json` for Scepter cameras without an IMU. Its isolated [glim_scepter profile](https://github.com/yankailab/OpenKAI/blob/master/jsonCfg/glim_scepter/README.md) selects CT odometry, disables `enable_imu` in both mapping configs, and uses identity sensor extrinsics. The map starts in the first camera's optical frame, without gravity alignment. No IMU module or synthetic inertial samples are needed. The shared frontend, WSconsole controls, submap stream and PLY export work with both profiles. The adapter checks the selected estimator's IMU requirement at startup.
 
 Scepter and Orbbec SDKs can be enabled in the same build. GLIM's spdlog must precede the Scepter SDK in the link order because the SDK exports an incompatible bundled spdlog; CMake declares the explicit dependency to preserve that order. Camera/SLAM saved controls for Scepter live under `jsonCfg/glim_scepter`, and its PLY output defaults to `data/glim_scepter`. The Orbbec settings remain separate. Sensor rates and preprocessing parameters still need tuning for the scene and camera.
 
@@ -90,7 +90,7 @@ credit; each client has its own cursor. Reconnection replays all completed
 submaps, slow clients catch up, and a new session resets both complete and partial
 geometry. New map timestamps may update poses without changing IDs or point arrays.
 The dedicated layout and routes are separate from geometry point/line streams;
-see the [wire contract](../html/viewer/_GLIM/README.md#dedicated-submap-protocol).
+see the [wire contract](https://github.com/yankailab/OpenKAI/blob/master/html/viewer/_GLIM/README.md#dedicated-submap-protocol).
 
 `PCLframeOut` names an optional flat point-cloud output for other modules. With
 `bPublishLiveMap: false` (default), only completed-submap changes and finalization
@@ -103,7 +103,7 @@ streams those individual frames. The flat output must differ from `PCLframeIn`.
 The browser trajectory is a bounded history of fresh status poses, not GLIM's
 optimized historical trajectory. Completed-submap pose corrections update the
 map and latest sensor marker; they do not retrospectively solve the browser's
-old trajectory samples. See [the viewer guide](../html/viewer/_GLIM/README.md)
+old trajectory samples. See [the viewer guide](https://github.com/yankailab/OpenKAI/blob/master/html/viewer/_GLIM/README.md)
 for controls, distance coloring, sensor setup and launch instructions.
 
 ## Parameters and PLY export
@@ -246,7 +246,7 @@ nano gtsam/gtsam/geometry/SL4.cpp
 ```
 add near the top
 
-```Cpp
+```cpp
 #include <cassert>
 ```
 
@@ -256,7 +256,7 @@ nano gtsam/gtsam/slam/FrobeniusFactor.h
 ```
 
 Around lines 200–225, replace the evaluateError() implementation with this:
-```Cpp
+```cpp
 Vector evaluateError(const T& T1, const T& T2, OptionalMatrixType H1,
                      OptionalMatrixType H2) const override {
   const bool computeJacobians = H1 || H2;

@@ -2,7 +2,7 @@
 
 ## CAN transport streams
 
-See [jsonCfg/_CAN.json](../jsonCfg/_CAN.json) for `_USR_CANET` and `_SocketCAN` examples. Both modules inherit `_ModuleBase` and use `CANframeStreamIn` for outgoing frames and `CANframeStreamOut` for received frames. Declare each stream with `"type": "dataObject"` and `"class": "CANframeStream"`.
+See [jsonCfg/_CAN.json](https://github.com/yankailab/OpenKAI/blob/master/jsonCfg/_CAN.json) for `_USR_CANET` and `_SocketCAN` examples. Both modules inherit `_ModuleBase` and use `CANframeStreamIn` for outgoing frames and `CANframeStreamOut` for received frames. Declare each stream with `"type": "dataObject"` and `"class": "CANframeStream"`.
 
 `thread.FPS` controls sending; `threadR.FPS` controls receiving and defaults to the send rate when omitted. `_USR_CANET` encodes frames into `BytePacketStreamOut` and decodes `BytePacketStreamIn`. Configure both links for each enabled direction: `CANframeStreamIn` with `BytePacketStreamOut`, or `BytePacketStreamIn` with `CANframeStreamOut`. `_SocketCAN` uses `ifName` (default `can0`) and supports either or both frame streams.
 
