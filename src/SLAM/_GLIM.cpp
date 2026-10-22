@@ -323,8 +323,9 @@ namespace kai
 		params.downsample_target = pre["targetPoints"].get<int>();
 		params.k_correspondences = pre["kNeighbors"].get<int>();
 		params.num_threads = pre["threads"].get<int>();
-		// Depth-camera clouds are single exposures; preserve the existing shutter model.
-		params.global_shutter = true;
+		// CloudPreprocessorParams reads the sensor's shutter model. Depth-camera
+		// profiles use one exposure; scanning LiDAR profiles preserve point times.
+		m_bGlobalShutter = params.global_shutter;
 		m_nMinPoints = std::max(m_nMinPoints, params.k_correspondences + 1);
 		m_distanceNear = params.distance_near_thresh;
 		m_distanceFar = params.distance_far_thresh;
@@ -405,6 +406,8 @@ namespace kai
 			auto raw = std::make_shared<glim::RawPoints>();
 			raw->stamp = nsec2sec<double>(stamp);
 			raw->points.reserve(m_vInputPoints.size());
+			raw->times.reserve(m_vInputPoints.size());
+			uint64_t scanEnd = stamp;
 			const double nearSquared = m_distanceNear * m_distanceNear;
 			const double farSquared = m_distanceFar * m_distanceFar;
 			for (const auto &point : m_vInputPoints)
@@ -414,16 +417,23 @@ namespace kai
 				IF_CONT(!std::isfinite(p[0]) || !std::isfinite(p[1]) || !std::isfinite(p[2]));
 				const double distanceSquared = double(p[0]) * p[0] + double(p[1]) * p[1] + double(p[2]) * p[2];
 				IF_CONT(distanceSquared <= nearSquared || distanceSquared >= farSquared);
+				if (!m_bGlobalShutter && point.m_tStamp < stamp)
+					throw std::runtime_error("LiDAR point timestamp precedes frame start; check capture timestamps");
 				raw->points.emplace_back(p[0], p[1], p[2], 1.0);
+				// Subtract nanoseconds before conversion to retain precision even
+				// when a synchronized sensor uses an absolute epoch timestamp.
+				raw->times.push_back(m_bGlobalShutter ? 0.0 : nsec2sec<double>(point.m_tStamp - stamp));
+				if (!m_bGlobalShutter) scanEnd = std::max(scanEnd, point.m_tStamp);
 			}
-			raw->times.assign(raw->points.size(), 0.0);
 			m_pendingFrame = raw;
+			m_pendingFrameEndNs = scanEnd;
 		}
 		recordStage(1);
 
 		IF_(!m_pendingFrame);
-		// Wait for IMU coverage; keep at most the newest depth frame when lagging.
-		IF_(m_bRequiresIMU && nsec2sec<double>(m_tStampLastIMU) <= m_pendingFrame->stamp);
+		// Deskewing needs IMU coverage through the final point of a scan.
+		// Keep at most the newest frame when the estimator falls behind.
+		IF_(m_bRequiresIMU && m_tStampLastIMU <= m_pendingFrameEndNs);
 		auto raw = std::move(m_pendingFrame);
 		m_inputPoints = raw->size();
 		if (raw->size() < m_nMinPoints)
@@ -649,6 +659,7 @@ namespace kai
 		}
 		publishMap(true);
 		m_pendingFrame.reset();
+		m_pendingFrameEndNs = 0;
 		m_odometry.reset();
 		m_subMapping.reset();
 		m_preprocessor.reset();
@@ -678,6 +689,7 @@ namespace kai
 		setPos(Vector3d::Zero());
 		setOrientation(Quaterniond::Identity(), true);
 		m_pendingFrame.reset();
+		m_pendingFrameEndNs = 0;
 		m_odometry.reset();
 		m_subMapping.reset();
 		m_globalMapping.reset();

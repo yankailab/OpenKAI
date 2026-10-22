@@ -18,6 +18,9 @@
 #include "../../Utility/utilNet.h"
 
 #include "livox_lidar_def.h"
+#include "Livox2Protocol.h"
+#include "../../Vision/RGBD/RealSenseIMU.h"
+#include <map>
 
 #define LVX2_N_BUF 1380
 #define LVX2_N_DATA 1344
@@ -76,6 +79,7 @@ namespace kai
 
 		void init(uint16_t cmdID, uint8_t cmdType, uint32_t seqNum)
 		{
+            memset(this, 0, sizeof(*this));
 			sof = LVX2_SOF;
 			version = 0;
 			length = LVX2_CMD_N_HDR;
@@ -94,8 +98,9 @@ namespace kai
 				crc32_d = CRC::Calculate(data, length - LVX2_CMD_N_HDR, CRC::CRC_32());
 		}
 
-		void addData(void *pD, int nD)
+		void addData(const void *pD, int nD)
 		{
+            if (nD < 0 || m_iD + nD > LVX2_N_DATA) throw std::length_error("Livox command payload too large");
 			memcpy(&data[m_iD], pD, nD);
 			m_iD += nD;
 			length += nD;
@@ -108,8 +113,7 @@ namespace kai
 
 		void addData(uint8_t v)
 		{
-			data[m_iD++] = v;
-			length++;
+			addData(&v, 1);
 		}
 	};
 
@@ -124,7 +128,7 @@ namespace kai
 	{
 		uint8_t m_pclDataType;
 		uint8_t m_patternMode;
-		uint64_t m_hostIP;
+		uint32_t m_hostIP;
 		uint16_t m_hostPortState;
 		uint16_t m_hostPortPCL;
 		uint16_t m_hostPortIMU;
@@ -155,6 +159,7 @@ namespace kai
 
 	class _Livox2 : public _ReferenceFrame
 	{
+        friend struct Livox2TestAccess;
 	public:
 		_Livox2();
 		~_Livox2();
@@ -164,7 +169,9 @@ namespace kai
 		virtual bool link(InstanceMgr *pM) override;
 		virtual bool check(void);
 		virtual bool start(void);
+        void stop(void) override;
 		virtual void console(void *pConsole);
+        void console(const json &j, void *pJSONbase) override;
 		virtual void clear(void);
 
 		LVX2_CONFIG getConfig(void);
@@ -172,8 +179,8 @@ namespace kai
 
 	private:
 		// Common
-		bool recvLivoxCmd(const BYTE_PACKET &packet, LIVOX2_CMD *pResvCmd, bool bParity = false);
-		bool recvLivoxData(const BYTE_PACKET &packet, LIVOX2_DATA *pResvDATA, bool bParity = false);
+		bool recvLivoxCmd(const BYTE_PACKET &packet, LIVOX2_CMD *pResvCmd, bool bParity = true);
+		bool recvLivoxData(const BYTE_PACKET &packet, LIVOX2_DATA *pResvDATA, bool bParity = true);
 
 		// Device Type Query
 		void sendDeviceQuery(void);
@@ -193,14 +200,16 @@ namespace kai
 		}
 
 		// Control Command
-		void setLvxPCLdataType(void);
-		void setLvxPattern(void);
-		void setLvxHost(void);
-		void setLvxFrameRate(void);
-		void setLvxDetectMode(void);
-		void setLvxWorkModeAfterBoot(void);
-		void setLvxWorkMode(void);
-		void setLvxIMUdataEn(void);
+        void sendCommand(LIVOX2_CMD cmd);
+        void setLvxByte(uint16_t key, uint8_t value);
+        void setLvxHost(void);
+        void configureDevice(void);
+        void handleInfo(const uint8_t *data, size_t length, uint16_t count);
+        json configValues() const;
+        json controlSchema() const;
+        json imuValues() const;
+        bool applyConfig(const json &patch, bool live, json &errors);
+        void resetFrame();
 
 		void getLvxConfig(void);
 		void updateWctrlCmd(void);
@@ -268,38 +277,58 @@ namespace kai
 		BytePacketStream *m_pBpStreamImuIn = nullptr;
 		uint64_t m_tLastBpStreamImuIn = 0;
 
-		// lvx state
-		LVX2_STATE m_lvxState = lvxState_deviceQuery;
-		TIME_OUT m_lvxTout;
+        // All driver state is protected by m_mutex, including console snapshots.
+        mutable std::recursive_mutex m_mutex;
+        LVX2_STATE m_lvxState = lvxState_deviceQuery;
+        uint64_t m_timeoutNs = 10 * NSEC_SEC;
+        uint64_t m_lastRx = 0;
+        uint64_t m_lastQuery = 0;
+        uint32_t m_sequence = 0;
+        struct PendingCommand
+        {
+            LIVOX2_CMD command;
+            uint64_t sent = 0;
+            unsigned attempts = 1;
+        };
+        std::map<uint32_t, PendingCommand> m_pending;
+        bool m_configFailed = false;
+        string m_lastError;
+        json m_observed = json::object();
 
-		// lvx info
-		string m_lvxSN = "";
-		uint8_t m_pLvxSN[16];
-		uint32_t m_lvxIP = 0;
-		uint16_t m_lvxCmdPort = 0;
-		uint8_t m_lvxDevType = 0;
+        string m_lvxSN;
+        string m_detectedSN;
+        uint32_t m_lvxIP = 0;
+        uint16_t m_lvxCmdPort = 0;
+        uint8_t m_lvxDevType = 0;
+        LVX2_CONFIG m_lvxCfg;
 
-		// lvx config
-		LVX2_CONFIG m_lvxCfg;
+        Quaterniond m_mountOrientation = Quaterniond::Identity();
+        bool m_bIMUstab = false;
+        realsense::IMUPreview m_imuPreview;
+        uint64_t m_tIMU = 0;
+        uint64_t m_lastIMUrx = 0;
+        IMUstream *m_pIMUout = nullptr;
 
-		// lvx IMU
-		bool m_bIMUstab = false;	// enable IMU stabilize
-		SF m_SF;
-		uint64_t m_tIMU = 0;
-
-		IMUstream *m_pIMUout = nullptr;
-		std::mutex m_poseMutex;
-
-		// Unpublished device frame; the mutex also serializes explicit clearing.
-		std::mutex m_frameMutex;
-		vector<GEOMETRY_POINT> m_vFramePoints;
-		Vector3f m_vColorDefault = Vector3f::Ones();
-		int m_nMaxFramePoints = 100000;
-		uint64_t m_tPCLframe = 0;
-		uint8_t m_iPCLframe = 0;
-		bool m_bPCLframe = false;
-
-	};
+        vector<GEOMETRY_POINT> m_vFramePoints;
+        Vector3f m_vColorDefault = Vector3f::Ones();
+        Vector2f m_vRangeD = Vector2f(0.1f, 200.0f);
+        bool m_bReflectivity = true;
+        int m_nMaxFramePoints = 100000;
+        uint64_t m_frameDurationNs = 100 * NSEC_MSEC;
+        uint64_t m_tPCLframe = 0;
+        uint64_t m_tLastPCL = 0;
+        uint8_t m_iPCLframe = 0;
+        bool m_bPCLframe = false;
+        uint64_t m_pointPackets = 0;
+        uint64_t m_points = 0;
+        uint64_t m_frames = 0;
+        uint64_t m_imuSamples = 0;
+        uint64_t m_invalidPackets = 0;
+        uint64_t m_outOfOrderPackets = 0;
+        uint64_t m_frameOverflows = 0;
+        uint64_t m_commandErrors = 0;
+        uint64_t m_commandRetries = 0;
+    };
 
 }
 #endif

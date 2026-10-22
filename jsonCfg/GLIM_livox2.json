@@ -1,0 +1,370 @@
+{
+	"APP": {
+		"class": "InstanceMgr",
+		"appName": "GLIM SLAM \u2014 Livox Mid-360",
+		"bLog": true,
+		"bStdErr": true
+	},
+	"livoxPoints": {
+		"type": "dataObject",
+		"class": "PCLframe"
+	},
+	"livoxIMU": {
+		"type": "dataObject",
+		"class": "IMUstream",
+		"nBuf": 4000
+	},
+	"udpLvxDeviceQuery_1": {
+		"BytePacketStreamIn": "udpLvxDeviceQuery_1_tx",
+		"BytePacketStreamOut": "udpLvxDeviceQuery_1_rx",
+		"class": "_UDP",
+		"bON": true,
+		"thread": {
+			"FPS": 100
+		},
+		"threadR": {
+			"FPS": 100
+		},
+		"addrRemote": "192.168.16.120",
+		"portRemote": 56000,
+		"portLocal": 0,
+		"bW2R": 0,
+		"bWbroadcast": 0,
+		"bLog": false
+	},
+	"udpLvxCtrlCmd_1": {
+		"BytePacketStreamIn": "udpLvxCtrlCmd_1_tx",
+		"BytePacketStreamOut": "udpLvxCtrlCmd_1_rx",
+		"class": "_UDP",
+		"bON": true,
+		"thread": {
+			"FPS": 100
+		},
+		"threadR": {
+			"FPS": 100
+		},
+		"addrRemote": "192.168.16.120",
+		"portRemote": 56100,
+		"portLocal": 56101,
+		"bW2R": 0,
+		"bWbroadcast": 0,
+		"bLog": false
+	},
+	"udpLvxPushCmd_1": {
+		"BytePacketStreamOut": "udpLvxPushCmd_1_rx",
+		"class": "_UDP",
+		"bON": true,
+		"thread": {
+			"FPS": 100
+		},
+		"threadR": {
+			"FPS": 100
+		},
+		"addrRemote": "192.168.16.120",
+		"portRemote": 56200,
+		"portLocal": 56201,
+		"bW2R": 0,
+		"bWbroadcast": 0,
+		"bLog": false
+	},
+	"udpLvxPCL_1": {
+		"BytePacketStreamOut": "udpLvxPCL_1_rx",
+		"class": "_UDP",
+		"bON": true,
+		"thread": {
+			"FPS": 100
+		},
+		"threadR": {
+			"FPS": 200
+		},
+		"bLog": false,
+		"addrRemote": "192.168.16.120",
+		"portRemote": 56300,
+		"portLocal": 56301,
+		"bW2R": 0,
+		"bWbroadcast": 0
+	},
+	"udpLvxIMU_1": {
+		"BytePacketStreamOut": "udpLvxIMU_1_rx",
+		"class": "_UDP",
+		"bON": true,
+		"thread": {
+			"FPS": 100
+		},
+		"threadR": {
+			"FPS": 200
+		},
+		"bLog": false,
+		"addrRemote": "192.168.16.120",
+		"portRemote": 56400,
+		"portLocal": 56401,
+		"bW2R": 0,
+		"bWbroadcast": 0
+	},
+	"Lvx1": {
+		"class": "_Livox2",
+		"bON": true,
+		"thread": {
+			"FPS": 1
+		},
+		"TdeviceQueryR": {
+			"FPS": 30
+		},
+		"TctrlCmdW": {
+			"FPS": 10
+		},
+		"TctrlCmdR": {
+			"FPS": 30
+		},
+		"TpushCmdR": {
+			"FPS": 30
+		},
+		"TpclR": {
+			"FPS": 200
+		},
+		"TimuR": {
+			"FPS": 200
+		},
+		"bLog": false,
+		"BytePacketStreamDeviceQueryIn": "udpLvxDeviceQuery_1_rx",
+		"BytePacketStreamDeviceQueryOut": "udpLvxDeviceQuery_1_tx",
+		"BytePacketStreamCtrlCmdIn": "udpLvxCtrlCmd_1_rx",
+		"BytePacketStreamCtrlCmdOut": "udpLvxCtrlCmd_1_tx",
+		"BytePacketStreamPushCmdIn": "udpLvxPushCmd_1_rx",
+		"BytePacketStreamPclIn": "udpLvxPCL_1_rx",
+		"BytePacketStreamImuIn": "udpLvxIMU_1_rx",
+		"lvxIP": "192.168.16.120",
+		"tOutSec": 10,
+		"lvxPCLdataType": 1,
+		"lvxPatternMode": 0,
+		"lvxHostIP": "192.168.16.100",
+		"lvxHostPortState": 56201,
+		"lvxHostPortPCL": 56301,
+		"lvxHostPortIMU": 56401,
+		"lvxDetectMode": 1,
+		"lvxWorkMode": 1,
+		"lvxIMUdataEn": 1,
+		"bIMUstab": false,
+		"PCLframeOut": "livoxPoints",
+		"IMUstreamOut": "livoxIMU",
+		"nMaxFramePoints": 100000,
+		"frameDurationMs": 100,
+		"bReflectivity": true,
+		"vRangeD": [
+			0.1,
+			200.0
+		],
+		"vColorDefault": [
+			1.0,
+			1.0,
+			1.0
+		]
+	},
+	"udpLvxDeviceQuery_1_tx": {
+		"type": "dataObject",
+		"class": "BytePacketStream",
+		"nPacket": 256,
+		"nPbuf": 2000
+	},
+	"udpLvxDeviceQuery_1_rx": {
+		"type": "dataObject",
+		"class": "BytePacketStream",
+		"nPacket": 256,
+		"nPbuf": 2000
+	},
+	"udpLvxCtrlCmd_1_tx": {
+		"type": "dataObject",
+		"class": "BytePacketStream",
+		"nPacket": 256,
+		"nPbuf": 2000
+	},
+	"udpLvxCtrlCmd_1_rx": {
+		"type": "dataObject",
+		"class": "BytePacketStream",
+		"nPacket": 256,
+		"nPbuf": 2000
+	},
+	"udpLvxPushCmd_1_rx": {
+		"type": "dataObject",
+		"class": "BytePacketStream",
+		"nPacket": 256,
+		"nPbuf": 2000
+	},
+	"udpLvxPCL_1_rx": {
+		"type": "dataObject",
+		"class": "BytePacketStream",
+		"nPacket": 4096,
+		"nPbuf": 2000
+	},
+	"udpLvxIMU_1_rx": {
+		"type": "dataObject",
+		"class": "BytePacketStream",
+		"nPacket": 256,
+		"nPbuf": 2000
+	},
+	"wsServer": {
+		"BytePacketStreamIn": "wsServer_tx",
+		"BytePacketStreamOut": "wsServer_rx",
+		"class": "_WebSocketServer",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"threadR": {
+			"FPS": 1
+		},
+		"host": "0.0.0.0",
+		"port": 7890,
+		"wsMode": 2,
+		"nClientMax": 8,
+		"tOutMs": 10000
+	},
+	"wsConsole": {
+		"class": "_WSconsole",
+		"bON": true,
+		"thread": {
+			"FPS": 10
+		},
+		"threadR": {
+			"FPS": 30
+		},
+		"BytePacketStreamIn": "wsServer_rx",
+		"BytePacketStreamOut": "wsServer_tx",
+		"msgFinishSend": "",
+		"msgFinishRecv": "EOJ",
+		"vBASE": [
+			"GLIM",
+			"Lvx1"
+		]
+	},
+	"wsServer_tx": {
+		"type": "dataObject",
+		"class": "BytePacketStream",
+		"nPacket": 256,
+		"nPbuf": 2000
+	},
+	"wsServer_rx": {
+		"type": "dataObject",
+		"class": "BytePacketStream",
+		"nPacket": 256,
+		"nPbuf": 2000
+	},
+	"console": {
+		"class": "_Console",
+		"bON": false,
+		"thread": {
+			"FPS": 10
+		},
+		"vBASE": [
+			"GLIM",
+			"Lvx1"
+		]
+	},
+	"sensorViewer": {
+		"class": "_WebGeometry",
+		"thread": {
+			"FPS": 30
+		},
+		"host": "0.0.0.0",
+		"port": 8081,
+		"nPbuf": 100000,
+		"nLbuf": 0,
+		"vGeometry": [
+			{
+				"PCLframeIn": "livoxPoints",
+				"nP": 100000,
+				"matPointSize": 2
+			}
+		],
+		"webRoot": "html/viewer/_Livox2",
+		"bON": true,
+		"nClientMax": 8,
+		"dTexpire": 0,
+		"bAutoBound": true,
+		"bShowGrid": true,
+		"vCamLookAt": [
+			0,
+			0,
+			0
+		],
+		"vCamEye": [
+			-4,
+			-4,
+			3
+		],
+		"vCamUp": [
+			0,
+			0,
+			1
+		],
+		"camFov": 70,
+		"vCamNF": [
+			0.01,
+			1000000
+		]
+	},
+	"viewer": {
+		"class": "_WebGLIM",
+		"webRoot": "html/viewer/_GLIM",
+		"bON": true,
+		"thread": {
+			"FPS": 10
+		},
+		"host": "0.0.0.0",
+		"port": 8080,
+		"nClientMax": 8,
+		"matPointSize": 2,
+		"bAutoBound": true,
+		"bShowGrid": true,
+		"vCamLookAt": [
+			0,
+			0,
+			0
+		],
+		"vCamEye": [
+			-6,
+			-6,
+			4
+		],
+		"vCamUp": [
+			0,
+			0,
+			1
+		],
+		"camFov": 70,
+		"vCamNF": [
+			0.01,
+			1000000
+		],
+		"PCLmapIn": "GLIMMap"
+	},
+	"GLIM": {
+		"class": "_GLIM",
+		"exportPath": "data/glim_livox2",
+		"bON": true,
+		"thread": {
+			"FPS": 100
+		},
+		"PCLframeIn": "livoxPoints",
+		"IMUstreamIn": "livoxIMU",
+		"configPath": "jsonCfg/glim_livox2",
+		"bAutoStart": false,
+		"bMapping": true,
+		"bPublishLiveMap": false,
+		"nMinPoints": 100,
+		"tConfidenceTimeoutNs": 1000000000,
+		"PCLframeOut": "glimPCL",
+		"nMapPoints": 400000,
+		"nLiveFrames": 60,
+		"tMapUpdateNs": 200000000,
+		"PCLmapOut": "GLIMMap"
+	},
+	"glimPCL": {
+		"type": "dataObject",
+		"class": "PCLframe"
+	},
+	"GLIMMap": {
+		"type": "dataObject",
+		"class": "PCLmap"
+	}
+}

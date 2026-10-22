@@ -64,6 +64,7 @@ namespace kai
 		string m_configPath;
 		bool m_bMapping = true;
 		bool m_bRequiresIMU = true;
+		bool m_bGlobalShutter = true;
 		bool m_bPublishLiveMap = false, m_mapDirty = false;
 		json m_parameters;
 		string m_exportPath = "data/glim";
@@ -75,6 +76,7 @@ namespace kai
 		std::shared_ptr<glim::SubMappingBase> m_subMapping;
 		std::shared_ptr<glim::GlobalMappingBase> m_globalMapping;
 		std::shared_ptr<glim::RawPoints> m_pendingFrame;
+		uint64_t m_pendingFrameEndNs = 0;
 		PCLframe *m_pGlobalMapout = nullptr;
 		PCLmap *m_pSubmapStreamout = nullptr;
 		vector<std::shared_ptr<glim::SubMap>> m_submaps;

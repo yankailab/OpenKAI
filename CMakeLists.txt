@@ -981,6 +981,8 @@ if(WITH_UNIVERSE)
     COMMAND ${CMAKE_COMMAND} -E copy_directory
       "${PROJECT_SOURCE_DIR}/html/viewer/_RealSense" "$<TARGET_FILE_DIR:OpenKAI>/html/viewer/_RealSense"
     COMMAND ${CMAKE_COMMAND} -E copy_directory
+      "${PROJECT_SOURCE_DIR}/html/viewer/_Livox2" "$<TARGET_FILE_DIR:OpenKAI>/html/viewer/_Livox2"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
       "${PROJECT_SOURCE_DIR}/html/viewer/_GLIM" "$<TARGET_FILE_DIR:OpenKAI>/html/viewer/_GLIM"
     COMMAND ${CMAKE_COMMAND} -E copy_directory
       "${PROJECT_SOURCE_DIR}/html/viewer/_Scepter" "$<TARGET_FILE_DIR:OpenKAI>/html/viewer/_Scepter"
@@ -1008,6 +1010,7 @@ if(WITH_UNIVERSE)
   install(DIRECTORY html/viewer/_GeometryBase DESTINATION ${CMAKE_INSTALL_BINDIR}/html/viewer)
   install(DIRECTORY html/viewer/_Orbbec DESTINATION ${CMAKE_INSTALL_BINDIR}/html/viewer)
   install(DIRECTORY html/viewer/_RealSense DESTINATION ${CMAKE_INSTALL_BINDIR}/html/viewer)
+  install(DIRECTORY html/viewer/_Livox2 DESTINATION ${CMAKE_INSTALL_BINDIR}/html/viewer)
   install(DIRECTORY html/viewer/_GLIM DESTINATION ${CMAKE_INSTALL_BINDIR}/html/viewer)
   install(DIRECTORY html/viewer/_Scepter DESTINATION ${CMAKE_INSTALL_BINDIR}/html/viewer)
   install(DIRECTORY html/viewer/_SporSensor DESTINATION ${CMAKE_INSTALL_BINDIR}/html/viewer)

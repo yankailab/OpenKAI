@@ -30,6 +30,8 @@ namespace kai
 
 		void addGyro(const Vector3f &value, uint64_t tStamp);
 		void addAcc(const Vector3f &value, uint64_t tStamp);
+		// Drop both histories together when a sensor reconnects or resets its clock.
+		void clear();
 		uint64_t get(deque<IMU_DATA> &gyro, deque<IMU_DATA> &acc);
 
 	private:

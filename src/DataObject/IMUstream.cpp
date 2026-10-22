@@ -75,6 +75,14 @@ namespace kai
 		updateTstamp(tStamp);
 	}
 
+	void IMUstream::clear()
+	{
+		std::unique_lock lock(m_sMutex);
+		m_dqGyro.clear();
+		m_dqAcc.clear();
+		updateTstamp();
+	}
+
 	uint64_t IMUstream::get(deque<IMU_DATA> &gyro, deque<IMU_DATA> &acc)
 	{
 		std::shared_lock lock(m_sMutex);
