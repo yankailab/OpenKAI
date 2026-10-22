@@ -5,21 +5,21 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Sensor_LiDAR__Livox2_H_
-#define OpenKAI_src_Sensor_LiDAR__Livox2_H_
+#ifndef OpenKAI_src_Sensor_LiDAR_Livox__Livox2_H_
+#define OpenKAI_src_Sensor_LiDAR_Livox__Livox2_H_
 
-#include "../../DataObject/BytePacketStream.h"
-#include "../../Universe/_ReferenceFrame.h"
-#include "../../DataObject/PCLframe.h"
-#include "../../DataObject/IMUstream.h"
-#include "../../Dependencies/SensorFusion/SensorFusion.h"
-#include "../../Dependencies/CRC.h"
-#include "../../Utility/util.h"
-#include "../../Utility/utilNet.h"
+#include "../../../DataObject/BytePacketStream.h"
+#include "../../../Universe/_ReferenceFrame.h"
+#include "../../../DataObject/PCLframe.h"
+#include "../../../DataObject/IMUstream.h"
+#include "../../../Dependencies/SensorFusion/SensorFusion.h"
+#include "../../../Dependencies/CRC.h"
+#include "../../../Utility/util.h"
+#include "../../../Utility/utilNet.h"
 
 #include "livox_lidar_def.h"
 #include "Livox2Protocol.h"
-#include "../../Vision/RGBD/RealSenseIMU.h"
+#include "../../../Vision/RGBD/RealSenseIMU.h"
 #include <map>
 
 #define LVX2_N_BUF 1380

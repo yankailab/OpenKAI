@@ -1,0 +1,7 @@
+#workspace { grid-template-columns: minmax(240px, 1fr) 340px; }
+#deviceStatus { display: grid; grid-template-columns: 1fr 1fr; gap: 5px 12px; margin: 10px 0; font-size: 12px; }
+#deviceStatus dt { color: #9aafc4; }
+#deviceStatus dd { margin: 0; overflow-wrap: anywhere; text-align: right; }
+@media (max-width: 1050px) {
+  #workspace { grid-template-columns: minmax(180px, 1fr) 300px; }
+}

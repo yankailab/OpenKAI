@@ -1,7 +1,7 @@
 #ifndef OPENKAI_LIVOX2_PROTOCOL_H
 #define OPENKAI_LIVOX2_PROTOCOL_H
 
-#include "../../Dependencies/CRC.h"
+#include "../../../Dependencies/CRC.h"
 #include <cstddef>
 #include <cstdint>
 #include <cstring>

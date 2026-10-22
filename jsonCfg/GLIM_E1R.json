@@ -1,0 +1,216 @@
+{
+	"APP": {
+		"class": "InstanceMgr",
+		"appName": "GLIM SLAM — RoboSense E1R",
+		"bLog": true,
+		"bStdErr": true
+	},
+	"e1rPoints": {
+		"type": "dataObject",
+		"class": "PCLframe"
+	},
+	"E1R": {
+		"class": "_E1R",
+		"bON": true,
+		"thread": {
+			"FPS": 200
+		},
+		"bLog": false,
+		"PCLframeOut": "e1rPoints",
+		"deviceIP": "192.168.1.200",
+		"bindIP": "0.0.0.0",
+		"msopPort": 6699,
+		"difopPort": 7788,
+		"receiveBufferBytes": 4194304,
+		"tOutSec": 3,
+		"frameTimeoutMs": 250,
+		"nMaxFramePoints": 50000,
+		"bReflectivity": true,
+		"bDropNoise": true,
+		"bUseSensorTime": true,
+		"vRangeD": [
+			0.1,
+			120.0
+		],
+		"vColorDefault": [
+			1.0,
+			1.0,
+			1.0
+		],
+		"vPos": [
+			0,
+			0,
+			0
+		],
+		"vOrt": [
+			0,
+			0,
+			0,
+			1
+		]
+	},
+	"wsServer": {
+		"BytePacketStreamIn": "wsServer_tx",
+		"BytePacketStreamOut": "wsServer_rx",
+		"class": "_WebSocketServer",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"threadR": {
+			"FPS": 1
+		},
+		"host": "0.0.0.0",
+		"port": 7890,
+		"wsMode": 2,
+		"nClientMax": 8,
+		"tOutMs": 10000
+	},
+	"wsConsole": {
+		"class": "_WSconsole",
+		"bON": true,
+		"thread": {
+			"FPS": 10
+		},
+		"threadR": {
+			"FPS": 30
+		},
+		"BytePacketStreamIn": "wsServer_rx",
+		"BytePacketStreamOut": "wsServer_tx",
+		"msgFinishSend": "",
+		"msgFinishRecv": "EOJ",
+		"vBASE": [
+			"GLIM",
+			"E1R"
+		]
+	},
+	"wsServer_tx": {
+		"type": "dataObject",
+		"class": "BytePacketStream",
+		"nPacket": 256,
+		"nPbuf": 2000
+	},
+	"wsServer_rx": {
+		"type": "dataObject",
+		"class": "BytePacketStream",
+		"nPacket": 256,
+		"nPbuf": 2000
+	},
+	"console": {
+		"class": "_Console",
+		"bON": false,
+		"thread": {
+			"FPS": 10
+		},
+		"vBASE": [
+			"GLIM",
+			"E1R"
+		]
+	},
+	"sensorViewer": {
+		"class": "_WebGeometry",
+		"thread": {
+			"FPS": 30
+		},
+		"host": "0.0.0.0",
+		"port": 8081,
+		"nPbuf": 50000,
+		"nLbuf": 0,
+		"vGeometry": [
+			{
+				"PCLframeIn": "e1rPoints",
+				"nP": 50000,
+				"matPointSize": 2
+			}
+		],
+		"webRoot": "html/viewer/_E1R",
+		"bON": true,
+		"nClientMax": 8,
+		"dTexpire": 0,
+		"bAutoBound": true,
+		"bShowGrid": true,
+		"vCamLookAt": [
+			0,
+			0,
+			0
+		],
+		"vCamEye": [
+			-4,
+			-4,
+			3
+		],
+		"vCamUp": [
+			0,
+			0,
+			1
+		],
+		"camFov": 70,
+		"vCamNF": [
+			0.01,
+			1000000
+		]
+	},
+	"viewer": {
+		"class": "_WebGLIM",
+		"webRoot": "html/viewer/_GLIM",
+		"bON": true,
+		"thread": {
+			"FPS": 10
+		},
+		"host": "0.0.0.0",
+		"port": 8080,
+		"nClientMax": 8,
+		"matPointSize": 2,
+		"bAutoBound": true,
+		"bShowGrid": true,
+		"vCamLookAt": [
+			0,
+			0,
+			0
+		],
+		"vCamEye": [
+			-6,
+			-6,
+			4
+		],
+		"vCamUp": [
+			0,
+			0,
+			1
+		],
+		"camFov": 70,
+		"vCamNF": [
+			0.01,
+			1000000
+		],
+		"PCLmapIn": "GLIMMap"
+	},
+	"GLIM": {
+		"class": "_GLIM",
+		"exportPath": "data/glim_e1r",
+		"bON": true,
+		"thread": {
+			"FPS": 100
+		},
+		"PCLframeIn": "e1rPoints",
+		"configPath": "jsonCfg/glim_e1r",
+		"bAutoStart": false,
+		"bMapping": true,
+		"bPublishLiveMap": false,
+		"nMinPoints": 100,
+		"tConfidenceTimeoutNs": 1000000000,
+		"PCLframeOut": "glimPCL",
+		"nMapPoints": 400000,
+		"nLiveFrames": 60,
+		"tMapUpdateNs": 200000000,
+		"PCLmapOut": "GLIMMap"
+	},
+	"glimPCL": {
+		"type": "dataObject",
+		"class": "PCLframe"
+	},
+	"GLIMMap": {
+		"type": "dataObject",
+		"class": "PCLmap"
+	}
+}

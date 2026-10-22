@@ -546,6 +546,17 @@ def adapters(records, files, constants, symbol):
     records['_ROS_fastLio']['_embedded'].append((['node'],'ROS_fastLio'))
     records['_ROS_fastLio']['containers'].append({'path':['node'],'type':'object'})
     param('_ROS_fastLio',['node'],'object','src/ROS/_ROS_fastLio.cpp:loadConfig')
+    # E1R validates startup patches against its constructor's local defaults.
+    # DIFOP-only device fields are intentionally not launch configuration.
+    e1r_path='src/Sensor/LiDAR/RoboSense/E1R/_E1R.cpp'
+    e1r_defaults=re.search(r'\bm_config\s*=\s*\{(.*?)\};', files[e1r_path], re.S)
+    for match in re.finditer(r'\{\s*"([^"]+)",\s*(\{[^{}]*\}|"[^"]*"|true|false|[-\d.]+)\s*\}', e1r_defaults[1]):
+        key,expression=match.groups()
+        value=literal(expression,constants)
+        if value is MISSING:
+            raise ValueError('Unrecognized E1R default: '+key)
+        kind='boolean' if isinstance(value,bool) else 'integer' if isinstance(value,int) else 'number' if isinstance(value,float) else 'array' if isinstance(value,list) else 'string'
+        param('_E1R',[key],kind,e1r_path+':loadConfig',default=value)
     # Scepter startup consumes every key exposed by visitScControls, not jKv calls.
     sc_path='src/Vision/RGBD/_Scepter.cpp'
     for match in re.finditer(r'\bf\("([^\"]+)",\s*([^,]+),\s*"([^\"]+)"\)', files[sc_path]):

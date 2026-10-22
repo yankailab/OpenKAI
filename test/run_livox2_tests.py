@@ -17,7 +17,7 @@ def main():
     repo = pathlib.Path(__file__).resolve().parents[1]
     build = pathlib.Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else repo / "build"
     entry = next(item for item in json.loads((build / "compile_commands.json").read_text())
-                 if item["file"].endswith("/src/Sensor/LiDAR/_Livox2.cpp"))
+                 if item["file"].endswith("/src/Sensor/LiDAR/Livox/_Livox2.cpp"))
     with tempfile.TemporaryDirectory(prefix="openkai-livox2-test-") as temp:
         obj = str(pathlib.Path(temp) / "livox2-tests.o")
         args = shlex.split(entry["command"])

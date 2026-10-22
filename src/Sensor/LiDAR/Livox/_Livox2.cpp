@@ -1,6 +1,6 @@
 /* Livox SDK2 Ethernet driver. Mid-360 uses non-repetitive, timestamped scans. */
 #include "_Livox2.h"
-#include "../../Protocol/_JSONbase.h"
+#include "../../../Protocol/_JSONbase.h"
 
 namespace kai
 {
