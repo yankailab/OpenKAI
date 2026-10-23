@@ -686,8 +686,8 @@ namespace kai
 		m_stageTimeNs.fill(0);
 		m_updates = m_inputPoints = m_registrationPoints = 0;
 		m_submapStamp = -1.0;
-		setPos(Vector3d::Zero());
-		setOrientation(Quaterniond::Identity(), true);
+		setTranslation(Vector3d::Zero());
+		setRotation(Quaterniond::Identity(), true);
 		m_pendingFrame.reset();
 		m_pendingFrameEndNs = 0;
 		m_odometry.reset();

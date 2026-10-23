@@ -35,7 +35,6 @@ namespace kai
 		ADD_MODULE(_PCmerge);
 		ADD_MODULE(_PCsend);
 		ADD_MODULE(_PCrecv);
-		ADD_MODULE(_PCtransform);
 		ADD_MODULE(_GeometryViewerBase);
 		ADD_MODULE(_WebSelectableOctGrid);
 		ADD_MODULE(_WebGeometry);

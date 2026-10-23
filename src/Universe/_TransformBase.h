@@ -26,38 +26,57 @@ namespace kai
 
         virtual bool loadConfig(void) override;
         virtual bool link(InstanceMgr *pM) override;
+        virtual bool start(void);
         virtual bool check(void);
         virtual void console(void *pConsole);
 
         virtual bool saveConfig(bool bExport) override;
 
-        virtual void setPos(const Vector3d &vP);
-        virtual void setPos(double x, double y, double z);
+        virtual void setTranslation(const Vector3d &vP);
+        virtual void setTranslation(double x, double y, double z);
         virtual void setAngles(const Vector3d &vA);
         virtual void setAngles(double roll, double pitch, double yaw);
-        virtual void setOrientation(const Quaterniond &vOrt, bool bConvertToEulerAngles = false);
-        virtual void setOrientation(double x, double y, double z, double w, bool bConvertToEulerAngles = false);
+        virtual void setRotation(const Quaterniond &vOrt, bool bConvertToEulerAngles = false);
+        virtual void setRotation(double x, double y, double z, double w, bool bConvertToEulerAngles = false);
 
-        virtual const Vector3d &getPos(void);
-        virtual void getPos(double &x, double &y, double &z);
+        virtual const Vector3d &getTranslation(void);
+        virtual void getTranslation(double &x, double &y, double &z);
         virtual const Vector3d &getAngles(void);
         virtual void getAngles(double &roll, double &pitch, double &yaw);
-        virtual const Quaterniond &getOrientation(void);
-        virtual void getOrientation(double &x, double &y, double &z, double &w);
+        virtual const Quaterniond &getRotation(void);
+        virtual void getRotation(double &x, double &y, double &z, double &w);
+
+        virtual const Isometry3d &getPose(void);
+        virtual const Isometry3f &getPosef(void);        
+        virtual const Isometry3d &getPoseCombined(void);
+        virtual const Isometry3f &getPoseCombinedf(void);
 
     protected:
         virtual void updatePose(void);
         virtual void updateEulerAngles(void);
+        virtual void updateChildNodes(void);
+
+    private:
+        virtual void update(void);
+        static void *getUpdate(void *This)
+        {
+            ((_TransformBase *)This)->update();
+            return NULL;
+        }
 
     protected:
-        vector<_TransformBase *> m_vpTf;
+        _TransformBase *m_pTfParent = nullptr; // kinematic tree parent node
+        vector<_TransformBase *> m_vpTf;       // kinematic tree children nodes
 
-        Vector3d m_vT = Vector3d::Zero();           // position
-        Quaterniond m_vR = Quaterniond::Identity(); // orientation quaternion
+        Vector3d m_vT = Vector3d::Zero();           // translation
+        Quaterniond m_vR = Quaterniond::Identity(); // rotation
         Vector3d m_vAngle = Vector3d::Zero();       // euler angles (radian) in roll, pitch, yaw order
 
-        Isometry3d m_mPose = Isometry3d::Identity();  // combined transform
+        Isometry3d m_mPose = Isometry3d::Identity();  // combined transform for this instance
         Isometry3f m_mPosef = Isometry3f::Identity(); // casted from m_mPose for quick calc
+
+        Isometry3d m_mPoseCombined = Isometry3d::Identity();  // combined transform from parent to this instance
+        Isometry3f m_mPoseCombinedf = Isometry3f::Identity(); // casted from m_mPoseCombined for quick calc
     };
 
 }

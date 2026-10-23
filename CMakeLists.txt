@@ -219,7 +219,6 @@ if(WITH_UNIVERSE)
 	src/Universe/Geometry/PointCloud/Pipeline/_PCmerge.cpp
 	src/Universe/Geometry/PointCloud/Pipeline/_PCsend.cpp
 	src/Universe/Geometry/PointCloud/Pipeline/_PCrecv.cpp
-	src/Universe/Geometry/PointCloud/Pipeline/_PCtransform.cpp
 	src/Universe/Geometry/_GeometryViewerBase.cpp
   )
 

@@ -437,8 +437,8 @@ namespace kai
             }
             m_config = next;
         }
-        setPos(Vector3d(next.at("vPos")[0], next.at("vPos")[1], next.at("vPos")[2]));
-        setOrientation(orientation, true);
+        setTranslation(Vector3d(next.at("vPos")[0], next.at("vPos")[1], next.at("vPos")[2]));
+        setRotation(orientation, true);
         return true;
     }
 

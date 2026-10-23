@@ -714,7 +714,7 @@ namespace kai
             if (!m_bIMUstab && before.at("bIMUstab") != next.at("bIMUstab"))
             {
                 // Restore the configured mounting transform after preview stabilization.
-                setOrientation(m_mountOrientation, true);
+                setRotation(m_mountOrientation, true);
             }
         }
         if (live && m_lvxState != lvxState_deviceQuery)
