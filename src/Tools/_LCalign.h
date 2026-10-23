@@ -12,7 +12,6 @@
 #include "../DataObject/PCLframe.h"
 #include "../Base/cv.h"
 #include "../DataObject/RGBframe.h"
-#include "../Sensor/_IMUbase.h"
 #include "../Protocol/_JSONbase.h"
 
 namespace kai
@@ -64,7 +63,6 @@ namespace kai
 		PCLframe *m_pPCLout = nullptr;
 		PCLframe *m_pPCLin = nullptr;
 		RGBframe *m_pRGBin = nullptr;
-		_IMUbase *m_pIMU = nullptr;
 
 		// Camera
 		// intrinsics

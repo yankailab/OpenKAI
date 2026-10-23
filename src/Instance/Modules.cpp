@@ -198,7 +198,6 @@ namespace kai
 #endif
 
 #ifdef WITH_SENSOR
-		ADD_MODULE(_IMUbase);
 		ADD_MODULE(_BenewakeTF);
 		ADD_MODULE(_TOFsense);
 #ifdef USE_SPOR_SENSOR_SDK
@@ -210,7 +209,6 @@ namespace kai
 #if defined(WITH_UNIVERSE)
 		ADD_MODULE(_Livox2);
 		ADD_MODULE(_E1R);
-		ADD_MODULE(_RoboSenseAiry);
 #endif // 3D
 #endif // sensor
 

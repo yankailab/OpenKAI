@@ -131,6 +131,14 @@ namespace kai
         m_pT->run();
     }
 
+    void _ModuleBase::catchUp(void)
+    {
+        IF_(!check());
+
+        m_pT->updateCounter();
+        m_pT->run();
+    }
+
     void _ModuleBase::stop(void)
     {
         IF_(!check());

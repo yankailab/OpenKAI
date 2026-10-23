@@ -44,6 +44,7 @@ namespace kai
 
 		virtual void pause(void);
 		virtual void resume(void);
+		virtual void catchUp(void);
 		virtual void stop(void);
 
 	protected:

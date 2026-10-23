@@ -188,7 +188,6 @@
 #endif
 
 #ifdef WITH_SENSOR
-#include "../Sensor/_IMUbase.h"
 #ifdef USE_LIBMODBUS
 #include "../Sensor/Distance/_LeddarVu.h"
 #endif
@@ -200,7 +199,6 @@
 #if defined(WITH_UNIVERSE)
 #include "../Sensor/LiDAR/Livox/_Livox2.h"
 #include "../Sensor/LiDAR/RoboSense/E1R/_E1R.h"
-#include "../Sensor/LiDAR/_RoboSenseAiry.h"
 #endif // 3D
 #endif // sensor
 

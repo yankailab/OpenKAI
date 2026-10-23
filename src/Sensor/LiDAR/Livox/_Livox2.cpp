@@ -37,7 +37,7 @@ namespace kai
     {
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
         IF_F(!_TransformBase::loadConfig());
-        m_mountOrientation = m_vOrt;
+        m_mountOrientation = m_vR;
         json patch = json::object(), errors;
         const json values = configValues();
         for (const auto &entry : values.items())

@@ -508,7 +508,6 @@ endif()
 if(WITH_SENSOR)
   add_definitions(-DWITH_SENSOR)
   list(APPEND OpenKAI_cpp
-	src/Sensor/_IMUbase.cpp
 	src/Sensor/Distance/_TOFsense.cpp
 	src/Sensor/Distance/_BenewakeTF.cpp
   )
@@ -522,7 +521,6 @@ if(WITH_SENSOR)
     list(APPEND OpenKAI_cpp
 		src/Sensor/LiDAR/Livox/_Livox2.cpp
 		src/Sensor/LiDAR/RoboSense/E1R/_E1R.cpp
-		src/Sensor/LiDAR/_RoboSenseAiry.cpp
     )
   endif() # 3D
 endif() # sensor

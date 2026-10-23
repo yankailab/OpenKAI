@@ -123,8 +123,8 @@ namespace kai
 		pC->addMsg("\tapMode:" + i2str(getMode()), 1);
 
 		pC->addMsg("Global Pos-----------------------", 1);
-		pC->addMsg("\tlat=\t" + lf2str(m_vPos.x(), 7) + "\tlon=\t" + lf2str(m_vPos.y(), 7), 1);
-		pC->addMsg("\talt=\t" + lf2str(m_vPos.z(), 2) + "\trelAlt=\t" + lf2str(m_rAlt, 2), 1);
+		pC->addMsg("\tlat=\t" + lf2str(m_vT.x(), 7) + "\tlon=\t" + lf2str(m_vT.y(), 7), 1);
+		pC->addMsg("\talt=\t" + lf2str(m_vT.z(), 2) + "\trelAlt=\t" + lf2str(m_rAlt, 2), 1);
 
 		pC->addMsg("-Home Pos-", 1);
 		pC->addMsg("\tlat=\t" + f2str(m_vHomePos.x(), 7) + "\tlon=\t" + f2str(m_vHomePos.y(), 7) + "\talt=\t" + f2str(m_vHomePos.z(), 7), 1);

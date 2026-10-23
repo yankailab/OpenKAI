@@ -66,10 +66,6 @@ namespace kai
 		m_pRGBin = dynamic_cast<RGBframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
 		IF_Le_F(!m_pRGBin, "RGBframeIn not found: " + n);
 
-		n = "";
-		jKv(j, "_IMUbase", n);
-		m_pIMU = (_IMUbase *)(pM->findModule(n));
-
 		return true;
 	}
 

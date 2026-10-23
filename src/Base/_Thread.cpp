@@ -194,11 +194,29 @@ namespace kai
 		m_bSkipSleep = true;
 	}
 
+	void _Thread::updateCounter(void)
+	{
+		m_iUpdate++;
+	}
+
 	void _Thread::autoFPS(void)
 	{
 		m_tToNs = getTns();
 
-		if (!m_bSkipSleep)
+		if (m_iUpdate > 0) // update counter enabled
+		{
+			if (m_iCatchUp < m_iUpdate) // outdated, catch it up
+			{
+				m_iCatchUp = m_iUpdate;
+				skipSleep();
+			}
+		}
+
+		if (m_bSkipSleep)
+		{
+			m_bSkipSleep = false;
+		}
+		else
 		{
 			const uint64_t elapsedNs = m_tToNs - m_tFromNs;
 			if (elapsedNs < m_targetTns)
@@ -209,10 +227,6 @@ namespace kai
 					sleepT(sleepNs);
 				}
 			}
-		}
-		else
-		{
-			m_bSkipSleep = false;
 		}
 
 		if (m_setState == thread_pause)

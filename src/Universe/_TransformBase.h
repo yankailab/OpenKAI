@@ -16,6 +16,8 @@
 namespace kai
 {
 
+    // Transform base class that implements Rigid transform
+
     class _TransformBase : public _ModuleBase
     {
     public:
@@ -48,9 +50,11 @@ namespace kai
         virtual void updateEulerAngles(void);
 
     protected:
-        Vector3d m_vPos = Vector3d::Zero();           // position
-        Quaterniond m_vOrt = Quaterniond::Identity(); // orientation quaternion
-        Vector3d m_vAngle = Vector3d::Zero();         // euler angles (radian) in roll, pitch, yaw order
+        vector<_TransformBase *> m_vpTf;
+
+        Vector3d m_vT = Vector3d::Zero();           // position
+        Quaterniond m_vR = Quaterniond::Identity(); // orientation quaternion
+        Vector3d m_vAngle = Vector3d::Zero();       // euler angles (radian) in roll, pitch, yaw order
 
         Isometry3d m_mPose = Isometry3d::Identity();  // combined transform
         Isometry3f m_mPosef = Isometry3f::Identity(); // casted from m_mPose for quick calc

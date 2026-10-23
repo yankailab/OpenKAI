@@ -133,9 +133,9 @@ namespace kai
 		if (auto *pM = m_pMavStream->get<MavGlobalPositionINT>(); pM && pM->bValid())
 		{
 			const auto &msg = pM->get();
-			m_vPos.x() = ((double)(msg.lat)) * 1e-7;
-			m_vPos.y() = ((double)(msg.lon)) * 1e-7;
-			m_vPos.z() = ((double)(msg.alt)) * 1e-3;
+			m_vT.x() = ((double)(msg.lat)) * 1e-7;
+			m_vT.y() = ((double)(msg.lon)) * 1e-7;
+			m_vT.z() = ((double)(msg.alt)) * 1e-3;
 
 			m_rAlt = ((float)(msg.relative_alt)) * 1e-3;
 			//			m_vAngle.z() = ((float)(msg.hdg)) * 1e-2;

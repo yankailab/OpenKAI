@@ -47,6 +47,7 @@ namespace kai
 
 		void sleepT(int64_t nsec);
 		void skipSleep(void);
+		void updateCounter(void);	// increment update counter to skip sleep if not catched up with new dependent data
 		void autoFPS(void);
 
 		uint64_t getFPS(void);
@@ -71,6 +72,9 @@ namespace kai
 		uint64_t m_dTns = 1;
 		uint64_t m_FPS = 0;
 		bool m_bSkipSleep = false;
+
+		uint64_t m_iUpdate = 0;	// update counter, incremented when dependent data is updated
+		uint64_t m_iCatchUp = 0;// catch up counter, if iCatchUp < iUpdate, skipSleep
 	};
 
 }

@@ -23,9 +23,9 @@ namespace kai
         IF_F(!this->_ModuleBase::loadConfig());
         const json &j = *m_pJ;
 
-        jKv<double>(j, "vPos", m_vPos);
-        jKv<double>(j, "vOrt", m_vOrt.coeffs());
-        setOrientation(m_vOrt, true);
+        jKv<double>(j, "vT", m_vT);
+        jKv<double>(j, "vOrt", m_vR.coeffs());
+        setOrientation(m_vR, true);
 
         return true;
     }
@@ -33,6 +33,19 @@ namespace kai
     bool _TransformBase::link(InstanceMgr *pM)
     {
         IF_F(!this->_ModuleBase::link(pM));
+
+        const json &j = *m_pJ;
+        vector<string> vN;
+        jKv(j, "_TransformBase", vN);
+
+        m_vpTf.clear();
+        m_vpTf.reserve(vN.size());
+        for (const string &n : vN)
+        {
+            _TransformBase *pTf = dynamic_cast<_TransformBase *>(static_cast<_ModuleBase *>(pM->findModule(n)));
+            IF_Le_F(!pTf, "_TransformBase not found: " + n);
+            m_vpTf.push_back(pTf);
+        }
 
         return true;
     }
@@ -42,8 +55,8 @@ namespace kai
         IF_F(!_ModuleBase::saveConfig(false));
 
         json &j = *m_pJ;
-        j["vPos"] = {m_vPos.x(), m_vPos.y(), m_vPos.z()};
-        j["vOrt"] = {m_vOrt.x(), m_vOrt.y(), m_vOrt.z(), m_vOrt.w()};
+        j["vPos"] = {m_vT.x(), m_vT.y(), m_vT.z()};
+        j["vOrt"] = {m_vR.x(), m_vR.y(), m_vR.z(), m_vR.w()};
 
         IF__(!bExport, true);
         return m_pJcfg->saveToFile();
@@ -56,13 +69,13 @@ namespace kai
 
     void _TransformBase::setPos(const Vector3d &vP)
     {
-        m_vPos = vP;
+        m_vT = vP;
         updatePose();
     }
 
     void _TransformBase::setPos(double x, double y, double z)
     {
-        m_vPos = Vector3d(x, y, z);
+        m_vT = Vector3d(x, y, z);
         updatePose();
     }
 
@@ -81,7 +94,7 @@ namespace kai
 
     void _TransformBase::setOrientation(const Quaterniond &vOrt, bool bConvertToEulerAngles)
     {
-        m_vOrt = vOrt.normalized();
+        m_vR = vOrt.normalized();
         updatePose();
 
         IF_(!bConvertToEulerAngles);
@@ -90,7 +103,7 @@ namespace kai
 
     void _TransformBase::setOrientation(double x, double y, double z, double w, bool bConvertToEulerAngles)
     {
-        m_vOrt = Quaterniond(w, x, y, z).normalized();
+        m_vR = Quaterniond(w, x, y, z).normalized();
         updatePose();
 
         IF_(!bConvertToEulerAngles);
@@ -99,14 +112,14 @@ namespace kai
 
     const Vector3d &_TransformBase::getPos(void)
     {
-        return m_vPos;
+        return m_vT;
     }
 
     void _TransformBase::getPos(double &x, double &y, double &z)
     {
-        x = m_vPos.x();
-        y = m_vPos.y();
-        z = m_vPos.z();
+        x = m_vT.x();
+        y = m_vT.y();
+        z = m_vT.z();
     }
 
     const Vector3d &_TransformBase::getAngles(void)
@@ -123,27 +136,27 @@ namespace kai
 
     const Quaterniond &_TransformBase::getOrientation(void)
     {
-        return m_vOrt;
+        return m_vR;
     }
 
     void _TransformBase::getOrientation(double &x, double &y, double &z, double &w)
     {
-        x = m_vOrt.x();
-        y = m_vOrt.y();
-        z = m_vOrt.z();
-        w = m_vOrt.w();
+        x = m_vR.x();
+        y = m_vR.y();
+        z = m_vR.z();
+        w = m_vR.w();
     }
 
     void _TransformBase::updatePose(void)
     {
-        m_mPose.linear() = m_vOrt.toRotationMatrix();
-        m_mPose.translation() = m_vPos;
+        m_mPose.linear() = m_vR.toRotationMatrix();
+        m_mPose.translation() = m_vT;
         m_mPosef = m_mPose.cast<float>();
     }
 
     void _TransformBase::updateEulerAngles(void)
     {
-        m_vAngle = m_vOrt.toRotationMatrix().canonicalEulerAngles(2, 1, 0).reverse();
+        m_vAngle = m_vR.toRotationMatrix().canonicalEulerAngles(2, 1, 0).reverse();
     }
 
     void _TransformBase::console(void *pConsole)
@@ -152,9 +165,9 @@ namespace kai
         this->_ModuleBase::console(pConsole);
 
         _Console *pC = (_Console *)pConsole;
-        pC->addMsg("vPos = (" + f2str(m_vPos.x()) + "," + f2str(m_vPos.y()) + ", " + f2str(m_vPos.z()) + ")");
+        pC->addMsg("vPos = (" + f2str(m_vT.x()) + "," + f2str(m_vT.y()) + ", " + f2str(m_vT.z()) + ")");
         pC->addMsg("vAngle(R,P,Y) = (" + f2str(m_vAngle.x()) + "," + f2str(m_vAngle.y()) + ", " + f2str(m_vAngle.z()) + ")");
-        pC->addMsg("vOrientation = (" + f2str(m_vOrt.x()) + "," + f2str(m_vOrt.y()) + ", " + f2str(m_vOrt.z()) + ", " + f2str(m_vOrt.w()) + ")");
+        pC->addMsg("vOrientation = (" + f2str(m_vR.x()) + "," + f2str(m_vR.y()) + ", " + f2str(m_vR.z()) + ", " + f2str(m_vR.w()) + ")");
     }
 
 }
