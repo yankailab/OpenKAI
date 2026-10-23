@@ -1,0 +1,150 @@
+{
+	"APP": {
+		"class": "InstanceMgr",
+		"appName": "Airy",
+		"bLog": true,
+		"bStdErr": true
+	},
+	"airyPoints": {
+		"type": "dataObject",
+		"class": "PCLframe"
+	},
+	"Airy": {
+		"class": "_Airy",
+		"bIMUpreview": true,
+		"bON": true,
+		"thread": {
+			"FPS": 200
+		},
+		"bLog": false,
+		"PCLframeOut": "airyPoints",
+		"deviceIP": "192.168.1.200",
+		"bindIP": "0.0.0.0",
+		"msopPort": 6699,
+		"difopPort": 7788,
+		"receiveBufferBytes": 4194304,
+		"tOutSec": 3,
+		"frameTimeoutMs": 250,
+		"nMaxFramePoints": 200000,
+		"bReflectivity": true,
+		"bUseSensorTime": true,
+		"vRangeD": [
+			0.1,
+			60.0
+		],
+		"vColorDefault": [
+			1.0,
+			1.0,
+			1.0
+		],
+		"vPos": [
+			0,
+			0,
+			0
+		],
+		"vOrt": [
+			0,
+			0,
+			0,
+			1
+		],
+		"imuPort": 6688,
+		"bIMUoutput": true,
+		"IMUstreamOut": "airyIMU",
+		"splitAngle": 0.0
+	},
+	"viewer": {
+		"class": "_WebGeometry",
+		"thread": {
+			"FPS": 30
+		},
+		"host": "0.0.0.0",
+		"port": 8080,
+		"nPbuf": 200000,
+		"nLbuf": 0,
+		"vGeometry": [
+			{
+				"PCLframeIn": "airyPoints",
+				"nP": 200000,
+				"matPointSize": 2
+			}
+		],
+		"webRoot": "html/viewer/_Airy",
+		"bON": true,
+		"nClientMax": 8,
+		"dTexpire": 0,
+		"bAutoBound": true,
+		"bShowGrid": true,
+		"vCamLookAt": [
+			0,
+			0,
+			0
+		],
+		"vCamEye": [
+			-4,
+			-4,
+			3
+		],
+		"vCamUp": [
+			0,
+			0,
+			1
+		],
+		"camFov": 70,
+		"vCamNF": [
+			0.01,
+			1000000
+		]
+	},
+	"wsServer": {
+		"BytePacketStreamIn": "wsServer_tx",
+		"BytePacketStreamOut": "wsServer_rx",
+		"class": "_WebSocketServer",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"threadR": {
+			"FPS": 1
+		},
+		"host": "0.0.0.0",
+		"port": 7890,
+		"wsMode": 2,
+		"nClientMax": 4,
+		"tOutMs": 10000
+	},
+	"wsConsole": {
+		"class": "_WSconsole",
+		"bON": true,
+		"thread": {
+			"FPS": 10
+		},
+		"threadR": {
+			"FPS": 30
+		},
+		"BytePacketStreamIn": "wsServer_rx",
+		"BytePacketStreamOut": "wsServer_tx",
+		"msgFinishSend": "",
+		"msgFinishRecv": "EOJ",
+		"vBASE": [
+			"Airy"
+		]
+	},
+	"wsServer_tx": {
+		"type": "dataObject",
+		"class": "BytePacketStream",
+		"nPacket": 256,
+		"nPbuf": 2000
+	},
+	"wsServer_rx": {
+		"type": "dataObject",
+		"class": "BytePacketStream",
+		"nPacket": 256,
+		"nPbuf": 2000
+	},
+	"airyIMU": {
+		"type": "dataObject",
+		"class": "IMUstream",
+		"nBuf": 4000
+	}
+}

@@ -24,8 +24,9 @@ their sensor or filter section.
 
 A field change immediately sends a `setConfig` patch. Device failures appear
 above the settings, and the backend's accepted configuration replaces the edited
-value. Every accepted change restarts camera capture, including SDK option
-changes. Settings that can only be written before capture starts remain editable;
+value. Capture and SDK option changes restart camera capture; changing only
+`bIMUpreview` takes effect without restarting capture. Settings that can only be
+written before capture starts remain editable;
 the backend records their writability before starting the pipeline.
 Accelerometer and gyroscope rates of **0** let the SDK choose a supported rate;
 the D455 configuration explicitly uses **250 Hz** acceleration and **200 Hz**
@@ -63,6 +64,13 @@ module selected under Camera controls and polls at up to 10 Hz. **Stop IMU** sto
 only the preview; it does not change embedded IMU capture or `IMUstreamOut`.
 Disconnecting or changing the camera module stops and clears the preview.
 
+`bIMUpreview` defaults to `false` and skips backend preview fusion and snapshot
+work. `RealSense.json` enables it for sensor verification; `GLIM_realSense.json`
+disables it. Change **Enable IMU preview** in the controls and save the
+configuration to persist the choice. Browser Start/Stop controls polling;
+disabling this setting is what stops backend preview computation. Changing only
+this setting leaves camera capture running.
+
 The backend estimates relative orientation from the embedded accelerometer and
 gyroscope. Yaw may drift without a heading reference. Raw values and orientation
 are cleared while IMU capture is disabled, the camera is closed or no recent
@@ -90,7 +98,7 @@ Each SDK schema entry has `domain` and `key`; capture settings have only `key`.
 Types are `int`, `float`, `bool`, `string`, `size`, `range`, `rect` or `object`.
 Rectangle options use `[x1, y1, x2, y2]` with integer pixel coordinates from 0 to 32767.
 `choices`, when present, contains `{ "value": 0, "label": "Off" }` entries.
-`getIMU` replies contain `bSuccess`, `enabled`, `deviceOpen`, `available`, `gyro`
+`getIMU` replies contain `bSuccess`, `enabled`, `previewEnabled`, `deviceOpen`, `available`, `gyro`
 and `acc` (XYZ arrays), plus `orientationValid`, `quaternion` (WXYZ) and `rpy`
 (roll/pitch/yaw in radians). `tGyro`, `tAcc` and `tFusion` are decimal strings of
 capture timestamps in nanoseconds, preserving precision in browsers. Treat

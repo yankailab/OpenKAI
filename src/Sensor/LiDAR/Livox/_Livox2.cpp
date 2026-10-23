@@ -31,7 +31,8 @@ namespace kai
         m_lvxState = lvxState_deviceQuery;
         m_pending.clear();
         resetFrame();
-        m_imuPreview.reset(); m_tIMU = m_lastIMUrx = 0;
+        if (m_bIMUpreview) m_imuPreview.reset();
+        m_tIMU = m_lastIMUrx = 0;
     }
 
     bool _Livox2::loadConfig()
@@ -148,7 +149,9 @@ namespace kai
         m_lastRx = m_lastDiscovery = m_lastQuery = m_lastIMUrx = 0;
         m_detectedSN.clear(); m_observed = json::object();
         m_pending.clear(); m_configFailed = false;
-        resetFrame(); m_imuPreview.reset(); m_tIMU = 0;
+        resetFrame();
+        if (m_bIMUpreview) m_imuPreview.reset();
+        m_tIMU = 0;
         if (m_pIMUout) m_pIMUout->clear();
         m_lastError.clear();
         m_started = true;
@@ -279,7 +282,9 @@ namespace kai
             if (m_pPCLout) m_pPCLout->set({}, m_tLastPCL ? m_tLastPCL : 1);
             m_pending.clear(); m_configFailed = false;
             m_lastError = "LiDAR timed out; rediscovering";
-            resetFrame(); m_imuPreview.reset(); m_tIMU = m_lastIMUrx = 0;
+            resetFrame();
+            if (m_bIMUpreview) m_imuPreview.reset();
+            m_tIMU = m_lastIMUrx = 0;
             if (m_pIMUout) m_pIMUout->clear();
         }
         if (m_lvxState == lvxState_deviceQuery)
@@ -331,7 +336,9 @@ namespace kai
         // The sensor advertises its command endpoint; do not assume a fixed model-specific port.
         m_lvxState = lvxState_init;
         m_pending.clear(); m_configFailed = false; m_lastError.clear();
-        resetFrame(); m_imuPreview.reset(); m_tIMU = 0;
+        resetFrame();
+        if (m_bIMUpreview) m_imuPreview.reset();
+        m_tIMU = 0;
         if (m_pIMUout) m_pIMUout->clear();
         configureDevice();
     }
@@ -564,16 +571,19 @@ namespace kai
             {
                 ++m_outOfOrderPackets;
                 if (m_tIMU - stamp < NSEC_SEC) continue;
-                m_imuPreview.reset();
+                if (m_bIMUpreview) m_imuPreview.reset();
                 if (m_pIMUout) m_pIMUout->clear();
             }
             m_tIMU = stamp; m_lastIMUrx = getTns(); m_lastRx = m_lastIMUrx; ++m_imuSamples;
             if (m_pIMUout) { m_pIMUout->addAcc(acc, stamp); m_pIMUout->addGyro(gyro, stamp); }
-            m_imuPreview.addAcc(acc, stamp); m_imuPreview.addGyro(gyro, stamp);
-            if (m_bIMUstab)
+            if (m_bIMUpreview)
             {
-                const auto preview = m_imuPreview.snapshot();
-                if (preview.orientationValid) setAngles(preview.rpy.x(), preview.rpy.y(), 0.0);
+                m_imuPreview.addAcc(acc, stamp); m_imuPreview.addGyro(gyro, stamp);
+                if (m_bIMUstab)
+                {
+                    const auto preview = m_imuPreview.snapshot();
+                    if (preview.orientationValid) setAngles(preview.rpy.x(), preview.rpy.y(), 0.0);
+                }
             }
         }
     }
@@ -604,7 +614,7 @@ namespace kai
             {"lvxPatternMode", m_lvxCfg.m_patternMode}, {"lvxFrameRate", m_lvxCfg.m_frameRate},
             {"lvxDetectMode", m_lvxCfg.m_detectMode}, {"lvxWorkModeAfterBoot", m_lvxCfg.m_workModeAfterBoot},
             {"lvxWorkMode", m_lvxCfg.m_workMode}, {"lvxIMUdataEn", m_lvxCfg.m_imuDataEn},
-            {"bIMUstab", m_bIMUstab}, {"bReflectivity", m_bReflectivity},
+            {"bIMUpreview", m_bIMUpreview}, {"bIMUstab", m_bIMUstab}, {"bReflectivity", m_bReflectivity},
             {"frameDurationMs", m_frameDurationNs / NSEC_MSEC}, {"tOutSec", m_timeoutNs / NSEC_SEC},
             {"nMaxFramePoints", m_nMaxFramePoints}, {"vColorDefault", {m_vColorDefault.x(), m_vColorDefault.y(), m_vColorDefault.z()}},
             {"vRangeD", {m_vRangeD.x(), m_vRangeD.y()}}};
@@ -626,7 +636,8 @@ namespace kai
         schema["frameDurationMs"] = {{"type", "integer"}, {"label", "Cloud frame duration (ms)"}, {"min", 20}, {"max", 1000}, {"description", "Host grouping interval for the non-repetitive scan"}};
         schema["tOutSec"] = {{"type", "integer"}, {"label", "Disconnect timeout (s)"}, {"min", 1}, {"max", 120}};
         schema["nMaxFramePoints"] = {{"type", "integer"}, {"label", "Maximum points per frame"}, {"min", 96}, {"max", 1000000}};
-        schema["bIMUstab"] = {{"type", "bool"}, {"label", "Stabilize cloud roll/pitch"}, {"description", "Leave disabled for SLAM; SLAM performs its own IMU fusion"}};
+        schema["bIMUpreview"] = {{"type", "bool"}, {"label", "Enable IMU preview"}, {"description", "Compute viewer orientation and graphs; raw IMUstream output is independent"}};
+        schema["bIMUstab"] = {{"type", "bool"}, {"label", "Stabilize cloud roll/pitch"}, {"description", "Requires Enable IMU preview. Leave disabled for SLAM; SLAM performs its own IMU fusion"}};
         schema["bReflectivity"] = {{"type", "bool"}, {"label", "Reflectivity coloring"}};
         schema["vColorDefault"] = {{"type", "array"}, {"label", "Default RGB color"}, {"length", 3}, {"min", 0}, {"max", 1}};
         schema["vRangeD"] = {{"type", "range"}, {"label", "Distance range (m)"}, {"length", 2}, {"min", 0}, {"max", 10000}};
@@ -691,6 +702,8 @@ namespace kai
         for (size_t i = 0; i < 4; ++i)
             for (size_t j = 0; j < i; ++j)
                 if (next.at(ports[i]) == next.at(ports[j])) errors[ports[i]] = "Local UDP ports must be distinct";
+        if (next.at("bIMUstab").get<bool>() && !next.at("bIMUpreview").get<bool>())
+            errors["bIMUstab"] = "bIMUstab requires bIMUpreview=true; enable preview or disable stabilization";
         if (!errors.empty()) return false;
         m_lvxSN = next.at("lvxSN");
         readIP(next.at("lvxIP"), m_lvxIP); readIP(next.at("lvxHostIP"), m_lvxCfg.m_hostIP);
@@ -700,7 +713,7 @@ namespace kai
         m_lvxCfg.m_pclDataType = next.at("lvxPCLdataType"); m_lvxCfg.m_patternMode = next.at("lvxPatternMode");
         m_lvxCfg.m_detectMode = next.at("lvxDetectMode"); m_lvxCfg.m_workMode = next.at("lvxWorkMode");
         m_lvxCfg.m_imuDataEn = next.at("lvxIMUdataEn"); m_lvxCfg.m_frameRate = next.at("lvxFrameRate"); m_lvxCfg.m_workModeAfterBoot = next.at("lvxWorkModeAfterBoot");
-        m_bIMUstab = next.at("bIMUstab"); m_bReflectivity = next.at("bReflectivity");
+        m_bIMUpreview = next.at("bIMUpreview"); m_bIMUstab = next.at("bIMUstab"); m_bReflectivity = next.at("bReflectivity");
         m_frameDurationNs = next.at("frameDurationMs").get<uint64_t>() * NSEC_MSEC;
         m_timeoutNs = next.at("tOutSec").get<uint64_t>() * NSEC_SEC;
         m_nMaxFramePoints = next.at("nMaxFramePoints");
@@ -708,9 +721,14 @@ namespace kai
         for (int i = 0; i < 2; ++i) m_vRangeD[i] = next.at("vRangeD")[i];
         if (before != next)
         {
-            resetFrame();
+            // Preview collection does not alter point decoding or the current cloud frame.
+            for (const auto &field : before.items())
+                if (field.key() != "bIMUpreview" && field.value() != next.at(field.key()))
+                { resetFrame(); break; }
+            if (m_bIMUpreview && (before.at("bIMUpreview") != next.at("bIMUpreview") ||
+                before.at("lvxIMUdataEn") != next.at("lvxIMUdataEn"))) m_imuPreview.reset();
             if (before.at("lvxIMUdataEn") != next.at("lvxIMUdataEn"))
-            { m_imuPreview.reset(); m_tIMU = 0; if (m_pIMUout) m_pIMUout->clear(); }
+            { m_tIMU = 0; if (m_pIMUout) m_pIMUout->clear(); }
             if (!m_bIMUstab && before.at("bIMUstab") != next.at("bIMUstab"))
             {
                 // Restore the configured mounting transform after preview stabilization.
@@ -748,11 +766,12 @@ namespace kai
 
     json _Livox2::imuValues() const
     {
-        const auto sample = m_imuPreview.snapshot();
+        IMUpreview::Snapshot sample;
+        if (m_bIMUpreview) sample = m_imuPreview.snapshot();
         const uint64_t now = getTns();
         const bool open = m_lvxState != lvxState_deviceQuery;
-        const bool available = open && m_lvxCfg.m_imuDataEn && sample.tGyro && m_lastIMUrx && now - m_lastIMUrx < NSEC_SEC / 2;
-        return {{"enabled", bool(m_lvxCfg.m_imuDataEn)}, {"deviceOpen", open}, {"available", available},
+        const bool available = m_bIMUpreview && open && m_lvxCfg.m_imuDataEn && sample.tGyro && m_lastIMUrx && now - m_lastIMUrx < NSEC_SEC / 2;
+        return {{"enabled", bool(m_lvxCfg.m_imuDataEn)}, {"previewEnabled", m_bIMUpreview}, {"deviceOpen", open}, {"available", available},
             {"tGyro", std::to_string(sample.tGyro)}, {"tAcc", std::to_string(sample.tAcc)}, {"tFusion", std::to_string(sample.tFusion)},
             {"gyro", {sample.gyro.x(), sample.gyro.y(), sample.gyro.z()}}, {"acc", {sample.acc.x(), sample.acc.y(), sample.acc.z()}},
             {"quaternion", {sample.quaternion.w(), sample.quaternion.x(), sample.quaternion.y(), sample.quaternion.z()}},

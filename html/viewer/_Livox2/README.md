@@ -27,6 +27,7 @@ All LiDAR networking is configured in the `_Livox2` instance:
 {
   "Lvx1": {
     "class": "_Livox2",
+    "bIMUpreview": true,
     "thread": {"FPS": 0},
     "lvxIP": "192.168.16.120",
     "lvxHostPortCmd": 56101,
@@ -100,6 +101,15 @@ Disabled, disconnected or stale data clears the plots and orientation rather tha
 remaining displayed as live samples. Changing the selected module or disconnecting
 also stops and clears the preview.
 
+`bIMUpreview` defaults to `false` and skips backend preview fusion and snapshot
+work. `Livox2.json` enables it for sensor verification; `GLIM_livox2.json`
+disables it. Change **Enable IMU preview** in the controls and save the
+configuration to persist the choice. Browser Start/Stop controls polling;
+disabling this setting is what stops backend preview computation.
+Livox's optional `bIMUstab` cloud stabilization uses the same orientation estimate
+and requires `bIMUpreview: true`. Turn stabilization off before disabling preview,
+or update both flags together. Incompatible combinations are rejected.
+
 Use `jsonCfg/GLIM_livox2.json` with its `jsonCfg/glim_livox2/` settings to run
 LiDAR-inertial SLAM. The configuration enables the MID-360 IMU and keeps its data
 available to GLIM regardless of whether a browser is connected.
@@ -126,7 +136,7 @@ provides types, limits, choices and read-only flags. `status.pendingCommands` an
 `status.configApplied` distinguish accepted changes from sensor acknowledgements;
 `lastError` reports asynchronous device failures.
 
-`getIMU` replies contain `bSuccess`, `enabled`, `deviceOpen`, `available`, `gyro`
+`getIMU` replies contain `bSuccess`, `enabled`, `previewEnabled`, `deviceOpen`, `available`, `gyro`
 and `acc` XYZ arrays, plus `orientationValid`, `quaternion` in WXYZ order and `rpy`
 in radians. `tGyro`, `tAcc` and `tFusion` are nanosecond timestamps encoded as
 decimal strings to preserve browser precision. Always honor the validity flags.

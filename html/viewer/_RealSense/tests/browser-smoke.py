@@ -137,7 +137,7 @@ def check_mock_imu(browser):
         await delay(250);
         assert(sent.at(-1) === first, 'IMU polling must keep at most one outstanding request');
         const epoch = 9007199254740993001n;
-        const sample = (request, overrides = {}) => ({...request, bSuccess:true, enabled:true, available:true,
+        const sample = (request, overrides = {}) => ({...request, bSuccess:true, enabled:true, previewEnabled:true, available:true,
             deviceOpen:true, tGyro:String(epoch), tAcc:String(epoch), tFusion:String(epoch),
             gyro:[0.1, -0.2, 0.3], acc:[1, 2, 9.7], quaternion:[1, 0, 0, 0], rpy:[0.1, 0.2, 0.3],
             orientationValid:true, ...overrides});
@@ -164,6 +164,18 @@ def check_mock_imu(browser):
             }
             throw Error('IMU preview did not schedule its next request');
         };
+        let disabledRequest = await nextRequest();
+        reply(sample(disabledRequest, {previewEnabled:false, available:false}));
+        assert(empty() && $('#imuStatus').textContent.includes('preview is disabled'),
+            'Disabled backend preview must clear samples and explain the configuration switch');
+        assert(!$('#imuStart').disabled && $('#imuStop').disabled,
+            'Disabled backend preview must stop browser polling');
+        const disabledCount = sent.filter(command => command.cmd === 'getIMU').length;
+        await delay(250);
+        assert(sent.filter(command => command.cmd === 'getIMU').length === disabledCount,
+            'Disabled preview must not keep polling or automatically enable fusion');
+        $('#imuStart').click();
+        reply(sample(sent.at(-1)));
         let request = await nextRequest();
         reply(sample(request, {tGyro:String(epoch + 1n), tAcc:String(epoch + 1n), tFusion:String(epoch + 1n),
             gyro:[0.4, 0.5, 0.6], acc:[3, 4, 9.8]}));
@@ -406,12 +418,13 @@ def main():
                 window.wsSendCmd = command => { sent.push(command); return true; };
                 window.dispatchEvent(new Event('wscmdstatechange'));
                 assert(sent.length === 1 && sent[0].cmd === 'getConfig', 'Connect must load config');
-                const config = { SN: '', bIMU: true, vSizeD: [848, 480], accelFPS: 250,
+                const config = { SN: '', bIMU: true, bIMUpreview: true, vSizeD: [848, 480], accelFPS: 250,
                     sensorOptions: { depth: { RS2_OPTION_EXPOSURE: 8500, RS2_OPTION_ENABLE_AUTO_EXPOSURE: false },
                         color: { RS2_OPTION_EXPOSURE: 100 } } };
                 const schema = [
                     {key:'SN', category:'Streams and point cloud', type:'string', restart:true},
                     {key:'bIMU', category:'Streams and point cloud', type:'bool', restart:true},
+                    {key:'bIMUpreview', label:'Enable IMU preview', category:'IMU preview', type:'bool', restart:false},
                     {key:'vSizeD', category:'Streams and point cloud', type:'size', restart:true},
                     {key:'accelFPS', category:'Streams and point cloud', type:'int', min:0, restart:true},
                     {key:'RS2_OPTION_EXPOSURE', domain:'depth', category:'Depth sensor', type:'float',
@@ -451,7 +464,9 @@ def main():
                     const input = field(key); input.value = value; input.dispatchEvent(new Event('change'));
                     return sent.at(-1);
                 };
-                let request = change('sensorOptions.depth.RS2_OPTION_EXPOSURE', '9000');
+                let request = change('bIMUpreview', 'false');
+                assert(request.config.bIMUpreview===false,'Preview must use a boolean independent of camera capture'); reply();
+                request = change('sensorOptions.depth.RS2_OPTION_EXPOSURE', '9000');
                 assert(JSON.stringify(request.config) === '{"sensorOptions":{"depth":{"RS2_OPTION_EXPOSURE":9000}}}', 'Depth patch must preserve other sensor overrides');
                 assert($('#cameraFields').disabled, 'Pending change must lock controls');
                 window.dispatchEvent(new CustomEvent('realsensecommand', {detail:response({requestId:'stale', config:{}})}));

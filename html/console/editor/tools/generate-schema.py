@@ -546,17 +546,18 @@ def adapters(records, files, constants, symbol):
     records['_ROS_fastLio']['_embedded'].append((['node'],'ROS_fastLio'))
     records['_ROS_fastLio']['containers'].append({'path':['node'],'type':'object'})
     param('_ROS_fastLio',['node'],'object','src/ROS/_ROS_fastLio.cpp:loadConfig')
-    # E1R validates startup patches against its constructor's local defaults.
+    # Native RoboSense drivers validate startup patches against constructor defaults.
     # DIFOP-only device fields are intentionally not launch configuration.
-    e1r_path='src/Sensor/LiDAR/RoboSense/E1R/_E1R.cpp'
-    e1r_defaults=re.search(r'\bm_config\s*=\s*\{(.*?)\};', files[e1r_path], re.S)
-    for match in re.finditer(r'\{\s*"([^"]+)",\s*(\{[^{}]*\}|"[^"]*"|true|false|[-\d.]+)\s*\}', e1r_defaults[1]):
-        key,expression=match.groups()
-        value=literal(expression,constants)
-        if value is MISSING:
-            raise ValueError('Unrecognized E1R default: '+key)
-        kind='boolean' if isinstance(value,bool) else 'integer' if isinstance(value,int) else 'number' if isinstance(value,float) else 'array' if isinstance(value,list) else 'string'
-        param('_E1R',[key],kind,e1r_path+':loadConfig',default=value)
+    for model in ('E1R','Airy'):
+        path=f'src/Sensor/LiDAR/RoboSense/{model}/_{model}.cpp'
+        defaults=re.search(r'\bm_config\s*=\s*\{(.*?)\};', files[path], re.S)
+        for match in re.finditer(r'\{\s*"([^"]+)",\s*(\{[^{}]*\}|"[^"]*"|true|false|[-\d.]+)\s*\}', defaults[1]):
+            key,expression=match.groups()
+            value=literal(expression,constants)
+            if value is MISSING:
+                raise ValueError(f'Unrecognized {model} default: '+key)
+            kind='boolean' if isinstance(value,bool) else 'integer' if isinstance(value,int) else 'number' if isinstance(value,float) else 'array' if isinstance(value,list) else 'string'
+            param('_'+model,[key],kind,path+':loadConfig',default=value)
     # Livox startup accepts the keys returned by configValues(), including its
     # owned socket settings. Keep this list source-derived as controls evolve.
     lvx = records['_Livox2']

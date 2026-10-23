@@ -86,7 +86,7 @@ def check_mock_imu(browser):
         await delay(250);
         assert(sent.at(-1) === first, 'IMU polling must keep at most one outstanding request');
         const epoch = 9007199254740993001n;
-        const sample = (request, overrides = {}) => ({...request, bSuccess:true, enabled:true, available:true,
+        const sample = (request, overrides = {}) => ({...request, bSuccess:true, enabled:true, previewEnabled:true, available:true,
             deviceOpen:true, tGyro:String(epoch), tAcc:String(epoch), tFusion:String(epoch),
             gyro:[0.1, -0.2, 0.3], acc:[1, 2, 9.7], quaternion:[1, 0, 0, 0], rpy:[0.1, 0.2, 0.3],
             orientationValid:true, ...overrides});
@@ -113,6 +113,18 @@ def check_mock_imu(browser):
             }
             throw Error('IMU preview did not schedule its next request');
         };
+        let disabledRequest = await nextRequest();
+        reply(sample(disabledRequest, {previewEnabled:false, available:false}));
+        assert(empty() && $('#imuStatus').textContent.includes('preview is disabled'),
+            'Disabled backend preview must clear samples and explain the configuration switch');
+        assert(!$('#imuStart').disabled && $('#imuStop').disabled,
+            'Disabled backend preview must stop browser polling');
+        const disabledCount = sent.filter(command => command.cmd === 'getIMU').length;
+        await delay(250);
+        assert(sent.filter(command => command.cmd === 'getIMU').length === disabledCount,
+            'Disabled preview must not keep polling or automatically enable fusion');
+        $('#imuStart').click();
+        reply(sample(sent.at(-1)));
         let request = await nextRequest();
         reply(sample(request, {tGyro:String(epoch + 1n), tAcc:String(epoch + 1n), tFusion:String(epoch + 1n),
             gyro:[0.4, 0.5, 0.6], acc:[3, 4, 9.8]}));
@@ -175,12 +187,13 @@ def check_controls(browser, captured=None):
         window.dispatchEvent(new Event('wscmdstatechange'));
         assert(sent.length === 1 && sent[0].cmd === 'getConfig', 'Connect must load config');
         assert($('#lidarModule').value === 'Lvx1', 'Default module must match launch configuration');
-        let config = {lvxIP:'192.168.16.120', lvxPCLdataType:1, lvxIMUdataEn:1, bReflectivity:true,
+        let config = {lvxIP:'192.168.16.120', lvxPCLdataType:1, lvxIMUdataEn:1, bIMUpreview:true, bReflectivity:true,
             frameDurationMs:100, vRangeD:[0.1,40], vColorDefault:[1,1,1]};
         const schema = {
             lvxIP:{type:'string',readOnly:true},
             lvxPCLdataType:{type:'integer', choices:[{value:1,label:'Cartesian high'},{value:2,label:'Cartesian low'},{value:3,label:'Spherical'}]},
             lvxIMUdataEn:{type:'integer',choices:[{value:0,label:'Off'},{value:1,label:'On'}]},
+            bIMUpreview:{type:'bool',label:'Enable IMU preview'},
             bReflectivity:{type:'bool'}, frameDurationMs:{type:'integer',min:20,max:1000},
             vRangeD:{type:'range',length:2,min:0,max:10000}, vColorDefault:{type:'array',length:3,min:0,max:1},
             unsupported:{type:'int',supported:false}
@@ -225,6 +238,8 @@ def check_controls(browser, captured=None):
         await new Promise(resolve => setTimeout(resolve,650));
         assert(sent.at(-1).cmd === 'getConfig', 'Queued write must poll device status');
         reply(); assert(!$('#lidarFields').disabled, 'Sensor ACK must unlock controls');
+        request=change('bIMUpreview','false');
+        assert(request.config.bIMUpreview===false,'Preview must be a persisted boolean independent of IMU capture'); reply();
         $('#saveConfig').click();
         assert(sent.at(-1).cmd === 'saveConfig' && !('config' in sent.at(-1)) && !('path' in sent.at(-1)), 'Save must use original launch file');
         reply(); assert($('#configStatus').textContent.includes('saved to disk'), 'Save success must be visible');

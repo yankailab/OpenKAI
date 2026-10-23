@@ -143,6 +143,7 @@
 	},
 	"RealSense": {
 		"class": "_RealSense",
+		"bIMUpreview": true,
 		"bON": true,
 		"thread": {
 			"FPS": 30
@@ -185,7 +186,7 @@
 		"DframeOut": "rsDepth",
 		"PCLframeOut": "rsPCL",
 		"IMUstreamOut": "rsIMU",
-		"/IMUpreview": "The left viewer panel reads getIMU snapshots from this RealSense module. Preview Start/Stop only controls display polling; embedded IMU capture continues to rsIMU for SLAM.",
+		"/IMUpreview": "bIMUpreview enables backend preview computation for verification; disable it for normal operation. Preview Start/Stop only controls display polling; embedded IMU capture continues to rsIMU for SLAM.",
 		"/sensorOptions": "Null preserves the device value; every supported SDK option is discovered and included on save. Domains separate independent sensor/filter settings. Read-only telemetry is exposed in the viewer. SDK default IMU rates can be selected with accelFPS/gyroFPS 0.",
 		"sensorOptions": {
 			"color": {

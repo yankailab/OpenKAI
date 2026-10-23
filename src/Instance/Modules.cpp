@@ -208,6 +208,7 @@ namespace kai
 #if defined(WITH_UNIVERSE)
 		ADD_MODULE(_Livox2);
 		ADD_MODULE(_E1R);
+		ADD_MODULE(_Airy);
 #endif // 3D
 #endif // sensor
 

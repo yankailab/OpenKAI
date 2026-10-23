@@ -18,7 +18,7 @@
 
 #include "livox_lidar_def.h"
 #include "Livox2Protocol.h"
-#include "../../../Vision/RGBD/RealSenseIMU.h"
+#include "../../IMU/IMUpreview.h"
 #include <array>
 #include <map>
 #include <mutex>
@@ -243,8 +243,9 @@ namespace kai
         LVX2_CONFIG m_lvxCfg;
 
         Quaterniond m_mountOrientation = Quaterniond::Identity();
+        bool m_bIMUpreview = false;
         bool m_bIMUstab = false;
-        realsense::IMUPreview m_imuPreview;
+        IMUpreview m_imuPreview;
         uint64_t m_tIMU = 0;
         uint64_t m_lastIMUrx = 0;
         IMUstream *m_pIMUout = nullptr;

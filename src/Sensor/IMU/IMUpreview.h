@@ -1,5 +1,5 @@
-#ifndef OPENKAI_REALSENSE_IMU_H
-#define OPENKAI_REALSENSE_IMU_H
+#ifndef OPENKAI_IMU_PREVIEW_H
+#define OPENKAI_IMU_PREVIEW_H
 
 #include "../../Dependencies/SensorFusion/SensorFusion.h"
 #include <Eigen/Geometry>
@@ -7,11 +7,11 @@
 #include <mutex>
 #include <optional>
 
-namespace kai::realsense
+namespace kai
 {
     // A viewer-only snapshot. The original samples still go independently to
     // IMUstream; preview reads and fusion never consume the SLAM input queues.
-    class IMUPreview
+    class IMUpreview
     {
     public:
         struct Snapshot
@@ -73,7 +73,7 @@ namespace kai::realsense
             if (!previous)
                 return;
 
-            // RealSense gyro is radians/s and acceleration is m/s^2. Capture
+            // Gyroscope input is radians/s and acceleration is m/s^2. Capture
             // timestamps determine dt; the preview/websocket rate does not.
             const float dt = static_cast<float>(captureNs - previous) * 1.0e-9f;
             const auto &acc = m_snapshot.acc;

@@ -98,6 +98,9 @@ export class IMUPreview {
         j.module !== this.module || j.requestId !== this.pending) return;
     clearTimeout(this.timeout); this.pending = null;
     if (!j.bSuccess) { this.stop(j.error || 'IMU command failed'); return; }
+    if (j.previewEnabled === false) {
+      this.stop('IMU preview is disabled · enable IMU preview in controls'); return;
+    }
     // One outstanding request bounds traffic when the LiDAR or network is busy.
     this.timer = setTimeout(() => this.poll(), 100);
     if (!j.available) {

@@ -16,6 +16,7 @@
 	},
 	"Lvx1": {
 		"class": "_Livox2",
+		"bIMUpreview": false,
 		"bON": true,
 		"thread": {
 			"FPS": 0

@@ -56,11 +56,12 @@ namespace kai
     json _RealSense::configValues() const
     {
         std::lock_guard<std::recursive_mutex> lock(m_deviceMutex);
+        std::lock_guard<std::mutex> previewLock(m_imuPreviewMutex);
         return {{"SN", m_SN}, {"devFPS", m_devFPS}, {"devFPSd", m_devFPSd},
             {"accelFPS", m_accelFPS}, {"gyroFPS", m_gyroFPS}, {"tOutMs", m_tOutMs},
             {"vSizeRGB", {m_vSizeRGB.x(), m_vSizeRGB.y()}}, {"vSizeD", {m_vSizeD.x(), m_vSizeD.y()}},
             {"vRangeD", {m_vRangeD.x(), m_vRangeD.y()}}, {"dOfs", m_dOfs},
-            {"bRGB", m_bRGB}, {"bDepth", m_bDepth}, {"bIR", m_bIR}, {"bIMU", m_bIMU},
+            {"bRGB", m_bRGB}, {"bDepth", m_bDepth}, {"bIR", m_bIR}, {"bIMU", m_bIMU}, {"bIMUpreview", m_bIMUpreview},
             {"bPCL", m_bPCL}, {"bPCLrgb", m_bPCLrgb}, {"bAlign", m_bAlign},
             {"bDecimation", m_bDecimation}, {"bSpatial", m_bSpatial}, {"bTemporal", m_bTemporal},
             {"bHoleFilling", m_bHoleFilling}, {"bThreshold", m_bThreshold}, {"sensorOptions", m_sensorOptions}};
@@ -80,6 +81,14 @@ namespace kai
         m_bDecimation = j.at("bDecimation"); m_bSpatial = j.at("bSpatial"); m_bTemporal = j.at("bTemporal");
         m_bHoleFilling = j.at("bHoleFilling"); m_bThreshold = j.at("bThreshold");
         m_sensorOptions = j.at("sensorOptions");
+        std::lock_guard<std::mutex> previewLock(m_imuPreviewMutex);
+        const bool enablePreview = j.at("bIMUpreview");
+        if (enablePreview && !m_bIMUpreview)
+        {
+            m_bIMUpreview = true;
+            m_imuPreview.reset();
+        }
+        else m_bIMUpreview = enablePreview;
     }
 
     bool _RealSense::loadConfig()
@@ -236,7 +245,9 @@ namespace kai
         if (!next["bRGB"].get<bool>() && !next["bDepth"].get<bool>() && !next["bIR"].get<bool>() && !next["bIMU"].get<bool>()) errors["config"] = "Enable at least one stream";
         if (!errors.empty()) return false;
         if (before == next) return true;
-        const bool reopen = live && m_bOpened;
+        json hardwareNext = next;
+        hardwareNext["bIMUpreview"] = before.at("bIMUpreview");
+        const bool reopen = live && m_bOpened && hardwareNext != before;
         json hardwareBefore = json::object();
         if (reopen)
         {
@@ -297,6 +308,13 @@ namespace kai
             const auto &v = entry.value();
             json field = {{"key", entry.key()}, {"category", "Streams and point cloud"}, {"nullable", false}, {"restart", true},
                 {"type", v.is_boolean() ? "bool" : v.is_string() ? "string" : v.is_array() ? (entry.key() == "vRangeD" ? "range" : "size") : v.is_number_integer() ? "int" : "float"}};
+            if (entry.key() == "bIMUpreview")
+            {
+                field["label"] = "Enable IMU preview";
+                field["category"] = "IMU preview";
+                field["restart"] = false;
+                field["description"] = "Enable viewer orientation fusion and IMU snapshots. Raw IMU capture continues independently.";
+            }
             if (v.is_number_integer()) { field["min"] = (entry.key() == "accelFPS" || entry.key() == "gyroFPS") ? 0 : 1; field["max"] = entry.key() == "tOutMs" ? 60000 : 2000; }
             schema.push_back(field);
         }
@@ -380,7 +398,10 @@ namespace kai
         rs2::frame old;
         while (m_frames.poll_for_frame(&old)) {}
         m_sensors.clear();
-        m_imuPreview.reset();
+        {
+            std::lock_guard<std::mutex> previewLock(m_imuPreviewMutex);
+            if (m_bIMUpreview) m_imuPreview.reset();
+        }
         _RGBDbase::close();
     }
 
@@ -398,13 +419,15 @@ namespace kai
                 {
                     m_lastAccel = steadyNs(); ++m_nAccel;
                     if (m_pIMUout) m_pIMUout->addAcc({v.x, v.y, v.z}, stamp);
-                    m_imuPreview.addAcc({v.x, v.y, v.z}, stamp);
+                    std::lock_guard<std::mutex> previewLock(m_imuPreviewMutex);
+                    if (m_bIMUpreview) m_imuPreview.addAcc({v.x, v.y, v.z}, stamp);
                 }
                 else if (motion.get_profile().stream_type() == RS2_STREAM_GYRO)
                 {
                     m_lastGyro = steadyNs(); ++m_nGyro;
                     if (m_pIMUout) m_pIMUout->addGyro({v.x, v.y, v.z}, stamp);
-                    m_imuPreview.addGyro({v.x, v.y, v.z}, stamp);
+                    std::lock_guard<std::mutex> previewLock(m_imuPreviewMutex);
+                    if (m_bIMUpreview) m_imuPreview.addGyro({v.x, v.y, v.z}, stamp);
                 }
             }
             else if (auto frames = frame.as<rs2::frameset>())
@@ -557,15 +580,18 @@ namespace kai
     json _RealSense::imuValues() const
     {
         // Called with the device lock held; SDK callbacks only take the preview
-        // mutex. Reading this snapshot never consumes the IMUstream used by SLAM.
-        const auto sample = m_imuPreview.snapshot();
+        // gate. Disabled previews never invoke the preview object, and reading
+        // snapshots never consumes the IMUstream used by SLAM.
+        std::lock_guard<std::mutex> previewLock(m_imuPreviewMutex);
+        IMUpreview::Snapshot sample;
+        if (m_bIMUpreview) sample = m_imuPreview.snapshot();
         const uint64_t now = steadyNs();
         const auto fresh = [now](uint64_t last) {
             return last && (last >= now || now - last <= NSEC_SEC / 2);
         };
-        const bool available = m_bOpened && m_bIMU && sample.tGyro && sample.tAcc &&
+        const bool available = m_bIMUpreview && m_bOpened && m_bIMU && sample.tGyro && sample.tAcc &&
             fresh(m_lastGyro.load()) && fresh(m_lastAccel.load());
-        return {{"enabled", m_bIMU}, {"deviceOpen", m_bOpened}, {"available", available},
+        return {{"enabled", m_bIMU}, {"previewEnabled", m_bIMUpreview}, {"deviceOpen", m_bOpened}, {"available", available},
             // Strings preserve capture-clock nanoseconds beyond JS integer precision.
             {"tGyro", std::to_string(sample.tGyro)}, {"tAcc", std::to_string(sample.tAcc)},
             {"tFusion", std::to_string(sample.tFusion)},
@@ -573,7 +599,7 @@ namespace kai
             {"acc", {sample.acc.x(), sample.acc.y(), sample.acc.z()}},
             {"quaternion", {sample.quaternion.w(), sample.quaternion.x(), sample.quaternion.y(), sample.quaternion.z()}},
             {"rpy", {sample.rpy.x(), sample.rpy.y(), sample.rpy.z()}},
-            {"fusion", true}, {"orientationValid", available && sample.orientationValid}};
+            {"fusion", m_bIMUpreview}, {"orientationValid", available && sample.orientationValid}};
     }
 
     void _RealSense::console(void *pConsole)

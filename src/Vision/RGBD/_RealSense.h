@@ -8,12 +8,13 @@
 #include <mutex>
 #include <set>
 #include "_RGBDbase.h"
-#include "RealSenseIMU.h"
+#include "../../Sensor/IMU/IMUpreview.h"
 
 namespace kai
 {
     class _RealSense : public _RGBDbase
     {
+        friend struct RealSensePreviewTestAccess;
     public:
         _RealSense();
         ~_RealSense() override;
@@ -46,6 +47,10 @@ namespace kai
 
         mutable std::mutex m_deviceAdmission;
         mutable std::recursive_mutex m_deviceMutex;
+        // SDK callbacks never take m_deviceMutex: pipeline.stop() joins them.
+        // Serialize preview enable/disable with callback add/reset/snapshot calls.
+        mutable std::mutex m_imuPreviewMutex;
+        bool m_bIMUpreview = false;
         string m_SN;
         int m_accelFPS = 0;
         int m_gyroFPS = 0;
@@ -71,7 +76,7 @@ namespace kai
         rs2::threshold_filter m_threshold;
         rs2::align m_align{RS2_STREAM_COLOR};
         rs2::pointcloud m_pointcloud;
-        realsense::IMUPreview m_imuPreview;
+        IMUpreview m_imuPreview;
         std::atomic<uint64_t> m_lastVideo{0};
         std::atomic<uint64_t> m_lastAccel{0};
         std::atomic<uint64_t> m_lastGyro{0};

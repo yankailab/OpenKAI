@@ -19,6 +19,9 @@ namespace kai
         static void points(_Livox2 &driver, const LIVOX2_DATA &packet) { driver.handlePointCloudData(packet); }
         static void imu(_Livox2 &driver, const LIVOX2_DATA &packet) { driver.handleIMUdata(packet); }
         static json snapshot(_Livox2 &driver) { return driver.imuValues(); }
+        // Inspect dormant state directly to detect accidental updates or resets while disabled.
+        static IMUpreview::Snapshot previewState(_Livox2 &driver) { return driver.m_imuPreview.snapshot(); }
+        static json schema(_Livox2 &driver) { return driver.controlSchema(); }
         static bool config(_Livox2 &driver, const json &patch, json &errors) { return driver.applyConfig(patch, true, errors); }
         static json values(_Livox2 &driver) { return driver.configValues(); }
         static void queue(_Livox2 &driver, uint16_t key, uint8_t value) { driver.setLvxByte(key, value); }
@@ -315,6 +318,105 @@ namespace
         imu.get(gyro, acc); assert(gyro.empty() && acc.empty());
     }
 
+    void testIMUPreview()
+    {
+        PCLframe cloud; IMUstream imu; _Livox2 driver;
+        Access::outputs(driver, cloud, imu); Access::connected(driver);
+        assert(Access::values(driver).at("bIMUpreview") == false);
+        const auto spec = Access::schema(driver).at("bIMUpreview");
+        assert(spec.at("type") == "bool" && spec.at("label") == "Enable IMU preview");
+        const uint64_t stamp = 10000000000ULL;
+        Access::imu(driver, imuPacket(driver, stamp));
+        Access::imu(driver, imuPacket(driver, stamp + 5000000));
+        Access::points(driver, points(driver, 1, stamp));
+        assert(Access::transport(driver).at("framePoints") == 2);
+        deque<IMUstream::IMU_DATA> gyro, acc;
+        imu.get(gyro, acc); assert(gyro.size() == 2 && acc.size() == 2);
+        auto state = Access::snapshot(driver);
+        assert(state.at("enabled") == true && state.at("previewEnabled") == false);
+        assert(state.at("available") == false && state.at("orientationValid") == false);
+        assert(state.at("tGyro") == "0" && Access::previewState(driver).tGyro == 0);
+
+        json errors;
+        const auto before = Access::values(driver);
+        assert(!Access::config(driver, {{"bIMUpreview", 1}, {"frameDurationMs", 25}}, errors));
+        assert(errors.contains("bIMUpreview") && Access::values(driver) == before);
+        assert(!Access::config(driver, {{"bIMUstab", true}, {"frameDurationMs", 25}}, errors));
+        assert(errors.at("bIMUstab").get<string>().find("bIMUpreview=true") != string::npos);
+        assert(Access::values(driver) == before);
+
+        assert(Access::config(driver, {{"bIMUpreview", true}}, errors));
+        assert(Access::transport(driver).at("framePoints") == 2);
+        state = Access::snapshot(driver);
+        assert(state.at("previewEnabled") == true && state.at("available") == false);
+        imu.get(gyro, acc); assert(gyro.size() == 2 && acc.size() == 2);
+        Access::imu(driver, imuPacket(driver, stamp + 5000000)); // toggling preserves raw deduplication
+        imu.get(gyro, acc); assert(gyro.size() == 2);
+        Access::imu(driver, imuPacket(driver, stamp + 10000000));
+        state = Access::snapshot(driver);
+        assert(state.at("available") == true && state.at("orientationValid") == false);
+        Access::imu(driver, imuPacket(driver, stamp + 15000000));
+        state = Access::snapshot(driver);
+        assert(state.at("orientationValid") == true);
+        assert(state.at("tGyro") == std::to_string(stamp + 15000000));
+        for (int i = 0; i < 10; ++i) Access::snapshot(driver);
+        imu.get(gyro, acc); assert(gyro.size() == 4 && acc.size() == 4);
+
+        const auto active = Access::previewState(driver);
+        assert(Access::config(driver, {{"bIMUpreview", false}}, errors));
+        assert(Access::transport(driver).at("framePoints") == 2);
+        Access::imu(driver, imuPacket(driver, stamp + 20000000));
+        state = Access::snapshot(driver);
+        assert(state.at("previewEnabled") == false && state.at("available") == false);
+        assert(state.at("orientationValid") == false && state.at("tGyro") == "0");
+        imu.get(gyro, acc); assert(gyro.size() == 5 && acc.size() == 5);
+        assert(gyro.back().m_t == stamp + 20000000 && std::abs(acc.back().m_v.z() - 9.80665f) < 1e-5f);
+        assert(Access::previewState(driver).tGyro == active.tGyro);
+        assert(Access::config(driver, {{"lvxIMUdataEn", 0}}, errors));
+        assert(Access::config(driver, {{"lvxIMUdataEn", 1}}, errors));
+        Access::imu(driver, imuPacket(driver, stamp + 25000000));
+        Access::imu(driver, imuPacket(driver, 1000000000)); // raw clock reset must not reset dormant preview
+        imu.get(gyro, acc); assert(gyro.size() == 1 && gyro.front().m_t == 1000000000);
+        driver.stop();
+        const auto dormant = Access::previewState(driver);
+        assert(dormant.tGyro == active.tGyro && dormant.tFusion == active.tFusion);
+        assert(dormant.orientationValid && dormant.quaternion.coeffs() == active.quaternion.coeffs());
+
+        assert(Access::config(driver, {{"bIMUpreview", true}}, errors));
+        state = Access::snapshot(driver);
+        assert(state.at("tGyro") == "0" && state.at("orientationValid") == false);
+        assert(Access::previewState(driver).tFusion == 0);
+        imu.get(gyro, acc); assert(gyro.size() == 1 && acc.size() == 1);
+        Access::connected(driver);
+        Access::imu(driver, imuPacket(driver, 1005000000));
+        assert(Access::snapshot(driver).at("orientationValid") == false);
+        Access::imu(driver, imuPacket(driver, 1010000000));
+        assert(Access::snapshot(driver).at("orientationValid") == true);
+
+        assert(Access::config(driver, {{"bIMUstab", true}}, errors));
+        const auto stabilized = Access::values(driver);
+        assert(!Access::config(driver, {{"bIMUpreview", false}, {"frameDurationMs", 25}}, errors));
+        assert(errors.contains("bIMUstab") && Access::values(driver) == stabilized);
+        assert(Access::config(driver, {{"bIMUpreview", false}, {"bIMUstab", false}}, errors));
+    }
+
+    void testIMUPreviewPersistence()
+    {
+        JsonCfg config;
+        config.setJson({{"name", "livox-preview-test"}, {"class", "_Livox2"}, {"lvxIP", "127.0.0.2"}});
+        _Livox2 driver;
+        driver.BASE::setConfig(&config, config.getJson());
+        assert(driver.loadConfig() && driver.saveConfig(false));
+        assert(config.getJson()->at("bIMUpreview") == false);
+        json errors;
+        assert(Access::config(driver, {{"bIMUpreview", true}}, errors));
+        assert(driver.saveConfig(false) && config.getJson()->at("bIMUpreview") == true);
+        _Livox2 restored;
+        restored.BASE::setConfig(&config, config.getJson());
+        assert(restored.loadConfig() && Access::values(restored).at("bIMUpreview") == true);
+        assert(Access::snapshot(restored).at("available") == false);
+    }
+
     void testConfigurationAndACK()
     {
         UdpEndpoint sink("127.0.0.2");
@@ -585,7 +687,7 @@ namespace
 }
 int main()
 {
-    testProtocol(); testCloud(); testIMU(); testConfigurationAndACK();
+    testProtocol(); testCloud(); testIMU(); testIMUPreview(); testIMUPreviewPersistence(); testConfigurationAndACK();
     testOwnedSockets(); testNetworkValidationAndBindFailure(); testServiceTimers();
     std::cout << "Livox2 packet, cloud, IMU, control, localhost UDP and socket lifecycle tests passed\n";
 }
