@@ -8,7 +8,6 @@
 #ifndef OpenKAI_src_Sensor_LiDAR_Livox__Livox2_H_
 #define OpenKAI_src_Sensor_LiDAR_Livox__Livox2_H_
 
-#include "../../../DataObject/BytePacketStream.h"
 #include "../../../Universe/_TransformBase.h"
 #include "../../../DataObject/PCLframe.h"
 #include "../../../DataObject/IMUstream.h"
@@ -20,7 +19,9 @@
 #include "livox_lidar_def.h"
 #include "Livox2Protocol.h"
 #include "../../../Vision/RGBD/RealSenseIMU.h"
+#include <array>
 #include <map>
+#include <mutex>
 
 #define LVX2_N_BUF 1380
 #define LVX2_N_DATA 1344
@@ -144,9 +145,9 @@ namespace kai
 			m_pclDataType = kLivoxLidarCartesianCoordinateHighData;
 			m_patternMode = kLivoxLidarScanPatternNoneRepetive;
 			m_hostIP = 0;
-			m_hostPortState = 0;
-			m_hostPortPCL = 0;
-			m_hostPortIMU = 0;
+			m_hostPortState = 56201;
+			m_hostPortPCL = 56301;
+			m_hostPortIMU = 56401;
 			m_frameRate = kLivoxLidarFrameRate25Hz;
 			m_detectMode = kLivoxLidarDetectNormal;
 			m_workModeAfterBoot = kLivoxLidarWorkModeAfterBootNormal;
@@ -177,105 +178,44 @@ namespace kai
 		LVX2_CONFIG getConfig(void);
 		void setConfig(const LVX2_CONFIG &cfg);
 
-	private:
-		// Common
-		bool recvLivoxCmd(const BYTE_PACKET &packet, LIVOX2_CMD *pResvCmd, bool bParity = true);
-		bool recvLivoxData(const BYTE_PACKET &packet, LIVOX2_DATA *pResvDATA, bool bParity = true);
-
-		// Device Type Query
-		void sendDeviceQuery(void);
-		void updateWdeviceQuery(void);
-		static void *getUpdateWdeviceQuery(void *This)
-		{
-			((_Livox2 *)This)->updateWdeviceQuery();
-			return NULL;
-		}
-
-		void handleDeviceQuery(const LIVOX2_CMD &cmd);
-		void updateRdeviceQuery(void);
-		static void *getUpdateRdeviceQuery(void *This)
-		{
-			((_Livox2 *)This)->updateRdeviceQuery();
-			return NULL;
-		}
-
-		// Control Command
+    private:
+        enum SocketChannel { Query, Command, Push, PointCloud, Imu, SocketCount };
+        bool openSockets(string &error);
+        void closeSockets();
+        bool sendDatagram(SocketChannel channel, uint16_t port, const LIVOX2_CMD &cmd);
+        void update();
+        static void *getUpdate(void *self) { static_cast<_Livox2 *>(self)->update(); return nullptr; }
+        void receive(size_t channel);
+        void service(uint64_t now);
+        bool recvLivoxCmd(const uint8_t *bytes, size_t length, LIVOX2_CMD *cmd, bool parity = true);
+        bool recvLivoxData(const uint8_t *bytes, size_t length, LIVOX2_DATA *data, bool parity = true);
+        void sendDeviceQuery();
+        void handleDeviceQuery(const LIVOX2_CMD &cmd);
         void sendCommand(LIVOX2_CMD cmd);
         void setLvxByte(uint16_t key, uint8_t value);
-        void setLvxHost(void);
-        void configureDevice(void);
+        void setLvxHost();
+        void configureDevice();
+        void getLvxConfig();
+        void handleCtrlCmdAck(const LIVOX2_CMD &cmd);
         void handleInfo(const uint8_t *data, size_t length, uint16_t count);
+        void handlePushCmd(const LIVOX2_CMD &cmd);
+        void handlePointCloudData(const LIVOX2_DATA &data);
+        void handleIMUdata(const LIVOX2_DATA &data);
         json configValues() const;
         json controlSchema() const;
         json imuValues() const;
         bool applyConfig(const json &patch, bool live, json &errors);
         void resetFrame();
 
-		void getLvxConfig(void);
-		void updateWctrlCmd(void);
-		static void *getUpdateWctrlCmd(void *This)
-		{
-			((_Livox2 *)This)->updateWctrlCmd();
-			return NULL;
-		}
-
-		void handleCtrlCmdAck(const LIVOX2_CMD &cmd);
-		void updateRctrlCmd(void);
-		static void *getUpdateRctrlCmd(void *This)
-		{
-			((_Livox2 *)This)->updateRctrlCmd();
-			return NULL;
-		}
-
-		// Push command
-		void handlePushCmd(const LIVOX2_CMD &cmd);
-		void updateRpushCmd(void);
-		static void *getUpdateRpushCmd(void *This)
-		{
-			((_Livox2 *)This)->updateRpushCmd();
-			return NULL;
-		}
-
-		// Point Cloud Data
-		void handlePointCloudData(const LIVOX2_DATA &d);
-		void updateRpointCloud(void);
-		static void *getUpdateRpointCloud(void *This)
-		{
-			((_Livox2 *)This)->updateRpointCloud();
-			return NULL;
-		}
-
-		// IMU
-		void handleIMUdata(const LIVOX2_DATA &d);
-		void updateRimu(void);
-		static void *getUpdateRimu(void *This)
-		{
-			((_Livox2 *)This)->updateRimu();
-			return NULL;
-		}
-
-	protected:
+    protected:
         PCLframe *m_pPCLout = nullptr;
-
-		_Thread *m_pTdeviceQueryR = nullptr;
-		_Thread *m_pTctrlCmdW = nullptr;
-		_Thread *m_pTctrlCmdR = nullptr;
-		_Thread *m_pTpushCmdR = nullptr;
-		_Thread *m_pTpclR = nullptr;
-		_Thread *m_pTimuR = nullptr;
-
-		BytePacketStream *m_pBpStreamDeviceQueryIn = nullptr;
-		uint64_t m_tLastBpStreamDeviceQueryIn = 0;
-		BytePacketStream *m_pBpStreamDeviceQueryOut = nullptr;
-		BytePacketStream *m_pBpStreamCtrlCmdIn = nullptr;
-		uint64_t m_tLastBpStreamCtrlCmdIn = 0;
-		BytePacketStream *m_pBpStreamCtrlCmdOut = nullptr;
-		BytePacketStream *m_pBpStreamPushCmdIn = nullptr;
-		uint64_t m_tLastBpStreamPushCmdIn = 0;
-		BytePacketStream *m_pBpStreamPclIn = nullptr;
-		uint64_t m_tLastBpStreamPclIn = 0;
-		BytePacketStream *m_pBpStreamImuIn = nullptr;
-		uint64_t m_tLastBpStreamImuIn = 0;
+        std::array<int, SocketCount> m_sockets{{-1, -1, -1, -1, -1}};
+        bool m_started = false;
+        uint32_t m_hostIP = 0; // Actual local address, resolved from the route when lvxHostIP is zero.
+        uint16_t m_queryPort = 56000;
+        uint16_t m_hostPortCmd = 56101;
+        int m_receiveBufferBytes = 4194304;
+        uint64_t m_lastDiscovery = 0;
 
         // All driver state is protected by m_mutex, including console snapshots.
         mutable std::recursive_mutex m_mutex;

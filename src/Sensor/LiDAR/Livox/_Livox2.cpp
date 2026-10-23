@@ -1,6 +1,7 @@
 /* Livox SDK2 Ethernet driver. Mid-360 uses non-repetitive, timestamped scans. */
 #include "_Livox2.h"
 #include "../../../Protocol/_JSONbase.h"
+#include <poll.h>
 
 namespace kai
 {
@@ -18,40 +19,34 @@ namespace kai
     }
 
     _Livox2::_Livox2() { m_lvxCfg.init(); }
-    _Livox2::~_Livox2()
-    {
-        stop();
-        DEL(m_pTdeviceQueryR); DEL(m_pTctrlCmdW); DEL(m_pTctrlCmdR);
-        DEL(m_pTpushCmdR); DEL(m_pTpclR); DEL(m_pTimuR);
-    }
+    _Livox2::~_Livox2() { stop(); }
 
     void _Livox2::stop()
     {
-        const std::initializer_list<_Thread *> workers = {m_pT, m_pTdeviceQueryR, m_pTctrlCmdW, m_pTctrlCmdR,
-            m_pTpushCmdR, m_pTpclR, m_pTimuR};
-        for (auto *worker : workers) if (worker) worker->stop();
-        for (auto *worker : workers) if (worker) worker->join();
+        // The worker owns the descriptors until it exits. Never join under its state lock.
+        if (m_pT) { m_pT->stop(); m_pT->join(); }
+        std::lock_guard<std::recursive_mutex> lock(m_mutex);
+        closeSockets();
+        m_started = false;
+        m_lvxState = lvxState_deviceQuery;
+        m_pending.clear();
+        resetFrame();
+        m_imuPreview.reset(); m_tIMU = m_lastIMUrx = 0;
     }
 
     bool _Livox2::loadConfig()
     {
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
+        IF_Le_F(m_started, "Stop Livox before loading its configuration");
         IF_F(!_TransformBase::loadConfig());
+        if (!m_pJ->at("thread").contains("FPS")) m_pT->setTargetFPS(0);
         m_mountOrientation = m_vR;
         json patch = json::object(), errors;
         const json values = configValues();
         for (const auto &entry : values.items())
             if (m_pJ->contains(entry.key())) patch[entry.key()] = (*m_pJ)[entry.key()];
         if (!applyConfig(patch, false, errors)) { LOG_E(errors.dump()); return false; }
-        const std::pair<_Thread **, const char *> workers[] = {
-            {&m_pTdeviceQueryR, "TdeviceQueryR"}, {&m_pTctrlCmdW, "TctrlCmdW"}, {&m_pTctrlCmdR, "TctrlCmdR"},
-            {&m_pTpushCmdR, "TpushCmdR"}, {&m_pTpclR, "TpclR"}, {&m_pTimuR, "TimuR"}};
-        for (const auto &worker : workers)
-        {
-            delete *worker.first;
-            *worker.first = createThread(jK(*m_pJ, worker.second), worker.second);
-            if (!*worker.first) return false;
-        }
+        IF_Le_F(!m_lvxIP, "Set lvxIP to the LiDAR IPv4 address");
         m_vFramePoints.reserve(m_nMaxFramePoints);
         return true;
     }
@@ -62,218 +57,209 @@ namespace kai
         IF_F(!_TransformBase::saveConfig(false));
         m_pJ->update(configValues());
         (*m_pJ)["vOrt"] = {m_mountOrientation.x(), m_mountOrientation.y(), m_mountOrientation.z(), m_mountOrientation.w()};
-        for (auto *worker : {m_pTdeviceQueryR, m_pTctrlCmdW, m_pTctrlCmdR, m_pTpushCmdR, m_pTpclR, m_pTimuR})
-            if (worker && !worker->saveConfig(false)) return false;
         return !bExport || m_pJcfg->saveToFile();
     }
 
     bool _Livox2::link(InstanceMgr *pM)
     {
-        IF_F(!this->_TransformBase::link(pM));
-        const json &j = *m_pJ;
-
-        string n;
-
-        n = "";
-        jKv(j, "PCLframeOut", n);
-        m_pPCLout = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
-        IF_Le_F(!m_pPCLout, "PCLframeOut not found: " + n);
-
-        n = "";
-        jKv(j, "IMUstreamOut", n);
-        m_pIMUout = dynamic_cast<IMUstream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
-        IF_Le_F(!n.empty() && !m_pIMUout, "IMUstreamOut not found: " + n);
-
-        n = "";
-        jKv(j, "BytePacketStreamDeviceQueryIn", n);
-        m_pBpStreamDeviceQueryIn = dynamic_cast<BytePacketStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
-        IF_Le_F(!m_pBpStreamDeviceQueryIn, "BytePacketStreamDeviceQueryIn not found: " + n);
-
-        n = "";
-        jKv(j, "BytePacketStreamDeviceQueryOut", n);
-        m_pBpStreamDeviceQueryOut = dynamic_cast<BytePacketStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
-        IF_Le_F(!m_pBpStreamDeviceQueryOut, "BytePacketStreamDeviceQueryOut not found: " + n);
-
-        n = "";
-        jKv(j, "BytePacketStreamCtrlCmdIn", n);
-        m_pBpStreamCtrlCmdIn = dynamic_cast<BytePacketStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
-        IF_Le_F(!m_pBpStreamCtrlCmdIn, "BytePacketStreamCtrlCmdIn not found: " + n);
-
-        n = "";
-        jKv(j, "BytePacketStreamCtrlCmdOut", n);
-        m_pBpStreamCtrlCmdOut = dynamic_cast<BytePacketStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
-        IF_Le_F(!m_pBpStreamCtrlCmdOut, "BytePacketStreamCtrlCmdOut not found: " + n);
-
-        n = "";
-        jKv(j, "BytePacketStreamPushCmdIn", n);
-        m_pBpStreamPushCmdIn = dynamic_cast<BytePacketStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
-        IF_Le_F(!m_pBpStreamPushCmdIn, "BytePacketStreamPushCmdIn not found: " + n);
-
-        n = "";
-        jKv(j, "BytePacketStreamPclIn", n);
-        m_pBpStreamPclIn = dynamic_cast<BytePacketStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
-        IF_Le_F(!m_pBpStreamPclIn, "BytePacketStreamPclIn not found: " + n);
-
-        n = "";
-        jKv(j, "BytePacketStreamImuIn", n);
-        m_pBpStreamImuIn = dynamic_cast<BytePacketStream *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
-        IF_Le_F(!m_pBpStreamImuIn, "BytePacketStreamImuIn not found: " + n);
-
+        IF_F(!_TransformBase::link(pM));
+        string name;
+        jKv(*m_pJ, "PCLframeOut", name);
+        m_pPCLout = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(name)));
+        IF_Le_F(!m_pPCLout, "PCLframeOut not found: " + name);
+        name.clear();
+        jKv(*m_pJ, "IMUstreamOut", name);
+        m_pIMUout = dynamic_cast<IMUstream *>(static_cast<DataObjBase *>(pM->findDataObject(name)));
+        IF_Le_F(!name.empty() && !m_pIMUout, "IMUstreamOut not found: " + name);
         return true;
     }
 
-    bool _Livox2::start(void)
+    bool _Livox2::check() { return m_pPCLout && m_pT && _TransformBase::check(); }
+
+    bool _Livox2::openSockets(string &error)
     {
-        NULL_F(m_pT);
-        NULL_F(m_pTdeviceQueryR);
-        NULL_F(m_pTctrlCmdW);
-        NULL_F(m_pTctrlCmdR);
-        NULL_F(m_pTpushCmdR);
-        NULL_F(m_pTpclR);
-        NULL_F(m_pTimuR);
-
-        if (!m_pT->startThread(getUpdateWdeviceQuery, this)) { stop(); return false; }
-        if (!m_pTdeviceQueryR->startThread(getUpdateRdeviceQuery, this)) { stop(); return false; }
-        if (!m_pTctrlCmdW->startThread(getUpdateWctrlCmd, this)) { stop(); return false; }
-        if (!m_pTctrlCmdR->startThread(getUpdateRctrlCmd, this)) { stop(); return false; }
-        if (!m_pTpushCmdR->startThread(getUpdateRpushCmd, this)) { stop(); return false; }
-        if (!m_pTpclR->startThread(getUpdateRpointCloud, this)) { stop(); return false; }
-        if (!m_pTimuR->startThread(getUpdateRimu, this)) { stop(); return false; }
-
+        error.clear();
+        if (!m_lvxIP) { error = "Set lvxIP to the LiDAR IPv4 address"; return false; }
+        uint32_t hostIP = m_lvxCfg.m_hostIP;
+        if (!hostIP)
+        {
+            // Route lookup is separate from discovery: connecting the discovery
+            // socket would discard the Mid-360's broadcast discovery replies.
+            const int probe = socket(AF_INET, SOCK_DGRAM | SOCK_CLOEXEC, 0);
+            if (probe < 0) { error = "Livox route socket: " + string(strerror(errno)); return false; }
+            sockaddr_in address{};
+            address.sin_family = AF_INET; address.sin_addr.s_addr = m_lvxIP; address.sin_port = htons(m_queryPort);
+            if (connect(probe, reinterpret_cast<sockaddr *>(&address), sizeof(address)) < 0)
+            { error = "Livox route: " + string(strerror(errno)); close(probe); return false; }
+            socklen_t size = sizeof(address);
+            if (getsockname(probe, reinterpret_cast<sockaddr *>(&address), &size) < 0 || !address.sin_addr.s_addr)
+            { error = "Cannot determine Livox host IP"; close(probe); return false; }
+            hostIP = address.sin_addr.s_addr;
+            close(probe);
+        }
+        std::array<int, SocketCount> opened{{-1, -1, -1, -1, -1}};
+        const auto fail = [&]() {
+            for (const int fd : opened) if (fd >= 0) close(fd);
+            return false;
+        };
+        const uint16_t ports[] = {0, m_hostPortCmd, m_lvxCfg.m_hostPortState,
+            m_lvxCfg.m_hostPortPCL, m_lvxCfg.m_hostPortIMU};
+        // Reserve fixed ports first so discovery's ephemeral port cannot occupy one.
+        for (size_t order = 1; order <= opened.size(); ++order)
+        {
+            const size_t i = order % opened.size();
+            const int fd = opened[i] = socket(AF_INET, SOCK_DGRAM | SOCK_NONBLOCK | SOCK_CLOEXEC, 0);
+            if (fd < 0) { error = "Livox UDP socket: " + string(strerror(errno)); return fail(); }
+            if (setsockopt(fd, SOL_SOCKET, SO_RCVBUF, &m_receiveBufferBytes, sizeof(m_receiveBufferBytes)) < 0)
+            { error = "Livox UDP receive buffer: " + string(strerror(errno)); return fail(); }
+            sockaddr_in address{};
+            address.sin_family = AF_INET;
+            // Discovery replies are broadcast to the request's source port.
+            // The other channels receive unicast on the selected local address.
+            address.sin_addr.s_addr = i == Query ? INADDR_ANY : hostIP;
+            address.sin_port = htons(ports[i]);
+            // Exclusive binds make conflicting drivers fail visibly instead of stealing datagrams.
+            if (bind(fd, reinterpret_cast<sockaddr *>(&address), sizeof(address)) < 0)
+            {
+                error = "Livox bind " + ipString(address.sin_addr.s_addr) + ":" + std::to_string(ports[i]) + ": " + strerror(errno);
+                return fail();
+            }
+        }
+        closeSockets();
+        m_sockets = opened;
+        m_hostIP = hostIP;
         return true;
     }
 
-    bool _Livox2::check(void)
+    void _Livox2::closeSockets()
     {
-        NULL_F(m_pPCLout);
-        NULL_F(m_pBpStreamDeviceQueryIn);
-        NULL_F(m_pBpStreamDeviceQueryOut);
-        NULL_F(m_pBpStreamCtrlCmdIn);
-        NULL_F(m_pBpStreamCtrlCmdOut);
-        NULL_F(m_pBpStreamPushCmdIn);
-        NULL_F(m_pBpStreamPclIn);
-        NULL_F(m_pBpStreamImuIn);
-
-        return this->_TransformBase::check();
+        for (int &fd : m_sockets) { if (fd >= 0) close(fd); fd = -1; }
+        m_hostIP = 0;
     }
 
-    void _Livox2::updateRdeviceQuery(void)
-    {
-        while (m_pTdeviceQueryR->bRun())
-        {
-            m_pTdeviceQueryR->autoFPS();
-
-            vector<BYTE_PACKET> vPacket;
-            m_pBpStreamDeviceQueryIn->get(vPacket, m_tLastBpStreamDeviceQueryIn);
-            for (const BYTE_PACKET &packet : vPacket)
-            {
-                m_tLastBpStreamDeviceQueryIn = packet.m_tStamp;
-                LIVOX2_CMD data;
-                if (recvLivoxCmd(packet, &data))
-                {
-                    handleDeviceQuery(data);
-                }
-            }
-        }
-    }
-
-    void _Livox2::updateRctrlCmd(void)
-    {
-        while (m_pTctrlCmdR->bRun())
-        {
-            m_pTctrlCmdR->autoFPS();
-
-            vector<BYTE_PACKET> vPacket;
-            m_pBpStreamCtrlCmdIn->get(vPacket, m_tLastBpStreamCtrlCmdIn);
-            for (const BYTE_PACKET &packet : vPacket)
-            {
-                m_tLastBpStreamCtrlCmdIn = packet.m_tStamp;
-                LIVOX2_CMD data;
-                if (recvLivoxCmd(packet, &data))
-                {
-                    handleCtrlCmdAck(data);
-                }
-            }
-        }
-    }
-
-    void _Livox2::updateRpushCmd(void)
-    {
-        while (m_pTpushCmdR->bRun())
-        {
-            m_pTpushCmdR->autoFPS();
-
-            vector<BYTE_PACKET> vPacket;
-            m_pBpStreamPushCmdIn->get(vPacket, m_tLastBpStreamPushCmdIn);
-            for (const BYTE_PACKET &packet : vPacket)
-            {
-                m_tLastBpStreamPushCmdIn = packet.m_tStamp;
-                LIVOX2_CMD data;
-                if (recvLivoxCmd(packet, &data))
-                {
-                    handlePushCmd(data);
-                }
-            }
-        }
-    }
-
-    void _Livox2::updateRpointCloud(void)
-    {
-        while (m_pTpclR->bRun())
-        {
-            m_pTpclR->autoFPS();
-
-            vector<BYTE_PACKET> vPacket;
-            m_pBpStreamPclIn->get(vPacket, m_tLastBpStreamPclIn);
-            for (const BYTE_PACKET &packet : vPacket)
-            {
-                m_tLastBpStreamPclIn = packet.m_tStamp;
-                LIVOX2_DATA data;
-                if (recvLivoxData(packet, &data))
-                {
-                    handlePointCloudData(data);
-                }
-            }
-        }
-    }
-
-    void _Livox2::updateRimu(void)
-    {
-        while (m_pTimuR->bRun())
-        {
-            m_pTimuR->autoFPS();
-
-            vector<BYTE_PACKET> vPacket;
-            m_pBpStreamImuIn->get(vPacket, m_tLastBpStreamImuIn);
-            for (const BYTE_PACKET &packet : vPacket)
-            {
-                m_tLastBpStreamImuIn = packet.m_tStamp;
-                LIVOX2_DATA data;
-                if (recvLivoxData(packet, &data))
-                {
-                    handleIMUdata(data);
-                }
-            }
-        }
-    }
-
-    bool _Livox2::recvLivoxCmd(const BYTE_PACKET &packet, LIVOX2_CMD *cmd, bool parity)
+    bool _Livox2::start()
     {
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
-        if (!cmd || !livox2::validCommand(packet.m_vB.data(), packet.m_vB.size(), parity))
+        if (m_started) return true;
+        if (!check()) return false;
+        if (!openSockets(m_lastError)) { LOG_E(m_lastError); return false; }
+        m_lvxState = lvxState_deviceQuery;
+        m_lvxCmdPort = 0;
+        m_lastRx = m_lastDiscovery = m_lastQuery = m_lastIMUrx = 0;
+        m_detectedSN.clear(); m_observed = json::object();
+        m_pending.clear(); m_configFailed = false;
+        resetFrame(); m_imuPreview.reset(); m_tIMU = 0;
+        if (m_pIMUout) m_pIMUout->clear();
+        m_lastError.clear();
+        m_started = true;
+        if (m_pT->startThread(getUpdate, this)) return true;
+        m_started = false;
+        closeSockets();
+        m_lastError = "Could not start Livox receive thread";
+        return false;
+    }
+
+    bool _Livox2::sendDatagram(SocketChannel channel, uint16_t port, const LIVOX2_CMD &cmd)
+    {
+        if (m_sockets[channel] < 0 || !port) return false;
+        sockaddr_in remote{};
+        remote.sin_family = AF_INET; remote.sin_addr.s_addr = m_lvxIP; remote.sin_port = htons(port);
+        ssize_t sent;
+        do { sent = sendto(m_sockets[channel], &cmd, cmd.length, 0,
+            reinterpret_cast<sockaddr *>(&remote), sizeof(remote)); } while (sent < 0 && errno == EINTR);
+        if (sent == cmd.length) return true;
+        ++m_commandErrors;
+        m_lastError = "Livox UDP send: " + string(sent < 0 ? strerror(errno) : "incomplete datagram");
+        return false;
+    }
+
+    void _Livox2::update()
+    {
+        while (m_pT->bRun())
+        {
+            m_pT->autoFPS();
+            if (!m_pT->bRun()) break;
+            pollfd sockets[SocketCount]{};
+            {
+                std::lock_guard<std::recursive_mutex> lock(m_mutex);
+                service(getTns());
+                for (size_t i = 0; i < m_sockets.size(); ++i) sockets[i] = {m_sockets[i], POLLIN, 0};
+            }
+            const int ready = poll(sockets, SocketCount, 20);
+            if (!m_pT->bRun()) break;
+            if (ready < 0)
+            {
+                if (errno != EINTR)
+                {
+                    std::lock_guard<std::recursive_mutex> lock(m_mutex);
+                    m_lastError = "Livox UDP poll: " + string(strerror(errno));
+                }
+                continue;
+            }
+            for (size_t i = 0; i < m_sockets.size(); ++i)
+            {
+                // Release between bounded channel batches so console and stop cannot starve.
+                std::lock_guard<std::recursive_mutex> lock(m_mutex);
+                if (sockets[i].revents & (POLLIN | POLLERR)) receive(i);
+                if (sockets[i].revents & (POLLHUP | POLLNVAL)) m_lastError = "Livox UDP socket closed unexpectedly";
+            }
+        }
+    }
+
+    void _Livox2::receive(size_t channel)
+    {
+        for (unsigned i = 0; i < 256; ++i)
+        {
+            uint8_t bytes[LVX2_N_BUF];
+            sockaddr_in source{};
+            socklen_t size = sizeof(source);
+            const ssize_t length = recvfrom(m_sockets[channel], bytes, sizeof(bytes), MSG_TRUNC,
+                reinterpret_cast<sockaddr *>(&source), &size);
+            if (length < 0)
+            {
+                if (errno == EINTR) continue;
+                if (errno != EAGAIN && errno != EWOULDBLOCK) m_lastError = "Livox UDP receive: " + string(strerror(errno));
+                break;
+            }
+            if (source.sin_addr.s_addr != m_lvxIP) continue;
+            if (length > static_cast<ssize_t>(sizeof(bytes))) { ++m_invalidPackets; continue; }
+            if (channel != Query && m_lvxState == lvxState_deviceQuery) continue;
+            if (channel == PointCloud || channel == Imu)
+            {
+                LIVOX2_DATA data;
+                if (!recvLivoxData(bytes, size_t(length), &data)) continue;
+                if ((data.data_type == kLivoxLidarImuData) != (channel == Imu)) { ++m_invalidPackets; continue; }
+                if (channel == PointCloud) handlePointCloudData(data);
+                else handleIMUdata(data);
+            }
+            else
+            {
+                LIVOX2_CMD cmd;
+                if (!recvLivoxCmd(bytes, size_t(length), &cmd)) continue;
+                if (channel == Query) handleDeviceQuery(cmd);
+                else if (channel == Command) handleCtrlCmdAck(cmd);
+                else handlePushCmd(cmd);
+            }
+        }
+    }
+
+    bool _Livox2::recvLivoxCmd(const uint8_t *bytes, size_t length, LIVOX2_CMD *cmd, bool parity)
+    {
+        std::lock_guard<std::recursive_mutex> lock(m_mutex);
+        if (!cmd || !livox2::validCommand(bytes, length, parity))
         { ++m_invalidPackets; return false; }
         static_assert(offsetof(LIVOX2_CMD, data) == LVX2_CMD_N_HDR, "Livox command layout");
         memset(cmd, 0, sizeof(*cmd));
-        memcpy(cmd, packet.m_vB.data(), packet.m_vB.size());
+        memcpy(cmd, bytes, length);
         return true;
     }
 
-    bool _Livox2::recvLivoxData(const BYTE_PACKET &packet, LIVOX2_DATA *data, bool parity)
+    bool _Livox2::recvLivoxData(const uint8_t *bytes, size_t length, LIVOX2_DATA *data, bool parity)
     {
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
-        if (!data || !livox2::validData(packet.m_vB.data(), packet.m_vB.size(), parity))
+        if (!data || !livox2::validData(bytes, length, parity))
         { ++m_invalidPackets; return false; }
-        const uint8_t *p = packet.m_vB.data();
+        const uint8_t *p = bytes;
         data->version = p[0]; data->length = livox2::u16(p + 1);
         data->time_interval = livox2::u16(p + 3); data->dot_num = livox2::u16(p + 5);
         data->udp_cnt = livox2::u16(p + 7); data->frame_cnt = p[9];
@@ -284,55 +270,65 @@ namespace kai
         return true;
     }
 
-    void _Livox2::updateWdeviceQuery()
+    void _Livox2::service(uint64_t now)
     {
-        while (m_pT->bRun())
+        if (m_lvxState != lvxState_deviceQuery && m_lastRx && now - m_lastRx > m_timeoutNs)
         {
-            m_pT->autoFPS();
-            std::lock_guard<std::recursive_mutex> lock(m_mutex);
-            const uint64_t now = getTns();
-            if (m_lvxState != lvxState_deviceQuery && m_lastRx && now - m_lastRx > m_timeoutNs)
-            {
-                m_lvxState = lvxState_deviceQuery;
-                if (m_pPCLout) m_pPCLout->set({}, m_tLastPCL ? m_tLastPCL : 1);
-                m_pending.clear(); m_configFailed = false;
-                m_lastError = "LiDAR timed out; rediscovering";
-                resetFrame(); m_imuPreview.reset(); m_tIMU = 0;
-                if (m_pIMUout) m_pIMUout->clear();
-            }
-            if (m_lvxState == lvxState_deviceQuery) sendDeviceQuery();
+            m_lvxState = lvxState_deviceQuery;
+            m_lvxCmdPort = 0; m_lastDiscovery = 0;
+            if (m_pPCLout) m_pPCLout->set({}, m_tLastPCL ? m_tLastPCL : 1);
+            m_pending.clear(); m_configFailed = false;
+            m_lastError = "LiDAR timed out; rediscovering";
+            resetFrame(); m_imuPreview.reset(); m_tIMU = m_lastIMUrx = 0;
+            if (m_pIMUout) m_pIMUout->clear();
         }
+        if (m_lvxState == lvxState_deviceQuery)
+        {
+            if (!m_lastDiscovery || now - m_lastDiscovery >= NSEC_SEC)
+            { sendDeviceQuery(); m_lastDiscovery = now; }
+            return;
+        }
+        for (auto it = m_pending.begin(); it != m_pending.end();)
+        {
+            auto &pending = it->second;
+            if (now - pending.sent < 500 * NSEC_MSEC) { ++it; continue; }
+            if (pending.attempts >= 3)
+            {
+                ++m_commandErrors;
+                if (pending.command.cmd_id == LVX2_CMD_SET) m_configFailed = true;
+                m_lastError = "LiDAR command " + std::to_string(pending.command.cmd_id) + " timed out after 3 attempts";
+                it = m_pending.erase(it); continue;
+            }
+            ++pending.attempts; ++m_commandRetries; pending.sent = now;
+            sendDatagram(Command, m_lvxCmdPort, pending.command);
+            ++it;
+        }
+        if (m_pending.empty() && now - m_lastQuery >= 2 * NSEC_SEC)
+        { getLvxConfig(); m_lastQuery = now; }
     }
 
     void _Livox2::sendDeviceQuery()
     {
-        if (!m_pBpStreamDeviceQueryOut) return;
         LIVOX2_CMD cmd;
         cmd.init(LVX2_CMD_DISCOVER, LVX2_CMD_REQ, ++m_sequence); cmd.calcCRC();
-        m_pBpStreamDeviceQueryOut->add({{vector<uint8_t>((uint8_t *)&cmd, (uint8_t *)&cmd + cmd.length), getTns()}});
+        sendDatagram(Query, m_queryPort, cmd);
     }
 
     void _Livox2::handleDeviceQuery(const LIVOX2_CMD &cmd)
     {
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
+        if (m_lvxState != lvxState_deviceQuery) return;
         if (cmd.cmd_id != LVX2_CMD_DISCOVER || cmd.cmd_type != LVX2_CMD_ACK || cmd.length < 48 || cmd.data[0]) return;
         uint32_t address;
         memcpy(&address, cmd.data + 18, 4);
-        if (m_lvxIP && address != m_lvxIP) return;
+        if (address != m_lvxIP || !livox2::u16(cmd.data + 22)) return;
         const string serial(reinterpret_cast<const char *>(cmd.data + 2), strnlen(reinterpret_cast<const char *>(cmd.data + 2), 16));
         if (!m_lvxSN.empty() && serial != m_lvxSN) return;
         m_detectedSN = serial;
         m_lvxCmdPort = livox2::u16(cmd.data + 22);
         m_lvxDevType = cmd.data[1];
         m_lastRx = getTns();
-        if (m_lvxState != lvxState_deviceQuery) return;
-        // The UDP command endpoint is configured independently, as with the
-        // other packet-stream drivers. Mid-360 advertises port 56100.
-        if (m_lvxCmdPort != 56100)
-        {
-            m_lastError = "Unsupported LiDAR command port " + std::to_string(m_lvxCmdPort) + "; configure the UDP command endpoint";
-            return;
-        }
+        // The sensor advertises its command endpoint; do not assume a fixed model-specific port.
         m_lvxState = lvxState_init;
         m_pending.clear(); m_configFailed = false; m_lastError.clear();
         resetFrame(); m_imuPreview.reset(); m_tIMU = 0;
@@ -342,11 +338,11 @@ namespace kai
 
     void _Livox2::sendCommand(LIVOX2_CMD cmd)
     {
-        if (!m_pBpStreamCtrlCmdOut) return;
+        if (m_sockets[Command] < 0 || !m_lvxCmdPort) return;
         cmd.seq_num = ++m_sequence; cmd.calcCRC();
         const uint64_t now = getTns();
         m_pending.emplace(cmd.seq_num, PendingCommand{cmd, now, 1});
-        m_pBpStreamCtrlCmdOut->add({{vector<uint8_t>((uint8_t *)&cmd, (uint8_t *)&cmd + cmd.length), now}});
+        sendDatagram(Command, m_lvxCmdPort, cmd);
     }
 
     void _Livox2::setLvxByte(uint16_t key, uint8_t value)
@@ -376,7 +372,7 @@ namespace kai
         const uint16_t sourcePorts[] = {56200, 56300, 56400};
         for (int i = 0; i < 3; ++i)
         {
-            cmd.addData(keys[i]); cmd.addData(uint16_t(8)); cmd.addData(&m_lvxCfg.m_hostIP, 4);
+            cmd.addData(keys[i]); cmd.addData(uint16_t(8)); cmd.addData(&m_hostIP, 4);
             cmd.addData(ports[i]); cmd.addData(sourcePorts[i]);
         }
         sendCommand(cmd);
@@ -390,37 +386,6 @@ namespace kai
         setLvxByte(kKeyDetectMode, m_lvxCfg.m_detectMode);
         setLvxByte(kKeyImuDataEn, m_lvxCfg.m_imuDataEn);
         setLvxByte(kKeyWorkMode, m_lvxCfg.m_workMode);
-    }
-
-    void _Livox2::updateWctrlCmd()
-    {
-        while (m_pTctrlCmdW->bRun())
-        {
-            m_pTctrlCmdW->autoFPS();
-            std::lock_guard<std::recursive_mutex> lock(m_mutex);
-            if (m_lvxState == lvxState_deviceQuery) continue;
-            const uint64_t now = getTns();
-            for (auto it = m_pending.begin(); it != m_pending.end();)
-            {
-                auto &pending = it->second;
-                if (now - pending.sent < 500 * NSEC_MSEC) { ++it; continue; }
-                if (pending.attempts >= 3)
-                {
-                    ++m_commandErrors;
-                    if (pending.command.cmd_id == LVX2_CMD_SET) m_configFailed = true;
-                    m_lastError = "LiDAR command " + std::to_string(pending.command.cmd_id) + " timed out after 3 attempts";
-                    it = m_pending.erase(it); continue;
-                }
-                ++pending.attempts; ++m_commandRetries; pending.sent = now;
-                const auto *bytes = reinterpret_cast<const uint8_t *>(&pending.command);
-                m_pBpStreamCtrlCmdOut->add({{vector<uint8_t>(bytes, bytes + pending.command.length), now}});
-                ++it;
-            }
-            if (m_pending.empty() && now - m_lastQuery >= 2 * NSEC_SEC)
-            {
-                getLvxConfig(); m_lastQuery = now;
-            }
-        }
     }
 
     void _Livox2::getLvxConfig()
@@ -633,6 +598,7 @@ namespace kai
     json _Livox2::configValues() const
     {
         return {{"lvxSN", m_lvxSN}, {"lvxIP", ipString(m_lvxIP)}, {"lvxHostIP", ipString(m_lvxCfg.m_hostIP)},
+            {"lvxPortQuery", m_queryPort}, {"lvxHostPortCmd", m_hostPortCmd}, {"receiveBufferBytes", m_receiveBufferBytes},
             {"lvxHostPortState", m_lvxCfg.m_hostPortState}, {"lvxHostPortPCL", m_lvxCfg.m_hostPortPCL},
             {"lvxHostPortIMU", m_lvxCfg.m_hostPortIMU}, {"lvxPCLdataType", m_lvxCfg.m_pclDataType},
             {"lvxPatternMode", m_lvxCfg.m_patternMode}, {"lvxFrameRate", m_lvxCfg.m_frameRate},
@@ -664,8 +630,15 @@ namespace kai
         schema["bReflectivity"] = {{"type", "bool"}, {"label", "Reflectivity coloring"}};
         schema["vColorDefault"] = {{"type", "array"}, {"label", "Default RGB color"}, {"length", 3}, {"min", 0}, {"max", 1}};
         schema["vRangeD"] = {{"type", "range"}, {"label", "Distance range (m)"}, {"length", 2}, {"min", 0}, {"max", 10000}};
-        for (const char *key : {"lvxSN", "lvxIP", "lvxHostIP", "lvxHostPortState", "lvxHostPortPCL", "lvxHostPortIMU"})
-            schema[key] = {{"type", "string"}, {"readOnly", true}, {"category", "Network"}, {"description", "Configure together with the UDP endpoints in the JSON file"}};
+        for (const char *key : {"lvxSN", "lvxIP", "lvxHostIP"})
+            schema[key] = {{"type", "string"}, {"readOnly", true}, {"category", "Network"}, {"description", "Edit this Livox instance in JSON and restart"}};
+        schema["lvxIP"]["description"] = "LiDAR IPv4 address; used for discovery, commands and incoming packet filtering";
+        schema["lvxHostIP"]["description"] = "Local IPv4 address; 0.0.0.0 automatically selects the route to lvxIP";
+        for (const char *key : {"lvxPortQuery", "lvxHostPortCmd", "lvxHostPortState", "lvxHostPortPCL", "lvxHostPortIMU"})
+            schema[key] = {{"type", "integer"}, {"min", 1}, {"max", 65535}, {"readOnly", true}, {"category", "Network"},
+                {"description", "UDP port; edit this Livox instance in JSON and restart"}};
+        schema["receiveBufferBytes"] = {{"type", "integer"}, {"min", 65536}, {"max", 67108864}, {"readOnly", true},
+            {"category", "Network"}, {"description", "Requested kernel receive buffer per socket (bytes); restart to apply"}};
         for (const char *key : {"lvxFrameRate", "lvxWorkModeAfterBoot"})
             schema[key] = {{"type", "integer"}, {"readOnly", true}, {"description", "Legacy HAP setting; unsupported and unused on Mid-360"}};
         return schema;
@@ -689,10 +662,9 @@ namespace kai
             else if (key == "lvxIP" || key == "lvxHostIP")
             {
                 uint32_t address = 0;
-                valid = readIP(value, address) && (key == "lvxIP" || address != 0);
+                valid = readIP(value, address) && (key == "lvxHostIP" || address != 0) &&
+                    (address == 0 || (ntohl(address) >> 24) > 0) && (ntohl(address) >> 24) < 224;
             }
-            else if (key == "lvxHostPortState" || key == "lvxHostPortPCL" || key == "lvxHostPortIMU")
-                valid = value.is_number_integer() && value.get<double>() >= 1 && value.get<double>() <= 65535;
             else if (spec.value("type", "") == "bool") valid = value.is_boolean();
             else if (spec.contains("choices"))
             {
@@ -715,9 +687,15 @@ namespace kai
             if (!valid) { errors[key] = "Invalid value or outside supported range"; continue; }
             next[key] = value;
         }
+        const char *ports[] = {"lvxHostPortCmd", "lvxHostPortState", "lvxHostPortPCL", "lvxHostPortIMU"};
+        for (size_t i = 0; i < 4; ++i)
+            for (size_t j = 0; j < i; ++j)
+                if (next.at(ports[i]) == next.at(ports[j])) errors[ports[i]] = "Local UDP ports must be distinct";
         if (!errors.empty()) return false;
         m_lvxSN = next.at("lvxSN");
         readIP(next.at("lvxIP"), m_lvxIP); readIP(next.at("lvxHostIP"), m_lvxCfg.m_hostIP);
+        m_queryPort = next.at("lvxPortQuery"); m_hostPortCmd = next.at("lvxHostPortCmd");
+        m_receiveBufferBytes = next.at("receiveBufferBytes");
         m_lvxCfg.m_hostPortState = next.at("lvxHostPortState"); m_lvxCfg.m_hostPortPCL = next.at("lvxHostPortPCL"); m_lvxCfg.m_hostPortIMU = next.at("lvxHostPortIMU");
         m_lvxCfg.m_pclDataType = next.at("lvxPCLdataType"); m_lvxCfg.m_patternMode = next.at("lvxPatternMode");
         m_lvxCfg.m_detectMode = next.at("lvxDetectMode"); m_lvxCfg.m_workMode = next.at("lvxWorkMode");
@@ -816,6 +794,7 @@ namespace kai
                 reply["deviceOpen"] = m_lvxState != lvxState_deviceQuery;
                 reply["status"] = {{"state", m_lvxState == lvxState_deviceQuery ? "discovering" : m_lvxState == lvxState_init ? "configuring" : "connected"},
                     {"serialNumber", m_detectedSN}, {"deviceType", m_lvxDevType}, {"commandPort", m_lvxCmdPort},
+                    {"hostIP", ipString(m_hostIP)}, {"socketsOpen", m_started},
                     {"pointPackets", m_pointPackets}, {"points", m_points}, {"frames", m_frames}, {"imuSamples", m_imuSamples},
                     {"invalidPackets", m_invalidPackets}, {"outOfOrderPackets", m_outOfOrderPackets}, {"frameOverflows", m_frameOverflows},
                     {"commandErrors", m_commandErrors}, {"commandRetries", m_commandRetries},

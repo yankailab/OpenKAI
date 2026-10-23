@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Run Livox2 wire/driver regressions against an existing WITH_SENSOR build.
+"""Run Livox2 wire, driver, and localhost UDP regressions with a WITH_SENSOR build.
 
 Usage: python3 test/run_livox2_tests.py [build-directory]
-Build OpenKAI first with compile_commands.json enabled. No hardware is accessed.
+Build OpenKAI first with compile_commands.json enabled. No hardware is accessed;
+the transport regressions bind ephemeral ports on the loopback interface.
 """
 import json
 import pathlib

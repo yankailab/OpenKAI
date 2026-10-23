@@ -1,18 +1,21 @@
 #ifdef OPENKAI_LIVOX2_TEST
 #include "../../src/Sensor/LiDAR/Livox/_Livox2.h"
 #include <cassert>
+#include <chrono>
 #include <iostream>
+#include <poll.h>
+#include <thread>
 
 namespace kai
 {
     struct Livox2TestAccess
     {
-        static void outputs(_Livox2 &driver, PCLframe &cloud, IMUstream &imu, BytePacketStream &commands)
-        { driver.m_pPCLout = &cloud; driver.m_pIMUout = &imu; driver.m_pBpStreamCtrlCmdOut = &commands; }
+        static void outputs(_Livox2 &driver, PCLframe &cloud, IMUstream &imu)
+        { driver.m_pPCLout = &cloud; driver.m_pIMUout = &imu; }
         static bool command(_Livox2 &driver, const vector<uint8_t> &bytes, LIVOX2_CMD &result)
-        { return driver.recvLivoxCmd({bytes, 1}, &result); }
+        { return driver.recvLivoxCmd(bytes.data(), bytes.size(), &result); }
         static bool data(_Livox2 &driver, const vector<uint8_t> &bytes, LIVOX2_DATA &result)
-        { return driver.recvLivoxData({bytes, 1}, &result); }
+        { return driver.recvLivoxData(bytes.data(), bytes.size(), &result); }
         static void points(_Livox2 &driver, const LIVOX2_DATA &packet) { driver.handlePointCloudData(packet); }
         static void imu(_Livox2 &driver, const LIVOX2_DATA &packet) { driver.handleIMUdata(packet); }
         static json snapshot(_Livox2 &driver) { return driver.imuValues(); }
@@ -32,11 +35,152 @@ namespace kai
         static void ack(_Livox2 &driver, const LIVOX2_CMD &reply) { driver.handleCtrlCmdAck(reply); }
         static void info(_Livox2 &driver, const vector<uint8_t> &tlv, uint16_t count) { driver.handleInfo(tlv.data(), tlv.size(), count); }
         static json observed(_Livox2 &driver) { return driver.m_observed; }
+        static bool offlineConfig(_Livox2 &driver, const json &patch, json &errors)
+        { return driver.applyConfig(patch, false, errors); }
+        static bool open(_Livox2 &driver)
+        { string error; return driver.openSockets(error); }
+        static void commandPort(_Livox2 &driver, uint16_t port) { driver.m_lvxCmdPort = port; }
+        static void service(_Livox2 &driver, uint64_t now) { driver.service(now); }
+        static void timers(_Livox2 &driver, uint64_t now) { driver.m_lastRx = driver.m_lastQuery = now; }
+        static uint64_t sent(_Livox2 &driver) { return driver.m_pending.begin()->second.sent; }
+        static void receiveQuery(_Livox2 &driver) { driver.receive(_Livox2::Query); }
+        static json transport(_Livox2 &driver)
+        {
+            std::lock_guard<std::recursive_mutex> lock(driver.m_mutex);
+            bool socketsClosed = true;
+            for (int fd : driver.m_sockets) socketsClosed &= fd < 0;
+            return {{"state", driver.m_lvxState}, {"closed", socketsClosed},
+                {"pointPackets", driver.m_pointPackets}, {"imuSamples", driver.m_imuSamples},
+                {"invalidPackets", driver.m_invalidPackets}, {"outOfOrderPackets", driver.m_outOfOrderPackets},
+                {"commandRetries", driver.m_commandRetries}, {"commandErrors", driver.m_commandErrors},
+                {"pending", driver.m_pending.size()}, {"framePoints", driver.m_vFramePoints.size()},
+                {"observed", driver.m_observed}};
+        }
     };
 }
 namespace
 {
     using namespace kai;
+    using Access = Livox2TestAccess;
+
+    struct Datagram
+    {
+        vector<uint8_t> bytes;
+        sockaddr_in source{};
+    };
+
+    class UdpEndpoint
+    {
+    public:
+        explicit UdpEndpoint(const char *ip = "127.0.0.1", uint16_t port = 0)
+        {
+            m_fd = ::socket(AF_INET, SOCK_DGRAM, 0);
+            assert(m_fd >= 0);
+            m_address.sin_family = AF_INET;
+            m_address.sin_port = htons(port);
+            assert(inet_pton(AF_INET, ip, &m_address.sin_addr) == 1);
+            assert(::bind(m_fd, reinterpret_cast<sockaddr *>(&m_address), sizeof(m_address)) == 0);
+            socklen_t size = sizeof(m_address);
+            assert(::getsockname(m_fd, reinterpret_cast<sockaddr *>(&m_address), &size) == 0);
+        }
+        ~UdpEndpoint() { close(); }
+        UdpEndpoint(const UdpEndpoint &) = delete;
+        UdpEndpoint &operator=(const UdpEndpoint &) = delete;
+        uint16_t port() const { return ntohs(m_address.sin_port); }
+        void close() { if (m_fd >= 0) ::close(m_fd); m_fd = -1; }
+        void send(const vector<uint8_t> &bytes, const sockaddr_in &destination)
+        {
+            assert(::sendto(m_fd, bytes.data(), bytes.size(), 0,
+                reinterpret_cast<const sockaddr *>(&destination), sizeof(destination)) == ssize_t(bytes.size()));
+        }
+        void send(const vector<uint8_t> &bytes, uint16_t hostPort)
+        {
+            sockaddr_in destination{};
+            destination.sin_family = AF_INET; destination.sin_port = htons(hostPort);
+            destination.sin_addr.s_addr = inet_addr("127.0.0.1");
+            send(bytes, destination);
+        }
+        void broadcast(const vector<uint8_t> &bytes, uint16_t hostPort)
+        {
+            const int enabled = 1;
+            assert(::setsockopt(m_fd, SOL_SOCKET, SO_BROADCAST, &enabled, sizeof(enabled)) == 0);
+            sockaddr_in destination{};
+            destination.sin_family = AF_INET; destination.sin_port = htons(hostPort);
+            destination.sin_addr.s_addr = inet_addr("127.255.255.255");
+            send(bytes, destination);
+        }
+        Datagram receive()
+        {
+            pollfd descriptor{m_fd, POLLIN, 0};
+            assert(::poll(&descriptor, 1, 2000) == 1 && (descriptor.revents & POLLIN));
+            Datagram datagram; datagram.bytes.resize(65536);
+            socklen_t size = sizeof(datagram.source);
+            const ssize_t received = ::recvfrom(m_fd, datagram.bytes.data(), datagram.bytes.size(), 0,
+                reinterpret_cast<sockaddr *>(&datagram.source), &size);
+            assert(received >= 0);
+            datagram.bytes.resize(size_t(received)); return datagram;
+        }
+        bool empty() const
+        {
+            pollfd descriptor{m_fd, POLLIN, 0};
+            return ::poll(&descriptor, 1, 0) == 0;
+        }
+    private:
+        int m_fd = -1;
+        sockaddr_in m_address{};
+    };
+
+    struct DriverFixture
+    {
+        JsonCfg config;
+        PCLframe cloud;
+        IMUstream imu;
+        _Livox2 driver;
+        uint16_t commandPort, statePort, pointPort, imuPort;
+
+        explicit DriverFixture(uint16_t queryPort, const char *hostIP = "0.0.0.0")
+        {
+            // Reserve all ports together so the kernel cannot choose one twice.
+            UdpEndpoint command, state, point, inertial;
+            commandPort = command.port(); statePort = state.port();
+            pointPort = point.port(); imuPort = inertial.port();
+            config.setJson({{"name", "livox-local-test"}, {"class", "_Livox2"},
+                {"lvxIP", "127.0.0.2"}, {"lvxHostIP", hostIP}, {"lvxPortQuery", queryPort},
+                {"lvxHostPortCmd", commandPort}, {"lvxHostPortState", statePort},
+                {"lvxHostPortPCL", pointPort}, {"lvxHostPortIMU", imuPort}});
+            driver.BASE::setConfig(&config, config.getJson());
+            assert(driver.loadConfig());
+            Access::outputs(driver, cloud, imu);
+        }
+    };
+
+    template <class Predicate> void await(Predicate predicate)
+    {
+        const auto end = std::chrono::steady_clock::now() + std::chrono::seconds(2);
+        while (!predicate() && std::chrono::steady_clock::now() < end)
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        assert(predicate());
+    }
+
+    vector<uint8_t> wire(LIVOX2_CMD command)
+    {
+        command.calcCRC();
+        const auto *bytes = reinterpret_cast<const uint8_t *>(&command);
+        return vector<uint8_t>(bytes, bytes + command.length);
+    }
+
+    bool hostCommand(const vector<uint8_t> &bytes, LIVOX2_CMD &command)
+    {
+        if (bytes.size() < 24 || bytes.size() > 1368 || bytes[0] != 0xaa || bytes[1] != 0 ||
+            livox2::u16(bytes.data() + 2) != bytes.size() || bytes[10] != LVX2_CMD_REQ || bytes[11] != 0)
+            return false;
+        if (CRC::Calculate(bytes.data(), 18, CRC::CRC_16_CCITTFALSE()) != livox2::u16(bytes.data() + 18) ||
+            (bytes.size() == 24 ? 0 : CRC::Calculate(bytes.data() + 24, bytes.size() - 24, CRC::CRC_32())) !=
+                livox2::u32(bytes.data() + 20)) return false;
+        memset(&command, 0, sizeof(command));
+        memcpy(&command, bytes.data(), bytes.size()); return true;
+    }
+
     void put(vector<uint8_t> &data, size_t offset, uint64_t value, size_t size)
     { for (size_t i = 0; i < size; ++i) data[offset + i] = uint8_t(value >> (8 * i)); }
 
@@ -108,8 +252,8 @@ namespace
     {
         for (uint8_t type = 1; type <= 3; ++type)
         {
-            _Livox2 driver; PCLframe cloud; IMUstream imu; BytePacketStream commands;
-            Livox2TestAccess::outputs(driver, cloud, imu, commands);
+            PCLframe cloud; IMUstream imu; _Livox2 driver;
+            Livox2TestAccess::outputs(driver, cloud, imu);
             const uint64_t start = 10000000000ULL;
             Livox2TestAccess::points(driver, points(driver, type, start));
             Livox2TestAccess::points(driver, points(driver, type, start)); // duplicate rejected
@@ -130,19 +274,25 @@ namespace
         }
     }
 
-    LIVOX2_DATA imuPacket(_Livox2 &driver, uint64_t stamp)
+    vector<uint8_t> imuBytes(uint64_t stamp)
     {
         auto bytes = packet(0, 1, stamp);
         LivoxLidarImuRawPoint raw{0.1f, -0.2f, 0.3f, 0, 0, 1};
         memcpy(bytes.data() + 36, &raw, sizeof(raw));
         put(bytes, 24, CRC::Calculate(bytes.data() + 28, bytes.size() - 28, CRC::CRC_32()), 4);
+        return bytes;
+    }
+
+    LIVOX2_DATA imuPacket(_Livox2 &driver, uint64_t stamp)
+    {
+        const auto bytes = imuBytes(stamp);
         LIVOX2_DATA data; assert(Livox2TestAccess::data(driver, bytes, data)); return data;
     }
 
     void testIMU()
     {
-        _Livox2 driver; PCLframe cloud; IMUstream imu; BytePacketStream commands;
-        Livox2TestAccess::outputs(driver, cloud, imu, commands);
+        PCLframe cloud; IMUstream imu; _Livox2 driver;
+        Livox2TestAccess::outputs(driver, cloud, imu);
         const uint64_t stamp = 10000000000ULL;
         auto data = imuPacket(driver, stamp);
         Livox2TestAccess::imu(driver, data);
@@ -167,8 +317,11 @@ namespace
 
     void testConfigurationAndACK()
     {
-        _Livox2 driver; PCLframe cloud; IMUstream imu; BytePacketStream commands;
-        Livox2TestAccess::outputs(driver, cloud, imu, commands);
+        UdpEndpoint sink("127.0.0.2");
+        DriverFixture fixture(sink.port());
+        _Livox2 &driver = fixture.driver;
+        assert(Access::open(driver));
+        Access::commandPort(driver, sink.port());
         const json before = Livox2TestAccess::values(driver); json errors;
         assert(!Livox2TestAccess::config(driver, {{"lvxPCLdataType", 99}, {"frameDurationMs", 25}}, errors));
         assert(Livox2TestAccess::values(driver) == before); // validation is transactional
@@ -210,10 +363,230 @@ namespace
         Livox2TestAccess::info(driver, {0, 0, 1, 0, 3}, 1);
         assert(Livox2TestAccess::observed(driver).at("lvxPCLdataType") == 3);
     }
+
+    LIVOX2_CMD discoveryReply(uint32_t sequence, uint16_t commandPort, const char *ip = "127.0.0.2")
+    {
+        LIVOX2_CMD reply; reply.init(LVX2_CMD_DISCOVER, LVX2_CMD_ACK, sequence); reply.sender_type = 1;
+        vector<uint8_t> payload(24);
+        payload[1] = 9;
+        memcpy(payload.data() + 2, "LOCALHOST-MID360", 15);
+        assert(inet_pton(AF_INET, ip, payload.data() + 18) == 1);
+        put(payload, 22, commandPort, 2);
+        reply.addData(payload.data(), payload.size()); return reply;
+    }
+
+    void testOwnedSockets()
+    {
+        UdpEndpoint query("127.0.0.2"), commands("127.0.0.2"), sensor("127.0.0.2"), other("127.0.0.3");
+        DriverFixture fixture(query.port());
+        _Livox2 &driver = fixture.driver;
+        assert(driver.start());
+        const auto discovery = query.receive();
+        LIVOX2_CMD request;
+        assert(hostCommand(discovery.bytes, request));
+        assert(request.cmd_id == LVX2_CMD_DISCOVER && request.cmd_type == LVX2_CMD_REQ);
+        assert(discovery.source.sin_addr.s_addr == inet_addr("127.0.0.1"));
+
+        // Both the UDP sender and the advertised address must identify this sensor.
+        other.send(wire(discoveryReply(request.seq_num, commands.port())), discovery.source);
+        query.send(wire(discoveryReply(request.seq_num, commands.port(), "127.0.0.3")), discovery.source);
+        std::this_thread::sleep_for(std::chrono::milliseconds(40));
+        assert(Access::transport(driver).at("state") == lvxState_deviceQuery);
+        // Mid-360 discovery ACKs arrive by broadcast, requiring a wildcard query bind.
+        query.broadcast(wire(discoveryReply(request.seq_num, commands.port())), ntohs(discovery.source.sin_port));
+
+        bool receivedHostConfig = false;
+        for (int count = 0; count < 6; ++count)
+        {
+            const auto outgoing = commands.receive();
+            LIVOX2_CMD command;
+            assert(hostCommand(outgoing.bytes, command));
+            assert(command.cmd_id == LVX2_CMD_SET && command.cmd_type == LVX2_CMD_REQ);
+            assert(ntohs(outgoing.source.sin_port) == fixture.commandPort);
+            if (livox2::u16(command.data) == 3)
+            {
+                const uint16_t ports[] = {fixture.statePort, fixture.pointPort, fixture.imuPort};
+                const uint16_t sourcePorts[] = {56200, 56300, 56400};
+                const uint16_t keys[] = {kKeyStateInfoHostIpCfg, kKeyLidarPointDataHostIpCfg, kKeyLidarImuHostIpCfg};
+                assert(command.length == 64);
+                for (int i = 0; i < 3; ++i)
+                {
+                    const uint8_t *entry = command.data + 4 + i * 12;
+                    assert(livox2::u16(entry) == keys[i] && livox2::u16(entry + 2) == 8);
+                    assert(livox2::u32(entry + 4) == inet_addr("127.0.0.1"));
+                    assert(livox2::u16(entry + 8) == ports[i]);
+                    assert(livox2::u16(entry + 10) == sourcePorts[i]);
+                }
+                receivedHostConfig = true;
+            }
+            LIVOX2_CMD ack; ack.init(command.cmd_id, LVX2_CMD_ACK, command.seq_num); ack.sender_type = 1;
+            ack.addData(uint8_t(0)); ack.addData(uint16_t(0));
+            commands.send(wire(ack), outgoing.source);
+        }
+        assert(receivedHostConfig);
+        await([&] { return Access::transport(driver).at("state") == lvxState_work; });
+
+        const uint64_t stamp = 10000000000ULL;
+        auto point = packet(1, 1, stamp, false);
+        const LivoxLidarCartesianHighRawPoint raw{1000, 0, 0, 255, 0};
+        memcpy(point.data() + 36, &raw, sizeof(raw));
+        other.send(point, fixture.pointPort);
+        sensor.send(imuBytes(stamp), fixture.pointPort); // Wrong data type for this port.
+        sensor.send({1, 2, 3}, fixture.pointPort);
+        auto oversized = packet(1, 96, stamp, false);
+        oversized.resize(8192); // Its valid 1380-byte prefix must not survive datagram truncation.
+        sensor.send(oversized, fixture.pointPort);
+        sensor.send(point, fixture.pointPort);
+        put(point, 28, stamp + 100000000, 8);
+        sensor.send(point, fixture.pointPort);
+        await([&] { return Access::transport(driver).at("pointPackets") == 2; });
+        vector<GEOMETRY_POINT> actual;
+        assert(fixture.cloud.get(actual) == stamp && actual.size() == 1);
+        assert((actual[0].m_vP - Vector3f(1, 0, 0)).norm() < 1e-5f);
+
+        other.send(imuBytes(stamp), fixture.imuPort);
+        sensor.send(point, fixture.imuPort);
+        sensor.send(imuBytes(stamp), fixture.imuPort);
+        await([&] { return Access::transport(driver).at("imuSamples") == 1; });
+        deque<IMUstream::IMU_DATA> gyro, acc;
+        fixture.imu.get(gyro, acc);
+        assert(gyro.size() == 1 && acc.size() == 1 && gyro[0].m_t == stamp);
+        assert(std::abs(acc[0].m_v.z() - 9.80665f) < 1e-5f);
+        assert(Access::transport(driver).at("outOfOrderPackets") == 0);
+        assert(Access::transport(driver).at("invalidPackets").get<unsigned>() >= 4);
+
+        LIVOX2_CMD push; push.init(LVX2_CMD_PUSH, LVX2_CMD_REQ, 0); push.sender_type = 1;
+        push.addData(uint16_t(1)); push.addData(uint16_t(0));
+        push.addData(uint16_t(kKeyPclDataType)); push.addData(uint16_t(1)); push.addData(uint8_t(3));
+        sensor.send(wire(push), fixture.statePort);
+        await([&] { return Access::transport(driver).at("observed").value("lvxPCLdataType", 0) == 3; });
+
+        // Saving preserves automatic host selection, so moving to another NIC still works.
+        assert(driver.saveConfig(false));
+        assert(fixture.config.getJson()->at("lvxHostIP") == "0.0.0.0");
+        driver.stop(); driver.stop();
+        const auto stopped = Access::transport(driver);
+        assert(stopped.at("closed") == true && stopped.at("pending") == 0 && stopped.at("framePoints") == 0);
+        assert(driver.start());
+        fixture.imu.get(gyro, acc); assert(gyro.empty() && acc.empty());
+        const auto restarted = query.receive();
+        assert(hostCommand(restarted.bytes, request));
+        assert(request.cmd_id == LVX2_CMD_DISCOVER);
+        assert(Access::transport(driver).at("state") == lvxState_deviceQuery);
+        driver.stop();
+        UdpEndpoint releasedCommand("127.0.0.1", fixture.commandPort);
+        UdpEndpoint releasedState("127.0.0.1", fixture.statePort);
+        UdpEndpoint releasedPoint("127.0.0.1", fixture.pointPort);
+        UdpEndpoint releasedImu("127.0.0.1", fixture.imuPort);
+    }
+
+    void testNetworkValidationAndBindFailure()
+    {
+        UdpEndpoint query("127.0.0.2");
+        DriverFixture fixture(query.port(), "127.0.0.1");
+        _Livox2 &driver = fixture.driver;
+        const json before = Access::values(driver);
+        const json invalid[] = {
+            {{"lvxIP", "0.0.0.0"}}, {{"lvxIP", "255.255.255.255"}}, {{"lvxIP", "239.1.2.3"}},
+            {{"lvxHostIP", "not-an-ip"}}, {{"lvxPortQuery", 0}}, {{"lvxHostPortCmd", 65536}},
+            {{"lvxHostPortPCL", 123.5}}, {{"receiveBufferBytes", -1}},
+            {{"lvxHostPortPCL", fixture.imuPort}},
+        };
+        for (const auto &patch : invalid)
+        {
+            json errors;
+            assert(!Access::offlineConfig(driver, patch, errors));
+            assert(!errors.empty() && Access::values(driver) == before);
+        }
+        json errors;
+        assert(!Access::config(driver, {{"lvxPortQuery", query.port() == 65535 ? 65534 : query.port() + 1}}, errors));
+        assert(Access::values(driver) == before);
+
+        // Fail after several sockets have opened; every earlier socket must be closed.
+        UdpEndpoint occupied("127.0.0.1", fixture.pointPort);
+        assert(!driver.start());
+        assert(Access::transport(driver).at("closed") == true);
+        {
+            UdpEndpoint releasedCommand("127.0.0.1", fixture.commandPort);
+            UdpEndpoint releasedState("127.0.0.1", fixture.statePort);
+        }
+        occupied.close();
+        assert(driver.start());
+        LIVOX2_CMD request;
+        assert(hostCommand(query.receive().bytes, request));
+        assert(request.cmd_id == LVX2_CMD_DISCOVER);
+        driver.stop();
+    }
+
+    void testServiceTimers()
+    {
+        UdpEndpoint sensor("127.0.0.2");
+        DriverFixture fixture(sensor.port());
+        _Livox2 &driver = fixture.driver;
+        assert(Access::open(driver));
+        Access::commandPort(driver, sensor.port());
+        Access::connected(driver);
+        Access::queue(driver, kKeyDetectMode, 1);
+        const auto original = sensor.receive();
+        LIVOX2_CMD command;
+        assert(hostCommand(original.bytes, command));
+        const uint64_t sent = Access::sent(driver);
+        Access::timers(driver, sent);
+        Access::service(driver, sent + 499 * NSEC_MSEC);
+        assert(sensor.empty() && Access::pending(driver) == 1);
+        for (int attempt = 1; attempt <= 2; ++attempt)
+        {
+            Access::service(driver, sent + attempt * 500 * NSEC_MSEC);
+            assert(sensor.receive().bytes == original.bytes); // Retries retain sequence and payload.
+            assert(Access::pending(driver) == 1 && !Access::failed(driver));
+        }
+        Access::service(driver, sent + 1500 * NSEC_MSEC);
+        assert(sensor.empty() && Access::pending(driver) == 0 && Access::failed(driver));
+        assert(Access::transport(driver).at("commandRetries") == 2);
+        assert(Access::transport(driver).at("commandErrors") == 1);
+
+        // Exercise discovery pacing without waiting for the wall clock.
+        driver.stop();
+        assert(Access::open(driver));
+        const uint64_t now = getTns();
+        Access::service(driver, now);
+        assert(hostCommand(sensor.receive().bytes, command) && command.cmd_id == LVX2_CMD_DISCOVER);
+        const uint32_t sequence = command.seq_num;
+        Access::service(driver, now + 500 * NSEC_MSEC);
+        assert(sensor.empty());
+        Access::service(driver, now + NSEC_SEC);
+        assert(hostCommand(sensor.receive().bytes, command) && command.seq_num != sequence);
+
+        // A transport timeout clears the old clock epoch, pending commands and IMU history.
+        json errors;
+        assert(Access::config(driver, {{"tOutSec", 1}}, errors));
+        Access::commandPort(driver, sensor.port());
+        Access::connected(driver);
+        Access::queue(driver, kKeyDetectMode, 0); sensor.receive();
+        Access::points(driver, points(driver, 1, 10000000000ULL));
+        Access::imu(driver, imuPacket(driver, 10000000000ULL));
+        Access::timers(driver, now);
+        Access::service(driver, now + NSEC_SEC + 1);
+        const auto reconnect = sensor.receive();
+        assert(hostCommand(reconnect.bytes, command) && command.cmd_id == LVX2_CMD_DISCOVER);
+        const auto reset = Access::transport(driver);
+        assert(reset.at("state") == lvxState_deviceQuery && reset.at("pending") == 0 && reset.at("framePoints") == 0);
+        assert(!Access::failed(driver));
+        deque<IMUstream::IMU_DATA> gyro, acc; fixture.imu.get(gyro, acc);
+        assert(gyro.empty() && acc.empty());
+        vector<GEOMETRY_POINT> cloud; fixture.cloud.get(cloud); assert(cloud.empty());
+
+        sensor.send(wire(discoveryReply(command.seq_num, sensor.port())), reconnect.source);
+        Access::receiveQuery(driver);
+        assert(Access::transport(driver).at("state") == lvxState_init && Access::pending(driver) == 6);
+        for (int i = 0; i < 6; ++i)
+            assert(hostCommand(sensor.receive().bytes, command) && command.cmd_id == LVX2_CMD_SET);
+    }
 }
 int main()
 {
     testProtocol(); testCloud(); testIMU(); testConfigurationAndACK();
-    std::cout << "Livox2 packet validation, scan timing, coordinate formats, IMU units, epoch reset and control tests passed\n";
+    testOwnedSockets(); testNetworkValidationAndBindFailure(); testServiceTimers();
+    std::cout << "Livox2 packet, cloud, IMU, control, localhost UDP and socket lifecycle tests passed\n";
 }
 #endif

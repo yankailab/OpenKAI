@@ -14,11 +14,46 @@ internet connection are not needed.
 
 The browser's **IP / host** is the PC running OpenKAI, not the LiDAR's address.
 For another computer on the same network, open `http://<OpenKAI-PC-IP>:8080/`.
-The MID-360 sensor is configured at `192.168.16.120`; the PC's Ethernet address
-must match `lvxHostIP` and all UDP receiver bindings in the launch configuration.
+The MID-360 sensor is configured at `192.168.16.120` in `Lvx1.lvxIP`.
+`_Livox2` owns its UDP sockets and automatically selects the PC's Ethernet
+address from the route to the sensor.
 The viewer uses TCP **8080** for the page and geometry, and TCP **7890** for
 commands. The sensor uses separate UDP ports specified in the launch JSON.
 The standalone launch allows four command clients; the GLIM launch allows eight.
+
+All LiDAR networking is configured in the `_Livox2` instance:
+
+```json
+{
+  "Lvx1": {
+    "class": "_Livox2",
+    "thread": {"FPS": 0},
+    "lvxIP": "192.168.16.120",
+    "lvxHostPortCmd": 56101,
+    "lvxHostPortState": 56201,
+    "lvxHostPortPCL": 56301,
+    "lvxHostPortIMU": 56401,
+    "PCLframeOut": "livoxPoints",
+    "IMUstreamOut": "livoxIMU"
+  }
+}
+```
+
+The four host ports above are defaults. `lvxHostIP` is optional; omit it or use
+`0.0.0.0` for automatic host selection, or set a local IPv4 address explicitly.
+`lvxPortQuery` defaults to 56000; the sensor advertises its command port during
+discovery. `receiveBufferBytes` defaults to 4194304 per socket. `thread.FPS: 0`
+lets socket polling pace the receive loop. There are no separate LiDAR `_UDP`
+modules, packet streams, or receive-worker settings. Point-cloud and IMU output
+DataObjects remain independent and available to other modules.
+
+The MID-360 broadcasts discovery replies to `255.255.255.255` at the query
+socket's automatically assigned local UDP port. The driver receives discovery
+on a wildcard socket and selects the Ethernet address separately for its four
+fixed host ports. If a firewall is enabled, allow UDP replies from the sensor,
+including these broadcast discovery replies and traffic to the configured host
+ports. The status panel shows the active host address and whether the UDP
+sockets are open.
 
 For a standalone page preview, serve the whole HTML tree:
 
@@ -37,10 +72,10 @@ The LiDAR module defaults to **Lvx1**. **Refresh config** retrieves the driver's
 current configuration, supported parameter schema and device status. Controls
 include coordinate format, detection/work modes, embedded IMU, point-cloud frame
 duration, distance filtering, reflectivity/color, IMU stabilization, maximum frame
-size and timeout, as supported by the connected device. Network routing and
-device identity are read-only; edit their launch JSON entries together before
-restarting OpenKAI. MID-360 does not expose unsupported frame-rate or scan-pattern
-choices.
+size and timeout, as supported by the connected device. Network settings and
+device identity are read-only; edit network settings on `Lvx1` in the launch
+JSON before restarting OpenKAI. MID-360 does not expose unsupported frame-rate
+or scan-pattern choices.
 
 Edits send a single `setConfig` patch. Device writes are asynchronous: the viewer
 shows queued settings and waits for sensor acknowledgements before allowing
@@ -128,6 +163,12 @@ IMU enable/disable, invalid settings, frame duration, save and shutdown, and
 restores the settings it edits. Stop other Livox backends before running it.
 `--glim` also checks stationary inertial initialization, tracking and PLY export.
 Use `--output /tmp/livox-test` to retain logs and results.
+
+Live driver verification on 2026-10-23 used the owned UDP sockets with the
+MID-360 at `192.168.16.120`: the 20-second capture published 199 frames and
+received 4,021 IMU samples. All three point formats and clean shutdown passed,
+with no invalid packets, command errors, or command retries. This run did not
+repeat the browser verification below.
 
 Live verification on 2026-10-22 used the MID-360 at `192.168.16.120`: about
 10 clouds/s and 200 IMU samples/s, with configuration readback and all three point

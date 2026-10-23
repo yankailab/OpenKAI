@@ -64,7 +64,7 @@ DataObject link keys end in `In` for inputs and `Out` for outputs. The suffix de
 | `_OctreeGrid`, `_SelectableOctGrid` | `vPCLframesIn` array | Existing cell interface |
 | `_BenewakeTF`, `_TOFsense` | `BytePacketStreamIn` | `PCLframeOut` |
 | `_LeddarVu` | Modbus device | `PCLframeOut` |
-| `_Livox2` | Existing UDP modules | `PCLframeOut`; optional `IMUstreamOut` |
+| `_Livox2` | Owned UDP sockets; `lvxIP` and host ports | `PCLframeOut`; optional `IMUstreamOut` |
 | `_RoboSenseAiry` | Existing UDP modules | `PCLframeOut` |
 | `_SLAMbase`, `_GLIM` | `PCLframeIn`; optional `IMUstreamIn` | `_GLIM`: optional `PCLframeOut` and `PCLmapOut` |
 | RGBD camera modules | Device | `RGBframeOut`, `DframeOut`, `IRframeOut`, `RGBDframeOut`, `RGBDtRGBframeOut`, `RGBDtDframeOut`, `PCLframeOut`, `IMUstreamOut` |
@@ -277,7 +277,7 @@ Benewake always publishes one beam. Leddar's register and `0x41` read modes both
 publish complete frames; `0x41` keeps the nearest valid return per division and
 invalidates divisions without detections.
 
-Livox assembles packets with the same device `frame_cnt`, then copies the completed cloud into its `PCLframe` when the next frame starts. `nMaxFramePoints` bounds that assembly buffer (default 100000); excess points in that frame are discarded. Clearing the driver also discards its pending unpublished frame. Its `IMUstream` output is independent of the cloud frame.
+Livox groups packets into `frameDurationMs` timestamp windows (default 100 ms), then publishes the completed cloud to its `PCLframe` when the next window starts. Each point retains its capture timestamp. `nMaxFramePoints` bounds the assembly buffer (default 100000); excess points in that window are discarded. Clearing the driver also discards its pending unpublished frame. Its `IMUstream` output is independent of the cloud frame.
 
 `PCLmap::get(vector<Submap> &submaps, uint64_t &session)` copies each submap's
 local point vector and pose, copies the SLAM session ID, and returns the map
@@ -289,7 +289,7 @@ uses GLM3 with map timestamps. Legacy wire decoders are not supported.
 
 ## Examples and scope
 
-Updated launches include `Detectors.json`, `WebViewer3D.json`, `ImGUI.json`, `APmav_drive.json`, `Orbbec.json`, `Scepter.json`, `GLIM_orbbec.json`, `GLIM_scepter.json`, and `_GLIM.json`. `Livox2.json` is a standalone LiDAR example; configure its host/device IP addresses for the local network. Build LiDAR with `WITH_SENSOR`, `WITH_UNIVERSE`, and `WITH_IO` enabled; Open3D is not required. `_GLIM.json` declares input streams but needs a producer to populate them.
+Updated launches include `Detectors.json`, `WebViewer3D.json`, `ImGUI.json`, `APmav_drive.json`, `Orbbec.json`, `Scepter.json`, `GLIM_orbbec.json`, `GLIM_scepter.json`, and `_GLIM.json`. `Livox2.json` is a standalone LiDAR example; set `Lvx1.lvxIP` to the sensor address. `_Livox2` owns its UDP sockets, selects the host address from the route, and accepts host ports directly on the instance. Build LiDAR with `WITH_SENSOR` and `WITH_UNIVERSE`; the example's WebSocket command service also needs `WITH_IO`. Open3D is not required. `_GLIM.json` declares input streams but needs a producer to populate them.
 
 The old `_IMUbase` preview modules are absent from the migrated examples; camera and LiDAR IMU data go to `IMUstream`. The `_LCalign.json` launch now uses point and image DataObjects but retains legacy viewer and IMU settings. Legacy `.kiss` launches still reference older Tools/Open3D/ROS interfaces and are not migrated examples. The historical `test/apMavlinkFollow.kiss` has updated bounding-box stream links, but its older syntax and remaining module settings still need migration before use. Open3D point registration now uses the point stream keys above, while its registration and visualization algorithms still require `USE_OPEN3D`. Other `USE_OPEN3D` interfaces remain outside this migration.
 

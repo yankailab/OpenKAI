@@ -557,6 +557,31 @@ def adapters(records, files, constants, symbol):
             raise ValueError('Unrecognized E1R default: '+key)
         kind='boolean' if isinstance(value,bool) else 'integer' if isinstance(value,int) else 'number' if isinstance(value,float) else 'array' if isinstance(value,list) else 'string'
         param('_E1R',[key],kind,e1r_path+':loadConfig',default=value)
+    # Livox startup accepts the keys returned by configValues(), including its
+    # owned socket settings. Keep this list source-derived as controls evolve.
+    lvx = records['_Livox2']
+    method = next(m for m in lvx['_methods'] if m['name']=='configValues')
+    for match in re.finditer(r'\{\s*"([^"]+)",\s*',method['body']):
+        key = match[1]
+        pair_end = closing(method['body'],match.start())
+        expression = split_args(method['body'][match.start()+1:pair_end])[1]
+        variable = re.search(r'\bm_\w+(?:\.m_\w+)*',expression)
+        if not variable:
+            raise ValueError('Unrecognized Livox configuration value: '+key)
+        variable = variable[0]
+        sym = symbol(lvx,variable,{})
+        type_,evidence = infer_type(sym.get('cppType',''),variable,key)
+        extra = {'cppVariable':variable,'cppType':sym.get('cppType',''),'typeEvidence':evidence}
+        if expression.startswith('ipString('):
+            type_ = 'string'
+        elif expression.startswith('{'):
+            type_ = 'array'
+        elif sym.get('expr'):
+            default_expression = sym['expr'] if expression==variable else expression.replace(variable,'('+sym['expr']+')')
+            value = literal(default_expression,constants)
+            if value is not MISSING:
+                extra['default'] = int(value) if type_=='integer' else value
+        param('_Livox2',[key],type_,source_ref(method['file'],method['full'],method['offset']+match.start()),**extra)
     # Scepter startup consumes every key exposed by visitScControls, not jKv calls.
     sc_path='src/Vision/RGBD/_Scepter.cpp'
     for match in re.finditer(r'\bf\("([^\"]+)",\s*([^,]+),\s*"([^\"]+)"\)', files[sc_path]):

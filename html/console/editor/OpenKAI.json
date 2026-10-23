@@ -21305,97 +21305,21 @@
     {
       "name": "_Livox2",
       "category": "Sensor/LiDAR/Livox",
-      "source": "src/Sensor/LiDAR/Livox/_Livox2.h:160",
+      "source": "src/Sensor/LiDAR/Livox/_Livox2.h:161",
       "baseClasses": [
         "_TransformBase"
       ],
       "parameters": [
         {
           "path": [
-            "BytePacketStreamCtrlCmdIn"
-          ],
-          "type": "string",
-          "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:98",
-          "typeEvidence": "instance-lookup",
-          "cppVariable": "n",
-          "dependency": true
-        },
-        {
-          "path": [
-            "BytePacketStreamCtrlCmdOut"
-          ],
-          "type": "string",
-          "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:103",
-          "typeEvidence": "instance-lookup",
-          "cppVariable": "n",
-          "dependency": true
-        },
-        {
-          "path": [
-            "BytePacketStreamDeviceQueryIn"
-          ],
-          "type": "string",
-          "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:88",
-          "typeEvidence": "instance-lookup",
-          "cppVariable": "n",
-          "dependency": true
-        },
-        {
-          "path": [
-            "BytePacketStreamDeviceQueryOut"
-          ],
-          "type": "string",
-          "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:93",
-          "typeEvidence": "instance-lookup",
-          "cppVariable": "n",
-          "dependency": true
-        },
-        {
-          "path": [
-            "BytePacketStreamImuIn"
-          ],
-          "type": "string",
-          "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:118",
-          "typeEvidence": "instance-lookup",
-          "cppVariable": "n",
-          "dependency": true
-        },
-        {
-          "path": [
-            "BytePacketStreamPclIn"
-          ],
-          "type": "string",
-          "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:113",
-          "typeEvidence": "instance-lookup",
-          "cppVariable": "n",
-          "dependency": true
-        },
-        {
-          "path": [
-            "BytePacketStreamPushCmdIn"
-          ],
-          "type": "string",
-          "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:108",
-          "typeEvidence": "instance-lookup",
-          "cppVariable": "n",
-          "dependency": true
-        },
-        {
-          "path": [
             "IMUstreamOut"
           ],
           "type": "string",
           "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:83",
-          "typeEvidence": "instance-lookup",
-          "cppVariable": "n",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:71",
+          "typeEvidence": "declaration",
+          "cppVariable": "name",
+          "cppType": "string",
           "dependency": true
         },
         {
@@ -21404,10 +21328,36 @@
           ],
           "type": "string",
           "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:78",
-          "typeEvidence": "instance-lookup",
-          "cppVariable": "n",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:67",
+          "typeEvidence": "declaration",
+          "cppVariable": "name",
+          "cppType": "string",
           "dependency": true
+        },
+        {
+          "path": [
+            "_TransformBase"
+          ],
+          "type": "array",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:39",
+          "typeEvidence": "declaration",
+          "cppVariable": "vN",
+          "cppType": "vector<string>",
+          "dependency": true
+        },
+        {
+          "path": [
+            "bIMUstab"
+          ],
+          "type": "boolean",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:607",
+          "declaredIn": "_Livox2",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_bIMUstab",
+          "cppType": "bool",
+          "typeEvidence": "declaration",
+          "default": false
         },
         {
           "path": [
@@ -21434,6 +21384,19 @@
         },
         {
           "path": [
+            "bReflectivity"
+          ],
+          "type": "boolean",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:607",
+          "declaredIn": "_Livox2",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_bReflectivity",
+          "cppType": "bool",
+          "typeEvidence": "declaration",
+          "default": true
+        },
+        {
+          "path": [
             "class"
           ],
           "type": "string",
@@ -21446,6 +21409,214 @@
         },
         {
           "path": [
+            "frameDurationMs"
+          ],
+          "type": "integer",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:608",
+          "declaredIn": "_Livox2",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_frameDurationNs",
+          "cppType": "uint64_t",
+          "typeEvidence": "declaration",
+          "default": 100
+        },
+        {
+          "path": [
+            "lvxDetectMode"
+          ],
+          "type": "integer",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:605",
+          "declaredIn": "_Livox2",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_lvxCfg.m_detectMode",
+          "cppType": "uint8_t",
+          "typeEvidence": "declaration"
+        },
+        {
+          "path": [
+            "lvxFrameRate"
+          ],
+          "type": "integer",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:604",
+          "declaredIn": "_Livox2",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_lvxCfg.m_frameRate",
+          "cppType": "uint8_t",
+          "typeEvidence": "declaration"
+        },
+        {
+          "path": [
+            "lvxHostIP"
+          ],
+          "type": "string",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:600",
+          "declaredIn": "_Livox2",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_lvxCfg.m_hostIP",
+          "cppType": "uint32_t",
+          "typeEvidence": "declaration"
+        },
+        {
+          "path": [
+            "lvxHostPortCmd"
+          ],
+          "type": "integer",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:601",
+          "declaredIn": "_Livox2",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_hostPortCmd",
+          "cppType": "uint16_t",
+          "typeEvidence": "declaration",
+          "default": 56101
+        },
+        {
+          "path": [
+            "lvxHostPortIMU"
+          ],
+          "type": "integer",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:603",
+          "declaredIn": "_Livox2",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_lvxCfg.m_hostPortIMU",
+          "cppType": "uint16_t",
+          "typeEvidence": "declaration"
+        },
+        {
+          "path": [
+            "lvxHostPortPCL"
+          ],
+          "type": "integer",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:602",
+          "declaredIn": "_Livox2",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_lvxCfg.m_hostPortPCL",
+          "cppType": "uint16_t",
+          "typeEvidence": "declaration"
+        },
+        {
+          "path": [
+            "lvxHostPortState"
+          ],
+          "type": "integer",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:602",
+          "declaredIn": "_Livox2",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_lvxCfg.m_hostPortState",
+          "cppType": "uint16_t",
+          "typeEvidence": "declaration"
+        },
+        {
+          "path": [
+            "lvxIMUdataEn"
+          ],
+          "type": "integer",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:606",
+          "declaredIn": "_Livox2",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_lvxCfg.m_imuDataEn",
+          "cppType": "uint8_t",
+          "typeEvidence": "declaration"
+        },
+        {
+          "path": [
+            "lvxIP"
+          ],
+          "type": "string",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:600",
+          "declaredIn": "_Livox2",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_lvxIP",
+          "cppType": "uint32_t",
+          "typeEvidence": "declaration"
+        },
+        {
+          "path": [
+            "lvxPCLdataType"
+          ],
+          "type": "integer",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:603",
+          "declaredIn": "_Livox2",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_lvxCfg.m_pclDataType",
+          "cppType": "uint8_t",
+          "typeEvidence": "declaration"
+        },
+        {
+          "path": [
+            "lvxPatternMode"
+          ],
+          "type": "integer",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:604",
+          "declaredIn": "_Livox2",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_lvxCfg.m_patternMode",
+          "cppType": "uint8_t",
+          "typeEvidence": "declaration"
+        },
+        {
+          "path": [
+            "lvxPortQuery"
+          ],
+          "type": "integer",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:601",
+          "declaredIn": "_Livox2",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_queryPort",
+          "cppType": "uint16_t",
+          "typeEvidence": "declaration",
+          "default": 56000
+        },
+        {
+          "path": [
+            "lvxSN"
+          ],
+          "type": "string",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:600",
+          "declaredIn": "_Livox2",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_lvxSN",
+          "cppType": "string",
+          "typeEvidence": "declaration"
+        },
+        {
+          "path": [
+            "lvxWorkMode"
+          ],
+          "type": "integer",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:606",
+          "declaredIn": "_Livox2",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_lvxCfg.m_workMode",
+          "cppType": "uint8_t",
+          "typeEvidence": "declaration"
+        },
+        {
+          "path": [
+            "lvxWorkModeAfterBoot"
+          ],
+          "type": "integer",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:605",
+          "declaredIn": "_Livox2",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_lvxCfg.m_workModeAfterBoot",
+          "cppType": "uint8_t",
+          "typeEvidence": "declaration"
+        },
+        {
+          "path": [
+            "nMaxFramePoints"
+          ],
+          "type": "integer",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:609",
+          "declaredIn": "_Livox2",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_nMaxFramePoints",
+          "cppType": "int",
+          "typeEvidence": "declaration",
+          "default": 100000
+        },
+        {
+          "path": [
             "name"
           ],
           "type": "string",
@@ -21455,6 +21626,32 @@
           "cppVariable": "m_name",
           "cppType": "string",
           "default": ""
+        },
+        {
+          "path": [
+            "receiveBufferBytes"
+          ],
+          "type": "integer",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:601",
+          "declaredIn": "_Livox2",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_receiveBufferBytes",
+          "cppType": "int",
+          "typeEvidence": "declaration",
+          "default": 4194304
+        },
+        {
+          "path": [
+            "tOutSec"
+          ],
+          "type": "integer",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:608",
+          "declaredIn": "_Livox2",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_timeoutNs",
+          "cppType": "uint64_t",
+          "typeEvidence": "declaration",
+          "default": 10
         },
         {
           "path": [
@@ -21486,112 +21683,52 @@
         },
         {
           "path": [
+            "vColorDefault"
+          ],
+          "type": "array",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:609",
+          "declaredIn": "_Livox2",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_vColorDefault",
+          "cppType": "Vector3f",
+          "typeEvidence": "declaration"
+        },
+        {
+          "path": [
             "vOrt"
           ],
           "type": "array",
           "declaredIn": "_TransformBase",
           "source": "src/Universe/_TransformBase.cpp:27",
           "typeEvidence": "jKv-vector-overload",
-          "cppVariable": "m_vOrt.coeffs()"
+          "cppVariable": "m_vR.coeffs()"
         },
         {
           "path": [
-            "vPos"
+            "vRangeD"
+          ],
+          "type": "array",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:610",
+          "declaredIn": "_Livox2",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_vRangeD",
+          "cppType": "Vector2f",
+          "typeEvidence": "declaration"
+        },
+        {
+          "path": [
+            "vT"
           ],
           "type": "array",
           "declaredIn": "_TransformBase",
           "source": "src/Universe/_TransformBase.cpp:26",
           "typeEvidence": "declaration",
-          "cppVariable": "m_vPos",
+          "cppVariable": "m_vT",
           "cppType": "Vector3d",
           "defaultExpression": "Vector3d::Zero()"
         }
       ],
       "dependencies": [
-        {
-          "path": [
-            "BytePacketStreamCtrlCmdIn"
-          ],
-          "targetClass": "BytePacketStream",
-          "targetKind": "dataObject",
-          "multiple": false,
-          "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:99",
-          "required": true,
-          "containers": []
-        },
-        {
-          "path": [
-            "BytePacketStreamCtrlCmdOut"
-          ],
-          "targetClass": "BytePacketStream",
-          "targetKind": "dataObject",
-          "multiple": false,
-          "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:104",
-          "required": true,
-          "containers": []
-        },
-        {
-          "path": [
-            "BytePacketStreamDeviceQueryIn"
-          ],
-          "targetClass": "BytePacketStream",
-          "targetKind": "dataObject",
-          "multiple": false,
-          "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:89",
-          "required": true,
-          "containers": []
-        },
-        {
-          "path": [
-            "BytePacketStreamDeviceQueryOut"
-          ],
-          "targetClass": "BytePacketStream",
-          "targetKind": "dataObject",
-          "multiple": false,
-          "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:94",
-          "required": true,
-          "containers": []
-        },
-        {
-          "path": [
-            "BytePacketStreamImuIn"
-          ],
-          "targetClass": "BytePacketStream",
-          "targetKind": "dataObject",
-          "multiple": false,
-          "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:119",
-          "required": true,
-          "containers": []
-        },
-        {
-          "path": [
-            "BytePacketStreamPclIn"
-          ],
-          "targetClass": "BytePacketStream",
-          "targetKind": "dataObject",
-          "multiple": false,
-          "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:114",
-          "required": true,
-          "containers": []
-        },
-        {
-          "path": [
-            "BytePacketStreamPushCmdIn"
-          ],
-          "targetClass": "BytePacketStream",
-          "targetKind": "dataObject",
-          "multiple": false,
-          "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:109",
-          "required": true,
-          "containers": []
-        },
         {
           "path": [
             "IMUstreamOut"
@@ -21600,7 +21737,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:84",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:72",
           "containers": []
         },
         {
@@ -21611,8 +21748,19 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:79",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:68",
           "required": true,
+          "containers": []
+        },
+        {
+          "path": [
+            "_TransformBase"
+          ],
+          "targetClass": "_TransformBase",
+          "targetKind": "module",
+          "multiple": true,
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:45",
           "containers": []
         }
       ],

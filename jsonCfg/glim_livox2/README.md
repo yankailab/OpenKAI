@@ -13,11 +13,17 @@ Keep the sensor still for initialization, then click **Start** in the GLIM viewe
 SLAM waits for IMU samples covering the complete scan before processing it.
 Stop SLAM before changing the sensor format, timing, work mode, or IMU settings.
 
-This profile uses the Mid-360 at `192.168.16.120` and the PC's Ethernet address
-`192.168.16.100`. Host UDP ports are 56101 (control), 56201 (state), 56301 (points),
-and 56401 (IMU). If the network changes, update `Lvx1.lvxHostIP`, `Lvx1.lvxIP`,
-and every UDP transport's `addrRemote` together. Run one Livox application at a
-time because the standalone and SLAM profiles use the same sensor and UDP ports.
+This profile uses the Mid-360 at `192.168.16.120`. `_Livox2` owns its UDP sockets
+and selects the PC's Ethernet address from the route to `Lvx1.lvxIP`. Host ports
+are configured directly on `Lvx1`: `lvxHostPortCmd: 56101`,
+`lvxHostPortState: 56201`, `lvxHostPortPCL: 56301`, and `lvxHostPortIMU: 56401`.
+If the sensor address changes, update only `Lvx1.lvxIP`; an optional `lvxHostIP`
+overrides automatic host selection. Restart OpenKAI after changing network
+settings. Run one Livox application at a time because the standalone and SLAM
+profiles use the same sensor and UDP ports.
+If a firewall is enabled, allow UDP traffic from the sensor to those host ports
+and broadcast discovery replies to the driver's automatically assigned query
+port; see the [Livox networking notes](../../html/viewer/_Livox2/README.md).
 
 `lvxIMUdataEn: 1` enables the built-in 200 Hz IMU. `_Livox2` converts acceleration
 from g to m/s² once, using 9.80665; gyroscope values are rad/s. No ROS acceleration

@@ -1,6 +1,8 @@
 const $ = selector => document.querySelector(selector);
 const labels = {
-  lvxSN: 'Selected serial number', lvxIP: 'Sensor IP', lvxHostIP: 'Host Ethernet IP',
+  lvxSN: 'Selected serial number', lvxIP: 'Sensor IP', lvxHostIP: 'Host IP override (0.0.0.0 = automatic)',
+  lvxPortQuery: 'Sensor discovery UDP port', lvxHostPortCmd: 'Host command UDP port',
+  receiveBufferBytes: 'UDP receive buffer (bytes)',
   lvxHostPortState: 'Status UDP port', lvxHostPortPCL: 'Point cloud UDP port', lvxHostPortIMU: 'IMU UDP port',
   lvxPCLdataType: 'Point coordinates', lvxPatternMode: 'Scan pattern', lvxDetectMode: 'Detection mode',
   lvxWorkMode: 'Work mode', lvxIMUdataEn: 'Embedded IMU', frameDurationMs: 'Point cloud frame duration (ms)',
@@ -127,7 +129,8 @@ export class LivoxControls {
     const container = $('#deviceStatus'); container.replaceChildren();
     if (!status || typeof status !== 'object') return;
     const labels = {
-      state: 'State', serialNumber: 'Serial number', deviceType: 'Device type', commandPort: 'Command UDP port',
+      state: 'State', serialNumber: 'Serial number', deviceType: 'Device type', commandPort: 'Sensor command UDP port',
+      hostIP: 'Active host Ethernet IP', socketsOpen: 'UDP sockets open',
       configApplied: 'Settings applied', pendingCommands: 'Pending commands', pointPackets: 'Point packets',
       points: 'Points received', frames: 'Frames published', imuSamples: 'IMU samples',
       invalidPackets: 'Invalid packets', outOfOrderPackets: 'Out-of-order packets', frameOverflows: 'Frame overflows',
