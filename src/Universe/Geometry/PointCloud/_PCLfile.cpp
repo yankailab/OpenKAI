@@ -831,7 +831,7 @@ namespace kai
 
 	bool _PCLfile::loadConfig(void)
 	{
-		IF_F(!this->_ReferenceFrame::loadConfig());
+		IF_F(!this->_TransformBase::loadConfig());
 		const json &j = *m_pJ;
 
 		jKv(j, "vfName", m_vfName);
@@ -841,7 +841,7 @@ namespace kai
 
 	bool _PCLfile::saveConfig(bool bExport)
 	{
-		IF_F(!_ReferenceFrame::saveConfig(false));
+		IF_F(!_TransformBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["vfName"] = m_vfName;
@@ -852,7 +852,7 @@ namespace kai
 
 	bool _PCLfile::link(InstanceMgr *pM)
 	{
-		if (!_ReferenceFrame::link(pM))
+		if (!_TransformBase::link(pM))
 		{
 			return false;
 		}
@@ -867,7 +867,7 @@ namespace kai
 
 	bool _PCLfile::check(void)
 	{
-		return m_pPCLout && _ReferenceFrame::check();
+		return m_pPCLout && _TransformBase::check();
 	}
 
 	void _PCLfile::clear(void)

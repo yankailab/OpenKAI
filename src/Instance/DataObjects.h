@@ -14,13 +14,15 @@
 #include "../DataObject/CANframeStream.h"
 #include "../DataObject/IMUstream.h"
 #include "../DataObject/LineFrame.h"
-#ifdef USE_MAVLINK
-#include "../DataObject/MavlinkStream.h"
-#endif
 #include "../DataObject/PCLframe.h"
 #include "../DataObject/PCLmap.h"
 #include "../DataObject/SharedMemoryFrame.h"
 #include "../DataObject/UGLIDcellStream.h"
+
+#ifdef USE_MAVLINK
+#include "../DataObject/MavlinkStream.h"
+#endif
+
 #ifdef USE_OPENCV
 #include "../DataObject/RGBframe.h"
 #include "../DataObject/RGBDframe.h"

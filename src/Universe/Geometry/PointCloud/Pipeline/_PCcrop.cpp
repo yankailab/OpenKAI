@@ -21,7 +21,7 @@ namespace kai
 
 	bool _PCcrop::loadConfig(void)
 	{
-		IF_F(!this->_ReferenceFrame::loadConfig());
+		IF_F(!this->_TransformBase::loadConfig());
 		const json &j = *m_pJ;
 
 		const json *pJF = jK(j, "vFilter");
@@ -52,7 +52,7 @@ namespace kai
 
 	bool _PCcrop::saveConfig(bool bExport)
 	{
-		IF_F(!_ReferenceFrame::saveConfig(false));
+		IF_F(!_TransformBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		json &filters = j["vFilter"];
@@ -105,7 +105,7 @@ namespace kai
 	{
 		//		NULL_F(m_pInCtx.m_pPCB);
 
-		return _ReferenceFrame::check();
+		return _TransformBase::check();
 	}
 
 	void _PCcrop::update(void)

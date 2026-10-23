@@ -1,7 +1,7 @@
 #ifndef OpenKAI_src_Autopilot__AutopilotBase_H_
 #define OpenKAI_src_Autopilot__AutopilotBase_H_
 
-#include "../Universe/_ReferenceFrame.h"
+#include "../Universe/_TransformBase.h"
 #include "../Protocol/_JSONbase.h"
 #include "../Utility/utilEvent.h"
 #include "../Utility/utilVar.h"
@@ -37,7 +37,7 @@ namespace kai
 		apGPS_unknown = 0,
 	};
 
-	class _AutopilotBase : public _ReferenceFrame
+	class _AutopilotBase : public _TransformBase
 	{
 	public:
 		_AutopilotBase();

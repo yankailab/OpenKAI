@@ -36,7 +36,7 @@ namespace kai
     bool _Livox2::loadConfig()
     {
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
-        IF_F(!_ReferenceFrame::loadConfig());
+        IF_F(!_TransformBase::loadConfig());
         m_mountOrientation = m_vOrt;
         json patch = json::object(), errors;
         const json values = configValues();
@@ -59,7 +59,7 @@ namespace kai
     bool _Livox2::saveConfig(bool bExport)
     {
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
-        IF_F(!_ReferenceFrame::saveConfig(false));
+        IF_F(!_TransformBase::saveConfig(false));
         m_pJ->update(configValues());
         (*m_pJ)["vOrt"] = {m_mountOrientation.x(), m_mountOrientation.y(), m_mountOrientation.z(), m_mountOrientation.w()};
         for (auto *worker : {m_pTdeviceQueryR, m_pTctrlCmdW, m_pTctrlCmdR, m_pTpushCmdR, m_pTpclR, m_pTimuR})
@@ -69,7 +69,7 @@ namespace kai
 
     bool _Livox2::link(InstanceMgr *pM)
     {
-        IF_F(!this->_ReferenceFrame::link(pM));
+        IF_F(!this->_TransformBase::link(pM));
         const json &j = *m_pJ;
 
         string n;
@@ -154,7 +154,7 @@ namespace kai
         NULL_F(m_pBpStreamPclIn);
         NULL_F(m_pBpStreamImuIn);
 
-        return this->_ReferenceFrame::check();
+        return this->_TransformBase::check();
     }
 
     void _Livox2::updateRdeviceQuery(void)
@@ -784,7 +784,7 @@ namespace kai
     void _Livox2::console(void *console)
     {
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
-        _ReferenceFrame::console(console);
+        _TransformBase::console(console);
         if (console) static_cast<_Console *>(console)->addMsg("Livox state=" + std::to_string(m_lvxState) + " SN=" + m_detectedSN +
             " frames=" + std::to_string(m_frames) + " IMU=" + std::to_string(m_imuSamples) + " " + m_lastError);
     }

@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_Universe_Geometry__GeometryViewerBase_H_
 #define OpenKAI_src_Universe_Geometry__GeometryViewerBase_H_
 
-#include "../_ReferenceFrame.h"
+#include "../_TransformBase.h"
 
 namespace kai
 {
@@ -30,7 +30,7 @@ namespace kai
 		Vector3f m_vUp = {0, 1, 0};
 	};
 
-	class _GeometryViewerBase : public _ReferenceFrame
+	class _GeometryViewerBase : public _TransformBase
 	{
 	public:
 		_GeometryViewerBase();

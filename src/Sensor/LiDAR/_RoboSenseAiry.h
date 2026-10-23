@@ -9,7 +9,7 @@
 #define OpenKAI_src_Sensor_LiDAR__RoboSenseAiry_H_
 
 #include "../../DataObject/BytePacketStream.h"
-#include "../../Universe/_ReferenceFrame.h"
+#include "../../Universe/_TransformBase.h"
 #include "../../DataObject/PCLframe.h"
 #include "../../Dependencies/SensorFusion/SensorFusion.h"
 #include "../../Dependencies/CRC.h"
@@ -86,7 +86,7 @@ namespace kai
 		uint8_t m_pFend[2];		// 0x0F 0xF0
 	};
 
-	class _RoboSenseAiry : public _ReferenceFrame
+	class _RoboSenseAiry : public _TransformBase
 	{
 	public:
 		_RoboSenseAiry();

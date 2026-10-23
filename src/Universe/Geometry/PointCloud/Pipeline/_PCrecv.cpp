@@ -19,7 +19,7 @@ namespace kai
 
 	bool _PCrecv::loadConfig(void)
 	{
-		IF_F(!_ReferenceFrame::loadConfig());
+		IF_F(!_TransformBase::loadConfig());
 		jKv(*m_pJ, "nPmax", m_nPmax);
 		IF_Le_F(m_nPmax == 0, "nPmax must be positive");
 		m_vPacket.reserve(pcstream::maxPacketBytes);
@@ -28,7 +28,7 @@ namespace kai
 
 	bool _PCrecv::saveConfig(bool bExport)
 	{
-		IF_F(!_ReferenceFrame::saveConfig(false));
+		IF_F(!_TransformBase::saveConfig(false));
 		(*m_pJ)["nPmax"] = m_nPmax;
 		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
@@ -36,7 +36,7 @@ namespace kai
 
 	bool _PCrecv::link(InstanceMgr *pM)
 	{
-		IF_F(!_ReferenceFrame::link(pM));
+		IF_F(!_TransformBase::link(pM));
 		string name;
 		jKv(*m_pJ, "PCLframeOut", name);
 		m_pPCLout = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(name)));
@@ -58,7 +58,7 @@ namespace kai
 
 	bool _PCrecv::check(void)
 	{
-		return m_pBpStreamIn && m_pPCLout && _ReferenceFrame::check();
+		return m_pBpStreamIn && m_pPCLout && _TransformBase::check();
 	}
 
 	void _PCrecv::clear(void)

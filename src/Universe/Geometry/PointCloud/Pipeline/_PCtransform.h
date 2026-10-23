@@ -8,14 +8,14 @@
 #ifndef OpenKAI_src_Universe_Geometry_PointCloud_PCtransform_H_
 #define OpenKAI_src_Universe_Geometry_PointCloud_PCtransform_H_
 
-#include "../../../_ReferenceFrame.h"
+#include "../../../_TransformBase.h"
 #include "../../../../DataObject/PCLframe.h"
 #include "../../../../Utility/utilFile.h"
 
 namespace kai
 {
 
-	class _PCtransform : public _ReferenceFrame
+	class _PCtransform : public _TransformBase
 	{
 	public:
 		_PCtransform();

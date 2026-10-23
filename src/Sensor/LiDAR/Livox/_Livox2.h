@@ -9,7 +9,7 @@
 #define OpenKAI_src_Sensor_LiDAR_Livox__Livox2_H_
 
 #include "../../../DataObject/BytePacketStream.h"
-#include "../../../Universe/_ReferenceFrame.h"
+#include "../../../Universe/_TransformBase.h"
 #include "../../../DataObject/PCLframe.h"
 #include "../../../DataObject/IMUstream.h"
 #include "../../../Dependencies/SensorFusion/SensorFusion.h"
@@ -157,7 +157,7 @@ namespace kai
 		}
 	};
 
-	class _Livox2 : public _ReferenceFrame
+	class _Livox2 : public _TransformBase
 	{
         friend struct Livox2TestAccess;
 	public:

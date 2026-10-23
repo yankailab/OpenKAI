@@ -211,7 +211,7 @@ if(WITH_UNIVERSE)
 	src/UI/Viewer/Web/_WebSelectableOctGrid.cpp
 	src/UI/Viewer/SelectableOctGridSources.cpp
 	src/UI/Viewer/Web/_WebGeometry.cpp
-	src/Universe/_ReferenceFrame.cpp
+	src/Universe/_TransformBase.cpp
   src/Universe/Grid/_OctreeBase.cpp
 	src/Universe/Grid/_OctreeGrid.cpp
 	src/Universe/Grid/_SelectableOctGrid.cpp
@@ -443,7 +443,7 @@ if(WITH_SLAM)
   endif()
   if(NOT WITH_UNIVERSE)
     list(APPEND OpenKAI_cpp
-		src/Universe/_ReferenceFrame.cpp
+		src/Universe/_TransformBase.cpp
 		src/Universe/Geometry/PointCloud/_PCLfile.cpp
     )
   endif()

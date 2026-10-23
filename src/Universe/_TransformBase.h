@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Universe__ReferenceFrame_H_
-#define OpenKAI_src_Universe__ReferenceFrame_H_
+#ifndef OpenKAI_src_Universe__TransformBase_H_
+#define OpenKAI_src_Universe__TransformBase_H_
 
 #include "../Base/_ModuleBase.h"
 #include "../Utility/util.h"
@@ -16,11 +16,11 @@
 namespace kai
 {
 
-    class _ReferenceFrame : public _ModuleBase
+    class _TransformBase : public _ModuleBase
     {
     public:
-        _ReferenceFrame();
-        virtual ~_ReferenceFrame();
+        _TransformBase();
+        virtual ~_TransformBase();
 
         virtual bool loadConfig(void) override;
         virtual bool link(InstanceMgr *pM) override;

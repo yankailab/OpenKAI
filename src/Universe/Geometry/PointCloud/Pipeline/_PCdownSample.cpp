@@ -20,7 +20,7 @@ namespace kai
 
 	bool _PCdownSample::loadConfig(void)
 	{
-		IF_F(!this->_ReferenceFrame::loadConfig());
+		IF_F(!this->_TransformBase::loadConfig());
 		const json &j = *m_pJ;
 
 		jKv(j, "rVoxel", m_rVoxel);
@@ -30,7 +30,7 @@ namespace kai
 
 	bool _PCdownSample::saveConfig(bool bExport)
 	{
-		IF_F(!_ReferenceFrame::saveConfig(false));
+		IF_F(!_TransformBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["rVoxel"] = m_rVoxel;
@@ -49,7 +49,7 @@ namespace kai
 	{
 		//	NULL_F(m_pInCtx.m_pPCB);
 
-		return _ReferenceFrame::check();
+		return _TransformBase::check();
 	}
 
 	void _PCdownSample::update(void)

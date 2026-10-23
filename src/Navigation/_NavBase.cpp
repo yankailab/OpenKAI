@@ -20,7 +20,7 @@ namespace kai
 
 	bool _NavBase::loadConfig(void)
 	{
-		IF_F(!this->_ReferenceFrame::loadConfig());
+		IF_F(!this->_TransformBase::loadConfig());
 		const json &j = *m_pJ;
 
 		jKv(j, "tConfidenceTimeoutNs", m_tConfidenceTimeoutNs);
@@ -30,7 +30,7 @@ namespace kai
 
 	bool _NavBase::saveConfig(bool bExport)
 	{
-		IF_F(!_ReferenceFrame::saveConfig(false));
+		IF_F(!_TransformBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["tConfidenceTimeoutNs"] = m_tConfidenceTimeoutNs;
@@ -60,7 +60,7 @@ namespace kai
 	void _NavBase::console(void *pConsole)
 	{
 		NULL_(pConsole);
-		this->_ReferenceFrame::console(pConsole);
+		this->_TransformBase::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
 		pC->addMsg("confidence=" + f2str(confidence()));

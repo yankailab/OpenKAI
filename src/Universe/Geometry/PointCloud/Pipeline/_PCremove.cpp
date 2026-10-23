@@ -20,7 +20,7 @@ namespace kai
 
 	bool _PCremove::loadConfig(void)
 	{
-		IF_F(!this->_ReferenceFrame::loadConfig());
+		IF_F(!this->_TransformBase::loadConfig());
 		const json &j = *m_pJ;
 
 		jKv(j, "nP", m_nP);
@@ -31,7 +31,7 @@ namespace kai
 
 	bool _PCremove::saveConfig(bool bExport)
 	{
-		IF_F(!_ReferenceFrame::saveConfig(false));
+		IF_F(!_TransformBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["nP"] = m_nP;
@@ -51,7 +51,7 @@ namespace kai
 	{
 		//	NULL_F(m_pInCtx.m_pPCB);
 
-		return _ReferenceFrame::check();
+		return _TransformBase::check();
 	}
 
 	void _PCremove::update(void)

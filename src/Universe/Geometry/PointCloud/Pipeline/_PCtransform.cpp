@@ -53,7 +53,7 @@ namespace kai
 
 	bool _PCtransform::loadConfig(void)
 	{
-		IF_F(!this->_ReferenceFrame::loadConfig());
+		IF_F(!this->_TransformBase::loadConfig());
 		const json &j = *m_pJ;
 
 		jKv(j, "dTexpire", m_dTexpire);
@@ -97,7 +97,7 @@ namespace kai
 
 	bool _PCtransform::saveConfig(bool bExport)
 	{
-		IF_F(!_ReferenceFrame::saveConfig(false));
+		IF_F(!_TransformBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["dTexpire"] = m_dTexpire;
@@ -116,7 +116,7 @@ namespace kai
 
     bool _PCtransform::link(InstanceMgr *pM)
     {
-        IF_F(!this->_ReferenceFrame::link(pM));
+        IF_F(!this->_TransformBase::link(pM));
         const json &j = *m_pJ;
 
         string n = "";
@@ -145,7 +145,7 @@ namespace kai
 	bool _PCtransform::check(void)
 	{
 		NULL_F(m_pPCLin);
-		return m_pPCLout && _ReferenceFrame::check();
+		return m_pPCLout && _TransformBase::check();
 	}
 
 	void _PCtransform::clear(void)

@@ -8,13 +8,13 @@
 #ifndef OpenKAI_src_Universe_Geometry_PointCloud_PCLfile_H_
 #define OpenKAI_src_Universe_Geometry_PointCloud_PCLfile_H_
 
-#include "../../_ReferenceFrame.h"
+#include "../../_TransformBase.h"
 #include "../../../DataObject/PCLframe.h"
 
 namespace kai
 {
 
-	class _PCLfile : public _ReferenceFrame
+	class _PCLfile : public _TransformBase
 	{
 	public:
 		_PCLfile();

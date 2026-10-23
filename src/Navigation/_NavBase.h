@@ -8,13 +8,13 @@
 #ifndef OpenKAI_src_Navigation__NavBase_H_
 #define OpenKAI_src_Navigation__NavBase_H_
 
-#include "../Universe/_ReferenceFrame.h"
+#include "../Universe/_TransformBase.h"
 #include <mutex>
 
 namespace kai
 {
 
-	class _NavBase : public _ReferenceFrame
+	class _NavBase : public _TransformBase
 	{
 	public:
 		_NavBase();

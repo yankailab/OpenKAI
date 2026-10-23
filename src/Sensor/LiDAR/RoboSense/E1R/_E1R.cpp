@@ -62,7 +62,7 @@ namespace kai
     bool _E1R::loadConfig()
     {
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
-        IF_F(!_ReferenceFrame::loadConfig());
+        IF_F(!_TransformBase::loadConfig());
         json patch = json::object(), errors;
         for (const auto &field : m_config.items())
             if (m_pJ->contains(field.key())) patch[field.key()] = m_pJ->at(field.key());
@@ -74,14 +74,14 @@ namespace kai
     bool _E1R::saveConfig(bool bExport)
     {
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
-        IF_F(!_ReferenceFrame::saveConfig(false));
+        IF_F(!_TransformBase::saveConfig(false));
         m_pJ->update(m_config);
         return !bExport || m_pJcfg->saveToFile();
     }
 
     bool _E1R::link(InstanceMgr *pM)
     {
-        IF_F(!_ReferenceFrame::link(pM));
+        IF_F(!_TransformBase::link(pM));
         string name;
         jKv(*m_pJ, "PCLframeOut", name);
         m_pPCLout = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(name)));
@@ -89,7 +89,7 @@ namespace kai
         return true;
     }
 
-    bool _E1R::check() { return m_pPCLout && _ReferenceFrame::check(); }
+    bool _E1R::check() { return m_pPCLout && _TransformBase::check(); }
 
     bool _E1R::openSockets(const json &config, string &error)
     {
@@ -464,7 +464,7 @@ namespace kai
     void _E1R::console(void *pConsole)
     {
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
-        _ReferenceFrame::console(pConsole);
+        _TransformBase::console(pConsole);
         if (pConsole) static_cast<_Console *>(pConsole)->addMsg("E1R " + statusValues().at("state").get<string>() +
             " " + m_selectedIP + " frames=" + std::to_string(m_frames) + " " + m_lastError);
     }

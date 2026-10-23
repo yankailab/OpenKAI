@@ -8,14 +8,14 @@
 #ifndef OpenKAI_src_Universe_Geometry_PointCloud_PCrecv_H_
 #define OpenKAI_src_Universe_Geometry_PointCloud_PCrecv_H_
 
-#include "../../../_ReferenceFrame.h"
+#include "../../../_TransformBase.h"
 #include "../../../../DataObject/PCLframe.h"
 #include "../../../../DataObject/BytePacketStream.h"
 #include "PCstreamProtocol.h"
 
 namespace kai
 {
-	class _PCrecv : public _ReferenceFrame
+	class _PCrecv : public _TransformBase
 	{
 	public:
 		_PCrecv();

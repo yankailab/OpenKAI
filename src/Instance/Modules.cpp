@@ -27,7 +27,7 @@ namespace kai
 		// modules
 
 #ifdef WITH_UNIVERSE
-		ADD_MODULE(_ReferenceFrame);
+		ADD_MODULE(_TransformBase);
 		ADD_MODULE(_OctreeBase);
 		ADD_MODULE(_OctreeGrid);
 		ADD_MODULE(_SelectableOctGrid);

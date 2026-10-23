@@ -2,14 +2,14 @@
 #ifndef OpenKAI_src_Sensor_LiDAR_RoboSense_E1R__E1R_H_
 #define OpenKAI_src_Sensor_LiDAR_RoboSense_E1R__E1R_H_
 
-#include "../../../../Universe/_ReferenceFrame.h"
+#include "../../../../Universe/_TransformBase.h"
 #include "../../../../DataObject/PCLframe.h"
 #include "E1RProtocol.h"
 #include <mutex>
 
 namespace kai
 {
-    class _E1R : public _ReferenceFrame
+    class _E1R : public _TransformBase
     {
         friend struct E1RTestAccess;
     public:

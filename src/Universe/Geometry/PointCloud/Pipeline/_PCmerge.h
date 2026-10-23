@@ -8,13 +8,13 @@
 #ifndef OpenKAI_src_Universe_Geometry_PointCloud_PCmerge_H_
 #define OpenKAI_src_Universe_Geometry_PointCloud_PCmerge_H_
 
-#include "../../../_ReferenceFrame.h"
+#include "../../../_TransformBase.h"
 #include "../../../../DataObject/PCLframe.h"
 
 namespace kai
 {
 
-	class _PCmerge : public _ReferenceFrame
+	class _PCmerge : public _TransformBase
 	{
 	public:
 		_PCmerge();

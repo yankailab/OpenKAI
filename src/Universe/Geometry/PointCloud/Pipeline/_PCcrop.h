@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_Universe_Geometry_PointCloud_PCcrop_H_
 #define OpenKAI_src_Universe_Geometry_PointCloud_PCcrop_H_
 
-#include "../../../_ReferenceFrame.h"
+#include "../../../_TransformBase.h"
 
 namespace kai
 {
@@ -88,7 +88,7 @@ namespace kai
 		}
 	};
 
-	class _PCcrop : public _ReferenceFrame
+	class _PCcrop : public _TransformBase
 	{
 	public:
 		_PCcrop();

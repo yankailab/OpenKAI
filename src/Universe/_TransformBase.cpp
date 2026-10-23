@@ -1,24 +1,24 @@
 /*
- * _ReferenceFrame.cpp
+ * _TransformBase.cpp
  *
  *  Created on: May 24, 2020
  *      Author: yankai
  */
 
-#include "_ReferenceFrame.h"
+#include "_TransformBase.h"
 
 namespace kai
 {
 
-    _ReferenceFrame::_ReferenceFrame()
+    _TransformBase::_TransformBase()
     {
     }
 
-    _ReferenceFrame::~_ReferenceFrame()
+    _TransformBase::~_TransformBase()
     {
     }
 
-    bool _ReferenceFrame::loadConfig(void)
+    bool _TransformBase::loadConfig(void)
     {
         IF_F(!this->_ModuleBase::loadConfig());
         const json &j = *m_pJ;
@@ -30,14 +30,14 @@ namespace kai
         return true;
     }
 
-    bool _ReferenceFrame::link(InstanceMgr *pM)
+    bool _TransformBase::link(InstanceMgr *pM)
     {
         IF_F(!this->_ModuleBase::link(pM));
 
         return true;
     }
 
-    bool _ReferenceFrame::saveConfig(bool bExport)
+    bool _TransformBase::saveConfig(bool bExport)
     {
         IF_F(!_ModuleBase::saveConfig(false));
 
@@ -49,29 +49,29 @@ namespace kai
         return m_pJcfg->saveToFile();
     }
 
-    bool _ReferenceFrame::check(void)
+    bool _TransformBase::check(void)
     {
         return this->_ModuleBase::check();
     }
 
-    void _ReferenceFrame::setPos(const Vector3d &vP)
+    void _TransformBase::setPos(const Vector3d &vP)
     {
         m_vPos = vP;
         updatePose();
     }
 
-    void _ReferenceFrame::setPos(double x, double y, double z)
+    void _TransformBase::setPos(double x, double y, double z)
     {
         m_vPos = Vector3d(x, y, z);
         updatePose();
     }
 
-    void _ReferenceFrame::setAngles(const Vector3d &vA)
+    void _TransformBase::setAngles(const Vector3d &vA)
     {
         setAngles(vA.x(), vA.y(), vA.z());
     }
 
-    void _ReferenceFrame::setAngles(double roll, double pitch, double yaw)
+    void _TransformBase::setAngles(double roll, double pitch, double yaw)
     {
         m_vAngle = Vector3d(roll, pitch, yaw);
         setOrientation(Eigen::AngleAxisd(yaw, Vector3d::UnitZ()) *
@@ -79,7 +79,7 @@ namespace kai
                        Eigen::AngleAxisd(roll, Vector3d::UnitX()));
     }
 
-    void _ReferenceFrame::setOrientation(const Quaterniond &vOrt, bool bConvertToEulerAngles)
+    void _TransformBase::setOrientation(const Quaterniond &vOrt, bool bConvertToEulerAngles)
     {
         m_vOrt = vOrt.normalized();
         updatePose();
@@ -88,7 +88,7 @@ namespace kai
         updateEulerAngles();
     }
 
-    void _ReferenceFrame::setOrientation(double x, double y, double z, double w, bool bConvertToEulerAngles)
+    void _TransformBase::setOrientation(double x, double y, double z, double w, bool bConvertToEulerAngles)
     {
         m_vOrt = Quaterniond(w, x, y, z).normalized();
         updatePose();
@@ -97,36 +97,36 @@ namespace kai
         updateEulerAngles();
     }
 
-    const Vector3d &_ReferenceFrame::getPos(void)
+    const Vector3d &_TransformBase::getPos(void)
     {
         return m_vPos;
     }
 
-    void _ReferenceFrame::getPos(double &x, double &y, double &z)
+    void _TransformBase::getPos(double &x, double &y, double &z)
     {
         x = m_vPos.x();
         y = m_vPos.y();
         z = m_vPos.z();
     }
 
-    const Vector3d &_ReferenceFrame::getAngles(void)
+    const Vector3d &_TransformBase::getAngles(void)
     {
         return m_vAngle;
     }
 
-    void _ReferenceFrame::getAngles(double &roll, double &pitch, double &yaw)
+    void _TransformBase::getAngles(double &roll, double &pitch, double &yaw)
     {
         roll = m_vAngle.x();
         pitch = m_vAngle.y();
         yaw = m_vAngle.z();
     }
 
-    const Quaterniond &_ReferenceFrame::getOrientation(void)
+    const Quaterniond &_TransformBase::getOrientation(void)
     {
         return m_vOrt;
     }
 
-    void _ReferenceFrame::getOrientation(double &x, double &y, double &z, double &w)
+    void _TransformBase::getOrientation(double &x, double &y, double &z, double &w)
     {
         x = m_vOrt.x();
         y = m_vOrt.y();
@@ -134,19 +134,19 @@ namespace kai
         w = m_vOrt.w();
     }
 
-    void _ReferenceFrame::updatePose(void)
+    void _TransformBase::updatePose(void)
     {
         m_mPose.linear() = m_vOrt.toRotationMatrix();
         m_mPose.translation() = m_vPos;
         m_mPosef = m_mPose.cast<float>();
     }
 
-    void _ReferenceFrame::updateEulerAngles(void)
+    void _TransformBase::updateEulerAngles(void)
     {
         m_vAngle = m_vOrt.toRotationMatrix().canonicalEulerAngles(2, 1, 0).reverse();
     }
 
-    void _ReferenceFrame::console(void *pConsole)
+    void _TransformBase::console(void *pConsole)
     {
         NULL_(pConsole);
         this->_ModuleBase::console(pConsole);

@@ -73,7 +73,7 @@ DataObject link keys end in `In` for inputs and `Out` for outputs. The suffix de
 Point pipeline inputs and outputs must use different streams. Replace old `_PointCloud`, `_GeometryBase`, `globalMapPCL`, and `vGeometryBase` data references with the applicable keys above. A former `_PointCloud` object used only for storage becomes a `PCLframe` DataObject declaration; remove its `thread` and `nP` settings.
 
 The `_PointCloud`, `_GeometryBase`, and `_Line` module classes have been removed.
-Remaining former geometry subclasses inherit directly from `_ReferenceFrame`. Point-cloud producers
+Remaining former geometry subclasses inherit directly from `_TransformBase`. Point-cloud producers
 each declare their own `PCLframe *m_pPCLout` output pointer,
 resolved from the `PCLframeOut` configuration key. The referenced DataObject owns
 the point data and remains managed by `InstanceMgr`. Use a `LineFrame` DataObject

@@ -9,7 +9,7 @@
 #define OpenKAI_src_Universe_Geometry_PointCloud_PCregistCol_H_
 
 #include "../Pipeline/_PCtransform.h"
-#include "../../../_ReferenceFrame.h"
+#include "../../../_TransformBase.h"
 #include "../../../../DataObject/PCLframe.h"
 #include <open3d/pipelines/registration/ColoredICP.h>
 using namespace open3d::pipelines::registration;
@@ -17,7 +17,7 @@ using namespace open3d::pipelines::registration;
 namespace kai
 {
 
-	class _PCregistCol : public _ReferenceFrame
+	class _PCregistCol : public _TransformBase
 	{
 	public:
 		_PCregistCol();

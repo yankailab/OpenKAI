@@ -321,7 +321,7 @@ For example, a 6,231,958-point cloud needs about 89.2 MiB for XYZ/RGB output;
 `nPbuf: 9000000` with a matching file-source `nP` accommodates it. The combined
 configured caps of all visible sources must still fit the frame limit.
 The removed `vReferenceFrame`, viewer `vGeometryBase`, `geometry`, and
-`_ReferenceFrame` entry aliases are rejected. Per-source caps use `nP`, `nL`,
+`_TransformBase` entry aliases are rejected. Per-source caps use `nP`, `nL`,
 and `nC`, with no `nPbuf`/`nLbuf`/`nCbuf` entry aliases.
 
 A calculation-only `_OctreeGrid` does not publish viewer snapshots; use
@@ -529,7 +529,7 @@ removal behavior. Picker commands send 16-byte IDs as hexadecimal strings.
 and its occupied cell records. It includes occupied ancestors, as the previous
 wireframe did, in root-first traversal order. `nMaxCells` in the grid config sets
 the publication cap (default 8333). The old `nMaxLines` setting is rejected. The viewers have independent `nCbuf` and per-object `nC` caps.
-`_OctreeBase` and its grid subclasses inherit pose handling from `_ReferenceFrame`.
+`_OctreeBase` and its grid subclasses inherit pose handling from `_TransformBase`.
 `_OctreeGrid` consumes
 point-cloud DataObjects through its `vPCLframesIn` input list; `_SelectableOctGrid` publishes
 only cell IDs, colors, and the root header. Viewers construct the boxes.

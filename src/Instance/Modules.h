@@ -14,7 +14,7 @@
 // modules
 
 #ifdef WITH_UNIVERSE
-#include "../Universe/_ReferenceFrame.h"
+#include "../Universe/_TransformBase.h"
 #include "../Universe/Grid/_OctreeBase.h"
 #include "../Universe/Grid/_OctreeGrid.h"
 #include "../Universe/Grid/_SelectableOctGrid.h"

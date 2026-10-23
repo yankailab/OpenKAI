@@ -17,7 +17,7 @@ namespace kai
 
     bool _RoboSenseAiry::loadConfig(void)
     {
-        IF_F(!this->_ReferenceFrame::loadConfig());
+        IF_F(!this->_TransformBase::loadConfig());
         const json &j = *m_pJ;
 
         DEL(m_pTdifop);
@@ -29,7 +29,7 @@ namespace kai
 
     bool _RoboSenseAiry::saveConfig(bool bExport)
     {
-        IF_F(!_ReferenceFrame::saveConfig(false));
+        IF_F(!_TransformBase::saveConfig(false));
 
 
         IF_F(m_pTdifop && !m_pTdifop->saveConfig(false));
@@ -40,7 +40,7 @@ namespace kai
 
     bool _RoboSenseAiry::link(InstanceMgr *pM)
     {
-        IF_F(!this->_ReferenceFrame::link(pM));
+        IF_F(!this->_TransformBase::link(pM));
         const json &j = *m_pJ;
 
         string n;
@@ -79,7 +79,7 @@ namespace kai
         NULL_F(m_pBpStreamMsopIn);
         NULL_F(m_pBpStreamDifopIn);
 
-        return this->_ReferenceFrame::check();
+        return this->_TransformBase::check();
     }
 
     void _RoboSenseAiry::clear(void)
@@ -141,7 +141,7 @@ namespace kai
     void _RoboSenseAiry::console(void *pConsole)
     {
         NULL_(pConsole);
-        this->_ReferenceFrame::console(pConsole);
+        this->_TransformBase::console(pConsole);
 
         _Console *pC = (_Console *)pConsole;
 

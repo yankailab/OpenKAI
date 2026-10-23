@@ -8,12 +8,12 @@
 #ifndef OpenKAI_src_Universe_Geometry_PointCloud_PCremove_H_
 #define OpenKAI_src_Universe_Geometry_PointCloud_PCremove_H_
 
-#include "../../../_ReferenceFrame.h"
+#include "../../../_TransformBase.h"
 
 namespace kai
 {
 
-	class _PCremove : public _ReferenceFrame
+	class _PCremove : public _TransformBase
 	{
 	public:
 		_PCremove();

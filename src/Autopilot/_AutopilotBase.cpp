@@ -13,7 +13,7 @@ namespace kai
 
 	bool _AutopilotBase::loadConfig(void)
 	{
-		IF_F(!this->_ReferenceFrame::loadConfig());
+		IF_F(!this->_TransformBase::loadConfig());
 		const json &j = *m_pJ;
 
 		jKv(j, "type", m_type);
@@ -23,7 +23,7 @@ namespace kai
 
 	bool _AutopilotBase::saveConfig(bool bExport)
 	{
-		IF_F(!_ReferenceFrame::saveConfig(false));
+		IF_F(!_TransformBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["type"] = m_type;
@@ -34,7 +34,7 @@ namespace kai
 
 	bool _AutopilotBase::link(InstanceMgr *pM)
 	{
-		IF_F(!this->_ReferenceFrame::link(pM));
+		IF_F(!this->_TransformBase::link(pM));
 
 		return true;
 	}
@@ -47,7 +47,7 @@ namespace kai
 
 	bool _AutopilotBase::check(void)
 	{
-		return this->_ReferenceFrame::check();
+		return this->_TransformBase::check();
 	}
 
 	void _AutopilotBase::update(void)
@@ -113,7 +113,7 @@ namespace kai
 	void _AutopilotBase::console(void *pConsole)
 	{
 		NULL_(pConsole);
-		this->_ReferenceFrame::console(pConsole);
+		this->_TransformBase::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
 		pC->addMsg("-State-", 1);

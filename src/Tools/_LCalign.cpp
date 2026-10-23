@@ -26,7 +26,7 @@ namespace kai
 
 	bool _LCalign::loadConfig(void)
 	{
-		IF_F(!this->_ReferenceFrame::loadConfig());
+		IF_F(!this->_TransformBase::loadConfig());
 		const json &j = *m_pJ;
 
 		jKv<int>(j, "vCsize", m_vCsize);
@@ -46,7 +46,7 @@ namespace kai
 
 	bool _LCalign::link(InstanceMgr *pM)
 	{
-		IF_F(!this->_ReferenceFrame::link(pM));
+		IF_F(!this->_TransformBase::link(pM));
 		const json &j = *m_pJ;
 		string n;
 
@@ -75,7 +75,7 @@ namespace kai
 
 	bool _LCalign::saveConfig(bool bExport)
 	{
-		IF_F(!_ReferenceFrame::saveConfig(false));
+		IF_F(!_TransformBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["vCsize"] = {m_vCsize.x(), m_vCsize.y()};
@@ -97,7 +97,7 @@ namespace kai
 		NULL_F(m_pPCLin);
 		NULL_F(m_pRGBin);
 
-		return this->_ReferenceFrame::check();
+		return this->_TransformBase::check();
 	}
 
 	void _LCalign::clear(void)
@@ -282,7 +282,7 @@ namespace kai
 	void _LCalign::console(void *pConsole)
 	{
 		NULL_(pConsole);
-		this->_ReferenceFrame::console(pConsole);
+		this->_TransformBase::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
 		string msg;

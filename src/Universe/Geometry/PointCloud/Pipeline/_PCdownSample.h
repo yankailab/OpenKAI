@@ -8,12 +8,12 @@
 #ifndef OpenKAI_src_Universe_Geometry_PointCloud_PCdownSample_H_
 #define OpenKAI_src_Universe_Geometry_PointCloud_PCdownSample_H_
 
-#include "../../../_ReferenceFrame.h"
+#include "../../../_TransformBase.h"
 
 namespace kai
 {
 
-    class _PCdownSample : public _ReferenceFrame
+    class _PCdownSample : public _TransformBase
     {
     public:
         _PCdownSample();

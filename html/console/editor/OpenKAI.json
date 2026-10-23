@@ -5740,7 +5740,7 @@
       "category": "Autopilot",
       "source": "src/Autopilot/_AutopilotBase.h:40",
       "baseClasses": [
-        "_ReferenceFrame"
+        "_TransformBase"
       ],
       "parameters": [
         {
@@ -5835,8 +5835,8 @@
             "vOrt"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:27",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:27",
           "typeEvidence": "jKv-vector-overload",
           "cppVariable": "m_vOrt.coeffs()"
         },
@@ -5845,8 +5845,8 @@
             "vPos"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:26",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:26",
           "typeEvidence": "declaration",
           "cppVariable": "m_vPos",
           "cppType": "Vector3d",
@@ -6102,8 +6102,8 @@
             "vOrt"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:27",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:27",
           "typeEvidence": "jKv-vector-overload",
           "cppVariable": "m_vOrt.coeffs()"
         },
@@ -6112,8 +6112,8 @@
             "vPos"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:26",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:26",
           "typeEvidence": "declaration",
           "cppVariable": "m_vPos",
           "cppType": "Vector3d",
@@ -6388,8 +6388,8 @@
             "vOrt"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:27",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:27",
           "typeEvidence": "jKv-vector-overload",
           "cppVariable": "m_vOrt.coeffs()"
         },
@@ -6398,8 +6398,8 @@
             "vPos"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:26",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:26",
           "typeEvidence": "declaration",
           "cppVariable": "m_vPos",
           "cppType": "Vector3d",
@@ -8940,8 +8940,8 @@
             "vOrt"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:27",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:27",
           "typeEvidence": "jKv-vector-overload",
           "cppVariable": "m_vOrt.coeffs()"
         },
@@ -8950,8 +8950,8 @@
             "vPos"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:26",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:26",
           "typeEvidence": "declaration",
           "cppVariable": "m_vPos",
           "cppType": "Vector3d",
@@ -9865,8 +9865,8 @@
             "vOrt"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:27",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:27",
           "typeEvidence": "jKv-vector-overload",
           "cppVariable": "m_vOrt.coeffs()"
         },
@@ -9875,8 +9875,8 @@
             "vPos"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:26",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:26",
           "typeEvidence": "declaration",
           "cppVariable": "m_vPos",
           "cppType": "Vector3d",
@@ -16204,7 +16204,7 @@
       "category": "Navigation",
       "source": "src/Navigation/_NavBase.h:17",
       "baseClasses": [
-        "_ReferenceFrame"
+        "_TransformBase"
       ],
       "parameters": [
         {
@@ -16299,8 +16299,8 @@
             "vOrt"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:27",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:27",
           "typeEvidence": "jKv-vector-overload",
           "cppVariable": "m_vOrt.coeffs()"
         },
@@ -16309,8 +16309,8 @@
             "vPos"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:26",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:26",
           "typeEvidence": "declaration",
           "cppVariable": "m_vPos",
           "cppType": "Vector3d",
@@ -19238,8 +19238,8 @@
             "vOrt"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:27",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:27",
           "typeEvidence": "jKv-vector-overload",
           "cppVariable": "m_vOrt.coeffs()"
         },
@@ -19248,8 +19248,8 @@
             "vPos"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:26",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:26",
           "typeEvidence": "declaration",
           "cppVariable": "m_vPos",
           "cppType": "Vector3d",
@@ -19879,8 +19879,8 @@
             "vOrt"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:27",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:27",
           "typeEvidence": "jKv-vector-overload",
           "cppVariable": "m_vOrt.coeffs()"
         },
@@ -19889,8 +19889,8 @@
             "vPos"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:26",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:26",
           "typeEvidence": "declaration",
           "cppVariable": "m_vPos",
           "cppType": "Vector3d",
@@ -20131,8 +20131,8 @@
             "vOrt"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:27",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:27",
           "typeEvidence": "jKv-vector-overload",
           "cppVariable": "m_vOrt.coeffs()"
         },
@@ -20141,8 +20141,8 @@
             "vPos"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:26",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:26",
           "typeEvidence": "declaration",
           "cppVariable": "m_vPos",
           "cppType": "Vector3d",
@@ -21077,7 +21077,7 @@
       "category": "Sensor/LiDAR",
       "source": "src/Sensor/LiDAR/_RoboSenseAiry.h:89",
       "baseClasses": [
-        "_ReferenceFrame"
+        "_TransformBase"
       ],
       "parameters": [
         {
@@ -21221,8 +21221,8 @@
             "vOrt"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:27",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:27",
           "typeEvidence": "jKv-vector-overload",
           "cppVariable": "m_vOrt.coeffs()"
         },
@@ -21231,8 +21231,8 @@
             "vPos"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:26",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:26",
           "typeEvidence": "declaration",
           "cppVariable": "m_vPos",
           "cppType": "Vector3d",
@@ -21307,7 +21307,7 @@
       "category": "Sensor/LiDAR/Livox",
       "source": "src/Sensor/LiDAR/Livox/_Livox2.h:160",
       "baseClasses": [
-        "_ReferenceFrame"
+        "_TransformBase"
       ],
       "parameters": [
         {
@@ -21489,8 +21489,8 @@
             "vOrt"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:27",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:27",
           "typeEvidence": "jKv-vector-overload",
           "cppVariable": "m_vOrt.coeffs()"
         },
@@ -21499,8 +21499,8 @@
             "vPos"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:26",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:26",
           "typeEvidence": "declaration",
           "cppVariable": "m_vPos",
           "cppType": "Vector3d",
@@ -21640,7 +21640,7 @@
       "category": "Sensor/LiDAR/RoboSense/E1R",
       "source": "src/Sensor/LiDAR/RoboSense/E1R/_E1R.h:12",
       "baseClasses": [
-        "_ReferenceFrame"
+        "_TransformBase"
       ],
       "parameters": [
         {
@@ -22643,7 +22643,7 @@
       "category": "Tools",
       "source": "src/Tools/_LCalign.h:21",
       "baseClasses": [
-        "_ReferenceFrame"
+        "_TransformBase"
       ],
       "parameters": [
         {
@@ -22910,8 +22910,8 @@
             "vOrt"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:27",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:27",
           "typeEvidence": "jKv-vector-overload",
           "cppVariable": "m_vOrt.coeffs()"
         },
@@ -22920,8 +22920,8 @@
             "vPos"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:26",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:26",
           "typeEvidence": "declaration",
           "cppVariable": "m_vPos",
           "cppType": "Vector3d",
@@ -24214,8 +24214,8 @@
             "vOrt"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:27",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:27",
           "typeEvidence": "jKv-vector-overload",
           "cppVariable": "m_vOrt.coeffs()"
         },
@@ -24224,8 +24224,8 @@
             "vPos"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:26",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:26",
           "typeEvidence": "declaration",
           "cppVariable": "m_vPos",
           "cppType": "Vector3d",
@@ -24968,8 +24968,8 @@
             "vOrt"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:27",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:27",
           "typeEvidence": "jKv-vector-overload",
           "cppVariable": "m_vOrt.coeffs()"
         },
@@ -24978,8 +24978,8 @@
             "vPos"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:26",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:26",
           "typeEvidence": "declaration",
           "cppVariable": "m_vPos",
           "cppType": "Vector3d",
@@ -25460,8 +25460,8 @@
             "vOrt"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:27",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:27",
           "typeEvidence": "jKv-vector-overload",
           "cppVariable": "m_vOrt.coeffs()"
         },
@@ -25470,8 +25470,8 @@
             "vPos"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:26",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:26",
           "typeEvidence": "declaration",
           "cppVariable": "m_vPos",
           "cppType": "Vector3d",
@@ -26218,8 +26218,8 @@
             "vOrt"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:27",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:27",
           "typeEvidence": "jKv-vector-overload",
           "cppVariable": "m_vOrt.coeffs()"
         },
@@ -26228,8 +26228,8 @@
             "vPos"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:26",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:26",
           "typeEvidence": "declaration",
           "cppVariable": "m_vPos",
           "cppType": "Vector3d",
@@ -26458,9 +26458,9 @@
       "configurable": false
     },
     {
-      "name": "_ReferenceFrame",
+      "name": "_TransformBase",
       "category": "Universe",
-      "source": "src/Universe/_ReferenceFrame.h:19",
+      "source": "src/Universe/_TransformBase.h:19",
       "baseClasses": [
         "_ModuleBase"
       ],
@@ -26545,8 +26545,8 @@
             "vOrt"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:27",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:27",
           "typeEvidence": "jKv-vector-overload",
           "cppVariable": "m_vOrt.coeffs()"
         },
@@ -26555,8 +26555,8 @@
             "vPos"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:26",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:26",
           "typeEvidence": "declaration",
           "cppVariable": "m_vPos",
           "cppType": "Vector3d",
@@ -26587,7 +26587,7 @@
       "category": "Universe/Geometry",
       "source": "src/Universe/Geometry/_GeometryViewerBase.h:33",
       "baseClasses": [
-        "_ReferenceFrame"
+        "_TransformBase"
       ],
       "parameters": [
         {
@@ -26860,8 +26860,8 @@
             "vOrt"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:27",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:27",
           "typeEvidence": "jKv-vector-overload",
           "cppVariable": "m_vOrt.coeffs()"
         },
@@ -26870,8 +26870,8 @@
             "vPos"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:26",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:26",
           "typeEvidence": "declaration",
           "cppVariable": "m_vPos",
           "cppType": "Vector3d",
@@ -26917,7 +26917,7 @@
       "category": "Universe/Geometry/PointCloud",
       "source": "src/Universe/Geometry/PointCloud/_PCLfile.h:17",
       "baseClasses": [
-        "_ReferenceFrame"
+        "_TransformBase"
       ],
       "parameters": [
         {
@@ -27012,8 +27012,8 @@
             "vOrt"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:27",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:27",
           "typeEvidence": "jKv-vector-overload",
           "cppVariable": "m_vOrt.coeffs()"
         },
@@ -27022,8 +27022,8 @@
             "vPos"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:26",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:26",
           "typeEvidence": "declaration",
           "cppVariable": "m_vPos",
           "cppType": "Vector3d",
@@ -27078,7 +27078,7 @@
       "category": "Universe/Geometry/PointCloud/Pipeline",
       "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCcrop.h:91",
       "baseClasses": [
-        "_ReferenceFrame"
+        "_TransformBase"
       ],
       "parameters": [
         {
@@ -27265,8 +27265,8 @@
             "vOrt"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:27",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:27",
           "typeEvidence": "jKv-vector-overload",
           "cppVariable": "m_vOrt.coeffs()"
         },
@@ -27275,8 +27275,8 @@
             "vPos"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:26",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:26",
           "typeEvidence": "declaration",
           "cppVariable": "m_vPos",
           "cppType": "Vector3d",
@@ -27314,7 +27314,7 @@
       "category": "Universe/Geometry/PointCloud/Pipeline",
       "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCdownSample.h:16",
       "baseClasses": [
-        "_ReferenceFrame"
+        "_TransformBase"
       ],
       "parameters": [
         {
@@ -27409,8 +27409,8 @@
             "vOrt"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:27",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:27",
           "typeEvidence": "jKv-vector-overload",
           "cppVariable": "m_vOrt.coeffs()"
         },
@@ -27419,8 +27419,8 @@
             "vPos"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:26",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:26",
           "typeEvidence": "declaration",
           "cppVariable": "m_vPos",
           "cppType": "Vector3d",
@@ -27452,7 +27452,7 @@
       "category": "Universe/Geometry/PointCloud/Pipeline",
       "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCmerge.h:17",
       "baseClasses": [
-        "_ReferenceFrame"
+        "_TransformBase"
       ],
       "parameters": [
         {
@@ -27559,8 +27559,8 @@
             "vOrt"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:27",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:27",
           "typeEvidence": "jKv-vector-overload",
           "cppVariable": "m_vOrt.coeffs()"
         },
@@ -27581,8 +27581,8 @@
             "vPos"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:26",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:26",
           "typeEvidence": "declaration",
           "cppVariable": "m_vPos",
           "cppType": "Vector3d",
@@ -27637,7 +27637,7 @@
       "category": "Universe/Geometry/PointCloud/Pipeline",
       "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCrecv.h:18",
       "baseClasses": [
-        "_ReferenceFrame"
+        "_TransformBase"
       ],
       "parameters": [
         {
@@ -27756,8 +27756,8 @@
             "vOrt"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:27",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:27",
           "typeEvidence": "jKv-vector-overload",
           "cppVariable": "m_vOrt.coeffs()"
         },
@@ -27766,8 +27766,8 @@
             "vPos"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:26",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:26",
           "typeEvidence": "declaration",
           "cppVariable": "m_vPos",
           "cppType": "Vector3d",
@@ -27823,7 +27823,7 @@
       "category": "Universe/Geometry/PointCloud/Pipeline",
       "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCremove.h:16",
       "baseClasses": [
-        "_ReferenceFrame"
+        "_TransformBase"
       ],
       "parameters": [
         {
@@ -27930,8 +27930,8 @@
             "vOrt"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:27",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:27",
           "typeEvidence": "jKv-vector-overload",
           "cppVariable": "m_vOrt.coeffs()"
         },
@@ -27940,8 +27940,8 @@
             "vPos"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:26",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:26",
           "typeEvidence": "declaration",
           "cppVariable": "m_vPos",
           "cppType": "Vector3d",
@@ -27973,7 +27973,7 @@
       "category": "Universe/Geometry/PointCloud/Pipeline",
       "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCsend.h:18",
       "baseClasses": [
-        "_ReferenceFrame"
+        "_TransformBase"
       ],
       "parameters": [
         {
@@ -28104,8 +28104,8 @@
             "vOrt"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:27",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:27",
           "typeEvidence": "jKv-vector-overload",
           "cppVariable": "m_vOrt.coeffs()"
         },
@@ -28114,8 +28114,8 @@
             "vPos"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:26",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:26",
           "typeEvidence": "declaration",
           "cppVariable": "m_vPos",
           "cppType": "Vector3d",
@@ -28171,7 +28171,7 @@
       "category": "Universe/Geometry/PointCloud/Pipeline",
       "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCtransform.h:18",
       "baseClasses": [
-        "_ReferenceFrame"
+        "_TransformBase"
       ],
       "parameters": [
         {
@@ -28299,8 +28299,8 @@
             "vOrt"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:27",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:27",
           "typeEvidence": "jKv-vector-overload",
           "cppVariable": "m_vOrt.coeffs()"
         },
@@ -28309,8 +28309,8 @@
             "vPos"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:26",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:26",
           "typeEvidence": "declaration",
           "cppVariable": "m_vPos",
           "cppType": "Vector3d",
@@ -28390,7 +28390,7 @@
       "category": "Universe/Geometry/PointCloud/Registration",
       "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistCol.h:20",
       "baseClasses": [
-        "_ReferenceFrame"
+        "_TransformBase"
       ],
       "parameters": [
         {
@@ -28591,8 +28591,8 @@
             "vOrt"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:27",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:27",
           "typeEvidence": "jKv-vector-overload",
           "cppVariable": "m_vOrt.coeffs()"
         },
@@ -28601,8 +28601,8 @@
             "vPos"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:26",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:26",
           "typeEvidence": "declaration",
           "cppVariable": "m_vPos",
           "cppType": "Vector3d",
@@ -29080,7 +29080,7 @@
       "category": "Universe/Grid",
       "source": "src/Universe/Grid/_OctreeBase.h:95",
       "baseClasses": [
-        "_ReferenceFrame"
+        "_TransformBase"
       ],
       "parameters": [
         {
@@ -29163,8 +29163,8 @@
             "vOrt"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:27",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:27",
           "typeEvidence": "jKv-vector-overload",
           "cppVariable": "m_vOrt.coeffs()"
         },
@@ -29173,8 +29173,8 @@
             "vPos"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:26",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:26",
           "typeEvidence": "declaration",
           "cppVariable": "m_vPos",
           "cppType": "Vector3d",
@@ -29324,8 +29324,8 @@
             "vOrt"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:27",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:27",
           "typeEvidence": "jKv-vector-overload",
           "cppVariable": "m_vOrt.coeffs()"
         },
@@ -29359,8 +29359,8 @@
             "vPos"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:26",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:26",
           "typeEvidence": "declaration",
           "cppVariable": "m_vPos",
           "cppType": "Vector3d",
@@ -29587,8 +29587,8 @@
             "vOrt"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:27",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:27",
           "typeEvidence": "jKv-vector-overload",
           "cppVariable": "m_vOrt.coeffs()"
         },
@@ -29622,8 +29622,8 @@
             "vPos"
           ],
           "type": "array",
-          "declaredIn": "_ReferenceFrame",
-          "source": "src/Universe/_ReferenceFrame.cpp:26",
+          "declaredIn": "_TransformBase",
+          "source": "src/Universe/_TransformBase.cpp:26",
           "typeEvidence": "declaration",
           "cppVariable": "m_vPos",
           "cppType": "Vector3d",
@@ -40278,8 +40278,8 @@
       "src/Universe/Grid/_OctreeGrid.h",
       "src/Universe/Grid/_SelectableOctGrid.cpp",
       "src/Universe/Grid/_SelectableOctGrid.h",
-      "src/Universe/_ReferenceFrame.cpp",
-      "src/Universe/_ReferenceFrame.h",
+      "src/Universe/_TransformBase.cpp",
+      "src/Universe/_TransformBase.h",
       "src/Utility/BitFlag.h",
       "src/Utility/RC.h",
       "src/Utility/util.h",
