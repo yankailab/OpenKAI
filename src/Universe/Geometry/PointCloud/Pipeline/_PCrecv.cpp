@@ -19,7 +19,7 @@ namespace kai
 
 	bool _PCrecv::loadConfig(void)
 	{
-		IF_F(!_TransformBase::loadConfig());
+		IF_F(!_ModuleBase::loadConfig());
 		jKv(*m_pJ, "nPmax", m_nPmax);
 		IF_Le_F(m_nPmax == 0, "nPmax must be positive");
 		m_vPacket.reserve(pcstream::maxPacketBytes);
@@ -28,7 +28,7 @@ namespace kai
 
 	bool _PCrecv::saveConfig(bool bExport)
 	{
-		IF_F(!_TransformBase::saveConfig(false));
+		IF_F(!_ModuleBase::saveConfig(false));
 		(*m_pJ)["nPmax"] = m_nPmax;
 		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
@@ -36,7 +36,13 @@ namespace kai
 
 	bool _PCrecv::link(InstanceMgr *pM)
 	{
-		IF_F(!_TransformBase::link(pM));
+		IF_F(!_ModuleBase::link(pM));
+
+		string tfName;
+		jKv(*m_pJ, "_TransformRigid", tfName);
+		m_pTf = dynamic_cast<_TransformRigid *>(static_cast<_ModuleBase *>(pM->findModule(tfName)));
+		IF_Le_F(!tfName.empty() && !m_pTf, "_TransformRigid not found: " + tfName);
+
 		string name;
 		jKv(*m_pJ, "PCLframeOut", name);
 		m_pPCLout = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(name)));
@@ -58,7 +64,7 @@ namespace kai
 
 	bool _PCrecv::check(void)
 	{
-		return m_pBpStreamIn && m_pPCLout && _TransformBase::check();
+		return m_pBpStreamIn && m_pPCLout && _ModuleBase::check();
 	}
 
 	void _PCrecv::clear(void)
@@ -159,6 +165,7 @@ namespace kai
 			return;
 		}
 
+		const Isometry3f pose = m_pTf ? m_pTf->getPoseCombinedf() : Isometry3f::Identity();
 		for (size_t i = 0; i < count; ++i)
 		{
 			const uint8_t *pPoint = pBytes + pcstream::headerBytes + i * pcstream::pointBytes;
@@ -168,7 +175,7 @@ namespace kai
 				point.m_vP[axis] = pcstream::unpackFloat(pPoint + axis * 4);
 				point.m_vC[axis] = pcstream::unpackFloat(pPoint + 12 + axis * 4);
 			}
-			point.m_vP = m_mPosef * point.m_vP;
+			point.m_vP = pose * point.m_vP;
 			point.m_tStamp = pcstream::unpackUint(pPoint + 24, 8);
 			m_vPendingPoints.push_back(point);
 		}

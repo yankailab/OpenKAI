@@ -20,7 +20,7 @@ namespace kai
 
 	bool _PCremove::loadConfig(void)
 	{
-		IF_F(!this->_TransformBase::loadConfig());
+		IF_F(!this->_ModuleBase::loadConfig());
 		const json &j = *m_pJ;
 
 		jKv(j, "nP", m_nP);
@@ -29,9 +29,21 @@ namespace kai
 		return true;
 	}
 
+	bool _PCremove::link(InstanceMgr *pM)
+	{
+		IF_F(!_ModuleBase::link(pM));
+
+		string tfName;
+		jKv(*m_pJ, "_TransformRigid", tfName);
+		m_pTf = dynamic_cast<_TransformRigid *>(static_cast<_ModuleBase *>(pM->findModule(tfName)));
+		IF_Le_F(!tfName.empty() && !m_pTf, "_TransformRigid not found: " + tfName);
+
+		return true;
+	}
+
 	bool _PCremove::saveConfig(bool bExport)
 	{
-		IF_F(!_TransformBase::saveConfig(false));
+		IF_F(!_ModuleBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["nP"] = m_nP;
@@ -51,7 +63,7 @@ namespace kai
 	{
 		//	NULL_F(m_pInCtx.m_pPCB);
 
-		return _TransformBase::check();
+		return _ModuleBase::check();
 	}
 
 	void _PCremove::update(void)

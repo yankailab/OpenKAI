@@ -53,8 +53,7 @@ namespace kai
             {"msopPort", 6699}, {"difopPort", 7788}, {"receiveBufferBytes", 4194304},
             {"tOutSec", 3}, {"frameTimeoutMs", 250}, {"nMaxFramePoints", 50000},
             {"bReflectivity", true}, {"bDropNoise", true}, {"bUseSensorTime", true},
-            {"vRangeD", {0.1, 120.0}}, {"vColorDefault", {1.0, 1.0, 1.0}},
-            {"vPos", {0.0, 0.0, 0.0}}, {"vOrt", {0.0, 0.0, 0.0, 1.0}}};
+            {"vRangeD", {0.1, 120.0}}, {"vColorDefault", {1.0, 1.0, 1.0}}};
     }
 
     _E1R::~_E1R() { stop(); }
@@ -62,10 +61,15 @@ namespace kai
     bool _E1R::loadConfig()
     {
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
-        IF_F(!_TransformBase::loadConfig());
+        IF_F(!_ModuleBase::loadConfig());
         json patch = json::object(), errors;
         for (const auto &field : m_config.items())
-            if (m_pJ->contains(field.key())) patch[field.key()] = m_pJ->at(field.key());
+        {
+            if (m_pJ->contains(field.key()))
+            {
+                patch[field.key()] = m_pJ->at(field.key());
+            }
+        }
         if (!applyConfig(patch, false, errors)) { LOG_E(errors.dump()); return false; }
         m_framePoints.reserve(m_config.at("nMaxFramePoints").get<size_t>());
         return true;
@@ -74,14 +78,20 @@ namespace kai
     bool _E1R::saveConfig(bool bExport)
     {
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
-        IF_F(!_TransformBase::saveConfig(false));
+        IF_F(!_ModuleBase::saveConfig(false));
         m_pJ->update(m_config);
         return !bExport || m_pJcfg->saveToFile();
     }
 
     bool _E1R::link(InstanceMgr *pM)
     {
-        IF_F(!_TransformBase::link(pM));
+        IF_F(!_ModuleBase::link(pM));
+
+        string tfName;
+        jKv(*m_pJ, "_TransformRigid", tfName);
+        m_pTf = dynamic_cast<_TransformRigid *>(static_cast<_ModuleBase *>(pM->findModule(tfName)));
+        IF_Le_F(!tfName.empty() && !m_pTf, "_TransformRigid not found: " + tfName);
+
         string name;
         jKv(*m_pJ, "PCLframeOut", name);
         m_pPCLout = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(name)));
@@ -89,7 +99,7 @@ namespace kai
         return true;
     }
 
-    bool _E1R::check() { return m_pPCLout && _TransformBase::check(); }
+    bool _E1R::check() { return m_pPCLout && _ModuleBase::check(); }
 
     bool _E1R::openSockets(const json &config, string &error)
     {
@@ -300,6 +310,7 @@ namespace kai
         const bool reflectivity = m_config.at("bReflectivity"), dropNoise = m_config.at("bDropNoise");
         const Vector3f color(m_config.at("vColorDefault")[0], m_config.at("vColorDefault")[1], m_config.at("vColorDefault")[2]);
         bool overflow = false;
+        const Isometry3f pose = m_pTf ? m_pTf->getPoseCombinedf() : Isometry3f::Identity();
         for (const auto &sample : packet.points)
         {
             // The guide defines 1 as normal and 2 as noise. Live E1R firmware
@@ -309,7 +320,7 @@ namespace kai
                 (dropNoise && sample.attribute > 1)) continue;
             if (m_framePoints.size() >= limit) { overflow = true; continue; }
             GEOMETRY_POINT point;
-            point.m_vP = m_mPosef * Vector3f(sample.x, sample.y, sample.z);
+            point.m_vP = pose * Vector3f(sample.x, sample.y, sample.z);
             point.m_vC = reflectivity ? Vector3f::Constant(sample.intensity / 255.0f) : color;
             point.m_tStamp = std::max<uint64_t>(packetNs + uint64_t(sample.offsetUs) * 1000, 1);
             m_framePoints.push_back(point);
@@ -367,9 +378,6 @@ namespace kai
             {"description", "When disabled, timestamp packets with host monotonic receive time, retaining per-point offsets."}};
         schema["vRangeD"] = {{"type", "range"}, {"label", "Distance range (m)"}, {"category", "Point cloud"}, {"length", 2}, {"min", 0}, {"max", 327.675}};
         schema["vColorDefault"] = {{"type", "array"}, {"label", "Default RGB color"}, {"category", "Point cloud"}, {"length", 3}, {"min", 0}, {"max", 1}};
-        schema["vPos"] = {{"type", "array"}, {"label", "Mount position XYZ (m)"}, {"category", "Mount transform"}, {"length", 3}, {"min", -1000000}, {"max", 1000000}};
-        schema["vOrt"] = {{"type", "array"}, {"label", "Mount quaternion XYZW"}, {"category", "Mount transform"}, {"length", 4}, {"min", -1}, {"max", 1},
-            {"description", "Normalized on apply. Identity is [0, 0, 0, 1]."}};
         for (const auto &field : deviceFields)
             schema[field.first] = {{"type", "string"}, {"label", field.second}, {"category", "Sensor (DIFOP)"}, {"readOnly", true},
                 {"description", "Observed sensor value. The supplied E1R manual defines output-only DIFOP; a supported device write protocol was not supplied."}};
@@ -403,12 +411,6 @@ namespace kai
                         if (!element.is_number() || !std::isfinite(element.get<double>()) ||
                             element.get<double>() < spec.at("min").get<double>() || element.get<double>() > spec.at("max").get<double>()) valid = false;
                 if (valid && field.key() == "vRangeD") valid = value[0].get<double>() < value[1].get<double>();
-                if (valid && field.key() == "vOrt")
-                {
-                    double norm = 0;
-                    for (const auto &element : value) norm += element.get<double>() * element.get<double>();
-                    valid = norm > 1e-12;
-                }
             }
             else valid = value.is_number_integer() && value.get<double>() >= spec.at("min").get<double>() && value.get<double>() <= spec.at("max").get<double>();
             if (!valid) { errors[field.key()] = "Invalid type or value outside supported range"; continue; }
@@ -416,10 +418,6 @@ namespace kai
         }
         if (next.at("msopPort") == next.at("difopPort")) errors["difopPort"] = "MSOP and DIFOP host ports must differ";
         if (!errors.empty()) return false;
-        Quaterniond orientation(next.at("vOrt")[3].get<double>(), next.at("vOrt")[0].get<double>(),
-            next.at("vOrt")[1].get<double>(), next.at("vOrt")[2].get<double>());
-        orientation.normalize();
-        next["vOrt"] = {orientation.x(), orientation.y(), orientation.z(), orientation.w()};
         bool networkChanged = false;
         for (const char *key : {"bindIP", "msopPort", "difopPort", "receiveBufferBytes"}) networkChanged |= next.at(key) != m_config.at(key);
         if (live && m_started && networkChanged)
@@ -437,8 +435,6 @@ namespace kai
             }
             m_config = next;
         }
-        setTranslation(Vector3d(next.at("vPos")[0], next.at("vPos")[1], next.at("vPos")[2]));
-        setRotation(orientation, true);
         return true;
     }
 
@@ -464,7 +460,7 @@ namespace kai
     void _E1R::console(void *pConsole)
     {
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
-        _TransformBase::console(pConsole);
+        _ModuleBase::console(pConsole);
         if (pConsole) static_cast<_Console *>(pConsole)->addMsg("E1R " + statusValues().at("state").get<string>() +
             " " + m_selectedIP + " frames=" + std::to_string(m_frames) + " " + m_lastError);
     }

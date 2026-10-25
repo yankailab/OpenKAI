@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_Universe_Geometry_PointCloud_PCcrop_H_
 #define OpenKAI_src_Universe_Geometry_PointCloud_PCcrop_H_
 
-#include "../../../_TransformBase.h"
+#include "../../../_TransformRigid.h"
 
 namespace kai
 {
@@ -88,13 +88,14 @@ namespace kai
 		}
 	};
 
-	class _PCcrop : public _TransformBase
+	class _PCcrop : public _ModuleBase
 	{
 	public:
 		_PCcrop();
 		virtual ~_PCcrop();
 
 		virtual bool loadConfig(void) override;
+		bool link(InstanceMgr *pM) override;
 		bool saveConfig(bool bExport) override;
 		virtual bool start(void);
 		virtual bool check(void);
@@ -110,6 +111,7 @@ namespace kai
 		}
 
 	protected:
+		_TransformRigid *m_pTf = nullptr;
 		vector<POINTCLOUD_VOL> m_vFilter;
 	};
 

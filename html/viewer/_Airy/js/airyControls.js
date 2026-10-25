@@ -6,8 +6,7 @@ const labels = {
   splitAngle: 'Frame split azimuth (°)',
   bUseSensorTime: 'Use sensor timestamps', bReflectivity: 'Color by reflectivity',
   vColorDefault: 'Point color [R, G, B]', vRangeD: 'Distance range [minimum, maximum] (m)',
-  nMaxFramePoints: 'Maximum points per frame', tOutSec: 'Device timeout (s)',
-  vPos: 'Position [X, Y, Z] (m)', vOrt: 'Orientation quaternion [X, Y, Z, W]'
+  nMaxFramePoints: 'Maximum points per frame', tOutSec: 'Device timeout (s)'
 };
 const deviceLabels = {
   deviceSensorIP: 'Sensor IPv4', deviceDestinationIP: 'Destination IPv4', deviceMAC: 'Sensor MAC address',

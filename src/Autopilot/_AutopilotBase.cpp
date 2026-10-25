@@ -13,7 +13,7 @@ namespace kai
 
 	bool _AutopilotBase::loadConfig(void)
 	{
-		IF_F(!this->_TransformBase::loadConfig());
+		IF_F(!this->_ModuleBase::loadConfig());
 		const json &j = *m_pJ;
 
 		jKv(j, "type", m_type);
@@ -23,7 +23,7 @@ namespace kai
 
 	bool _AutopilotBase::saveConfig(bool bExport)
 	{
-		IF_F(!_TransformBase::saveConfig(false));
+		IF_F(!_ModuleBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["type"] = m_type;
@@ -34,7 +34,12 @@ namespace kai
 
 	bool _AutopilotBase::link(InstanceMgr *pM)
 	{
-		IF_F(!this->_TransformBase::link(pM));
+		IF_F(!this->_ModuleBase::link(pM));
+
+		string tfName;
+		jKv(*m_pJ, "_TransformRigid", tfName);
+		m_pTf = dynamic_cast<_TransformRigid *>(static_cast<_ModuleBase *>(pM->findModule(tfName)));
+		IF_Le_F(!tfName.empty() && !m_pTf, "_TransformRigid not found: " + tfName);
 
 		return true;
 	}
@@ -47,7 +52,7 @@ namespace kai
 
 	bool _AutopilotBase::check(void)
 	{
-		return this->_TransformBase::check();
+		return this->_ModuleBase::check();
 	}
 
 	void _AutopilotBase::update(void)
@@ -113,7 +118,7 @@ namespace kai
 	void _AutopilotBase::console(void *pConsole)
 	{
 		NULL_(pConsole);
-		this->_TransformBase::console(pConsole);
+		this->_ModuleBase::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
 		pC->addMsg("-State-", 1);
@@ -123,8 +128,9 @@ namespace kai
 		pC->addMsg("\tapMode:" + i2str(getMode()), 1);
 
 		pC->addMsg("Global Pos-----------------------", 1);
-		pC->addMsg("\tlat=\t" + lf2str(m_vT.x(), 7) + "\tlon=\t" + lf2str(m_vT.y(), 7), 1);
-		pC->addMsg("\talt=\t" + lf2str(m_vT.z(), 2) + "\trelAlt=\t" + lf2str(m_rAlt, 2), 1);
+		const Vector3d translation = m_pTf ? m_pTf->getTranslation() : Vector3d::Zero();
+		pC->addMsg("\tlat=\t" + lf2str(translation.x(), 7) + "\tlon=\t" + lf2str(translation.y(), 7), 1);
+		pC->addMsg("\talt=\t" + lf2str(translation.z(), 2) + "\trelAlt=\t" + lf2str(m_rAlt, 2), 1);
 
 		pC->addMsg("-Home Pos-", 1);
 		pC->addMsg("\tlat=\t" + f2str(m_vHomePos.x(), 7) + "\tlon=\t" + f2str(m_vHomePos.y(), 7) + "\talt=\t" + f2str(m_vHomePos.z(), 7), 1);

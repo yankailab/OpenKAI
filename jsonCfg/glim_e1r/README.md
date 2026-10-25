@@ -25,7 +25,7 @@ The OpenKAI E1R driver exposes point clouds without an IMU stream. This profile
 uses `libodometry_estimation_ct.so` for continuous-time geometric odometry and
 disables IMU factors in submapping and global mapping. The map starts in the
 initial LiDAR frame, without gravity alignment. Keep the driver transform fixed;
-the supplied `vPos` and `vOrt` are identity.
+the supplied the linked `_TransformRigid` module's `vT` and `vR` are identity.
 
 `bUseSensorTime: true` retains sensor capture timestamps and per-point offsets.
 `config_sensors.json` sets `global_shutter_lidar: false` to preserve those offsets

@@ -58,8 +58,7 @@ namespace kai
             {"msopPort", 6699}, {"difopPort", 7788}, {"imuPort", 6688}, {"receiveBufferBytes", 4194304},
             {"tOutSec", 3}, {"frameTimeoutMs", 250}, {"nMaxFramePoints", 200000},
             {"bReflectivity", true}, {"bIMUoutput", true}, {"bIMUpreview", false}, {"bUseSensorTime", true}, {"splitAngle", 0.0},
-            {"vRangeD", {0.1, 60.0}}, {"vColorDefault", {1.0, 1.0, 1.0}},
-            {"vPos", {0.0, 0.0, 0.0}}, {"vOrt", {0.0, 0.0, 0.0, 1.0}}};
+            {"vRangeD", {0.1, 60.0}}, {"vColorDefault", {1.0, 1.0, 1.0}}};
     }
 
     _Airy::~_Airy() { stop(); }
@@ -67,10 +66,15 @@ namespace kai
     bool _Airy::loadConfig()
     {
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
-        IF_F(!_TransformBase::loadConfig());
+        IF_F(!_ModuleBase::loadConfig());
         json patch = json::object(), errors;
         for (const auto &field : m_config.items())
-            if (m_pJ->contains(field.key())) patch[field.key()] = m_pJ->at(field.key());
+        {
+            if (m_pJ->contains(field.key()))
+            {
+                patch[field.key()] = m_pJ->at(field.key());
+            }
+        }
         if (!applyConfig(patch, false, errors)) { LOG_E(errors.dump()); return false; }
         m_framePoints.reserve(m_config.at("nMaxFramePoints").get<size_t>());
         return true;
@@ -79,14 +83,20 @@ namespace kai
     bool _Airy::saveConfig(bool bExport)
     {
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
-        IF_F(!_TransformBase::saveConfig(false));
+        IF_F(!_ModuleBase::saveConfig(false));
         m_pJ->update(m_config);
         return !bExport || m_pJcfg->saveToFile();
     }
 
     bool _Airy::link(InstanceMgr *pM)
     {
-        IF_F(!_TransformBase::link(pM));
+        IF_F(!_ModuleBase::link(pM));
+
+        string tfName;
+        jKv(*m_pJ, "_TransformRigid", tfName);
+        m_pTf = dynamic_cast<_TransformRigid *>(static_cast<_ModuleBase *>(pM->findModule(tfName)));
+        IF_Le_F(!tfName.empty() && !m_pTf, "_TransformRigid not found: " + tfName);
+
         string name;
         jKv(*m_pJ, "PCLframeOut", name);
         m_pPCLout = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(name)));
@@ -98,7 +108,7 @@ namespace kai
         return true;
     }
 
-    bool _Airy::check() { return m_pPCLout && _TransformBase::check(); }
+    bool _Airy::check() { return m_pPCLout && _ModuleBase::check(); }
 
     bool _Airy::openSockets(const json &config, string &error)
     {
@@ -134,7 +144,7 @@ namespace kai
         if (!check()) return false;
         if (m_started) return true;
         if (!openSockets(m_config, m_lastError)) { LOG_E(m_lastError); return false; }
-        resetSensor();
+        resetSensor(true);
         m_started = true;
         m_lastError.clear();
         if (m_pT->startThread(getUpdate, this)) return true;
@@ -259,7 +269,7 @@ namespace kai
         m_frameStamp = m_lastPacketNs = 0;
     }
 
-    void _Airy::resetSensor()
+    void _Airy::resetSensor(bool bClearOutput)
     {
         resetFrame();
         m_lastMSOP = m_lastDIFOP = m_lastIMU = m_lastIMUstamp = 0;
@@ -269,7 +279,10 @@ namespace kai
         m_latestIMU = airy::Imu{};
         resetIMUpreview();
         m_timedOut = false;
-        if (m_pIMUout) m_pIMUout->clear();
+        if (bClearOutput && m_pIMUout)
+        {
+            m_pIMUout->clear();
+        }
     }
 
     void _Airy::publishFrame(bool partial)
@@ -337,6 +350,7 @@ namespace kai
         const bool croppedFOV = (unsigned(m_calibration.fovEnd) + 36000 - m_calibration.fovStart) % 36000 != 0;
         bool overflow = false;
         uint8_t previousBlock = 255;
+        const Isometry3f pose = m_pTf ? m_pTf->getPoseCombinedf() : Isometry3f::Identity();
         for (const auto &sample : packet.points)
         {
             // Split only at block boundaries: channel calibration/interpolation
@@ -364,7 +378,7 @@ namespace kai
             if (sample.range <= 0 || sample.range < minimum || sample.range > maximum) continue;
             if (m_framePoints.size() >= limit) { overflow = true; m_framePartial = true; continue; }
             GEOMETRY_POINT point;
-            point.m_vP = m_mPosef * Vector3f(sample.x, sample.y, sample.z);
+            point.m_vP = pose * Vector3f(sample.x, sample.y, sample.z);
             point.m_vC = reflectivity ? Vector3f::Constant(sample.intensity / 255.0f) : color;
             point.m_tStamp = stamp;
             m_framePoints.push_back(point);
@@ -523,9 +537,6 @@ namespace kai
             {"description", "When disabled, timestamp packets with host monotonic receive time, retaining per-point offsets."}};
         schema["vRangeD"] = {{"type", "range"}, {"label", "Distance range (m)"}, {"category", "Point cloud"}, {"length", 2}, {"min", 0}, {"max", 81.915}};
         schema["vColorDefault"] = {{"type", "array"}, {"label", "Default RGB color"}, {"category", "Point cloud"}, {"length", 3}, {"min", 0}, {"max", 1}};
-        schema["vPos"] = {{"type", "array"}, {"label", "Mount position XYZ (m)"}, {"category", "Mount transform"}, {"length", 3}, {"min", -1000000}, {"max", 1000000}};
-        schema["vOrt"] = {{"type", "array"}, {"label", "Mount quaternion XYZW"}, {"category", "Mount transform"}, {"length", 4}, {"min", -1}, {"max", 1},
-            {"description", "Normalized on apply. Identity is [0, 0, 0, 1]."}};
         for (const auto &field : deviceFields)
             schema[field.first] = {{"type", "string"}, {"label", field.second}, {"category", "Sensor (DIFOP)"}, {"readOnly", true},
                 {"description", "Observed sensor value. Configure hardware settings through the Airy built-in web interface; DIFOP is output-only."}};
@@ -559,12 +570,6 @@ namespace kai
                         if (!element.is_number() || !std::isfinite(element.get<double>()) ||
                             element.get<double>() < spec.at("min").get<double>() || element.get<double>() > spec.at("max").get<double>()) valid = false;
                 if (valid && field.key() == "vRangeD") valid = value[0].get<double>() < value[1].get<double>();
-                if (valid && field.key() == "vOrt")
-                {
-                    double norm = 0;
-                    for (const auto &element : value) norm += element.get<double>() * element.get<double>();
-                    valid = norm > 1e-12;
-                }
             }
             else if (type == "float") valid = value.is_number() && std::isfinite(value.get<double>()) && value.get<double>() >= spec.at("min").get<double>() && value.get<double>() <= spec.at("max").get<double>();
             else valid = value.is_number_integer() && value.get<double>() >= spec.at("min").get<double>() && value.get<double>() <= spec.at("max").get<double>();
@@ -575,10 +580,6 @@ namespace kai
         if (next.at("imuPort") != 0 && (next.at("imuPort") == next.at("msopPort") || next.at("imuPort") == next.at("difopPort")))
             errors["imuPort"] = "IMU port must differ from MSOP and DIFOP ports";
         if (!errors.empty()) return false;
-        Quaterniond orientation(next.at("vOrt")[3].get<double>(), next.at("vOrt")[0].get<double>(),
-            next.at("vOrt")[1].get<double>(), next.at("vOrt")[2].get<double>());
-        orientation.normalize();
-        next["vOrt"] = {orientation.x(), orientation.y(), orientation.z(), orientation.w()};
         bool networkChanged = false;
         for (const char *key : {"bindIP", "msopPort", "difopPort", "imuPort", "receiveBufferBytes"}) networkChanged |= next.at(key) != m_config.at(key);
         if (live && m_started && networkChanged)
@@ -594,10 +595,14 @@ namespace kai
             if (scanChanged) resetFrame();
             if (networkChanged || next.at("deviceIP") != m_config.at("deviceIP"))
             {
-                resetSensor(); m_lastError.clear();
+                resetSensor(live);
+                m_lastError.clear();
             }
-            if (m_config.at("bUseSensorTime") != next.at("bUseSensorTime") || m_config.at("bIMUoutput") != next.at("bIMUoutput"))
-            { if (m_pIMUout) m_pIMUout->clear(); }
+            if (live && m_pIMUout && (m_config.at("bUseSensorTime") != next.at("bUseSensorTime") ||
+                m_config.at("bIMUoutput") != next.at("bIMUoutput")))
+            {
+                m_pIMUout->clear();
+            }
             if (m_config.at("bUseSensorTime") != next.at("bUseSensorTime"))
             { m_lastIMUstamp = 0; resetIMUpreview(); }
             m_config = next;
@@ -609,8 +614,6 @@ namespace kai
             if (m_bIMUpreview) resetIMUpreview();
             else { m_previewStamp = 0; m_haveIMUleveling = false; }
         }
-        setTranslation(Vector3d(next.at("vPos")[0], next.at("vPos")[1], next.at("vPos")[2]));
-        setRotation(orientation, true);
         return true;
     }
 
@@ -639,7 +642,7 @@ namespace kai
     void _Airy::console(void *pConsole)
     {
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
-        _TransformBase::console(pConsole);
+        _ModuleBase::console(pConsole);
         if (pConsole) static_cast<_Console *>(pConsole)->addMsg("Airy " + statusValues().at("state").get<string>() +
             " " + m_selectedIP + " frames=" + std::to_string(m_frames) + " " + m_lastError);
     }

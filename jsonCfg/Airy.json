@@ -37,21 +37,11 @@
 			1.0,
 			1.0
 		],
-		"vPos": [
-			0,
-			0,
-			0
-		],
-		"vOrt": [
-			0,
-			0,
-			0,
-			1
-		],
 		"imuPort": 6688,
 		"bIMUoutput": true,
 		"IMUstreamOut": "airyIMU",
-		"splitAngle": 0.0
+		"splitAngle": 0.0,
+		"_TransformRigid": "AiryTransform"
 	},
 	"viewer": {
 		"class": "_WebGeometry",
@@ -146,5 +136,19 @@
 		"type": "dataObject",
 		"class": "IMUstream",
 		"nBuf": 4000
+	},
+	"AiryTransform": {
+		"class": "_TransformRigid",
+		"vT": [
+			0,
+			0,
+			0
+		],
+		"vR": [
+			0,
+			0,
+			0,
+			1
+		]
 	}
 }

@@ -216,11 +216,11 @@ def run(browser, editor):
             throw Error('Removed geometry base classes must not remain in the catalog');
         const producers = new OpenKAIModel(OPENKAI_SCHEMA);
         producers.addNode('PCLframe', 'points');
-        for (const name of ['_PCLfile', '_PCtransform', '_PCmerge', '_PCrecv',
-                            '_Livox2', '_RoboSenseAiry', '_PCregistCol', '_LCalign']) {
+        for (const name of ['_PCLfile', '_PCmerge', '_PCrecv',
+                            '_Livox2', '_Airy', '_E1R', '_PCregistCol', '_LCalign']) {
             const definition = producers.getClass(name);
-            if (JSON.stringify(definition.baseClasses) !== '["_TransformBase"]')
-                throw Error(name + ' must directly inherit _TransformBase');
+            if (JSON.stringify(definition.baseClasses) !== '["_ModuleBase"]')
+                throw Error(name + ' must directly inherit _ModuleBase');
             const output = definition.dependencies.find(dep => dep.path.join('.') === 'PCLframeOut');
             if (!output || output.targetClass !== 'PCLframe' || output.declaredIn !== name)
                 throw Error(name + ' must declare its own PCLframeOut output');
@@ -231,8 +231,8 @@ def run(browser, editor):
         }
         for (const name of ['_GeometryViewerBase', '_PCsend', '_PCcrop', '_PCremove', '_PCdownSample']) {
             const definition = producers.getClass(name);
-            if (JSON.stringify(definition.baseClasses) !== '["_TransformBase"]')
-                throw Error(name + ' must directly inherit _TransformBase');
+            if (JSON.stringify(definition.baseClasses) !== '["_ModuleBase"]')
+                throw Error(name + ' must directly inherit _ModuleBase');
         }
         const grid = new OpenKAIModel(OPENKAI_SCHEMA);
         grid.addNode('PCLframe', 'points');

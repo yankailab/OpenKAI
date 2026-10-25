@@ -25,7 +25,8 @@ An optional backend configuration is in `jsonCfg/WebViewer3D_commands.json`;
 include it from your application's `APP.vInclude` when using commands.
 
 Use `"class": "_SelectableOctGrid"` for grids displayed by this viewer.
-Octree grids derive from `_TransformBase` and publish cell snapshots only.
+Octree grids derive from `_ModuleBase`, retain an optional `_TransformRigid` link,
+and publish cell snapshots only.
 Configure separate viewer lists:
 
 ```json

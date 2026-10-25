@@ -8,13 +8,13 @@
 #ifndef OpenKAI_src_Universe_Geometry_PointCloud_PCmerge_H_
 #define OpenKAI_src_Universe_Geometry_PointCloud_PCmerge_H_
 
-#include "../../../_TransformBase.h"
+#include "../../../_TransformRigid.h"
 #include "../../../../DataObject/PCLframe.h"
 
 namespace kai
 {
 
-	class _PCmerge : public _TransformBase
+	class _PCmerge : public _ModuleBase
 	{
 	public:
 		_PCmerge();
@@ -37,6 +37,7 @@ namespace kai
 		}
 
 	protected:
+		_TransformRigid *m_pTf = nullptr;
 		PCLframe *m_pPCLout = nullptr;
 		vector<PCLframe *> m_vpPCLin;
 		vector<uint64_t> m_vInputStamps;

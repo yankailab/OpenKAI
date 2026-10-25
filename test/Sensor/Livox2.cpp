@@ -12,6 +12,7 @@ namespace kai
     {
         static void outputs(_Livox2 &driver, PCLframe &cloud, IMUstream &imu)
         { driver.m_pPCLout = &cloud; driver.m_pIMUout = &imu; }
+        static void transform(_Livox2 &driver, _TransformRigid &transform) { driver.m_pTf = &transform; }
         static bool command(_Livox2 &driver, const vector<uint8_t> &bytes, LIVOX2_CMD &result)
         { return driver.recvLivoxCmd(bytes.data(), bytes.size(), &result); }
         static bool data(_Livox2 &driver, const vector<uint8_t> &bytes, LIVOX2_DATA &result)
@@ -255,8 +256,12 @@ namespace
     {
         for (uint8_t type = 1; type <= 3; ++type)
         {
+            _TransformRigid transform;
+            transform.setTranslation(5, -3, 2);
+            transform.setAngles(0, 0, M_PI / 2);
             PCLframe cloud; IMUstream imu; _Livox2 driver;
             Livox2TestAccess::outputs(driver, cloud, imu);
+            Livox2TestAccess::transform(driver, transform);
             const uint64_t start = 10000000000ULL;
             Livox2TestAccess::points(driver, points(driver, type, start));
             Livox2TestAccess::points(driver, points(driver, type, start)); // duplicate rejected
@@ -264,8 +269,8 @@ namespace
             Livox2TestAccess::points(driver, points(driver, type, start + 100000000));
             vector<GEOMETRY_POINT> actual;
             assert(cloud.get(actual) == start); assert(actual.size() == 2);
-            assert((actual[0].m_vP - Vector3f(1, 0, 0)).norm() < 1e-5f);
-            assert((actual[1].m_vP - Vector3f(0, 2, 0)).norm() < 1e-5f);
+            assert((actual[0].m_vP - Vector3f(5, -2, 2)).norm() < 1e-5f);
+            assert((actual[1].m_vP - Vector3f(3, -3, 2)).norm() < 1e-5f);
             assert(actual[0].m_tStamp == start); assert(actual[1].m_tStamp == start + 10000);
             assert(actual[0].m_vC.x() == 1.0f);
             json errors;
@@ -415,6 +420,48 @@ namespace
         restored.BASE::setConfig(&config, config.getJson());
         assert(restored.loadConfig() && Access::values(restored).at("bIMUpreview") == true);
         assert(Access::snapshot(restored).at("available") == false);
+    }
+
+    void testConfigPreservesLinkedStreams()
+    {
+        JsonCfg config;
+        config.setJson({{"name", "livox-config-test"}, {"class", "_Livox2"},
+            {"lvxIP", "127.0.0.2"}, {"lvxIMUdataEn", 0}});
+        PCLframe cloud;
+        IMUstream imu;
+        _Livox2 driver;
+        driver.BASE::setConfig(&config, config.getJson());
+        Access::outputs(driver, cloud, imu);
+        imu.addGyro(Vector3f(1, 2, 3), 100);
+        imu.addAcc(Vector3f(4, 5, 6), 100);
+        GEOMETRY_POINT point;
+        point.m_vP = Vector3f(7, 8, 9);
+        point.m_tStamp = 100;
+        cloud.set({point}, 100);
+        const auto assertStreamsUnchanged = [&]
+        {
+            deque<IMUstream::IMU_DATA> gyro, acc;
+            assert(imu.get(gyro, acc) == 100 && gyro.size() == 1 && acc.size() == 1);
+            assert(gyro[0].m_t == 100 && gyro[0].m_v.isApprox(Vector3f(1, 2, 3)));
+            assert(acc[0].m_t == 100 && acc[0].m_v.isApprox(Vector3f(4, 5, 6)));
+            vector<GEOMETRY_POINT> points;
+            assert(cloud.get(points) == 100 && points.size() == 1);
+            assert(points[0].m_tStamp == 100 && points[0].m_vP.isApprox(point.m_vP));
+        };
+        assert(driver.loadConfig());
+        assertStreamsUnchanged();
+        assert(driver.saveConfig(false));
+        assertStreamsUnchanged();
+        (*config.getJson())["lvxIMUdataEn"] = 1;
+        assert(driver.loadConfig());
+        assertStreamsUnchanged();
+        assert(Access::values(driver).at("lvxIMUdataEn") == 1);
+        // Live changes still reset the stream when the sensor mode changes.
+        json errors;
+        assert(Access::config(driver, {{"lvxIMUdataEn", 0}}, errors));
+        deque<IMUstream::IMU_DATA> gyro, acc;
+        imu.get(gyro, acc);
+        assert(gyro.empty() && acc.empty());
     }
 
     void testConfigurationAndACK()
@@ -687,7 +734,8 @@ namespace
 }
 int main()
 {
-    testProtocol(); testCloud(); testIMU(); testIMUPreview(); testIMUPreviewPersistence(); testConfigurationAndACK();
+    testProtocol(); testCloud(); testIMU(); testIMUPreview(); testIMUPreviewPersistence();
+    testConfigPreservesLinkedStreams(); testConfigurationAndACK();
     testOwnedSockets(); testNetworkValidationAndBindFailure(); testServiceTimers();
     std::cout << "Livox2 packet, cloud, IMU, control, localhost UDP and socket lifecycle tests passed\n";
 }

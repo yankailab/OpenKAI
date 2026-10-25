@@ -2,7 +2,7 @@
 #ifndef OpenKAI_src_Sensor_LiDAR_RoboSense_Airy__Airy_H_
 #define OpenKAI_src_Sensor_LiDAR_RoboSense_Airy__Airy_H_
 
-#include "../../../../Universe/_TransformBase.h"
+#include "../../../../Universe/_TransformRigid.h"
 #include "../../../../DataObject/PCLframe.h"
 #include "../../../../DataObject/IMUstream.h"
 #include "../../../IMU/IMUpreview.h"
@@ -11,7 +11,7 @@
 
 namespace kai
 {
-    class _Airy : public _TransformBase
+    class _Airy : public _ModuleBase
     {
         friend struct AiryTestAccess;
     public:
@@ -26,6 +26,9 @@ namespace kai
         void console(void *pConsole) override;
         void console(const json &request, void *pJSONbase) override;
         void clear();
+
+    protected:
+        _TransformRigid *m_pTf = nullptr;
 
     private:
         json configValues() const;
@@ -42,7 +45,7 @@ namespace kai
         void handleIMU(const airy::Imu &packet, uint64_t receivedNs);
         json imuValues() const;
         void resetIMUpreview();
-        void resetSensor();
+        void resetSensor(bool bClearOutput);
         void publishFrame(bool partial = false);
         void resetFrame();
 

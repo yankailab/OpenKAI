@@ -125,20 +125,21 @@ namespace kai
 		if (auto *pM = m_pMavStream->get<MavAttitude>(); pM && pM->bValid())
 		{
 			const auto &msg = pM->get();
-			m_vAngle.x() = msg.roll;
-			m_vAngle.y() = msg.pitch;
-			m_vAngle.z() = msg.yaw;
+			if (m_pTf)
+			{
+				m_pTf->setAngles(msg.roll, msg.pitch, msg.yaw);
+			}
 		}
 
 		if (auto *pM = m_pMavStream->get<MavGlobalPositionINT>(); pM && pM->bValid())
 		{
 			const auto &msg = pM->get();
-			m_vT.x() = ((double)(msg.lat)) * 1e-7;
-			m_vT.y() = ((double)(msg.lon)) * 1e-7;
-			m_vT.z() = ((double)(msg.alt)) * 1e-3;
+			if (m_pTf)
+			{
+				m_pTf->setTranslation(msg.lat * 1e-7, msg.lon * 1e-7, msg.alt * 1e-3);
+			}
 
 			m_rAlt = ((float)(msg.relative_alt)) * 1e-3;
-			//			m_vAngle.z() = ((float)(msg.hdg)) * 1e-2;
 		}
 
 		if (auto *pM = m_pMavStream->get<MavLocalPositionNED>(); pM && pM->bValid())

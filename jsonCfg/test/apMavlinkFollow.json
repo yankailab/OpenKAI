@@ -130,7 +130,8 @@
 			}
 		},
 		"/_StateControl": "state",
-		"/apType": 0
+		"/apType": 0,
+		"_TransformRigid": "apBaseTransform"
 	},
 	"cam": {
 		"class": "_GStreamer",
@@ -260,5 +261,19 @@
 		"class": "BytePacketStream",
 		"nPacket": 10,
 		"nPbuf": 512
+	},
+	"apBaseTransform": {
+		"class": "_TransformRigid",
+		"vT": [
+			0.0,
+			0.0,
+			0.0
+		],
+		"vR": [
+			0.0,
+			0.0,
+			0.0,
+			1.0
+		]
 	}
 }

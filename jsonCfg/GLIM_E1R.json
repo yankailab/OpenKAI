@@ -37,17 +37,7 @@
 			1.0,
 			1.0
 		],
-		"vPos": [
-			0,
-			0,
-			0
-		],
-		"vOrt": [
-			0,
-			0,
-			0,
-			1
-		]
+		"_TransformRigid": "E1RTransform"
 	},
 	"wsServer": {
 		"BytePacketStreamIn": "wsServer_tx",
@@ -203,7 +193,8 @@
 		"nMapPoints": 400000,
 		"nLiveFrames": 60,
 		"tMapUpdateNs": 200000000,
-		"PCLmapOut": "GLIMMap"
+		"PCLmapOut": "GLIMMap",
+		"_TransformRigid": "GLIMTransform"
 	},
 	"glimPCL": {
 		"type": "dataObject",
@@ -212,5 +203,33 @@
 	"GLIMMap": {
 		"type": "dataObject",
 		"class": "PCLmap"
+	},
+	"E1RTransform": {
+		"class": "_TransformRigid",
+		"vT": [
+			0,
+			0,
+			0
+		],
+		"vR": [
+			0,
+			0,
+			0,
+			1
+		]
+	},
+	"GLIMTransform": {
+		"class": "_TransformRigid",
+		"vT": [
+			0.0,
+			0.0,
+			0.0
+		],
+		"vR": [
+			0.0,
+			0.0,
+			0.0,
+			1.0
+		]
 	}
 }

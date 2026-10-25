@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_Universe_Geometry__GeometryViewerBase_H_
 #define OpenKAI_src_Universe_Geometry__GeometryViewerBase_H_
 
-#include "../_TransformBase.h"
+#include "../_TransformRigid.h"
 
 namespace kai
 {
@@ -30,7 +30,7 @@ namespace kai
 		Vector3f m_vUp = {0, 1, 0};
 	};
 
-	class _GeometryViewerBase : public _TransformBase
+	class _GeometryViewerBase : public _ModuleBase
 	{
 	public:
 		_GeometryViewerBase();
@@ -62,6 +62,7 @@ namespace kai
 		virtual void updateCamPose(void);
 
 	protected:
+		_TransformRigid *m_pTf = nullptr;
 		// rendering
 		Vector2i m_vWinSize = Vector2i::Zero();
 		bool m_bFullScreen = false;

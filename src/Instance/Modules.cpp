@@ -23,11 +23,11 @@ namespace kai
 		IF_N(name.empty());
 
 		ADD_MODULE(_Console);
+		ADD_MODULE(_TransformRigid);
 
 		// modules
 
 #ifdef WITH_UNIVERSE
-		ADD_MODULE(_TransformBase);
 		ADD_MODULE(_OctreeBase);
 		ADD_MODULE(_OctreeGrid);
 		ADD_MODULE(_SelectableOctGrid);

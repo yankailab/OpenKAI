@@ -20,10 +20,25 @@
     "bMapping": true,
     "nMinPoints": 100,
     "tConfidenceTimeoutNs": 1000000000,
-    "PCLmapOut": "slamMap"
+    "PCLmapOut": "slamMap",
+    "_TransformRigid": "slamTransform"
   },
   "slamMap": {
     "type": "dataObject",
     "class": "PCLmap"
+  },
+  "slamTransform": {
+    "class": "_TransformRigid",
+    "vT": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "vR": [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
   }
 }

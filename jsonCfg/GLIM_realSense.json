@@ -184,7 +184,8 @@
 		"nMapPoints": 400000,
 		"nLiveFrames": 60,
 		"tMapUpdateNs": 200000000,
-		"PCLmapOut": "GLIMMap"
+		"PCLmapOut": "GLIMMap",
+		"_TransformRigid": "GLIMTransform"
 	},
 	"d2rgbRGB": {
 		"type": "dataObject",
@@ -221,5 +222,19 @@
 		"class": "BytePacketStream",
 		"nPacket": 256,
 		"nPbuf": 2000
+	},
+	"GLIMTransform": {
+		"class": "_TransformRigid",
+		"vT": [
+			0.0,
+			0.0,
+			0.0
+		],
+		"vR": [
+			0.0,
+			0.0,
+			0.0,
+			1.0
+		]
 	}
 }

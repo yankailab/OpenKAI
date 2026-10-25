@@ -3,7 +3,7 @@
   "title": "OpenKAI editor class catalog",
   "description": "Source-derived editor metadata; not a JSON Schema validator. See SCHEMA.md.",
   "generator": "tools/generate-schema.py",
-  "sourceDigest": "75827acc44baeee1bdabc5b06df4faca9b49a02c4c6d34946bf4199b8bbca062",
+  "sourceDigest": "9dc65dcf550ab8d14e319a4d33c8969ab5397cc641e247fc02aaeac5288780ee",
   "categories": [
     "Actuator",
     "Actuator/Articulated",
@@ -5740,30 +5740,18 @@
       "category": "Autopilot",
       "source": "src/Autopilot/_AutopilotBase.h:40",
       "baseClasses": [
-        "_TransformBase"
+        "_ModuleBase"
       ],
       "parameters": [
         {
           "path": [
-            "_TransformBaseChildren"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:44",
-          "typeEvidence": "declaration",
-          "cppVariable": "vN",
-          "cppType": "vector<string>",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
+            "_TransformRigid"
           ],
           "type": "string",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:40",
+          "declaredIn": "_AutopilotBase",
+          "source": "src/Autopilot/_AutopilotBase.cpp:40",
           "typeEvidence": "declaration",
-          "cppVariable": "nP",
+          "cppVariable": "tfName",
           "cppType": "string",
           "dependency": true
         },
@@ -5853,51 +5841,18 @@
           "cppVariable": "m_type",
           "cppType": "AP_TYPE",
           "defaultExpression": "ardupilot_unknown"
-        },
-        {
-          "path": [
-            "vR"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:27",
-          "typeEvidence": "jKv-vector-overload",
-          "cppVariable": "m_vR.coeffs()"
-        },
-        {
-          "path": [
-            "vT"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vT",
-          "cppType": "Vector3d",
-          "defaultExpression": "Vector3d::Zero()"
         }
       ],
       "dependencies": [
         {
           "path": [
-            "_TransformBaseChildren"
+            "_TransformRigid"
           ],
-          "targetClass": "_TransformBase",
-          "targetKind": "module",
-          "multiple": true,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:49",
-          "containers": []
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
-          ],
-          "targetClass": "_TransformBase",
+          "targetClass": "_TransformRigid",
           "targetKind": "module",
           "multiple": false,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:41",
+          "declaredIn": "_AutopilotBase",
+          "source": "src/Autopilot/_AutopilotBase.cpp:41",
           "containers": []
         }
       ],
@@ -5941,25 +5896,13 @@
         },
         {
           "path": [
-            "_TransformBaseChildren"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:44",
-          "typeEvidence": "declaration",
-          "cppVariable": "vN",
-          "cppType": "vector<string>",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
+            "_TransformRigid"
           ],
           "type": "string",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:40",
+          "declaredIn": "_AutopilotBase",
+          "source": "src/Autopilot/_AutopilotBase.cpp:40",
           "typeEvidence": "declaration",
-          "cppVariable": "nP",
+          "cppVariable": "tfName",
           "cppType": "string",
           "dependency": true
         },
@@ -6167,28 +6110,6 @@
           "cppVariable": "m_type",
           "cppType": "AP_TYPE",
           "defaultExpression": "ardupilot_unknown"
-        },
-        {
-          "path": [
-            "vR"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:27",
-          "typeEvidence": "jKv-vector-overload",
-          "cppVariable": "m_vR.coeffs()"
-        },
-        {
-          "path": [
-            "vT"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vT",
-          "cppType": "Vector3d",
-          "defaultExpression": "Vector3d::Zero()"
         }
       ],
       "dependencies": [
@@ -6206,24 +6127,13 @@
         },
         {
           "path": [
-            "_TransformBaseChildren"
+            "_TransformRigid"
           ],
-          "targetClass": "_TransformBase",
-          "targetKind": "module",
-          "multiple": true,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:49",
-          "containers": []
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
-          ],
-          "targetClass": "_TransformBase",
+          "targetClass": "_TransformRigid",
           "targetKind": "module",
           "multiple": false,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:41",
+          "declaredIn": "_AutopilotBase",
+          "source": "src/Autopilot/_AutopilotBase.cpp:41",
           "containers": []
         }
       ],
@@ -6273,25 +6183,13 @@
         },
         {
           "path": [
-            "_TransformBaseChildren"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:44",
-          "typeEvidence": "declaration",
-          "cppVariable": "vN",
-          "cppType": "vector<string>",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
+            "_TransformRigid"
           ],
           "type": "string",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:40",
+          "declaredIn": "_AutopilotBase",
+          "source": "src/Autopilot/_AutopilotBase.cpp:40",
           "typeEvidence": "declaration",
-          "cppVariable": "nP",
+          "cppVariable": "tfName",
           "cppType": "string",
           "dependency": true
         },
@@ -6499,28 +6397,6 @@
           "cppVariable": "m_type",
           "cppType": "AP_TYPE",
           "defaultExpression": "ardupilot_unknown"
-        },
-        {
-          "path": [
-            "vR"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:27",
-          "typeEvidence": "jKv-vector-overload",
-          "cppVariable": "m_vR.coeffs()"
-        },
-        {
-          "path": [
-            "vT"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vT",
-          "cppType": "Vector3d",
-          "defaultExpression": "Vector3d::Zero()"
         }
       ],
       "dependencies": [
@@ -6538,24 +6414,13 @@
         },
         {
           "path": [
-            "_TransformBaseChildren"
+            "_TransformRigid"
           ],
-          "targetClass": "_TransformBase",
-          "targetKind": "module",
-          "multiple": true,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:49",
-          "containers": []
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
-          ],
-          "targetClass": "_TransformBase",
+          "targetClass": "_TransformRigid",
           "targetKind": "module",
           "multiple": false,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:41",
+          "declaredIn": "_AutopilotBase",
+          "source": "src/Autopilot/_AutopilotBase.cpp:41",
           "containers": []
         }
       ],
@@ -8871,25 +8736,13 @@
         },
         {
           "path": [
-            "_TransformBaseChildren"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:44",
-          "typeEvidence": "declaration",
-          "cppVariable": "vN",
-          "cppType": "vector<string>",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
+            "_TransformRigid"
           ],
           "type": "string",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:40",
+          "declaredIn": "_AutopilotBase",
+          "source": "src/Autopilot/_AutopilotBase.cpp:40",
           "typeEvidence": "declaration",
-          "cppVariable": "nP",
+          "cppVariable": "tfName",
           "cppType": "string",
           "dependency": true
         },
@@ -9097,28 +8950,6 @@
           "cppVariable": "m_type",
           "cppType": "AP_TYPE",
           "defaultExpression": "ardupilot_unknown"
-        },
-        {
-          "path": [
-            "vR"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:27",
-          "typeEvidence": "jKv-vector-overload",
-          "cppVariable": "m_vR.coeffs()"
-        },
-        {
-          "path": [
-            "vT"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vT",
-          "cppType": "Vector3d",
-          "defaultExpression": "Vector3d::Zero()"
         }
       ],
       "dependencies": [
@@ -9136,24 +8967,13 @@
         },
         {
           "path": [
-            "_TransformBaseChildren"
+            "_TransformRigid"
           ],
-          "targetClass": "_TransformBase",
-          "targetKind": "module",
-          "multiple": true,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:49",
-          "containers": []
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
-          ],
-          "targetClass": "_TransformBase",
+          "targetClass": "_TransformRigid",
           "targetKind": "module",
           "multiple": false,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:41",
+          "declaredIn": "_AutopilotBase",
+          "source": "src/Autopilot/_AutopilotBase.cpp:41",
           "containers": []
         }
       ],
@@ -9874,25 +9694,13 @@
       "parameters": [
         {
           "path": [
-            "_TransformBaseChildren"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:44",
-          "typeEvidence": "declaration",
-          "cppVariable": "vN",
-          "cppType": "vector<string>",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
+            "_TransformRigid"
           ],
           "type": "string",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:40",
+          "declaredIn": "_AutopilotBase",
+          "source": "src/Autopilot/_AutopilotBase.cpp:40",
           "typeEvidence": "declaration",
-          "cppVariable": "nP",
+          "cppVariable": "tfName",
           "cppType": "string",
           "dependency": true
         },
@@ -10071,16 +9879,6 @@
         },
         {
           "path": [
-            "vR"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:27",
-          "typeEvidence": "jKv-vector-overload",
-          "cppVariable": "m_vR.coeffs()"
-        },
-        {
-          "path": [
             "vSpdRange"
           ],
           "type": "array",
@@ -10108,41 +9906,18 @@
             -1.0,
             1.0
           ]
-        },
-        {
-          "path": [
-            "vT"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vT",
-          "cppType": "Vector3d",
-          "defaultExpression": "Vector3d::Zero()"
         }
       ],
       "dependencies": [
         {
           "path": [
-            "_TransformBaseChildren"
+            "_TransformRigid"
           ],
-          "targetClass": "_TransformBase",
-          "targetKind": "module",
-          "multiple": true,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:49",
-          "containers": []
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
-          ],
-          "targetClass": "_TransformBase",
+          "targetClass": "_TransformRigid",
           "targetKind": "module",
           "multiple": false,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:41",
+          "declaredIn": "_AutopilotBase",
+          "source": "src/Autopilot/_AutopilotBase.cpp:41",
           "containers": []
         },
         {
@@ -11310,7 +11085,7 @@
           "typeEvidence": "declaration",
           "cppVariable": "nMsgQueue",
           "cppType": "size_t",
-          "defaultExpression": "m_nMsgQueue"
+          "default": 1024
         },
         {
           "path": [
@@ -16119,7 +15894,7 @@
     {
       "name": "Modules",
       "category": "Instance",
-      "source": "src/Instance/Modules.h:288",
+      "source": "src/Instance/Modules.h:289",
       "baseClasses": [],
       "parameters": [],
       "dependencies": [],
@@ -16435,30 +16210,18 @@
       "category": "Navigation",
       "source": "src/Navigation/_NavBase.h:17",
       "baseClasses": [
-        "_TransformBase"
+        "_ModuleBase"
       ],
       "parameters": [
         {
           "path": [
-            "_TransformBaseChildren"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:44",
-          "typeEvidence": "declaration",
-          "cppVariable": "vN",
-          "cppType": "vector<string>",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
+            "_TransformRigid"
           ],
           "type": "string",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:40",
+          "declaredIn": "_NavBase",
+          "source": "src/Navigation/_NavBase.cpp:36",
           "typeEvidence": "declaration",
-          "cppVariable": "nP",
+          "cppVariable": "tfName",
           "cppType": "string",
           "dependency": true
         },
@@ -16548,51 +16311,18 @@
           "cppType": "bool",
           "default": false,
           "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "vR"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:27",
-          "typeEvidence": "jKv-vector-overload",
-          "cppVariable": "m_vR.coeffs()"
-        },
-        {
-          "path": [
-            "vT"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vT",
-          "cppType": "Vector3d",
-          "defaultExpression": "Vector3d::Zero()"
         }
       ],
       "dependencies": [
         {
           "path": [
-            "_TransformBaseChildren"
+            "_TransformRigid"
           ],
-          "targetClass": "_TransformBase",
-          "targetKind": "module",
-          "multiple": true,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:49",
-          "containers": []
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
-          ],
-          "targetClass": "_TransformBase",
+          "targetClass": "_TransformRigid",
           "targetKind": "module",
           "multiple": false,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:41",
+          "declaredIn": "_NavBase",
+          "source": "src/Navigation/_NavBase.cpp:37",
           "containers": []
         }
       ],
@@ -19347,25 +19077,13 @@
         },
         {
           "path": [
-            "_TransformBaseChildren"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:44",
-          "typeEvidence": "declaration",
-          "cppVariable": "vN",
-          "cppType": "vector<string>",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
+            "_TransformRigid"
           ],
           "type": "string",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:40",
+          "declaredIn": "_NavBase",
+          "source": "src/Navigation/_NavBase.cpp:36",
           "typeEvidence": "declaration",
-          "cppVariable": "nP",
+          "cppVariable": "tfName",
           "cppType": "string",
           "dependency": true
         },
@@ -19534,28 +19252,6 @@
           "cppType": "bool",
           "default": false,
           "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "vR"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:27",
-          "typeEvidence": "jKv-vector-overload",
-          "cppVariable": "m_vR.coeffs()"
-        },
-        {
-          "path": [
-            "vT"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vT",
-          "cppType": "Vector3d",
-          "defaultExpression": "Vector3d::Zero()"
         }
       ],
       "dependencies": [
@@ -19572,24 +19268,13 @@
         },
         {
           "path": [
-            "_TransformBaseChildren"
+            "_TransformRigid"
           ],
-          "targetClass": "_TransformBase",
-          "targetKind": "module",
-          "multiple": true,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:49",
-          "containers": []
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
-          ],
-          "targetClass": "_TransformBase",
+          "targetClass": "_TransformRigid",
           "targetKind": "module",
           "multiple": false,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:41",
+          "declaredIn": "_NavBase",
+          "source": "src/Navigation/_NavBase.cpp:37",
           "containers": []
         }
       ],
@@ -19731,25 +19416,13 @@
         },
         {
           "path": [
-            "_TransformBaseChildren"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:44",
-          "typeEvidence": "declaration",
-          "cppVariable": "vN",
-          "cppType": "vector<string>",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
+            "_TransformRigid"
           ],
           "type": "string",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:40",
+          "declaredIn": "_NavBase",
+          "source": "src/Navigation/_NavBase.cpp:36",
           "typeEvidence": "declaration",
-          "cppVariable": "nP",
+          "cppVariable": "tfName",
           "cppType": "string",
           "dependency": true
         },
@@ -20221,28 +19894,6 @@
           "cppType": "bool",
           "default": false,
           "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "vR"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:27",
-          "typeEvidence": "jKv-vector-overload",
-          "cppVariable": "m_vR.coeffs()"
-        },
-        {
-          "path": [
-            "vT"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vT",
-          "cppType": "Vector3d",
-          "defaultExpression": "Vector3d::Zero()"
         }
       ],
       "dependencies": [
@@ -20293,24 +19944,13 @@
         },
         {
           "path": [
-            "_TransformBaseChildren"
+            "_TransformRigid"
           ],
-          "targetClass": "_TransformBase",
-          "targetKind": "module",
-          "multiple": true,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:49",
-          "containers": []
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
-          ],
-          "targetClass": "_TransformBase",
+          "targetClass": "_TransformRigid",
           "targetKind": "module",
           "multiple": false,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:41",
+          "declaredIn": "_NavBase",
+          "source": "src/Navigation/_NavBase.cpp:37",
           "containers": []
         }
       ],
@@ -20399,25 +20039,13 @@
         },
         {
           "path": [
-            "_TransformBaseChildren"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:44",
-          "typeEvidence": "declaration",
-          "cppVariable": "vN",
-          "cppType": "vector<string>",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
+            "_TransformRigid"
           ],
           "type": "string",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:40",
+          "declaredIn": "_NavBase",
+          "source": "src/Navigation/_NavBase.cpp:36",
           "typeEvidence": "declaration",
-          "cppVariable": "nP",
+          "cppVariable": "tfName",
           "cppType": "string",
           "dependency": true
         },
@@ -20519,28 +20147,6 @@
           "cppType": "bool",
           "default": false,
           "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "vR"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:27",
-          "typeEvidence": "jKv-vector-overload",
-          "cppVariable": "m_vR.coeffs()"
-        },
-        {
-          "path": [
-            "vT"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vT",
-          "cppType": "Vector3d",
-          "defaultExpression": "Vector3d::Zero()"
         }
       ],
       "dependencies": [
@@ -20569,24 +20175,13 @@
         },
         {
           "path": [
-            "_TransformBaseChildren"
+            "_TransformRigid"
           ],
-          "targetClass": "_TransformBase",
-          "targetKind": "module",
-          "multiple": true,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:49",
-          "containers": []
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
-          ],
-          "targetClass": "_TransformBase",
+          "targetClass": "_TransformRigid",
           "targetKind": "module",
           "multiple": false,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:41",
+          "declaredIn": "_NavBase",
+          "source": "src/Navigation/_NavBase.cpp:37",
           "containers": []
         }
       ],
@@ -21334,7 +20929,7 @@
       "category": "Sensor/LiDAR/Livox",
       "source": "src/Sensor/LiDAR/Livox/_Livox2.h:161",
       "baseClasses": [
-        "_TransformBase"
+        "_ModuleBase"
       ],
       "parameters": [
         {
@@ -21343,7 +20938,7 @@
           ],
           "type": "string",
           "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:72",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:77",
           "typeEvidence": "declaration",
           "cppVariable": "name",
           "cppType": "string",
@@ -21355,7 +20950,7 @@
           ],
           "type": "string",
           "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:68",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:73",
           "typeEvidence": "declaration",
           "cppVariable": "name",
           "cppType": "string",
@@ -21363,25 +20958,13 @@
         },
         {
           "path": [
-            "_TransformBaseChildren"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:44",
-          "typeEvidence": "declaration",
-          "cppVariable": "vN",
-          "cppType": "vector<string>",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
+            "_TransformRigid"
           ],
           "type": "string",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:40",
+          "declaredIn": "_Livox2",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:67",
           "typeEvidence": "declaration",
-          "cppVariable": "nP",
+          "cppVariable": "tfName",
           "cppType": "string",
           "dependency": true
         },
@@ -21390,7 +20973,7 @@
             "bIMUpreview"
           ],
           "type": "boolean",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:617",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:626",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_bIMUpreview",
@@ -21403,7 +20986,7 @@
             "bIMUstab"
           ],
           "type": "boolean",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:617",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:626",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_bIMUstab",
@@ -21439,7 +21022,7 @@
             "bReflectivity"
           ],
           "type": "boolean",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:617",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:626",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_bReflectivity",
@@ -21464,7 +21047,7 @@
             "frameDurationMs"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:618",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:627",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_frameDurationNs",
@@ -21477,7 +21060,7 @@
             "lvxDetectMode"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:615",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:624",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxCfg.m_detectMode",
@@ -21489,7 +21072,7 @@
             "lvxFrameRate"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:614",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:623",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxCfg.m_frameRate",
@@ -21501,7 +21084,7 @@
             "lvxHostIP"
           ],
           "type": "string",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:610",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:619",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxCfg.m_hostIP",
@@ -21513,7 +21096,7 @@
             "lvxHostPortCmd"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:611",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:620",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_hostPortCmd",
@@ -21526,7 +21109,7 @@
             "lvxHostPortIMU"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:613",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:622",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxCfg.m_hostPortIMU",
@@ -21538,7 +21121,7 @@
             "lvxHostPortPCL"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:612",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:621",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxCfg.m_hostPortPCL",
@@ -21550,7 +21133,7 @@
             "lvxHostPortState"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:612",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:621",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxCfg.m_hostPortState",
@@ -21562,7 +21145,7 @@
             "lvxIMUdataEn"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:616",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:625",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxCfg.m_imuDataEn",
@@ -21574,7 +21157,7 @@
             "lvxIP"
           ],
           "type": "string",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:610",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:619",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxIP",
@@ -21586,7 +21169,7 @@
             "lvxPCLdataType"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:613",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:622",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxCfg.m_pclDataType",
@@ -21598,7 +21181,7 @@
             "lvxPatternMode"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:614",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:623",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxCfg.m_patternMode",
@@ -21610,7 +21193,7 @@
             "lvxPortQuery"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:611",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:620",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_queryPort",
@@ -21623,7 +21206,7 @@
             "lvxSN"
           ],
           "type": "string",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:610",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:619",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxSN",
@@ -21635,7 +21218,7 @@
             "lvxWorkMode"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:616",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:625",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxCfg.m_workMode",
@@ -21647,7 +21230,7 @@
             "lvxWorkModeAfterBoot"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:615",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:624",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxCfg.m_workModeAfterBoot",
@@ -21659,7 +21242,7 @@
             "nMaxFramePoints"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:619",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:628",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_nMaxFramePoints",
@@ -21684,7 +21267,7 @@
             "receiveBufferBytes"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:611",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:620",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_receiveBufferBytes",
@@ -21697,7 +21280,7 @@
             "tOutSec"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:618",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:627",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_timeoutNs",
@@ -21738,7 +21321,7 @@
             "vColorDefault"
           ],
           "type": "array",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:619",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:628",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_vColorDefault",
@@ -21747,37 +21330,15 @@
         },
         {
           "path": [
-            "vR"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:27",
-          "typeEvidence": "jKv-vector-overload",
-          "cppVariable": "m_vR.coeffs()"
-        },
-        {
-          "path": [
             "vRangeD"
           ],
           "type": "array",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:620",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:629",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_vRangeD",
           "cppType": "Vector2f",
           "typeEvidence": "declaration"
-        },
-        {
-          "path": [
-            "vT"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vT",
-          "cppType": "Vector3d",
-          "defaultExpression": "Vector3d::Zero()"
         }
       ],
       "dependencies": [
@@ -21789,7 +21350,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:73",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:78",
           "containers": []
         },
         {
@@ -21800,30 +21361,19 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:69",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:74",
           "required": true,
           "containers": []
         },
         {
           "path": [
-            "_TransformBaseChildren"
+            "_TransformRigid"
           ],
-          "targetClass": "_TransformBase",
-          "targetKind": "module",
-          "multiple": true,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:49",
-          "containers": []
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
-          ],
-          "targetClass": "_TransformBase",
+          "targetClass": "_TransformRigid",
           "targetKind": "module",
           "multiple": false,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:41",
+          "declaredIn": "_Livox2",
+          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:68",
           "containers": []
         }
       ],
@@ -21851,7 +21401,7 @@
       "category": "Sensor/LiDAR/RoboSense/Airy",
       "source": "src/Sensor/LiDAR/RoboSense/Airy/_Airy.h:14",
       "baseClasses": [
-        "_TransformBase"
+        "_ModuleBase"
       ],
       "parameters": [
         {
@@ -21860,7 +21410,7 @@
           ],
           "type": "string",
           "declaredIn": "_Airy",
-          "source": "src/Sensor/LiDAR/RoboSense/Airy/_Airy.cpp:95",
+          "source": "src/Sensor/LiDAR/RoboSense/Airy/_Airy.cpp:105",
           "typeEvidence": "declaration",
           "cppVariable": "name",
           "cppType": "string",
@@ -21872,7 +21422,7 @@
           ],
           "type": "string",
           "declaredIn": "_Airy",
-          "source": "src/Sensor/LiDAR/RoboSense/Airy/_Airy.cpp:91",
+          "source": "src/Sensor/LiDAR/RoboSense/Airy/_Airy.cpp:101",
           "typeEvidence": "declaration",
           "cppVariable": "name",
           "cppType": "string",
@@ -21880,25 +21430,13 @@
         },
         {
           "path": [
-            "_TransformBaseChildren"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:44",
-          "typeEvidence": "declaration",
-          "cppVariable": "vN",
-          "cppType": "vector<string>",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
+            "_TransformRigid"
           ],
           "type": "string",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:40",
+          "declaredIn": "_Airy",
+          "source": "src/Sensor/LiDAR/RoboSense/Airy/_Airy.cpp:96",
           "typeEvidence": "declaration",
-          "cppVariable": "nP",
+          "cppVariable": "tfName",
           "cppType": "string",
           "dependency": true
         },
@@ -22133,45 +21671,6 @@
         },
         {
           "path": [
-            "vOrt"
-          ],
-          "type": "array",
-          "source": "src/Sensor/LiDAR/RoboSense/Airy/_Airy.cpp:loadConfig",
-          "declaredIn": "_Airy",
-          "extraction": "audited-adapter",
-          "default": [
-            0.0,
-            0.0,
-            0.0,
-            1.0
-          ]
-        },
-        {
-          "path": [
-            "vPos"
-          ],
-          "type": "array",
-          "source": "src/Sensor/LiDAR/RoboSense/Airy/_Airy.cpp:loadConfig",
-          "declaredIn": "_Airy",
-          "extraction": "audited-adapter",
-          "default": [
-            0.0,
-            0.0,
-            0.0
-          ]
-        },
-        {
-          "path": [
-            "vR"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:27",
-          "typeEvidence": "jKv-vector-overload",
-          "cppVariable": "m_vR.coeffs()"
-        },
-        {
-          "path": [
             "vRangeD"
           ],
           "type": "array",
@@ -22182,18 +21681,6 @@
             0.1,
             60.0
           ]
-        },
-        {
-          "path": [
-            "vT"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vT",
-          "cppType": "Vector3d",
-          "defaultExpression": "Vector3d::Zero()"
         }
       ],
       "dependencies": [
@@ -22205,7 +21692,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_Airy",
-          "source": "src/Sensor/LiDAR/RoboSense/Airy/_Airy.cpp:96",
+          "source": "src/Sensor/LiDAR/RoboSense/Airy/_Airy.cpp:106",
           "containers": []
         },
         {
@@ -22216,30 +21703,19 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_Airy",
-          "source": "src/Sensor/LiDAR/RoboSense/Airy/_Airy.cpp:92",
+          "source": "src/Sensor/LiDAR/RoboSense/Airy/_Airy.cpp:102",
           "required": true,
           "containers": []
         },
         {
           "path": [
-            "_TransformBaseChildren"
+            "_TransformRigid"
           ],
-          "targetClass": "_TransformBase",
-          "targetKind": "module",
-          "multiple": true,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:49",
-          "containers": []
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
-          ],
-          "targetClass": "_TransformBase",
+          "targetClass": "_TransformRigid",
           "targetKind": "module",
           "multiple": false,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:41",
+          "declaredIn": "_Airy",
+          "source": "src/Sensor/LiDAR/RoboSense/Airy/_Airy.cpp:97",
           "containers": []
         }
       ],
@@ -22267,7 +21743,7 @@
       "category": "Sensor/LiDAR/RoboSense/E1R",
       "source": "src/Sensor/LiDAR/RoboSense/E1R/_E1R.h:12",
       "baseClasses": [
-        "_TransformBase"
+        "_ModuleBase"
       ],
       "parameters": [
         {
@@ -22276,7 +21752,7 @@
           ],
           "type": "string",
           "declaredIn": "_E1R",
-          "source": "src/Sensor/LiDAR/RoboSense/E1R/_E1R.cpp:86",
+          "source": "src/Sensor/LiDAR/RoboSense/E1R/_E1R.cpp:96",
           "typeEvidence": "declaration",
           "cppVariable": "name",
           "cppType": "string",
@@ -22284,25 +21760,13 @@
         },
         {
           "path": [
-            "_TransformBaseChildren"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:44",
-          "typeEvidence": "declaration",
-          "cppVariable": "vN",
-          "cppType": "vector<string>",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
+            "_TransformRigid"
           ],
           "type": "string",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:40",
+          "declaredIn": "_E1R",
+          "source": "src/Sensor/LiDAR/RoboSense/E1R/_E1R.cpp:91",
           "typeEvidence": "declaration",
-          "cppVariable": "nP",
+          "cppVariable": "tfName",
           "cppType": "string",
           "dependency": true
         },
@@ -22507,45 +21971,6 @@
         },
         {
           "path": [
-            "vOrt"
-          ],
-          "type": "array",
-          "source": "src/Sensor/LiDAR/RoboSense/E1R/_E1R.cpp:loadConfig",
-          "declaredIn": "_E1R",
-          "extraction": "audited-adapter",
-          "default": [
-            0.0,
-            0.0,
-            0.0,
-            1.0
-          ]
-        },
-        {
-          "path": [
-            "vPos"
-          ],
-          "type": "array",
-          "source": "src/Sensor/LiDAR/RoboSense/E1R/_E1R.cpp:loadConfig",
-          "declaredIn": "_E1R",
-          "extraction": "audited-adapter",
-          "default": [
-            0.0,
-            0.0,
-            0.0
-          ]
-        },
-        {
-          "path": [
-            "vR"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:27",
-          "typeEvidence": "jKv-vector-overload",
-          "cppVariable": "m_vR.coeffs()"
-        },
-        {
-          "path": [
             "vRangeD"
           ],
           "type": "array",
@@ -22556,18 +21981,6 @@
             0.1,
             120.0
           ]
-        },
-        {
-          "path": [
-            "vT"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vT",
-          "cppType": "Vector3d",
-          "defaultExpression": "Vector3d::Zero()"
         }
       ],
       "dependencies": [
@@ -22579,30 +21992,19 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_E1R",
-          "source": "src/Sensor/LiDAR/RoboSense/E1R/_E1R.cpp:87",
+          "source": "src/Sensor/LiDAR/RoboSense/E1R/_E1R.cpp:97",
           "required": true,
           "containers": []
         },
         {
           "path": [
-            "_TransformBaseChildren"
+            "_TransformRigid"
           ],
-          "targetClass": "_TransformBase",
-          "targetKind": "module",
-          "multiple": true,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:49",
-          "containers": []
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
-          ],
-          "targetClass": "_TransformBase",
+          "targetClass": "_TransformRigid",
           "targetKind": "module",
           "multiple": false,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:41",
+          "declaredIn": "_E1R",
+          "source": "src/Sensor/LiDAR/RoboSense/E1R/_E1R.cpp:92",
           "containers": []
         }
       ],
@@ -23338,34 +22740,12 @@
       "category": "Tools",
       "source": "src/Tools/_LCalign.h:20",
       "baseClasses": [
-        "_TransformBase"
+        "_ModuleBase"
       ],
       "parameters": [
         {
           "path": [
             "PCLframeIn"
-          ],
-          "type": "string",
-          "declaredIn": "_LCalign",
-          "source": "src/Tools/_LCalign.cpp:59",
-          "typeEvidence": "instance-lookup",
-          "cppVariable": "n",
-          "dependency": true
-        },
-        {
-          "path": [
-            "PCLframeOut"
-          ],
-          "type": "string",
-          "declaredIn": "_LCalign",
-          "source": "src/Tools/_LCalign.cpp:54",
-          "typeEvidence": "instance-lookup",
-          "cppVariable": "n",
-          "dependency": true
-        },
-        {
-          "path": [
-            "RGBframeIn"
           ],
           "type": "string",
           "declaredIn": "_LCalign",
@@ -23376,25 +22756,35 @@
         },
         {
           "path": [
-            "_TransformBaseChildren"
+            "PCLframeOut"
           ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:44",
-          "typeEvidence": "declaration",
-          "cppVariable": "vN",
-          "cppType": "vector<string>",
+          "type": "string",
+          "declaredIn": "_LCalign",
+          "source": "src/Tools/_LCalign.cpp:60",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
           "dependency": true
         },
         {
           "path": [
-            "_TransformBaseParent"
+            "RGBframeIn"
           ],
           "type": "string",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:40",
+          "declaredIn": "_LCalign",
+          "source": "src/Tools/_LCalign.cpp:71",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "_TransformRigid"
+          ],
+          "type": "string",
+          "declaredIn": "_LCalign",
+          "source": "src/Tools/_LCalign.cpp:52",
           "typeEvidence": "declaration",
-          "cppVariable": "nP",
+          "cppVariable": "tfName",
           "cppType": "string",
           "dependency": true
         },
@@ -23611,28 +23001,6 @@
             640,
             480
           ]
-        },
-        {
-          "path": [
-            "vR"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:27",
-          "typeEvidence": "jKv-vector-overload",
-          "cppVariable": "m_vR.coeffs()"
-        },
-        {
-          "path": [
-            "vT"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vT",
-          "cppType": "Vector3d",
-          "defaultExpression": "Vector3d::Zero()"
         }
       ],
       "dependencies": [
@@ -23644,7 +23012,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_LCalign",
-          "source": "src/Tools/_LCalign.cpp:60",
+          "source": "src/Tools/_LCalign.cpp:66",
           "required": true,
           "containers": []
         },
@@ -23656,7 +23024,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_LCalign",
-          "source": "src/Tools/_LCalign.cpp:55",
+          "source": "src/Tools/_LCalign.cpp:61",
           "required": true,
           "containers": []
         },
@@ -23668,30 +23036,19 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_LCalign",
-          "source": "src/Tools/_LCalign.cpp:66",
+          "source": "src/Tools/_LCalign.cpp:72",
           "required": true,
           "containers": []
         },
         {
           "path": [
-            "_TransformBaseChildren"
+            "_TransformRigid"
           ],
-          "targetClass": "_TransformBase",
-          "targetKind": "module",
-          "multiple": true,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:49",
-          "containers": []
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
-          ],
-          "targetClass": "_TransformBase",
+          "targetClass": "_TransformRigid",
           "targetKind": "module",
           "multiple": false,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:41",
+          "declaredIn": "_LCalign",
+          "source": "src/Tools/_LCalign.cpp:53",
           "containers": []
         }
       ],
@@ -24380,25 +23737,13 @@
       "parameters": [
         {
           "path": [
-            "_TransformBaseChildren"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:44",
-          "typeEvidence": "declaration",
-          "cppVariable": "vN",
-          "cppType": "vector<string>",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
+            "_TransformRigid"
           ],
           "type": "string",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:40",
+          "declaredIn": "_GeometryViewerBase",
+          "source": "src/Universe/Geometry/_GeometryViewerBase.cpp:85",
           "typeEvidence": "declaration",
-          "cppVariable": "nP",
+          "cppVariable": "tfName",
           "cppType": "string",
           "dependency": true
         },
@@ -24953,16 +24298,6 @@
         },
         {
           "path": [
-            "vR"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:27",
-          "typeEvidence": "jKv-vector-overload",
-          "cppVariable": "m_vR.coeffs()"
-        },
-        {
-          "path": [
             "vSelectableOctGrid"
           ],
           "type": "array",
@@ -25036,18 +24371,6 @@
         },
         {
           "path": [
-            "vT"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vT",
-          "cppType": "Vector3d",
-          "defaultExpression": "Vector3d::Zero()"
-        },
-        {
-          "path": [
             "vWinSize"
           ],
           "type": "array",
@@ -25065,24 +24388,13 @@
       "dependencies": [
         {
           "path": [
-            "_TransformBaseChildren"
+            "_TransformRigid"
           ],
-          "targetClass": "_TransformBase",
-          "targetKind": "module",
-          "multiple": true,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:49",
-          "containers": []
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
-          ],
-          "targetClass": "_TransformBase",
+          "targetClass": "_TransformRigid",
           "targetKind": "module",
           "multiple": false,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:41",
+          "declaredIn": "_GeometryViewerBase",
+          "source": "src/Universe/Geometry/_GeometryViewerBase.cpp:86",
           "containers": []
         },
         {
@@ -25268,25 +24580,13 @@
       "parameters": [
         {
           "path": [
-            "_TransformBaseChildren"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:44",
-          "typeEvidence": "declaration",
-          "cppVariable": "vN",
-          "cppType": "vector<string>",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
+            "_TransformRigid"
           ],
           "type": "string",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:40",
+          "declaredIn": "_GeometryViewerBase",
+          "source": "src/Universe/Geometry/_GeometryViewerBase.cpp:85",
           "typeEvidence": "declaration",
-          "cppVariable": "nP",
+          "cppVariable": "tfName",
           "cppType": "string",
           "dependency": true
         },
@@ -25753,28 +25053,6 @@
         },
         {
           "path": [
-            "vR"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:27",
-          "typeEvidence": "jKv-vector-overload",
-          "cppVariable": "m_vR.coeffs()"
-        },
-        {
-          "path": [
-            "vT"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vT",
-          "cppType": "Vector3d",
-          "defaultExpression": "Vector3d::Zero()"
-        },
-        {
-          "path": [
             "vWinSize"
           ],
           "type": "array",
@@ -25804,24 +25082,13 @@
       "dependencies": [
         {
           "path": [
-            "_TransformBaseChildren"
+            "_TransformRigid"
           ],
-          "targetClass": "_TransformBase",
-          "targetKind": "module",
-          "multiple": true,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:49",
-          "containers": []
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
-          ],
-          "targetClass": "_TransformBase",
+          "targetClass": "_TransformRigid",
           "targetKind": "module",
           "multiple": false,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:41",
+          "declaredIn": "_GeometryViewerBase",
+          "source": "src/Universe/Geometry/_GeometryViewerBase.cpp:86",
           "containers": []
         },
         {
@@ -25913,25 +25180,13 @@
         },
         {
           "path": [
-            "_TransformBaseChildren"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:44",
-          "typeEvidence": "declaration",
-          "cppVariable": "vN",
-          "cppType": "vector<string>",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
+            "_TransformRigid"
           ],
           "type": "string",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:40",
+          "declaredIn": "_GeometryViewerBase",
+          "source": "src/Universe/Geometry/_GeometryViewerBase.cpp:85",
           "typeEvidence": "declaration",
-          "cppVariable": "nP",
+          "cppVariable": "tfName",
           "cppType": "string",
           "dependency": true
         },
@@ -26291,28 +25546,6 @@
         },
         {
           "path": [
-            "vR"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:27",
-          "typeEvidence": "jKv-vector-overload",
-          "cppVariable": "m_vR.coeffs()"
-        },
-        {
-          "path": [
-            "vT"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vT",
-          "cppType": "Vector3d",
-          "defaultExpression": "Vector3d::Zero()"
-        },
-        {
-          "path": [
             "vWinSize"
           ],
           "type": "array",
@@ -26354,24 +25587,13 @@
         },
         {
           "path": [
-            "_TransformBaseChildren"
+            "_TransformRigid"
           ],
-          "targetClass": "_TransformBase",
-          "targetKind": "module",
-          "multiple": true,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:49",
-          "containers": []
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
-          ],
-          "targetClass": "_TransformBase",
+          "targetClass": "_TransformRigid",
           "targetKind": "module",
           "multiple": false,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:41",
+          "declaredIn": "_GeometryViewerBase",
+          "source": "src/Universe/Geometry/_GeometryViewerBase.cpp:86",
           "containers": []
         }
       ],
@@ -26598,25 +25820,13 @@
       "parameters": [
         {
           "path": [
-            "_TransformBaseChildren"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:44",
-          "typeEvidence": "declaration",
-          "cppVariable": "vN",
-          "cppType": "vector<string>",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
+            "_TransformRigid"
           ],
           "type": "string",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:40",
+          "declaredIn": "_GeometryViewerBase",
+          "source": "src/Universe/Geometry/_GeometryViewerBase.cpp:85",
           "typeEvidence": "declaration",
-          "cppVariable": "nP",
+          "cppVariable": "tfName",
           "cppType": "string",
           "dependency": true
         },
@@ -27095,16 +26305,6 @@
         },
         {
           "path": [
-            "vR"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:27",
-          "typeEvidence": "jKv-vector-overload",
-          "cppVariable": "m_vR.coeffs()"
-        },
-        {
-          "path": [
             "vSelectableOctGrid"
           ],
           "type": "array",
@@ -27178,18 +26378,6 @@
         },
         {
           "path": [
-            "vT"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vT",
-          "cppType": "Vector3d",
-          "defaultExpression": "Vector3d::Zero()"
-        },
-        {
-          "path": [
             "vWinSize"
           ],
           "type": "array",
@@ -27219,24 +26407,13 @@
       "dependencies": [
         {
           "path": [
-            "_TransformBaseChildren"
+            "_TransformRigid"
           ],
-          "targetClass": "_TransformBase",
-          "targetKind": "module",
-          "multiple": true,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:49",
-          "containers": []
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
-          ],
-          "targetClass": "_TransformBase",
+          "targetClass": "_TransformRigid",
           "targetKind": "module",
           "multiple": false,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:41",
+          "declaredIn": "_GeometryViewerBase",
+          "source": "src/Universe/Geometry/_GeometryViewerBase.cpp:86",
           "containers": []
         },
         {
@@ -27360,20 +26537,20 @@
       "configurable": false
     },
     {
-      "name": "_TransformBase",
+      "name": "_TransformRigid",
       "category": "Universe",
-      "source": "src/Universe/_TransformBase.h:21",
+      "source": "src/Universe/_TransformRigid.h:22",
       "baseClasses": [
         "_ModuleBase"
       ],
       "parameters": [
         {
           "path": [
-            "_TransformBaseChildren"
+            "_TransformRigidChildren"
           ],
           "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:44",
+          "declaredIn": "_TransformRigid",
+          "source": "src/Universe/_TransformRigid.cpp:55",
           "typeEvidence": "declaration",
           "cppVariable": "vN",
           "cppType": "vector<string>",
@@ -27381,11 +26558,11 @@
         },
         {
           "path": [
-            "_TransformBaseParent"
+            "_TransformRigidParent"
           ],
           "type": "string",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:40",
+          "declaredIn": "_TransformRigid",
+          "source": "src/Universe/_TransformRigid.cpp:46",
           "typeEvidence": "declaration",
           "cppVariable": "nP",
           "cppType": "string",
@@ -27471,8 +26648,8 @@
             "vR"
           ],
           "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:27",
+          "declaredIn": "_TransformRigid",
+          "source": "src/Universe/_TransformRigid.cpp:31",
           "typeEvidence": "jKv-vector-overload",
           "cppVariable": "m_vR.coeffs()"
         },
@@ -27481,8 +26658,8 @@
             "vT"
           ],
           "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:26",
+          "declaredIn": "_TransformRigid",
+          "source": "src/Universe/_TransformRigid.cpp:30",
           "typeEvidence": "declaration",
           "cppVariable": "m_vT",
           "cppType": "Vector3d",
@@ -27492,24 +26669,24 @@
       "dependencies": [
         {
           "path": [
-            "_TransformBaseChildren"
+            "_TransformRigidChildren"
           ],
-          "targetClass": "_TransformBase",
+          "targetClass": "_TransformRigid",
           "targetKind": "module",
           "multiple": true,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:49",
+          "declaredIn": "_TransformRigid",
+          "source": "src/Universe/_TransformRigid.cpp:58",
           "containers": []
         },
         {
           "path": [
-            "_TransformBaseParent"
+            "_TransformRigidParent"
           ],
-          "targetClass": "_TransformBase",
+          "targetClass": "_TransformRigid",
           "targetKind": "module",
           "multiple": false,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:41",
+          "declaredIn": "_TransformRigid",
+          "source": "src/Universe/_TransformRigid.cpp:47",
           "containers": []
         }
       ],
@@ -27525,9 +26702,7 @@
       "creatable": true,
       "instanceKind": "module",
       "buildConditions": [
-        [
-          "ifdef WITH_UNIVERSE"
-        ]
+        []
       ],
       "configurable": true
     },
@@ -27536,30 +26711,18 @@
       "category": "Universe/Geometry",
       "source": "src/Universe/Geometry/_GeometryViewerBase.h:33",
       "baseClasses": [
-        "_TransformBase"
+        "_ModuleBase"
       ],
       "parameters": [
         {
           "path": [
-            "_TransformBaseChildren"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:44",
-          "typeEvidence": "declaration",
-          "cppVariable": "vN",
-          "cppType": "vector<string>",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
+            "_TransformRigid"
           ],
           "type": "string",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:40",
+          "declaredIn": "_GeometryViewerBase",
+          "source": "src/Universe/Geometry/_GeometryViewerBase.cpp:85",
           "typeEvidence": "declaration",
-          "cppVariable": "nP",
+          "cppVariable": "tfName",
           "cppType": "string",
           "dependency": true
         },
@@ -27830,28 +26993,6 @@
         },
         {
           "path": [
-            "vR"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:27",
-          "typeEvidence": "jKv-vector-overload",
-          "cppVariable": "m_vR.coeffs()"
-        },
-        {
-          "path": [
-            "vT"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vT",
-          "cppType": "Vector3d",
-          "defaultExpression": "Vector3d::Zero()"
-        },
-        {
-          "path": [
             "vWinSize"
           ],
           "type": "array",
@@ -27869,24 +27010,13 @@
       "dependencies": [
         {
           "path": [
-            "_TransformBaseChildren"
+            "_TransformRigid"
           ],
-          "targetClass": "_TransformBase",
-          "targetKind": "module",
-          "multiple": true,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:49",
-          "containers": []
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
-          ],
-          "targetClass": "_TransformBase",
+          "targetClass": "_TransformRigid",
           "targetKind": "module",
           "multiple": false,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:41",
+          "declaredIn": "_GeometryViewerBase",
+          "source": "src/Universe/Geometry/_GeometryViewerBase.cpp:86",
           "containers": []
         }
       ],
@@ -27913,7 +27043,7 @@
       "category": "Universe/Geometry/PointCloud",
       "source": "src/Universe/Geometry/PointCloud/_PCLfile.h:17",
       "baseClasses": [
-        "_TransformBase"
+        "_ModuleBase"
       ],
       "parameters": [
         {
@@ -27922,7 +27052,7 @@
           ],
           "type": "string",
           "declaredIn": "_PCLfile",
-          "source": "src/Universe/Geometry/PointCloud/_PCLfile.cpp:861",
+          "source": "src/Universe/Geometry/PointCloud/_PCLfile.cpp:866",
           "typeEvidence": "declaration",
           "cppVariable": "name",
           "cppType": "string",
@@ -27930,25 +27060,13 @@
         },
         {
           "path": [
-            "_TransformBaseChildren"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:44",
-          "typeEvidence": "declaration",
-          "cppVariable": "vN",
-          "cppType": "vector<string>",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
+            "_TransformRigid"
           ],
           "type": "string",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:40",
+          "declaredIn": "_PCLfile",
+          "source": "src/Universe/Geometry/PointCloud/_PCLfile.cpp:861",
           "typeEvidence": "declaration",
-          "cppVariable": "nP",
+          "cppVariable": "tfName",
           "cppType": "string",
           "dependency": true
         },
@@ -28029,28 +27147,6 @@
         },
         {
           "path": [
-            "vR"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:27",
-          "typeEvidence": "jKv-vector-overload",
-          "cppVariable": "m_vR.coeffs()"
-        },
-        {
-          "path": [
-            "vT"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vT",
-          "cppType": "Vector3d",
-          "defaultExpression": "Vector3d::Zero()"
-        },
-        {
-          "path": [
             "vfName"
           ],
           "type": "array",
@@ -28070,30 +27166,19 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_PCLfile",
-          "source": "src/Universe/Geometry/PointCloud/_PCLfile.cpp:862",
+          "source": "src/Universe/Geometry/PointCloud/_PCLfile.cpp:867",
           "required": true,
           "containers": []
         },
         {
           "path": [
-            "_TransformBaseChildren"
+            "_TransformRigid"
           ],
-          "targetClass": "_TransformBase",
-          "targetKind": "module",
-          "multiple": true,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:49",
-          "containers": []
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
-          ],
-          "targetClass": "_TransformBase",
+          "targetClass": "_TransformRigid",
           "targetKind": "module",
           "multiple": false,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:41",
+          "declaredIn": "_PCLfile",
+          "source": "src/Universe/Geometry/PointCloud/_PCLfile.cpp:862",
           "containers": []
         }
       ],
@@ -28120,30 +27205,18 @@
       "category": "Universe/Geometry/PointCloud/Pipeline",
       "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCcrop.h:91",
       "baseClasses": [
-        "_TransformBase"
+        "_ModuleBase"
       ],
       "parameters": [
         {
           "path": [
-            "_TransformBaseChildren"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:44",
-          "typeEvidence": "declaration",
-          "cppVariable": "vN",
-          "cppType": "vector<string>",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
+            "_TransformRigid"
           ],
           "type": "string",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:40",
+          "declaredIn": "_PCcrop",
+          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCcrop.cpp:58",
           "typeEvidence": "declaration",
-          "cppVariable": "nP",
+          "cppVariable": "tfName",
           "cppType": "string",
           "dependency": true
         },
@@ -28325,51 +27398,18 @@
           "cppVariable": "v.m_vZ",
           "cppType": "Vector2f",
           "defaultExpression": "Vector2f::Zero()"
-        },
-        {
-          "path": [
-            "vR"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:27",
-          "typeEvidence": "jKv-vector-overload",
-          "cppVariable": "m_vR.coeffs()"
-        },
-        {
-          "path": [
-            "vT"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vT",
-          "cppType": "Vector3d",
-          "defaultExpression": "Vector3d::Zero()"
         }
       ],
       "dependencies": [
         {
           "path": [
-            "_TransformBaseChildren"
+            "_TransformRigid"
           ],
-          "targetClass": "_TransformBase",
-          "targetKind": "module",
-          "multiple": true,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:49",
-          "containers": []
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
-          ],
-          "targetClass": "_TransformBase",
+          "targetClass": "_TransformRigid",
           "targetKind": "module",
           "multiple": false,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:41",
+          "declaredIn": "_PCcrop",
+          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCcrop.cpp:59",
           "containers": []
         }
       ],
@@ -28403,30 +27443,18 @@
       "category": "Universe/Geometry/PointCloud/Pipeline",
       "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCdownSample.h:16",
       "baseClasses": [
-        "_TransformBase"
+        "_ModuleBase"
       ],
       "parameters": [
         {
           "path": [
-            "_TransformBaseChildren"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:44",
-          "typeEvidence": "declaration",
-          "cppVariable": "vN",
-          "cppType": "vector<string>",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
+            "_TransformRigid"
           ],
           "type": "string",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:40",
+          "declaredIn": "_PCdownSample",
+          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCdownSample.cpp:36",
           "typeEvidence": "declaration",
-          "cppVariable": "nP",
+          "cppVariable": "tfName",
           "cppType": "string",
           "dependency": true
         },
@@ -28516,51 +27544,18 @@
           "cppType": "bool",
           "default": false,
           "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "vR"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:27",
-          "typeEvidence": "jKv-vector-overload",
-          "cppVariable": "m_vR.coeffs()"
-        },
-        {
-          "path": [
-            "vT"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vT",
-          "cppType": "Vector3d",
-          "defaultExpression": "Vector3d::Zero()"
         }
       ],
       "dependencies": [
         {
           "path": [
-            "_TransformBaseChildren"
+            "_TransformRigid"
           ],
-          "targetClass": "_TransformBase",
-          "targetKind": "module",
-          "multiple": true,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:49",
-          "containers": []
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
-          ],
-          "targetClass": "_TransformBase",
+          "targetClass": "_TransformRigid",
           "targetKind": "module",
           "multiple": false,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:41",
+          "declaredIn": "_PCdownSample",
+          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCdownSample.cpp:37",
           "containers": []
         }
       ],
@@ -28588,7 +27583,7 @@
       "category": "Universe/Geometry/PointCloud/Pipeline",
       "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCmerge.h:17",
       "baseClasses": [
-        "_TransformBase"
+        "_ModuleBase"
       ],
       "parameters": [
         {
@@ -28597,7 +27592,7 @@
           ],
           "type": "string",
           "declaredIn": "_PCmerge",
-          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCmerge.cpp:90",
+          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCmerge.cpp:96",
           "typeEvidence": "declaration",
           "cppVariable": "outputName",
           "cppType": "string",
@@ -28605,25 +27600,13 @@
         },
         {
           "path": [
-            "_TransformBaseChildren"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:44",
-          "typeEvidence": "declaration",
-          "cppVariable": "vN",
-          "cppType": "vector<string>",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
+            "_TransformRigid"
           ],
           "type": "string",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:40",
+          "declaredIn": "_PCmerge",
+          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCmerge.cpp:89",
           "typeEvidence": "declaration",
-          "cppVariable": "nP",
+          "cppVariable": "tfName",
           "cppType": "string",
           "dependency": true
         },
@@ -28720,33 +27703,11 @@
           ],
           "type": "array",
           "declaredIn": "_PCmerge",
-          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCmerge.cpp:95",
+          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCmerge.cpp:101",
           "typeEvidence": "declaration",
           "cppVariable": "names",
           "cppType": "vector<string>",
           "dependency": true
-        },
-        {
-          "path": [
-            "vR"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:27",
-          "typeEvidence": "jKv-vector-overload",
-          "cppVariable": "m_vR.coeffs()"
-        },
-        {
-          "path": [
-            "vT"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vT",
-          "cppType": "Vector3d",
-          "defaultExpression": "Vector3d::Zero()"
         }
       ],
       "dependencies": [
@@ -28758,30 +27719,19 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_PCmerge",
-          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCmerge.cpp:91",
+          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCmerge.cpp:97",
           "required": true,
           "containers": []
         },
         {
           "path": [
-            "_TransformBaseChildren"
+            "_TransformRigid"
           ],
-          "targetClass": "_TransformBase",
-          "targetKind": "module",
-          "multiple": true,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:49",
-          "containers": []
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
-          ],
-          "targetClass": "_TransformBase",
+          "targetClass": "_TransformRigid",
           "targetKind": "module",
           "multiple": false,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:41",
+          "declaredIn": "_PCmerge",
+          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCmerge.cpp:90",
           "containers": []
         },
         {
@@ -28792,7 +27742,7 @@
           "targetKind": "dataObject",
           "multiple": true,
           "declaredIn": "_PCmerge",
-          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCmerge.cpp:100",
+          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCmerge.cpp:106",
           "containers": []
         }
       ],
@@ -28819,7 +27769,7 @@
       "category": "Universe/Geometry/PointCloud/Pipeline",
       "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCrecv.h:18",
       "baseClasses": [
-        "_TransformBase"
+        "_ModuleBase"
       ],
       "parameters": [
         {
@@ -28828,7 +27778,7 @@
           ],
           "type": "string",
           "declaredIn": "_PCrecv",
-          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCrecv.cpp:46",
+          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCrecv.cpp:52",
           "typeEvidence": "declaration",
           "cppVariable": "name",
           "cppType": "string",
@@ -28840,7 +27790,7 @@
           ],
           "type": "string",
           "declaredIn": "_PCrecv",
-          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCrecv.cpp:41",
+          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCrecv.cpp:47",
           "typeEvidence": "declaration",
           "cppVariable": "name",
           "cppType": "string",
@@ -28848,25 +27798,13 @@
         },
         {
           "path": [
-            "_TransformBaseChildren"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:44",
-          "typeEvidence": "declaration",
-          "cppVariable": "vN",
-          "cppType": "vector<string>",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
+            "_TransformRigid"
           ],
           "type": "string",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:40",
+          "declaredIn": "_PCrecv",
+          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCrecv.cpp:42",
           "typeEvidence": "declaration",
-          "cppVariable": "nP",
+          "cppVariable": "tfName",
           "cppType": "string",
           "dependency": true
         },
@@ -28956,28 +27894,6 @@
           "cppType": "bool",
           "default": false,
           "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "vR"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:27",
-          "typeEvidence": "jKv-vector-overload",
-          "cppVariable": "m_vR.coeffs()"
-        },
-        {
-          "path": [
-            "vT"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vT",
-          "cppType": "Vector3d",
-          "defaultExpression": "Vector3d::Zero()"
         }
       ],
       "dependencies": [
@@ -28989,7 +27905,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_PCrecv",
-          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCrecv.cpp:47",
+          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCrecv.cpp:53",
           "required": true,
           "containers": []
         },
@@ -29001,30 +27917,19 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_PCrecv",
-          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCrecv.cpp:42",
+          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCrecv.cpp:48",
           "required": true,
           "containers": []
         },
         {
           "path": [
-            "_TransformBaseChildren"
+            "_TransformRigid"
           ],
-          "targetClass": "_TransformBase",
-          "targetKind": "module",
-          "multiple": true,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:49",
-          "containers": []
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
-          ],
-          "targetClass": "_TransformBase",
+          "targetClass": "_TransformRigid",
           "targetKind": "module",
           "multiple": false,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:41",
+          "declaredIn": "_PCrecv",
+          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCrecv.cpp:43",
           "containers": []
         }
       ],
@@ -29051,30 +27956,18 @@
       "category": "Universe/Geometry/PointCloud/Pipeline",
       "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCremove.h:16",
       "baseClasses": [
-        "_TransformBase"
+        "_ModuleBase"
       ],
       "parameters": [
         {
           "path": [
-            "_TransformBaseChildren"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:44",
-          "typeEvidence": "declaration",
-          "cppVariable": "vN",
-          "cppType": "vector<string>",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
+            "_TransformRigid"
           ],
           "type": "string",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:40",
+          "declaredIn": "_PCremove",
+          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCremove.cpp:37",
           "typeEvidence": "declaration",
-          "cppVariable": "nP",
+          "cppVariable": "tfName",
           "cppType": "string",
           "dependency": true
         },
@@ -29176,51 +28069,18 @@
           "cppType": "bool",
           "default": false,
           "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "vR"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:27",
-          "typeEvidence": "jKv-vector-overload",
-          "cppVariable": "m_vR.coeffs()"
-        },
-        {
-          "path": [
-            "vT"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vT",
-          "cppType": "Vector3d",
-          "defaultExpression": "Vector3d::Zero()"
         }
       ],
       "dependencies": [
         {
           "path": [
-            "_TransformBaseChildren"
+            "_TransformRigid"
           ],
-          "targetClass": "_TransformBase",
-          "targetKind": "module",
-          "multiple": true,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:49",
-          "containers": []
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
-          ],
-          "targetClass": "_TransformBase",
+          "targetClass": "_TransformRigid",
           "targetKind": "module",
           "multiple": false,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:41",
+          "declaredIn": "_PCremove",
+          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCremove.cpp:38",
           "containers": []
         }
       ],
@@ -29248,7 +28108,7 @@
       "category": "Universe/Geometry/PointCloud/Pipeline",
       "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCsend.h:18",
       "baseClasses": [
-        "_TransformBase"
+        "_ModuleBase"
       ],
       "parameters": [
         {
@@ -29257,7 +28117,7 @@
           ],
           "type": "string",
           "declaredIn": "_PCsend",
-          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCsend.cpp:44",
+          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCsend.cpp:50",
           "typeEvidence": "declaration",
           "cppVariable": "name",
           "cppType": "string",
@@ -29269,7 +28129,7 @@
           ],
           "type": "string",
           "declaredIn": "_PCsend",
-          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCsend.cpp:49",
+          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCsend.cpp:55",
           "typeEvidence": "declaration",
           "cppVariable": "name",
           "cppType": "string",
@@ -29277,25 +28137,13 @@
         },
         {
           "path": [
-            "_TransformBaseChildren"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:44",
-          "typeEvidence": "declaration",
-          "cppVariable": "vN",
-          "cppType": "vector<string>",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
+            "_TransformRigid"
           ],
           "type": "string",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:40",
+          "declaredIn": "_PCsend",
+          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCsend.cpp:45",
           "typeEvidence": "declaration",
-          "cppVariable": "nP",
+          "cppVariable": "tfName",
           "cppType": "string",
           "dependency": true
         },
@@ -29397,28 +28245,6 @@
           "cppType": "bool",
           "default": false,
           "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "vR"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:27",
-          "typeEvidence": "jKv-vector-overload",
-          "cppVariable": "m_vR.coeffs()"
-        },
-        {
-          "path": [
-            "vT"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vT",
-          "cppType": "Vector3d",
-          "defaultExpression": "Vector3d::Zero()"
         }
       ],
       "dependencies": [
@@ -29430,7 +28256,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_PCsend",
-          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCsend.cpp:45",
+          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCsend.cpp:51",
           "required": true,
           "containers": []
         },
@@ -29442,30 +28268,19 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_PCsend",
-          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCsend.cpp:50",
+          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCsend.cpp:56",
           "required": true,
           "containers": []
         },
         {
           "path": [
-            "_TransformBaseChildren"
+            "_TransformRigid"
           ],
-          "targetClass": "_TransformBase",
-          "targetKind": "module",
-          "multiple": true,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:49",
-          "containers": []
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
-          ],
-          "targetClass": "_TransformBase",
+          "targetClass": "_TransformRigid",
           "targetKind": "module",
           "multiple": false,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:41",
+          "declaredIn": "_PCsend",
+          "source": "src/Universe/Geometry/PointCloud/Pipeline/_PCsend.cpp:46",
           "containers": []
         }
       ],
@@ -29490,9 +28305,9 @@
     {
       "name": "_PCregistCol",
       "category": "Universe/Geometry/PointCloud/Registration",
-      "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistCol.h:20",
+      "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistCol.h:19",
       "baseClasses": [
-        "_TransformBase"
+        "_ModuleBase"
       ],
       "parameters": [
         {
@@ -29501,7 +28316,7 @@
           ],
           "type": "string",
           "declaredIn": "_PCregistCol",
-          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistCol.cpp:68",
+          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistCol.cpp:74",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
           "dependency": true
@@ -29512,32 +28327,20 @@
           ],
           "type": "string",
           "declaredIn": "_PCregistCol",
-          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistCol.cpp:63",
+          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistCol.cpp:69",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
           "dependency": true
         },
         {
           "path": [
-            "_TransformBaseChildren"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:44",
-          "typeEvidence": "declaration",
-          "cppVariable": "vN",
-          "cppType": "vector<string>",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
+            "_TransformRigid"
           ],
           "type": "string",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:40",
+          "declaredIn": "_PCregistCol",
+          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistCol.cpp:62",
           "typeEvidence": "declaration",
-          "cppVariable": "nP",
+          "cppVariable": "tfName",
           "cppType": "string",
           "dependency": true
         },
@@ -29711,28 +28514,6 @@
           "cppType": "bool",
           "default": false,
           "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "vR"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:27",
-          "typeEvidence": "jKv-vector-overload",
-          "cppVariable": "m_vR.coeffs()"
-        },
-        {
-          "path": [
-            "vT"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vT",
-          "cppType": "Vector3d",
-          "defaultExpression": "Vector3d::Zero()"
         }
       ],
       "dependencies": [
@@ -29744,7 +28525,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_PCregistCol",
-          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistCol.cpp:69",
+          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistCol.cpp:75",
           "required": true,
           "containers": []
         },
@@ -29756,30 +28537,19 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_PCregistCol",
-          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistCol.cpp:64",
+          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistCol.cpp:70",
           "required": true,
           "containers": []
         },
         {
           "path": [
-            "_TransformBaseChildren"
+            "_TransformRigid"
           ],
-          "targetClass": "_TransformBase",
-          "targetKind": "module",
-          "multiple": true,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:49",
-          "containers": []
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
-          ],
-          "targetClass": "_TransformBase",
+          "targetClass": "_TransformRigid",
           "targetKind": "module",
           "multiple": false,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:41",
+          "declaredIn": "_PCregistCol",
+          "source": "src/Universe/Geometry/PointCloud/Registration/_PCregistCol.cpp:63",
           "containers": []
         }
       ],
@@ -30228,30 +28998,18 @@
       "category": "Universe/Grid",
       "source": "src/Universe/Grid/_OctreeBase.h:95",
       "baseClasses": [
-        "_TransformBase"
+        "_ModuleBase"
       ],
       "parameters": [
         {
           "path": [
-            "_TransformBaseChildren"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:44",
-          "typeEvidence": "declaration",
-          "cppVariable": "vN",
-          "cppType": "vector<string>",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
+            "_TransformRigid"
           ],
           "type": "string",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:40",
+          "declaredIn": "_OctreeBase",
+          "source": "src/Universe/Grid/_OctreeBase.cpp:34",
           "typeEvidence": "declaration",
-          "cppVariable": "nP",
+          "cppVariable": "tfName",
           "cppType": "string",
           "dependency": true
         },
@@ -30329,51 +29087,18 @@
           "cppType": "bool",
           "default": false,
           "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "vR"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:27",
-          "typeEvidence": "jKv-vector-overload",
-          "cppVariable": "m_vR.coeffs()"
-        },
-        {
-          "path": [
-            "vT"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vT",
-          "cppType": "Vector3d",
-          "defaultExpression": "Vector3d::Zero()"
         }
       ],
       "dependencies": [
         {
           "path": [
-            "_TransformBaseChildren"
+            "_TransformRigid"
           ],
-          "targetClass": "_TransformBase",
-          "targetKind": "module",
-          "multiple": true,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:49",
-          "containers": []
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
-          ],
-          "targetClass": "_TransformBase",
+          "targetClass": "_TransformRigid",
           "targetKind": "module",
           "multiple": false,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:41",
+          "declaredIn": "_OctreeBase",
+          "source": "src/Universe/Grid/_OctreeBase.cpp:35",
           "containers": []
         }
       ],
@@ -30405,25 +29130,13 @@
       "parameters": [
         {
           "path": [
-            "_TransformBaseChildren"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:44",
-          "typeEvidence": "declaration",
-          "cppVariable": "vN",
-          "cppType": "vector<string>",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
+            "_TransformRigid"
           ],
           "type": "string",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:40",
+          "declaredIn": "_OctreeBase",
+          "source": "src/Universe/Grid/_OctreeBase.cpp:34",
           "typeEvidence": "declaration",
-          "cppVariable": "nP",
+          "cppVariable": "tfName",
           "cppType": "string",
           "dependency": true
         },
@@ -30565,16 +29278,6 @@
         },
         {
           "path": [
-            "vR"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:27",
-          "typeEvidence": "jKv-vector-overload",
-          "cppVariable": "m_vR.coeffs()"
-        },
-        {
-          "path": [
             "vRootCellSize"
           ],
           "type": "array",
@@ -30588,41 +29291,18 @@
             10,
             10
           ]
-        },
-        {
-          "path": [
-            "vT"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vT",
-          "cppType": "Vector3d",
-          "defaultExpression": "Vector3d::Zero()"
         }
       ],
       "dependencies": [
         {
           "path": [
-            "_TransformBaseChildren"
+            "_TransformRigid"
           ],
-          "targetClass": "_TransformBase",
-          "targetKind": "module",
-          "multiple": true,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:49",
-          "containers": []
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
-          ],
-          "targetClass": "_TransformBase",
+          "targetClass": "_TransformRigid",
           "targetKind": "module",
           "multiple": false,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:41",
+          "declaredIn": "_OctreeBase",
+          "source": "src/Universe/Grid/_OctreeBase.cpp:35",
           "containers": []
         },
         {
@@ -30673,25 +29353,13 @@
       "parameters": [
         {
           "path": [
-            "_TransformBaseChildren"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:44",
-          "typeEvidence": "declaration",
-          "cppVariable": "vN",
-          "cppType": "vector<string>",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
+            "_TransformRigid"
           ],
           "type": "string",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:40",
+          "declaredIn": "_OctreeBase",
+          "source": "src/Universe/Grid/_OctreeBase.cpp:34",
           "typeEvidence": "declaration",
-          "cppVariable": "nP",
+          "cppVariable": "tfName",
           "cppType": "string",
           "dependency": true
         },
@@ -30874,16 +29542,6 @@
         },
         {
           "path": [
-            "vR"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:27",
-          "typeEvidence": "jKv-vector-overload",
-          "cppVariable": "m_vR.coeffs()"
-        },
-        {
-          "path": [
             "vRootCellSize"
           ],
           "type": "array",
@@ -30907,41 +29565,18 @@
           "declaredIn": "_SelectableOctGrid",
           "extraction": "audited-adapter",
           "description": "Selected cell UUID strings; each ID must refer to the configured grid."
-        },
-        {
-          "path": [
-            "vT"
-          ],
-          "type": "array",
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vT",
-          "cppType": "Vector3d",
-          "defaultExpression": "Vector3d::Zero()"
         }
       ],
       "dependencies": [
         {
           "path": [
-            "_TransformBaseChildren"
+            "_TransformRigid"
           ],
-          "targetClass": "_TransformBase",
-          "targetKind": "module",
-          "multiple": true,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:49",
-          "containers": []
-        },
-        {
-          "path": [
-            "_TransformBaseParent"
-          ],
-          "targetClass": "_TransformBase",
+          "targetClass": "_TransformRigid",
           "targetKind": "module",
           "multiple": false,
-          "declaredIn": "_TransformBase",
-          "source": "src/Universe/_TransformBase.cpp:41",
+          "declaredIn": "_OctreeBase",
+          "source": "src/Universe/Grid/_OctreeBase.cpp:35",
           "containers": []
         },
         {
@@ -41563,8 +40198,8 @@
       "src/Universe/Grid/_OctreeGrid.h",
       "src/Universe/Grid/_SelectableOctGrid.cpp",
       "src/Universe/Grid/_SelectableOctGrid.h",
-      "src/Universe/_TransformBase.cpp",
-      "src/Universe/_TransformBase.h",
+      "src/Universe/_TransformRigid.cpp",
+      "src/Universe/_TransformRigid.h",
       "src/Utility/BitFlag.h",
       "src/Utility/RC.h",
       "src/Utility/util.h",
@@ -41630,10 +40265,10 @@
       "src/Vision/_VideoFile.h",
       "src/main.cpp"
     ],
-    "configReads": 629,
-    "resolvedReads": 617,
-    "moduleLookups": 124,
-    "resolvedLookups": 119,
+    "configReads": 645,
+    "resolvedReads": 633,
+    "moduleLookups": 140,
+    "resolvedLookups": 135,
     "unresolvedReads": 12,
     "unresolvedLookups": 5,
     "diagnosticsCount": 17,

@@ -19,7 +19,7 @@ namespace kai
 
 	bool _PCsend::loadConfig(void)
 	{
-		IF_F(!_TransformBase::loadConfig());
+		IF_F(!_ModuleBase::loadConfig());
 		jKv(*m_pJ, "tInt", m_tInt);
 		jKv(*m_pJ, "nB", m_nB);
 		IF_Le_F(m_nB < int(pcstream::headerBytes + pcstream::pointBytes) ||
@@ -30,7 +30,7 @@ namespace kai
 
 	bool _PCsend::saveConfig(bool bExport)
 	{
-		IF_F(!_TransformBase::saveConfig(false));
+		IF_F(!_ModuleBase::saveConfig(false));
 		(*m_pJ)["tInt"] = m_tInt;
 		(*m_pJ)["nB"] = m_nB;
 		IF__(!bExport, true);
@@ -39,7 +39,13 @@ namespace kai
 
 	bool _PCsend::link(InstanceMgr *pM)
 	{
-		IF_F(!_TransformBase::link(pM));
+		IF_F(!_ModuleBase::link(pM));
+
+		string tfName;
+		jKv(*m_pJ, "_TransformRigid", tfName);
+		m_pTf = dynamic_cast<_TransformRigid *>(static_cast<_ModuleBase *>(pM->findModule(tfName)));
+		IF_Le_F(!tfName.empty() && !m_pTf, "_TransformRigid not found: " + tfName);
+
 		string name;
 		jKv(*m_pJ, "BytePacketStreamOut", name);
 		m_pBpStreamOut = dynamic_cast<BytePacketStream *>(static_cast<DataObjBase *>(pM->findDataObject(name)));
@@ -61,7 +67,7 @@ namespace kai
 
 	bool _PCsend::check(void)
 	{
-		return m_pBpStreamOut && m_pPCLin && !m_vPacket.empty() && _TransformBase::check();
+		return m_pBpStreamOut && m_pPCLin && !m_vPacket.empty() && _ModuleBase::check();
 	}
 
 	void _PCsend::update(void)

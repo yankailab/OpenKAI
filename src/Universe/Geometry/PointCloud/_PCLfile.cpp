@@ -831,7 +831,7 @@ namespace kai
 
 	bool _PCLfile::loadConfig(void)
 	{
-		IF_F(!this->_TransformBase::loadConfig());
+		IF_F(!this->_ModuleBase::loadConfig());
 		const json &j = *m_pJ;
 
 		jKv(j, "vfName", m_vfName);
@@ -841,7 +841,7 @@ namespace kai
 
 	bool _PCLfile::saveConfig(bool bExport)
 	{
-		IF_F(!_TransformBase::saveConfig(false));
+		IF_F(!_ModuleBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["vfName"] = m_vfName;
@@ -852,22 +852,27 @@ namespace kai
 
 	bool _PCLfile::link(InstanceMgr *pM)
 	{
-		if (!_TransformBase::link(pM))
+		if (!_ModuleBase::link(pM))
 		{
 			return false;
 		}
+
+		string tfName;
+		jKv(*m_pJ, "_TransformRigid", tfName);
+		m_pTf = dynamic_cast<_TransformRigid *>(static_cast<_ModuleBase *>(pM->findModule(tfName)));
+		IF_Le_F(!tfName.empty() && !m_pTf, "_TransformRigid not found: " + tfName);
 
 		string name;
 		jKv(*m_pJ, "PCLframeOut", name);
 		m_pPCLout = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(name)));
 		IF_Le_F(!m_pPCLout, "PCLframeOut not found: " + name);
 
-		return open();
+		return true;
 	}
 
 	bool _PCLfile::check(void)
 	{
-		return m_pPCLout && _TransformBase::check();
+		return m_pPCLout && _ModuleBase::check();
 	}
 
 	void _PCLfile::clear(void)
@@ -905,9 +910,10 @@ namespace kai
 		}
 
 		const uint64_t stamp = getTns();
+		const Isometry3f pose = m_pTf ? m_pTf->getPoseCombinedf() : Isometry3f::Identity();
 		for (GEOMETRY_POINT &point : vPoint)
 		{
-			point.m_vP = m_mPosef * point.m_vP;
+			point.m_vP = pose * point.m_vP;
 			point.m_tStamp = stamp;
 		}
 		m_pPCLout->set(vPoint, stamp);
@@ -917,6 +923,8 @@ namespace kai
 	bool _PCLfile::start(void)
 	{
 		NULL_F(m_pT);
+		// Every transform edge is linked before the first cloud is published.
+		IF_F(!open());
 		return m_pT->startThread(getUpdate, this);
 	}
 

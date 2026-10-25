@@ -28,7 +28,7 @@ namespace kai
         static uint64_t previewStamp(_Airy &driver) { return driver.m_previewStamp; }
         static void running(_Airy &driver, bool running) { driver.m_started = running; }
         static size_t pending(_Airy &driver) { return driver.m_framePoints.size(); }
-        static void resetSensor(_Airy &driver) { driver.resetSensor(); }
+        static void resetSensor(_Airy &driver) { driver.resetSensor(true); }
     };
 }
 
@@ -36,6 +36,14 @@ namespace
 {
     using namespace kai;
     using Access = AiryTestAccess;
+
+    class DriverWithTransform : public _Airy
+    {
+    public:
+        DriverWithTransform() { m_pTf = &m_transform; }
+        ~DriverWithTransform() { stop(); }
+        _TransformRigid m_transform;
+    };
     const std::array<uint16_t, 8> early{{100, 200, 300, 400, 500, 600, 700, 800}};
     const std::array<uint16_t, 8> late{{20000, 22000, 24000, 26000, 28000, 30000, 32000, 34000}};
     const std::array<uint16_t, 8> zero{{0, 50, 100, 150, 200, 250, 300, 350}};
@@ -84,7 +92,7 @@ namespace
 
     void testCalibration()
     {
-        _Airy driver;
+        DriverWithTransform driver;
         PCLframe cloud;
         Access::output(driver, cloud);
         Access::packet(driver, packet(10, 1000000000));
@@ -112,7 +120,7 @@ namespace
 
     void testFramesAndDualReturns()
     {
-        _Airy driver;
+        DriverWithTransform driver;
         PCLframe cloud;
         Access::output(driver, cloud);
         Access::info(driver, calibration());
@@ -148,7 +156,7 @@ namespace
 
     void testSequenceAndRecovery()
     {
-        _Airy driver;
+        DriverWithTransform driver;
         Access::info(driver, calibration());
         Access::packet(driver, packet(65535, 1000000000));
         Access::packet(driver, packet(0, 1001000000)); // Counter wrap is not a scan boundary.
@@ -171,7 +179,7 @@ namespace
 
     void testCroppedFOV()
     {
-        _Airy driver;
+        DriverWithTransform driver;
         PCLframe cloud;
         Access::output(driver, cloud);
         auto info = calibration();
@@ -196,11 +204,13 @@ namespace
 
     void testFilteringTransformAndCap()
     {
-        _Airy driver;
+        DriverWithTransform driver;
         PCLframe cloud;
         Access::output(driver, cloud);
         Access::info(driver, calibration());
-        configure(driver, {{"vRangeD", {1.0, 10.0}}, {"vPos", {1.0, 2.0, 3.0}}, {"vOrt", {0.0, 0.0, 0.5, 0.5}}});
+        configure(driver, {{"vRangeD", {1.0, 10.0}}});
+        driver.m_transform.setTranslation(1, 2, 3);
+        driver.m_transform.setRotation(0, 0, 0.5, 0.5);
         auto data = packet(1, 1000000000, early, 5);
         data.points[0].x = data.points[0].range = 0.5f;
         data.points[2].x = data.points[2].range = 10.0f;
@@ -229,7 +239,7 @@ namespace
 
     void testIMU()
     {
-        _Airy driver;
+        DriverWithTransform driver;
         PCLframe cloud;
         IMUstream imu;
         Access::output(driver, cloud, &imu);
@@ -256,7 +266,7 @@ namespace
         configure(driver, {{"bIMUoutput", true}, {"bUseSensorTime", false}});
         Access::imu(driver, data, 7000000000);
         imu.get(gyro, acc); assert(gyro.size() == 1 && gyro[0].m_t == 7000000000);
-        configure(driver, {{"vOrt", {1.0, 0.0, 0.0, 0.0}}});
+        driver.m_transform.setRotation(1, 0, 0, 0);
         Access::imu(driver, data, 7001000000);
         imu.get(gyro, acc); assert(acc.back().m_v.z() < 0); // Cloud mount does not silently rotate raw IMU.
         Access::resetSensor(driver);
@@ -267,13 +277,15 @@ namespace
 
     void testIMUpreview()
     {
-        _Airy driver;
+        DriverWithTransform driver;
         PCLframe cloud;
         IMUstream imu;
         Access::output(driver, cloud, &imu);
         Access::running(driver, true);
-        configure(driver, {{"bIMUpreview", true}, {"vPos", {1, 2, 3}}, {"vOrt", {0, 0, 0.5, 0.5}}});
-        const auto mount = driver.getPose().matrix().eval();
+        configure(driver, {{"bIMUpreview", true}});
+        driver.m_transform.setTranslation(1, 2, 3);
+        driver.m_transform.setRotation(0, 0, 0.5, 0.5);
+        const auto mount = driver.m_transform.getPose().matrix().eval();
         airy::Imu data;
         data.timestampNs = 1000000000;
         data.acceleration = {{0, 0, -9.80665}};
@@ -304,7 +316,7 @@ namespace
         const Quaterniond after = quaternion(values);
         const Quaterniond relative = initial.conjugate() * after;
         assert(std::abs(2 * std::atan2(relative.z(), relative.w()) - 1.0) < 0.01);
-        assert((driver.getPose().matrix() - mount).norm() == 0); // No point cloud stabilization.
+        assert((driver.m_transform.getPose().matrix() - mount).norm() == 0); // No point cloud stabilization.
         deque<IMUstream::IMU_DATA> gyro, acc;
         imu.get(gyro, acc);
         assert(gyro.size() == 202 && acc.size() == 202);
@@ -342,7 +354,7 @@ namespace
 
     void testPreviewOptIn()
     {
-        _Airy driver;
+        DriverWithTransform driver;
         PCLframe cloud;
         IMUstream imu;
         Access::output(driver, cloud, &imu);
@@ -409,18 +421,67 @@ namespace
         driver.stop();
     }
 
+    void testConfigPreservesLinkedStreams()
+    {
+        JsonCfg config;
+        config.setJson({{"name", "airy-config-test"}, {"class", "_Airy"},
+            {"deviceIP", "127.0.0.2"}, {"bUseSensorTime", false}, {"bIMUoutput", false}});
+        PCLframe cloud;
+        IMUstream imu;
+        DriverWithTransform driver;
+        driver.setConfig(&config, config.getJson());
+        Access::output(driver, cloud, &imu);
+        imu.addGyro(Vector3f(1, 2, 3), 100);
+        imu.addAcc(Vector3f(4, 5, 6), 100);
+        GEOMETRY_POINT point;
+        point.m_vP = Vector3f(7, 8, 9);
+        point.m_tStamp = 100;
+        cloud.set({point}, 100);
+        const auto assertStreamsUnchanged = [&]
+        {
+            deque<IMUstream::IMU_DATA> gyro, acc;
+            assert(imu.get(gyro, acc) == 100 && gyro.size() == 1 && acc.size() == 1);
+            assert(gyro[0].m_t == 100 && gyro[0].m_v.isApprox(Vector3f(1, 2, 3)));
+            assert(acc[0].m_t == 100 && acc[0].m_v.isApprox(Vector3f(4, 5, 6)));
+            vector<GEOMETRY_POINT> points;
+            assert(cloud.get(points) == 100 && points.size() == 1);
+            assert(points[0].m_tStamp == 100 && points[0].m_vP.isApprox(point.m_vP));
+        };
+        assert(driver.loadConfig());
+        assertStreamsUnchanged();
+        assert(driver.saveConfig(false));
+        assertStreamsUnchanged();
+        config.getJson()->update({{"deviceIP", "127.0.0.3"}, {"bUseSensorTime", true}, {"bIMUoutput", true}});
+        assert(driver.loadConfig());
+        assertStreamsUnchanged();
+        assert(Access::config(driver).at("deviceIP") == "127.0.0.3");
+        // A live clock/output change still discards old samples deliberately.
+        configure(driver, {{"bIMUoutput", false}});
+        deque<IMUstream::IMU_DATA> gyro, acc;
+        imu.get(gyro, acc);
+        assert(gyro.empty() && acc.empty());
+    }
+
     void testConfig()
     {
-        _Airy driver;
+        DriverWithTransform driver;
         json errors;
         const json original = Access::config(driver);
         for (const auto &field : original.items()) assert(Access::schema(driver).contains(field.key()));
         configure(driver, original); // All defaults fit their documented limits.
+        const json poseFields = {{"vPos", {1, 2, 3}}, {"vOrt", {0, 0, 0, 1}},
+                                 {"vT", {1, 2, 3}}, {"vR", {0, 0, 0, 1}}};
+        for (const auto &field : poseFields.items())
+        {
+            assert(!original.contains(field.key()) && !Access::schema(driver).contains(field.key()));
+            assert(!Access::config(driver, {{field.key(), field.value()}}, errors));
+            assert(errors.at(field.key()) == "Unknown parameter" && Access::config(driver) == original);
+        }
         const json invalid[] = {json(), json::array(), {{"msopPort", 7788}}, {{"imuPort", 6699}},
             {{"imuPort", -1}}, {{"vRangeD", {0, 120}}}, {{"vRangeD", {10, 1}}}, {{"splitAngle", 360}},
             {{"splitAngle", -1}}, {{"splitAngle", std::numeric_limits<double>::infinity()}},
             {{"bIMUoutput", 1}}, {{"bIMUpreview", 1}}, {{"bIMUpreview", "true"}},
-            {{"bIMUpreview", nullptr}}, {{"deviceIP", "999.0.0.1"}}, {{"vOrt", {0, 0, 0, 0}}},
+            {{"bIMUpreview", nullptr}}, {{"deviceIP", "999.0.0.1"}},
             {{"bReflectivity", false}, {"unexpected", 1}}, {{"deviceRPM", 1200}}};
         for (const auto &patch : invalid)
         {
@@ -449,6 +510,7 @@ int main()
     testIMU();
     testIMUpreview();
     testPreviewOptIn();
+    testConfigPreservesLinkedStreams();
     testConfig();
     std::cout << "Airy driver tests passed\n";
 }

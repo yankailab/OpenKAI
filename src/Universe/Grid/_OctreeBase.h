@@ -1,7 +1,7 @@
 #ifndef OpenKAI_src_Universe_Grid__OctreeBase_H_
 #define OpenKAI_src_Universe_Grid__OctreeBase_H_
 
-#include "../_TransformBase.h"
+#include "../_TransformRigid.h"
 
 #define N_OCT 8
 
@@ -92,7 +92,7 @@ namespace kai
 	};
 
 	// Spatial cell hierarchy; geometry input/output belongs to separate interfaces.
-	class _OctreeBase : public _TransformBase
+	class _OctreeBase : public _ModuleBase
 	{
 	public:
 		_OctreeBase();
@@ -116,6 +116,7 @@ namespace kai
 		}
 
 	protected:
+		_TransformRigid *m_pTf = nullptr;
 	};
 
 }

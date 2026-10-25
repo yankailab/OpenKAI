@@ -17,6 +17,7 @@ namespace kai
         static bool config(_E1R &driver, const json &patch, json &errors)
         { return driver.applyConfig(patch, true, errors); }
         static json config(_E1R &driver) { return driver.configValues(); }
+        static json schema(_E1R &driver) { return driver.controlSchema(); }
         static json status(_E1R &driver) { return driver.statusValues(); }
         static size_t pending(_E1R &driver) { return driver.m_framePoints.size(); }
     };
@@ -26,6 +27,14 @@ namespace
 {
     using namespace kai;
     using Access = E1RTestAccess;
+
+    class DriverWithTransform : public _E1R
+    {
+    public:
+        DriverWithTransform() { m_pTf = &m_transform; }
+        ~DriverWithTransform() { stop(); }
+        _TransformRigid m_transform;
+    };
 
     e1r::Msop packet(uint16_t sequence, uint64_t timestampUs, size_t count = 1)
     {
@@ -54,7 +63,7 @@ namespace
 
     void testFrames()
     {
-        _E1R driver;
+        DriverWithTransform driver;
         PCLframe cloud;
         Access::output(driver, cloud);
         Access::packet(driver, packet(0, 1000000));
@@ -78,7 +87,7 @@ namespace
 
     void testSinglePacketFrames()
     {
-        _E1R driver;
+        DriverWithTransform driver;
         PCLframe cloud;
         Access::output(driver, cloud);
         Access::packet(driver, packet(0, 1000000));
@@ -92,7 +101,7 @@ namespace
 
     void testTimeoutAndPartialPrefix()
     {
-        _E1R driver;
+        DriverWithTransform driver;
         PCLframe cloud;
         Access::output(driver, cloud);
         Access::packet(driver, packet(0, 1000000));
@@ -116,11 +125,12 @@ namespace
 
     void testFilteringAndTransform()
     {
-        _E1R driver;
+        DriverWithTransform driver;
         PCLframe cloud;
         Access::output(driver, cloud);
-        configure(driver, {{"vRangeD", {1.0, 10.0}}, {"vPos", {1.0, 2.0, 3.0}},
-            {"vOrt", {0.0, 0.0, 0.5, 0.5}}});
+        configure(driver, {{"vRangeD", {1.0, 10.0}}});
+        driver.m_transform.setTranslation(1, 2, 3);
+        driver.m_transform.setRotation(0, 0, 0.5, 0.5);
         auto data = packet(0, 1000000, 8);
         data.points[0].x = data.points[0].range = 0.5f; // Outside near boundary.
         data.points[2].x = data.points[2].range = 10.0f; // Inclusive far boundary.
@@ -149,7 +159,7 @@ namespace
 
     void testFrameCapAndClear()
     {
-        _E1R driver;
+        DriverWithTransform driver;
         PCLframe cloud;
         Access::output(driver, cloud);
         configure(driver, {{"nMaxFramePoints", 96}});
@@ -174,7 +184,7 @@ namespace
 
     void testClockAndOverflow()
     {
-        _E1R driver;
+        DriverWithTransform driver;
         PCLframe cloud;
         Access::output(driver, cloud);
         Access::packet(driver, packet(0, 3000000));
@@ -205,17 +215,25 @@ namespace
 
     void testConfigAtomicityAndTelemetry()
     {
-        _E1R driver;
+        DriverWithTransform driver;
         json errors;
         const json before = Access::config(driver);
         Access::packet(driver, packet(0, 1000000));
+        const json poseFields = {{"vPos", {1, 2, 3}}, {"vOrt", {0, 0, 0, 1}},
+                                 {"vT", {1, 2, 3}}, {"vR", {0, 0, 0, 1}}};
+        for (const auto &field : poseFields.items())
+        {
+            assert(!before.contains(field.key()) && !Access::schema(driver).contains(field.key()));
+            assert(!Access::config(driver, {{field.key(), field.value()}}, errors));
+            assert(errors.at(field.key()) == "Unknown parameter" && Access::config(driver) == before);
+            assert(Access::pending(driver) == 1);
+        }
         const json invalid[] = {
             json(), json::array(),
             {{"msopPort", 12345}, {"vRangeD", {10.0, 1.0}}},
             {{"msopPort", 7788}}, {{"difopPort", -1}}, {{"msopPort", 1.5}},
             {{"deviceIP", "192.168.1.999"}}, {{"bindIP", false}},
             {{"bDropNoise", "true"}}, {{"nMaxFramePoints", 95}},
-            {{"vOrt", {0, 0, 0, 0}}}, {{"vPos", {0, 0}}},
             {{"vColorDefault", {0, 0, 1.1}}}, {{"vRangeD", {0, std::numeric_limits<double>::infinity()}}},
             {{"unknown", 1}}, {{"devicePHYmode", 2}},
         };

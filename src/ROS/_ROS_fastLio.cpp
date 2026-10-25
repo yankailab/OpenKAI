@@ -99,9 +99,12 @@ namespace kai
     {
         IF_(!check());
 
-        m_mT = m_pROSnode->m_mT;
-        m_vT = m_pROSnode->m_vP;
-        m_vQ = m_pROSnode->m_vQ;
+        if (m_pTf)
+        {
+            m_pTf->setTranslation(m_pROSnode->m_vP.cast<double>());
+            const Vector4f &q = m_pROSnode->m_vQ;
+            m_pTf->setRotation(q.x(), q.y(), q.z(), q.w(), true);
+        }
         m_confidence = 30.0;
     }
 

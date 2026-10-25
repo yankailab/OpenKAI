@@ -37,17 +37,7 @@
 			1.0,
 			1.0
 		],
-		"vPos": [
-			0,
-			0,
-			0
-		],
-		"vOrt": [
-			0,
-			0,
-			0,
-			1
-		]
+		"_TransformRigid": "E1RTransform"
 	},
 	"viewer": {
 		"class": "_WebGeometry",
@@ -137,5 +127,19 @@
 		"class": "BytePacketStream",
 		"nPacket": 256,
 		"nPbuf": 2000
+	},
+	"E1RTransform": {
+		"class": "_TransformRigid",
+		"vT": [
+			0,
+			0,
+			0
+		],
+		"vR": [
+			0,
+			0,
+			0,
+			1
+		]
 	}
 }

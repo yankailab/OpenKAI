@@ -72,14 +72,17 @@ namespace
 		JsonCfg cfg;
 		cfg.setJson({
 			{"mavlink", {{"class", "MavlinkStream"}}},
-			{"autopilot", {{"class", "_APmav_base"},
+			{"transform", {{"class", "_TransformRigid"}}},
+			{"autopilot", {{"class", "_APmav_base"}, {"_TransformRigid", "transform"},
 				{"MavlinkStream", "mavlink"},
 				{"mavMsgInt", {{"attitude", {{"id", MAVLINK_MSG_ID_ATTITUDE}, {"tInt", 0.1}}}}}}},
 		});
 		InstanceMgr instances;
 		json &config = *cfg.getJson();
 		assert(instances.addDataObject("mavlink", &cfg, &config["mavlink"]));
+		assert(instances.addModule("transform", &cfg, &config["transform"]));
 		assert(instances.initAll());
+		auto *transform = static_cast<_TransformRigid *>(instances.findModule("transform"));
 		AutopilotHarness autopilot;
 		autopilot.setName("autopilot");
 		autopilot.setConfig(&cfg, &config["autopilot"]);
@@ -103,9 +106,9 @@ namespace
 		autopilot.updateApMavRecv();
 		assert(autopilot.getArm() == apArm_disarm);
 		assert(autopilot.getCustomMode() == 7);
-		assert(std::abs(autopilot.getAngles().x() - 0.25) < 1e-6);
-		assert(std::abs(autopilot.getAngles().y() + 0.5) < 1e-6);
-		assert(std::abs(autopilot.getAngles().z() - 1.0) < 1e-6);
+		assert(std::abs(transform->getAngles().x() - 0.25) < 1e-6);
+		assert(std::abs(transform->getAngles().y() + 0.5) < 1e-6);
+		assert(std::abs(transform->getAngles().z() - 1.0) < 1e-6);
 
 		if (!testEncoding)
 			return;

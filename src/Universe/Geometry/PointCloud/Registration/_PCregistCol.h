@@ -8,8 +8,7 @@
 #ifndef OpenKAI_src_Universe_Geometry_PointCloud_PCregistCol_H_
 #define OpenKAI_src_Universe_Geometry_PointCloud_PCregistCol_H_
 
-#include "../Pipeline/_PCtransform.h"
-#include "../../../_TransformBase.h"
+#include "../../../_TransformRigid.h"
 #include "../../../../DataObject/PCLframe.h"
 #include <open3d/pipelines/registration/ColoredICP.h>
 using namespace open3d::pipelines::registration;
@@ -17,7 +16,7 @@ using namespace open3d::pipelines::registration;
 namespace kai
 {
 
-	class _PCregistCol : public _TransformBase
+	class _PCregistCol : public _ModuleBase
 	{
 	public:
 		_PCregistCol();
@@ -45,6 +44,7 @@ namespace kai
 		}
 
 	protected:
+		_TransformRigid *m_pTf = nullptr;
 		double m_maxDistance = 0.1;
 		double m_rNormal = 0.2;
 		int m_maxNNnormal = 30;
@@ -59,7 +59,6 @@ namespace kai
 		PCLframe *m_pPCLin = nullptr;
 		RegistrationResult m_RR;
 		double m_minFit = 0.0;
-		_PCtransform *m_pTf = nullptr;
 	};
 
 }

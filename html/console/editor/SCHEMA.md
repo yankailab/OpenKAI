@@ -85,7 +85,7 @@ Parameter `type` is `boolean`, `integer`, `number`, `string`, `array`, `object`,
 
 Optional metadata includes:
 
-- `default`: a safely parsed source literal, vector initializer, or simple constant expression. It is a convenience for adding instances, not proof of an SDK/device's runtime value. Inherited constructor assignments override known source defaults. Dynamic expressions are not executed.
+- `default`: a safely parsed source literal, vector initializer, or simple constant expression, including a local copy of an initialized member. It is a convenience for adding instances, not proof of an SDK/device's runtime value. Inherited constructor assignments override known source defaults. Dynamic expressions are not executed.
 - `defaultExpression`: an unresolved C++ initializer or a value assigned from runtime state; never evaluate this as JavaScript.
 - `cppType`, `cppVariable`, `typeEvidence`: extraction provenance. `typeEvidence: "key-convention"` is weaker than an actual declaration. `typeEvidence: "instance-lookup"` identifies a scalar module/DataObject lookup that establishes a string name even when local declaration inference is unresolved.
 - `description`, `group`: help text and source-defined control grouping.

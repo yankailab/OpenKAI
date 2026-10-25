@@ -8,19 +8,20 @@
 #ifndef OpenKAI_src_Navigation__NavBase_H_
 #define OpenKAI_src_Navigation__NavBase_H_
 
-#include "../Universe/_TransformBase.h"
+#include "../Universe/_TransformRigid.h"
 #include <mutex>
 
 namespace kai
 {
 
-	class _NavBase : public _TransformBase
+	class _NavBase : public _ModuleBase
 	{
 	public:
 		_NavBase();
 		virtual ~_NavBase();
 
 		virtual bool loadConfig(void) override;
+		bool link(InstanceMgr *pM) override;
 		bool saveConfig(bool bExport) override;
 		virtual void console(void *pConsole);
 
@@ -31,6 +32,7 @@ namespace kai
 		//TODO: add global positioning, etc.
 
 	protected:
+		_TransformRigid *m_pTf = nullptr;
 		float m_confidence = 0.0;
 		uint64_t m_tConfidenceTimeoutNs = 0; // zero disables expiry
 		uint64_t m_tConfidenceUpdatedNs = 0;

@@ -73,7 +73,9 @@ DataObject link keys end in `In` for inputs and `Out` for outputs. The suffix de
 Point pipeline inputs and outputs must use different streams. Replace old `_PointCloud`, `_GeometryBase`, `globalMapPCL`, and `vGeometryBase` data references with the applicable keys above. A former `_PointCloud` object used only for storage becomes a `PCLframe` DataObject declaration; remove its `thread` and `nP` settings.
 
 The `_PointCloud`, `_GeometryBase`, and `_Line` module classes have been removed.
-Remaining former geometry subclasses inherit directly from `_TransformBase`. Point-cloud producers
+Remaining former geometry subclasses inherit directly from `_ModuleBase` and retain an optional
+`_TransformRigid *m_pTf` link. Point-cloud transforms use the linked module's combined pose,
+including its parent chain. Without a link, the transform is identity. Point-cloud producers
 each declare their own `PCLframe *m_pPCLout` output pointer,
 resolved from the `PCLframeOut` configuration key. The referenced DataObject owns
 the point data and remains managed by `InstanceMgr`. Use a `LineFrame` DataObject
@@ -324,3 +326,39 @@ python3 html/viewer/tests/run.py /tmp/openkai-stream-tests/viewer_cache_test
 ```
 
 These checks use synthetic data and do not start hardware devices.
+
+### Rigid transform modules
+
+Pose configuration belongs to a `_TransformRigid` instance. Set `vT` to XYZ translation
+and `vR` to an XYZW quaternion; rotations are normalized, and angles use radians in
+roll, pitch, yaw order (Rz * Ry * Rx). Modules reference their pose by name:
+
+```json
+{
+  "robotPose": {"class": "_TransformRigid", "vT": [1, 0, 0]},
+  "lidarMount": {
+    "class": "_TransformRigid",
+    "_TransformRigidParent": "robotPose",
+    "vT": [0, 0, 0.5],
+    "vR": [0, 0, 0, 1]
+  },
+  "lidar": {"class": "_Livox2", "_TransformRigid": "lidarMount"}
+}
+```
+
+This illustrates pose links only; keep the driver's required network and output settings.
+Alternatively, a parent can list `_TransformRigidChildren` by instance name. Either end
+establishes the same edge; duplicate edges are coalesced, and cycles or conflicting parents
+fail linking. Link the tree before starting workers. The combined pose is `parentCombined * local`.
+Setters and getters update the combined pose immediately, and the worker wakes child modules
+with `catchUp()` when it changes. Pose getters return synchronized value snapshots.
+
+Configure pose only through the linked `_TransformRigid` instance's `vT` and `vR`.
+Sensor configuration and web controls do not expose pose aliases. Navigation, SLAM,
+and autopilot modules publish their pose through the same link. A consumer's
+`loadConfig` and `saveConfig` handle its own parameters and owned embedded objects.
+Saving a publisher from its web viewer preserves linked instances' configuration,
+including the transform's existing JSON. Save pose configuration explicitly through
+the `_TransformRigid` instance during integration.
+`_TransformRigidParent` and `_TransformRigidChildren` replace the old transform
+base's tree keys.

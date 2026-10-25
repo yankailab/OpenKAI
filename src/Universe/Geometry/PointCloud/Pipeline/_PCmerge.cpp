@@ -62,7 +62,7 @@ namespace kai
 
 	bool _PCmerge::loadConfig(void)
 	{
-		IF_F(!this->_TransformBase::loadConfig());
+		IF_F(!this->_ModuleBase::loadConfig());
 		const json &j = *m_pJ;
 
 		jKv(j, "rVoxel", m_rVoxel);
@@ -72,7 +72,7 @@ namespace kai
 
 	bool _PCmerge::saveConfig(bool bExport)
 	{
-		IF_F(!_TransformBase::saveConfig(false));
+		IF_F(!_ModuleBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["rVoxel"] = m_rVoxel;
@@ -83,7 +83,13 @@ namespace kai
 
 	bool _PCmerge::link(InstanceMgr *pM)
 	{
-		IF_F(!this->_TransformBase::link(pM));
+		IF_F(!this->_ModuleBase::link(pM));
+
+		string tfName;
+		jKv(*m_pJ, "_TransformRigid", tfName);
+		m_pTf = dynamic_cast<_TransformRigid *>(static_cast<_ModuleBase *>(pM->findModule(tfName)));
+		IF_Le_F(!tfName.empty() && !m_pTf, "_TransformRigid not found: " + tfName);
+
 		const json &j = *m_pJ;
 
 		string outputName;
@@ -116,7 +122,7 @@ namespace kai
 
 	bool _PCmerge::check(void)
 	{
-		return m_pPCLout && _TransformBase::check();
+		return m_pPCLout && _ModuleBase::check();
 	}
 
 	void _PCmerge::clear(void)
@@ -164,6 +170,7 @@ namespace kai
 		points.reserve(count);
 		std::unordered_map<MergeVoxel, size_t, MergeVoxelHash> voxels;
 		vector<size_t> voxelCounts;
+		const Isometry3f pose = m_pTf ? m_pTf->getPoseCombinedf() : Isometry3f::Identity();
 		for (const vector<GEOMETRY_POINT> &input : m_vInputPoints)
 		{
 			for (const GEOMETRY_POINT &point : input)
@@ -174,7 +181,7 @@ namespace kai
 				}
 
 				GEOMETRY_POINT transformed = point;
-				transformed.m_vP = m_mPosef * point.m_vP;
+				transformed.m_vP = pose * point.m_vP;
 				if (m_rVoxel == 0.0f)
 				{
 					points.push_back(transformed);

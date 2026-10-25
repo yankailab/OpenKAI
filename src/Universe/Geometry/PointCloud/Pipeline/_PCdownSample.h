@@ -8,18 +8,19 @@
 #ifndef OpenKAI_src_Universe_Geometry_PointCloud_PCdownSample_H_
 #define OpenKAI_src_Universe_Geometry_PointCloud_PCdownSample_H_
 
-#include "../../../_TransformBase.h"
+#include "../../../_TransformRigid.h"
 
 namespace kai
 {
 
-    class _PCdownSample : public _TransformBase
+    class _PCdownSample : public _ModuleBase
     {
     public:
         _PCdownSample();
         virtual ~_PCdownSample();
 
         virtual bool loadConfig(void) override;
+        bool link(InstanceMgr *pM) override;
         bool saveConfig(bool bExport) override;
         virtual bool start(void);
         virtual bool check(void);
@@ -34,6 +35,7 @@ namespace kai
         }
 
     protected:
+        _TransformRigid *m_pTf = nullptr;
         float m_rVoxel = 0.1;
     };
 

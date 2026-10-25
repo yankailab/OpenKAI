@@ -686,8 +686,11 @@ namespace kai
 		m_stageTimeNs.fill(0);
 		m_updates = m_inputPoints = m_registrationPoints = 0;
 		m_submapStamp = -1.0;
-		setTranslation(Vector3d::Zero());
-		setRotation(Quaterniond::Identity(), true);
+		if (m_pTf)
+		{
+			m_pTf->setTranslation(Vector3d::Zero());
+			m_pTf->setRotation(Quaterniond::Identity(), true);
+		}
 		m_pendingFrame.reset();
 		m_pendingFrameEndNs = 0;
 		m_odometry.reset();
@@ -738,7 +741,7 @@ namespace kai
 	{
 		auto lock = lockSLAM();
 		const float quality = confidence();
-		const Isometry3d pose = mapCorrection() * m_mPose;
+		const Isometry3d pose = mapCorrection() * (m_pTf ? m_pTf->getPoseCombined() : Isometry3d::Identity());
 		const Quaterniond q(pose.linear());
 		const auto &r = pose.linear();
 		const Vector3d angles(std::atan2(r(2, 1), r(2, 2)),

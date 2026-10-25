@@ -5,8 +5,7 @@ const labels = {
   frameTimeoutMs: 'Frame timeout (ms)', bDropNoise: 'Drop noisy points',
   bUseSensorTime: 'Use sensor timestamps', bReflectivity: 'Color by reflectivity',
   vColorDefault: 'Point color [R, G, B]', vRangeD: 'Distance range [minimum, maximum] (m)',
-  nMaxFramePoints: 'Maximum points per frame', tOutSec: 'Device timeout (s)',
-  vPos: 'Position [X, Y, Z] (m)', vOrt: 'Orientation quaternion [X, Y, Z, W]'
+  nMaxFramePoints: 'Maximum points per frame', tOutSec: 'Device timeout (s)'
 };
 const deviceLabels = {
   deviceSensorIP: 'Sensor IPv4', deviceNetmask: 'Sensor subnet mask', deviceMAC: 'Sensor MAC address',

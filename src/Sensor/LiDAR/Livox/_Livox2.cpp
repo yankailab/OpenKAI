@@ -39,9 +39,8 @@ namespace kai
     {
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
         IF_Le_F(m_started, "Stop Livox before loading its configuration");
-        IF_F(!_TransformBase::loadConfig());
+        IF_F(!_ModuleBase::loadConfig());
         if (!m_pJ->at("thread").contains("FPS")) m_pT->setTargetFPS(0);
-        m_mountOrientation = m_vR;
         json patch = json::object(), errors;
         const json values = configValues();
         for (const auto &entry : values.items())
@@ -55,15 +54,21 @@ namespace kai
     bool _Livox2::saveConfig(bool bExport)
     {
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
-        IF_F(!_TransformBase::saveConfig(false));
+        IF_F(!_ModuleBase::saveConfig(false));
         m_pJ->update(configValues());
-        (*m_pJ)["vOrt"] = {m_mountOrientation.x(), m_mountOrientation.y(), m_mountOrientation.z(), m_mountOrientation.w()};
         return !bExport || m_pJcfg->saveToFile();
     }
 
     bool _Livox2::link(InstanceMgr *pM)
     {
-        IF_F(!_TransformBase::link(pM));
+        IF_F(!_ModuleBase::link(pM));
+
+        string tfName;
+        jKv(*m_pJ, "_TransformRigid", tfName);
+        m_pTf = dynamic_cast<_TransformRigid *>(static_cast<_ModuleBase *>(pM->findModule(tfName)));
+        IF_Le_F(!tfName.empty() && !m_pTf, "_TransformRigid not found: " + tfName);
+        m_mountOrientation = m_pTf ? m_pTf->getRotation() : Quaterniond::Identity();
+
         string name;
         jKv(*m_pJ, "PCLframeOut", name);
         m_pPCLout = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(name)));
@@ -75,7 +80,7 @@ namespace kai
         return true;
     }
 
-    bool _Livox2::check() { return m_pPCLout && m_pT && _TransformBase::check(); }
+    bool _Livox2::check() { return m_pPCLout && m_pT && _ModuleBase::check(); }
 
     bool _Livox2::openSockets(string &error)
     {
@@ -507,6 +512,7 @@ namespace kai
         }
         const size_t stride = livox2::pointSize(data.data_type);
         bool overflow = false;
+        const Isometry3f pose = m_pTf ? m_pTf->getPoseCombinedf() : Isometry3f::Identity();
         for (size_t i = 0; i < data.dot_num; ++i)
         {
             const uint8_t *bytes = data.data + i * stride;
@@ -540,7 +546,7 @@ namespace kai
                 distance2 > m_vRangeD.y() * m_vRangeD.y()) continue;
             if (m_vFramePoints.size() >= size_t(m_nMaxFramePoints)) { overflow = true; continue; }
             GEOMETRY_POINT point;
-            point.m_vP = m_mPosef * position;
+            point.m_vP = pose * position;
             point.m_vC = m_bReflectivity ? Vector3f::Constant(reflectivity / 255.0f) : m_vColorDefault;
             point.m_tStamp = livox2::pointTime(stamp, data.time_interval, data.dot_num, i);
             m_vFramePoints.push_back(point); ++m_points;
@@ -582,7 +588,10 @@ namespace kai
                 if (m_bIMUstab)
                 {
                     const auto preview = m_imuPreview.snapshot();
-                    if (preview.orientationValid) setAngles(preview.rpy.x(), preview.rpy.y(), 0.0);
+                    if (preview.orientationValid && m_pTf)
+                    {
+                        m_pTf->setAngles(preview.rpy.x(), preview.rpy.y(), 0.0);
+                    }
                 }
             }
         }
@@ -728,11 +737,20 @@ namespace kai
             if (m_bIMUpreview && (before.at("bIMUpreview") != next.at("bIMUpreview") ||
                 before.at("lvxIMUdataEn") != next.at("lvxIMUdataEn"))) m_imuPreview.reset();
             if (before.at("lvxIMUdataEn") != next.at("lvxIMUdataEn"))
-            { m_tIMU = 0; if (m_pIMUout) m_pIMUout->clear(); }
-            if (!m_bIMUstab && before.at("bIMUstab") != next.at("bIMUstab"))
+            {
+                m_tIMU = 0;
+                if (live && m_pIMUout)
+                {
+                    m_pIMUout->clear();
+                }
+            }
+            if (live && !m_bIMUstab && before.at("bIMUstab") != next.at("bIMUstab"))
             {
                 // Restore the configured mounting transform after preview stabilization.
-                setRotation(m_mountOrientation, true);
+                if (m_pTf)
+                {
+                    m_pTf->setRotation(m_mountOrientation, true);
+                }
             }
         }
         if (live && m_lvxState != lvxState_deviceQuery)
@@ -781,7 +799,7 @@ namespace kai
     void _Livox2::console(void *console)
     {
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
-        _TransformBase::console(console);
+        _ModuleBase::console(console);
         if (console) static_cast<_Console *>(console)->addMsg("Livox state=" + std::to_string(m_lvxState) + " SN=" + m_detectedSN +
             " frames=" + std::to_string(m_frames) + " IMU=" + std::to_string(m_imuSamples) + " " + m_lastError);
     }

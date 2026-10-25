@@ -47,7 +47,8 @@
 			1.0,
 			1.0,
 			1.0
-		]
+		],
+		"_TransformRigid": "Lvx1Transform"
 	},
 	"viewer": {
 		"class": "_WebGeometry",
@@ -137,5 +138,19 @@
 		"class": "BytePacketStream",
 		"nPacket": 256,
 		"nPbuf": 2000
+	},
+	"Lvx1Transform": {
+		"class": "_TransformRigid",
+		"vT": [
+			0.0,
+			0.0,
+			0.0
+		],
+		"vR": [
+			0.0,
+			0.0,
+			0.0,
+			1.0
+		]
 	}
 }

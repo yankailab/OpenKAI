@@ -114,6 +114,21 @@ def literal(expr, constants, seen=()):
     return MISSING
 
 
+def initializer_literal(expr, constants, lookup, seen=()):
+    value = literal(expr, constants)
+    if value is not MISSING:
+        return value
+    # Config readers may copy an initialized member through a local variable.
+    # Follow simple initializer aliases only; arbitrary C++ stays unresolved.
+    name = expr.strip()
+    if not re.fullmatch(r'\w+', name) or name in seen:
+        return MISSING
+    initializer = lookup(name)
+    if initializer is None:
+        return MISSING
+    return initializer_literal(initializer, constants, lookup, seen + (name,))
+
+
 def infer_type(cpp_type, variable, key, template=''):
     cpp_type = cpp_type.replace('std::', '').strip()
     if re.search(r'vector\s*<|array\s*<|Vector\d|vec\d|\[', cpp_type):
@@ -345,7 +360,8 @@ def generate():
                     if sym.get('cppType'):
                         parameter['cppType'] = sym['cppType']
                     if sym.get('expr'):
-                        default = literal(sym['expr'], constants)
+                        default = initializer_literal(sym['expr'], constants,
+                                                      lambda name: symbol(record, name, local).get('expr'))
                         if default is not MISSING and type_ != 'json':
                             parameter['default'] = bool(default) if type_=='boolean' else int(default) if type_=='integer' and isinstance(default,(int,float)) else default
                         else:

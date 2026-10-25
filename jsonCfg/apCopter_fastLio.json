@@ -133,7 +133,8 @@
 			}
 		},
 		"/_StateControl": "state",
-		"/apType": 0
+		"/apType": 0,
+		"_TransformRigid": "apBaseTransform"
 	},
 	"fastLio": {
 		"class": "_ROS_fastLio",
@@ -156,7 +157,8 @@
 			0,
 			1,
 			2
-		]
+		],
+		"_TransformRigid": "fastLioTransform"
 	},
 	"apVision": {
 		"class": "_APmav_visionEstimate",
@@ -241,5 +243,33 @@
 		"class": "BytePacketStream",
 		"nPacket": 256,
 		"nPbuf": 2000
+	},
+	"apBaseTransform": {
+		"class": "_TransformRigid",
+		"vT": [
+			0.0,
+			0.0,
+			0.0
+		],
+		"vR": [
+			0.0,
+			0.0,
+			0.0,
+			1.0
+		]
+	},
+	"fastLioTransform": {
+		"class": "_TransformRigid",
+		"vT": [
+			0.0,
+			0.0,
+			0.0
+		],
+		"vR": [
+			0.0,
+			0.0,
+			0.0,
+			1.0
+		]
 	}
 }

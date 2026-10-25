@@ -26,7 +26,7 @@ namespace kai
 
 	bool _LCalign::loadConfig(void)
 	{
-		IF_F(!this->_TransformBase::loadConfig());
+		IF_F(!this->_ModuleBase::loadConfig());
 		const json &j = *m_pJ;
 
 		jKv<int>(j, "vCsize", m_vCsize);
@@ -46,7 +46,13 @@ namespace kai
 
 	bool _LCalign::link(InstanceMgr *pM)
 	{
-		IF_F(!this->_TransformBase::link(pM));
+		IF_F(!this->_ModuleBase::link(pM));
+
+		string tfName;
+		jKv(*m_pJ, "_TransformRigid", tfName);
+		m_pTf = dynamic_cast<_TransformRigid *>(static_cast<_ModuleBase *>(pM->findModule(tfName)));
+		IF_Le_F(!tfName.empty() && !m_pTf, "_TransformRigid not found: " + tfName);
+
 		const json &j = *m_pJ;
 		string n;
 
@@ -71,7 +77,7 @@ namespace kai
 
 	bool _LCalign::saveConfig(bool bExport)
 	{
-		IF_F(!_TransformBase::saveConfig(false));
+		IF_F(!_ModuleBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["vCsize"] = {m_vCsize.x(), m_vCsize.y()};
@@ -93,7 +99,7 @@ namespace kai
 		NULL_F(m_pPCLin);
 		NULL_F(m_pRGBin);
 
-		return this->_TransformBase::check();
+		return this->_ModuleBase::check();
 	}
 
 	void _LCalign::clear(void)
@@ -136,6 +142,7 @@ namespace kai
 		vector<GEOMETRY_POINT> output;
 		output.reserve(input.size());
 
+		const Isometry3f pose = m_pTf ? m_pTf->getPoseCombinedf() : Isometry3f::Identity();
 		for (const GEOMETRY_POINT &point : input)
 		{
 			IF_CONT(point.m_tStamp == 0);
@@ -151,7 +158,7 @@ namespace kai
 			vC *= 1.0 / 255.0;
 
 			GEOMETRY_POINT colored = point;
-			colored.m_vP = m_mPosef * vP;
+			colored.m_vP = pose * vP;
 			colored.m_vC = vC;
 			output.push_back(colored);
 		}
@@ -278,7 +285,7 @@ namespace kai
 	void _LCalign::console(void *pConsole)
 	{
 		NULL_(pConsole);
-		this->_TransformBase::console(pConsole);
+		this->_ModuleBase::console(pConsole);
 
 		_Console *pC = (_Console *)pConsole;
 		string msg;

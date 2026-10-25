@@ -27,7 +27,7 @@ the same UDP ports.
 This profile uses `libodometry_estimation_ct.so` for continuous-time geometric
 odometry and disables IMU factors in submapping and global mapping. The map
 starts in the initial LiDAR frame without gravity alignment. Keep the driver
-mounting transform fixed; `vPos` and `vOrt` are identity in the supplied profile.
+mounting transform fixed; the linked `_TransformRigid` module's `vT` and `vR` are identity in the supplied profile.
 
 The native driver publishes an optional `airyIMU` stream with SI angular
 velocity/acceleration and sensor timestamps. It is deliberately not connected

@@ -47,6 +47,13 @@ Editor-specific assets are within this directory; the shared theme and logo are 
 
 ## Verification
 
+Run the full source-derived schema suite and check both generated catalogs:
+
+```sh
+python3 html/console/editor/tests/schema.test.py
+python3 html/console/editor/tools/generate-schema.py --check
+```
+
 Run the browser suite from the repository root with Python 3 and an installed Chrome/Chromium:
 
 ```sh

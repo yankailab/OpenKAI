@@ -181,8 +181,11 @@ def run(args, output):
             difop_port = free_udp_port()
         config['E1R'].update(deviceIP='127.0.0.1', bindIP='127.0.0.1',
                              msopPort=msop_port, difopPort=difop_port,
-                             bUseSensorTime=False, bDropNoise=True, vRangeD=[.1, 120],
-                             vPos=[0, 0, 0], vOrt=[0, 0, 0, 1])
+                             bUseSensorTime=False, bDropNoise=True, vRangeD=[.1, 120])
+        # Runtime transforms normalize this rotation, but saving the sensor
+        # must leave the linked transform's configuration untouched.
+        config[config['E1R']['_TransformRigid']].update(vT=[1, 2, 3], vR=[0, 0, .5, .5])
+        config[config['E1R']['_TransformRigid']].setdefault('thread', {})
     launch = output / 'launch.json'
     launch.write_text(json.dumps(config, indent=2))
     result = {'mode': 'live (read-only)' if args.live else 'synthetic UDP'}
@@ -206,6 +209,8 @@ def run(args, output):
             schema = reply['schema']
             schema = {item['key']: item for item in schema} if isinstance(schema, list) else schema
             assert set(initial['config']).issubset(schema), 'Every config field needs a viewer control'
+            pose_fields = {'vPos', 'vOrt', 'vT', 'vR'}
+            assert pose_fields.isdisjoint(schema) and pose_fields.isdisjoint(reply['config']), reply
             read_only = [key for key, field in schema.items() if field.get('readOnly')]
             assert read_only, 'Device telemetry must be exposed read-only'
             result['schemaFields'] = len(schema)
@@ -240,12 +245,19 @@ def run(args, output):
                 assert delta['frames'] > 0 and delta['points'] > 0, result['stream']
                 assert delta['invalidPackets'] == 0 and delta['frameOverflows'] == 0, result['stream']
             else:
-                assert all(math.isclose(p[0], expected_x, abs_tol=1e-6) and p[1] == p[2] == 0
+                assert all(math.isclose(p[0], 1, abs_tol=1e-6) and
+                           math.isclose(p[1], expected_x + 2, abs_tol=1e-6) and p[2] == 3
                            for p in cloud), cloud[:3]
                 result['decodedCloud'] = {'points': len(cloud), 'firstPoint': cloud[0]}
+                result['transformedPoint'] = cloud[0]
                 original = reply['config']
+                for key, value in {'vPos': [1, 2, 3], 'vOrt': [0, 0, 0, 1],
+                                   'vT': [1, 2, 3], 'vR': [0, 0, 0, 1]}.items():
+                    rejected = commands.request('setConfig', config={key: value})
+                    assert not rejected.get('bSuccess') and rejected['errors'][key] == 'Unknown parameter', rejected
+                    assert success(commands.request('getConfig'))['config'] == original
                 for patch in [{'msopPort': 0}, {'bDropNoise': 'true'}, {'vRangeD': [120, 1]},
-                              {'vColorDefault': [1, 2, 0]}, {'vOrt': [0, 0, 0, 0]},
+                              {'vColorDefault': [1, 2, 0]},
                               {'unexpectedSetting': 1}, {'bReflectivity': False, 'msopPort': 0}]:
                     rejected = commands.request('setConfig', config=patch)
                     assert not rejected.get('bSuccess'), rejected
@@ -271,16 +283,15 @@ def run(args, output):
                 eventually(lambda: success(commands.request('getConfig')),
                            lambda r: r['status']['invalidPackets'] >= before + 2)
                 patched = success(commands.request('setConfig', config={
-                    'bReflectivity': False, 'vColorDefault': [1, .5, 0], 'vPos': [1, 2, 3]}))
-                assert patched['config']['vPos'] == [1, 2, 3], patched
-                transformed = receive_cloud(points, lambda cloud: len(cloud) == 279 and
-                                            all(math.isclose(p[0], expected_x + 1, abs_tol=1e-6)
-                                                and p[1] == 2 and p[2] == 3 for p in cloud))
-                result['transformedPoint'] = transformed[0]
+                    'bReflectivity': False, 'vColorDefault': [1, .5, 0]}))
+                assert patched['config']['bReflectivity'] is False, patched
                 success(commands.request('saveConfig'))
                 saved = json.loads(launch.read_text())
                 assert saved['E1R']['bReflectivity'] is False
-                assert saved['E1R']['vColorDefault'] == [1, .5, 0] and saved['E1R']['vPos'] == [1, 2, 3]
+                assert saved['E1R']['vColorDefault'] == [1, .5, 0]
+                assert pose_fields.isdisjoint(saved['E1R']), saved['E1R']
+                transform_name = saved['E1R']['_TransformRigid']
+                assert saved[transform_name] == config[transform_name], saved[transform_name]
                 assert saved['viewer'] == config['viewer'] and saved['wsServer'] == config['wsServer']
                 assert saved['E1R']['PCLframeOut'] == config['E1R']['PCLframeOut']
                 new_msop, new_difop = free_udp_port(), free_udp_port()

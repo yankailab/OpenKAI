@@ -151,7 +151,8 @@
 				"id": 42,
 				"tInt": 1
 			}
-		}
+		},
+		"_TransformRigid": "apBaseTransform"
 	},
 	"apMavlink_stream": {
 		"type": "dataObject",
@@ -193,5 +194,19 @@
 		"class": "BytePacketStream",
 		"nPacket": 256,
 		"nPbuf": 2000
+	},
+	"apBaseTransform": {
+		"class": "_TransformRigid",
+		"vT": [
+			0.0,
+			0.0,
+			0.0
+		],
+		"vR": [
+			0.0,
+			0.0,
+			0.0,
+			1.0
+		]
 	}
 }

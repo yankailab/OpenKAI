@@ -8,14 +8,14 @@
 #ifndef OpenKAI_src_Universe_Geometry_PointCloud_PCrecv_H_
 #define OpenKAI_src_Universe_Geometry_PointCloud_PCrecv_H_
 
-#include "../../../_TransformBase.h"
+#include "../../../_TransformRigid.h"
 #include "../../../../DataObject/PCLframe.h"
 #include "../../../../DataObject/BytePacketStream.h"
 #include "PCstreamProtocol.h"
 
 namespace kai
 {
-	class _PCrecv : public _TransformBase
+	class _PCrecv : public _ModuleBase
 	{
 	public:
 		_PCrecv();
@@ -41,6 +41,7 @@ namespace kai
 		}
 
 	protected:
+		_TransformRigid *m_pTf = nullptr;
 		PCLframe *m_pPCLout = nullptr;
 		BytePacketStream *m_pBpStreamIn = nullptr;
 		uint64_t m_tLastBpStreamIn = 0;

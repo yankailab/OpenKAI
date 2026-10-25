@@ -529,7 +529,8 @@ removal behavior. Picker commands send 16-byte IDs as hexadecimal strings.
 and its occupied cell records. It includes occupied ancestors, as the previous
 wireframe did, in root-first traversal order. `nMaxCells` in the grid config sets
 the publication cap (default 8333). The old `nMaxLines` setting is rejected. The viewers have independent `nCbuf` and per-object `nC` caps.
-`_OctreeBase` and its grid subclasses inherit pose handling from `_TransformBase`.
+`_OctreeBase` inherits from `_ModuleBase`; its grid subclasses can link a
+`_TransformRigid` module through the optional `_TransformRigid` configuration key.
 `_OctreeGrid` consumes
 point-cloud DataObjects through its `vPCLframesIn` input list; `_SelectableOctGrid` publishes
 only cell IDs, colors, and the root header. Viewers construct the boxes.

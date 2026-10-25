@@ -163,8 +163,11 @@ namespace kai
 		m_iGyro = 0;
 		m_iAcc = 0;
 		m_slamError.clear();
-		setTranslation(Vector3d::Zero());
-		setRotation(Quaterniond::Identity(), true);
+		if (m_pTf)
+		{
+			m_pTf->setTranslation(Vector3d::Zero());
+			m_pTf->setRotation(Quaterniond::Identity(), true);
+		}
 	}
 
 	bool _SLAMbase::readPointCloud(vector<GEOMETRY_POINT> &points, uint64_t &stamp)
@@ -297,8 +300,11 @@ namespace kai
 			setConfidence(0.0f);
 			return false;
 		}
-		setTranslation(pose.translation());
-		setRotation(Quaterniond(pose.linear()), true);
+		if (m_pTf)
+		{
+			m_pTf->setTranslation(pose.translation());
+			m_pTf->setRotation(Quaterniond(pose.linear()), true);
+		}
 		setConfidence(confidence);
 		return true;
 	}

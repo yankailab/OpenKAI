@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_Sensor_LiDAR_Livox__Livox2_H_
 #define OpenKAI_src_Sensor_LiDAR_Livox__Livox2_H_
 
-#include "../../../Universe/_TransformBase.h"
+#include "../../../Universe/_TransformRigid.h"
 #include "../../../DataObject/PCLframe.h"
 #include "../../../DataObject/IMUstream.h"
 #include "../../../Dependencies/SensorFusion/SensorFusion.h"
@@ -158,7 +158,7 @@ namespace kai
 		}
 	};
 
-	class _Livox2 : public _TransformBase
+	class _Livox2 : public _ModuleBase
 	{
         friend struct Livox2TestAccess;
 	public:
@@ -208,6 +208,7 @@ namespace kai
         void resetFrame();
 
     protected:
+        _TransformRigid *m_pTf = nullptr;
         PCLframe *m_pPCLout = nullptr;
         std::array<int, SocketCount> m_sockets{{-1, -1, -1, -1, -1}};
         bool m_started = false;

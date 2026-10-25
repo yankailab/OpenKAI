@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_Tools__LCalign_H_
 #define OpenKAI_src_Tools__LCalign_H_
 
-#include "../Universe/_TransformBase.h"
+#include "../Universe/_TransformRigid.h"
 #include "../DataObject/PCLframe.h"
 #include "../Base/cv.h"
 #include "../DataObject/RGBframe.h"
@@ -17,7 +17,7 @@
 namespace kai
 {
 
-	class _LCalign : public _TransformBase
+	class _LCalign : public _ModuleBase
 	{
 	public:
 		_LCalign();
@@ -60,6 +60,7 @@ namespace kai
 		}
 
 	protected:
+		_TransformRigid *m_pTf = nullptr;
 		PCLframe *m_pPCLout = nullptr;
 		PCLframe *m_pPCLin = nullptr;
 		RGBframe *m_pRGBin = nullptr;

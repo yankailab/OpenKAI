@@ -209,14 +209,13 @@ def check_controls(browser, captured=None):
         assert($('#lidarModule').value === 'Airy', 'Default module must match launch configuration');
         let config = {deviceIP:'192.168.1.200', msopPort:6699, imuPort:6688,
             bIMUoutput:true, bIMUpreview:true, bReflectivity:true, frameTimeoutMs:250,
-            vRangeD:[0.1,60], vColorDefault:[1,1,1], vOrt:[0,0,0,1]};
+            vRangeD:[0.1,60], vColorDefault:[1,1,1]};
         const schema = {
             deviceIP:{type:'string',category:'Receiver'}, msopPort:{type:'integer',min:1,max:65535},
             imuPort:{type:'integer',min:1,max:65535}, bIMUoutput:{type:'bool',category:'IMU'},
             bIMUpreview:{type:'bool',label:'Enable IMU preview'},
             bReflectivity:{type:'bool'}, frameTimeoutMs:{type:'integer',min:10,max:10000},
             vRangeD:{type:'range',length:2,min:0,max:81.915}, vColorDefault:{type:'array',length:3,min:0,max:1},
-            vOrt:{type:'array',length:4,min:-1,max:1},
             deviceReturnMode:{type:'integer',readOnly:true,category:'Device parameters',
                 choices:[{value:0,label:'Strongest'}]},
             unavailable:{type:'integer',supported:false}
@@ -230,6 +229,7 @@ def check_controls(browser, captured=None):
             for (let at=0; at<text.length; at+=7) cmdHandler({data:text.slice(at,at+7)});
         };
         reply({schema});
+        for (const key of ['vPos','vOrt','vT','vR']) assert(!field(key), 'Driver must not expose pose controls: '+key);
         assert(!$('#lidarFields').disabled, 'Reply must unlock controls');
         assert(document.querySelectorAll('.control').length === Object.keys(schema).length, 'Every schema field must render');
         assert(!field('deviceIP').disabled, 'Host source filter must be editable');
@@ -255,7 +255,7 @@ def check_controls(browser, captured=None):
         assert(sent.length === count, 'Numeric bounds and integer validation must reject invalid inputs');
         request=change('frameTimeoutMs','500'); assert(request.config.frameTimeoutMs===500,'Valid number must be sent'); reply();
         for (const [key,value] of [['vRangeD','[40,1]'],['vRangeD','[0,"40"]'],['vColorDefault','[1,0]'],
-                                  ['vColorDefault','[1,2,0]'],['vOrt','[0,0,1]']]) {
+                                  ['vColorDefault','[1,2,0]']]) {
             count=sent.length; change(key,value); assert(sent.length===count,'Invalid vector must not be sent: '+key+' '+value);
         }
         request=change('vColorDefault','[1,0.5,0]');
@@ -286,6 +286,10 @@ def check_controls(browser, captured=None):
             $('#getConfig').click(); const source=window.capturedResponse;
             reply({...source,module:'Airy',cmd:'getConfig',requestId:sent.at(-1).requestId});
             const specs=Array.isArray(source.schema)?source.schema:Object.entries(source.schema).map(([key,spec])=>({key,...spec}));
+            for (const key of ['vPos','vOrt','vT','vR']) {
+                assert(!specs.some(spec=>spec.key===key) && !(key in source.config) && !field(key),
+                    'Driver must not expose pose controls: '+key);
+            }
             for (const spec of specs) {
                 const input=field(spec.key); assert(input,'Missing backend field '+spec.key);
                 assert(input.disabled===(!!spec.readOnly || spec.supported===false),'Wrong writability '+spec.key);
@@ -323,6 +327,10 @@ def run_live(browser, url, screenshot_path=None):
         result = browser.evaluate(r"""(() => {
             const config=window.liveConfigs.at(-1);
             const specs=Array.isArray(config.schema)?config.schema:Object.entries(config.schema).map(([key,spec])=>({key,...spec}));
+            for(const key of ['vPos','vOrt','vT','vR']) {
+                if(specs.some(spec=>spec.key===key) || key in config.config || document.getElementById('param-'+key))
+                    throw Error('Driver must not expose pose controls: '+key);
+            }
             for(const spec of specs) {
                 const field=document.getElementById('param-'+spec.key);
                 if(!field) throw Error('Missing field '+spec.key);

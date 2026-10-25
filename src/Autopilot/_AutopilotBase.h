@@ -1,7 +1,7 @@
 #ifndef OpenKAI_src_Autopilot__AutopilotBase_H_
 #define OpenKAI_src_Autopilot__AutopilotBase_H_
 
-#include "../Universe/_TransformBase.h"
+#include "../Universe/_TransformRigid.h"
 #include "../Protocol/_JSONbase.h"
 #include "../Utility/utilEvent.h"
 #include "../Utility/utilVar.h"
@@ -37,7 +37,7 @@ namespace kai
 		apGPS_unknown = 0,
 	};
 
-	class _AutopilotBase : public _TransformBase
+	class _AutopilotBase : public _ModuleBase
 	{
 	public:
 		_AutopilotBase();
@@ -76,6 +76,7 @@ namespace kai
 		}
 
 	protected:
+		_TransformRigid *m_pTf = nullptr;
 		AP_TYPE m_type = ardupilot_unknown;
 
 		// state control
@@ -86,13 +87,6 @@ namespace kai
 		float m_rAlt;
 		Vector3f m_vVelocity = Vector3f::Zero();
 		Vector4d m_vHomePos = Vector4d::Zero();
-		// Reference frame
-        // Vector3d m_vPos;    // position in Lat, Lon, Alt
-        // Quaterniond m_vOrt; // orientation quaternion
-        // Vector3d m_vAngle;  // euler angles (radian) in roll, pitch, yaw (North 0) order
-
-
-
 		int8_t m_battery = -1;	// remaining percentage in integer, -1:unknown
 
 	};

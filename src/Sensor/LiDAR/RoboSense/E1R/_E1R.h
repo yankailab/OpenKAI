@@ -2,14 +2,14 @@
 #ifndef OpenKAI_src_Sensor_LiDAR_RoboSense_E1R__E1R_H_
 #define OpenKAI_src_Sensor_LiDAR_RoboSense_E1R__E1R_H_
 
-#include "../../../../Universe/_TransformBase.h"
+#include "../../../../Universe/_TransformRigid.h"
 #include "../../../../DataObject/PCLframe.h"
 #include "E1RProtocol.h"
 #include <mutex>
 
 namespace kai
 {
-    class _E1R : public _TransformBase
+    class _E1R : public _ModuleBase
     {
         friend struct E1RTestAccess;
     public:
@@ -24,6 +24,9 @@ namespace kai
         void console(void *pConsole) override;
         void console(const json &request, void *pJSONbase) override;
         void clear();
+
+    protected:
+        _TransformRigid *m_pTf = nullptr;
 
     private:
         json configValues() const;

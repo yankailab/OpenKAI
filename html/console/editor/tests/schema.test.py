@@ -12,6 +12,28 @@ generator = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(generator)
 
 
+class InitializerDefaultTest(unittest.TestCase):
+    def test_local_copies_resolve_source_defaults(self):
+        initializers = {
+            "nMsgQueue": "m_nMsgQueue", "m_nMsgQueue": "QUEUE_CAPACITY",
+            "enabled": "m_enabled", "m_enabled": "false",
+            "position": "m_position", "m_position": "Vector3d(1, 2, 3)",
+        }
+        constants = {"QUEUE_CAPACITY": "1 << 10"}
+        self.assertEqual(generator.initializer_literal("nMsgQueue", constants, initializers.get), 1024)
+        self.assertIs(generator.initializer_literal("enabled", constants, initializers.get), False)
+        self.assertEqual(generator.initializer_literal("position", constants, initializers.get), [1, 2, 3])
+
+    def test_unknown_dynamic_and_cyclic_initializers_remain_unresolved(self):
+        initializers = {
+            "dynamic": "readDeviceDefault()", "missing": "m_uninitialized",
+            "self": "self", "first": "second", "second": "first",
+        }
+        for expression in initializers:
+            with self.subTest(expression=expression):
+                self.assertIs(generator.initializer_literal(expression, {}, initializers.get), generator.MISSING)
+
+
 class StreamReferenceSchemaTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -23,6 +45,25 @@ class StreamReferenceSchemaTest(unittest.TestCase):
 
     def dependencies(self, name):
         return {tuple(d["path"]): d for d in self.classes[name]["dependencies"]}
+
+    def test_rigid_transform_composition(self):
+        self.assertNotIn("_TransformBase", self.classes)
+        self.assertTrue(self.classes["_TransformRigid"]["creatable"])
+        self.assertEqual(self.classes["_TransformRigid"]["buildConditions"], [[]])
+        tree = self.dependencies("_TransformRigid")
+        self.assertEqual(tree[("_TransformRigidParent",)]["targetClass"], "_TransformRigid")
+        self.assertEqual(tree[("_TransformRigidChildren",)]["targetClass"], "_TransformRigid")
+        self.assertTrue(tree[("_TransformRigidChildren",)]["multiple"])
+        for name in ("_Livox2", "_Airy", "_E1R", "_PCLfile", "_PCmerge", "_PCrecv", "_PCsend",
+                     "_PCcrop", "_PCremove", "_PCdownSample", "_PCregistCol", "_OctreeBase",
+                     "_GeometryViewerBase", "_NavBase", "_AutopilotBase", "_LCalign"):
+            with self.subTest(class_name=name):
+                self.assertEqual(self.classes[name]["baseClasses"], ["_ModuleBase"])
+                self.assertEqual(self.dependencies(name)[("_TransformRigid",)]["targetClass"], "_TransformRigid")
+                for key in ("vT", "vR", "vPos", "vOrt"):
+                    self.assertNotIn((key,), self.parameters(name))
+        for key in ("vT", "vR"):
+            self.assertIn((key,), self.parameters("_TransformRigid"))
 
     def test_all_declared_factory_classes_are_creatable(self):
         registered = set()
@@ -38,6 +79,8 @@ class StreamReferenceSchemaTest(unittest.TestCase):
     def test_data_object_factories_and_configuration_defaults(self):
         names = {"BBoxStream", "BytePacketStream", "CANframeStream", "IMUstream", "LineFrame", "MavlinkStream", "PCLframe", "PCLmap",
                  "RGBframe", "RGBDframe", "SharedMemoryFrame", "UGLIDcellStream"}
+        stream_classes = {"BBoxStream", "BytePacketStream", "CANframeStream", "UGLIDcellStream"}
+        guarded_classes = {"RGBframe": "USE_OPENCV", "RGBDframe": "USE_OPENCV", "MavlinkStream": "USE_MAVLINK"}
         self.assertEqual(
             {name for name, entry in self.classes.items() if entry["category"] == "DataObject" and entry["creatable"]},
             names,
@@ -45,16 +88,26 @@ class StreamReferenceSchemaTest(unittest.TestCase):
         for name in names:
             with self.subTest(class_name=name):
                 record, parameters = self.classes[name], self.parameters(name)
-                self.assertEqual(record["baseClasses"], ["DataObjBase"])
+                base = "DataObjStream" if name in stream_classes else "DataObjBase"
+                self.assertEqual(record["baseClasses"], [base])
                 self.assertEqual(record["instanceKind"], "dataObject")
                 self.assertEqual(parameters[("type",)]["default"], "dataObject")
                 self.assertEqual(parameters[("type",)]["type"], "string")
                 self.assertIs(parameters[("bON",)]["default"], True)
                 self.assertIs(parameters[("bLog",)]["default"], False)
-                guards = [["ifdef USE_OPENCV"]] if name in {"RGBframe", "RGBDframe"} else [[]]
+                guards = [["ifdef " + guarded_classes[name]]] if name in guarded_classes else [[]]
                 self.assertEqual(record["buildConditions"], guards)
         self.assertFalse(self.classes["DataObjBase"]["creatable"])
-        for name in ("BBoxStream", "CANframeStream", "IMUstream"):
+        self.assertFalse(self.classes["DataObjStream"]["creatable"])
+        self.assertEqual(self.classes["DataObjStream"]["baseClasses"], ["DataObjBase"])
+        self.assertEqual(self.parameters("DataObjStream"), self.parameters("DataObjBase"))
+        for name in stream_classes:
+            with self.subTest(stream_class=name):
+                parameters = self.parameters(name)
+                for path, parameter in self.parameters("DataObjBase").items():
+                    self.assertEqual(parameters[path], parameter)
+                self.assertNotIn(("thread",), {tuple(c["path"]) for c in self.classes[name]["containers"]})
+        for name in ("BBoxStream", "CANframeStream", "IMUstream", "UGLIDcellStream"):
             self.assertEqual(self.parameters(name)[("nBuf",)]["type"], "integer")
             self.assertEqual(self.parameters(name)[("nBuf",)]["default"], 1000)
         self.assertEqual(self.parameters("BBoxStream")[("vContainerDim",)]["type"], "array")
@@ -89,7 +142,11 @@ class StreamReferenceSchemaTest(unittest.TestCase):
                 self.assertNotIn(("MavlinkStreamOut",), dependencies)
                 self.assertNotIn(("_Mavlink",), dependencies)
         self.assertNotIn(("vRoutings",), self.dependencies("_Mavlink"))
-        self.assertEqual(self.parameters("MavlinkStream")[("nMsgQueue",)]["default"], 1024)
+        queue = self.parameters("MavlinkStream")[("nMsgQueue",)]
+        self.assertEqual(queue["type"], "integer")
+        self.assertEqual(queue["cppType"], "size_t")
+        self.assertEqual(queue["default"], 1024)
+        self.assertNotIn("defaultExpression", queue)
 
     def test_io_threads_are_independently_configurable(self):
         classes = ("_IObase", "_UDP", "_TCPclient", "_SerialPort", "_WebSocket", "_WebSocketServer",
@@ -167,16 +224,31 @@ class StreamReferenceSchemaTest(unittest.TestCase):
             if path[0] == "parameters":
                 self.assertNotIn("default", parameter, path)
 
-    def test_imu_stream_thread_configuration_is_embedded(self):
-        parameters = self.parameters("_IMUbase")
-        containers = {tuple(c["path"]): c["type"] for c in self.classes["_IMUbase"]["containers"]}
-        self.assertEqual(containers[("threadStream",)], "object")
-        self.assertEqual(parameters[("threadStream", "FPS")]["type"], "number")
-        self.assertEqual(parameters[("threadStream", "FPS")]["default"], 30)
-        self.assertEqual(parameters[("threadStream", "bLog")]["type"], "boolean")
-        self.assertIs(parameters[("threadStream", "bLog")]["default"], False)
-        self.assertNotIn(("threadStream", "class"), parameters)
-        self.assertNotIn(("threadStream", "name"), parameters)
+    def test_imu_producers_use_stream_ports_and_embedded_threads(self):
+        self.assertNotIn("_IMUbase", self.classes)
+        producers = {"_Airy": ("thread",), "_Livox2": ("thread",),
+                     "_RealSense": ("thread", "threadPP"), "_Orbbec": ("thread", "threadPP")}
+        for name, threads in producers.items():
+            with self.subTest(class_name=name):
+                parameters = self.parameters(name)
+                dependencies = self.dependencies(name)
+                stream = dependencies[("IMUstreamOut",)]
+                self.assertEqual(parameters[("IMUstreamOut",)]["type"], "string")
+                self.assertEqual(stream["targetClass"], "IMUstream")
+                self.assertEqual(stream["targetKind"], "dataObject")
+                self.assertFalse(stream["multiple"])
+                self.assertFalse(stream.get("required", False))
+                self.assertNotIn(("_IMUbase",), dependencies)
+                containers = {tuple(c["path"]): c["type"] for c in self.classes[name]["containers"]}
+                self.assertNotIn(("threadStream",), containers)
+                self.assertFalse(any(p[0] == "threadStream" for p in parameters))
+                for thread in threads:
+                    self.assertEqual(containers[(thread,)], "object")
+                    self.assertEqual(parameters[(thread, "FPS")]["type"], "number")
+                    self.assertEqual(parameters[(thread, "bLog")]["type"], "boolean")
+                    self.assertIs(parameters[(thread, "bLog")]["default"], False)
+                    self.assertNotIn((thread, "class"), parameters)
+                    self.assertNotIn((thread, "name"), parameters)
 
     def test_optional_stream_links_do_not_block_valid_configurations(self):
         optional = {

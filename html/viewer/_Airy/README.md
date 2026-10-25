@@ -37,8 +37,8 @@ Airy uses its own 1248-byte MSOP/DIFOP formats, 48/96-channel packet models,
 5 mm range units and per-unit angular calibration. The native receiver waits
 for valid DIFOP calibration before publishing points, then splits scans at the
 azimuth wrap and retains per-point capture timestamps. The output is in metres,
-with X forward, Y left and Z up. `vPos` and `vOrt` apply the OpenKAI mounting
-transform. The supplied configuration reserves 200,000 points per frame to
+with X forward, Y left and Z up. The linked `_TransformRigid` instance's `vT` and
+`vR` define the OpenKAI mounting transform. The supplied configuration reserves 200,000 points per frame to
 accommodate dual returns; the manual specifies 10 Hz and a nominal 60 m maximum
 range, with range varying by channel and target reflectivity.
 
@@ -52,9 +52,11 @@ the native decoder supports the documented 48/96-channel layouts.
 
 Every backend schema field is shown in the control panel. Local receiver
 addresses, ports, buffers, timeouts, point limits, distance filters, color,
-timestamps, IMU publication and mounting transform are editable. A change sends
+timestamps and IMU publication are editable. A change sends
 an immediate `setConfig` patch. **Save config** writes the accepted values to
-the original launch JSON. Invalid changes display the backend error and restore
+the publisher's section in the original launch JSON, preserving linked instances'
+configuration. Configure and save the mounting transform separately through its
+`_TransformRigid` instance during integration. Invalid changes display the backend error and restore
 the accepted values. Device status refreshes every two seconds when no field
 is being edited. The IMU samples section shows raw angular velocity in rad/s
 and acceleration in m/s² in the IMU's own axes.

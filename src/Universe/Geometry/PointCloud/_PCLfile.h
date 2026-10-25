@@ -8,13 +8,13 @@
 #ifndef OpenKAI_src_Universe_Geometry_PointCloud_PCLfile_H_
 #define OpenKAI_src_Universe_Geometry_PointCloud_PCLfile_H_
 
-#include "../../_TransformBase.h"
+#include "../../_TransformRigid.h"
 #include "../../../DataObject/PCLframe.h"
 
 namespace kai
 {
 
-	class _PCLfile : public _TransformBase
+	class _PCLfile : public _ModuleBase
 	{
 	public:
 		_PCLfile();
@@ -42,6 +42,7 @@ namespace kai
 		}
 
 	protected:
+		_TransformRigid *m_pTf = nullptr;
 		PCLframe *m_pPCLout = nullptr;
 		vector<string> m_vfName;
 	};

@@ -41,7 +41,8 @@
 			"/topicPath": "path"
 		},
 		"/_PCframe": "pcFrame",
-		"/migration": "The ROS adapter still expects the removed _PCframe module. Its optional point-cloud link remains commented; odometry settings are preserved."
+		"/migration": "The ROS adapter still expects the removed _PCframe module. Its optional point-cloud link remains commented; odometry settings are preserved.",
+		"_TransformRigid": "fastLioTransform"
 	},
 	"pcFrame": {
 		"class": "PCLframe",
@@ -154,5 +155,19 @@
 		"class": "RGBframe",
 		"/migration": "The original window had no compatible image producer. Connect an RGBframe producer before enabling it."
 	},
-	"/migration": "Legacy point storage is now a PCLframe DataObject; data objects have no worker thread."
+	"/migration": "Legacy point storage is now a PCLframe DataObject; data objects have no worker thread.",
+	"fastLioTransform": {
+		"class": "_TransformRigid",
+		"vT": [
+			0.0,
+			0.0,
+			0.0
+		],
+		"vR": [
+			0.0,
+			0.0,
+			0.0,
+			1.0
+		]
+	}
 }
