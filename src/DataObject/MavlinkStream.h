@@ -13,6 +13,7 @@
 #include "Mavlink/MavAttitude.h"
 #include "Mavlink/MavAttitudeQuaternion.h"
 #include "Mavlink/MavBatteryStatus.h"
+#include "Mavlink/MavButtonChange.h"
 #include "Mavlink/MavCommandAck.h"
 #include "Mavlink/MavCommandInt.h"
 #include "Mavlink/MavCommandLong.h"
@@ -130,6 +131,8 @@ namespace kai
 				return &m_attitudeQuaternion;
 			else if constexpr (std::is_same_v<T, MavBatteryStatus>)
 				return &m_batteryStatus;
+			else if constexpr (std::is_same_v<T, MavButtonChange>)
+				return &m_buttonChange;
 			else if constexpr (std::is_same_v<T, MavCommandAck>)
 				return &m_commandAck;
 			else if constexpr (std::is_same_v<T, MavCommandInt>)
@@ -242,6 +245,7 @@ namespace kai
 		MavAttitude m_attitude;
 		MavAttitudeQuaternion m_attitudeQuaternion;
 		MavBatteryStatus m_batteryStatus;
+		MavButtonChange m_buttonChange;
 		MavCommandAck m_commandAck;
 		MavCommandInt m_cmdInt;
 		MavCommandLong m_cmdLong;

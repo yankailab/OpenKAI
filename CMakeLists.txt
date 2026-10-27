@@ -121,6 +121,7 @@ if(USE_MAVLINK)
   src/DataObject/Mavlink/MavAttitude.cpp
   src/DataObject/Mavlink/MavAttitudeQuaternion.cpp
   src/DataObject/Mavlink/MavBatteryStatus.cpp
+  src/DataObject/Mavlink/MavButtonChange.cpp
   src/DataObject/Mavlink/MavCommandAck.cpp
   src/DataObject/Mavlink/MavCommandInt.cpp
   src/DataObject/Mavlink/MavCommandLong.cpp

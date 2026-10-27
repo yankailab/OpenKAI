@@ -15,6 +15,7 @@ namespace kai
 		m_vpMsgRegistry.push_back(&m_attitude);
 		m_vpMsgRegistry.push_back(&m_attitudeQuaternion);
 		m_vpMsgRegistry.push_back(&m_batteryStatus);
+		m_vpMsgRegistry.push_back(&m_buttonChange);
 		m_vpMsgRegistry.push_back(&m_commandAck);
 		m_vpMsgRegistry.push_back(&m_cmdInt);
 		m_vpMsgRegistry.push_back(&m_cmdLong);
