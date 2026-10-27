@@ -1,10 +1,10 @@
-#ifndef OpenKAI_src_Autopilot_FC_ArduPilot__APmav_drive_H_
-#define OpenKAI_src_Autopilot_FC_ArduPilot__APmav_drive_H_
+#ifndef OpenKAI_samples_AProver_LiDAR__AProver_LiDAR_H_
+#define OpenKAI_samples_AProver_LiDAR__AProver_LiDAR_H_
 
-#include "../../../Protocol/_JSONbase.h"
-#include "../../../Navigation/_GeoFence.h"
-#include "../../../Universe/Grid/_SelectableOctGrid.h"
-#include "_APmav_move.h"
+#include <OpenKAI/Protocol/_JSONbase.h>
+#include <OpenKAI/Navigation/_GeoFence.h>
+#include <OpenKAI/Universe/Grid/_SelectableOctGrid.h>
+#include <OpenKAI/Autopilot/FC/ArduPilot/_APmav_move.h>
 
 namespace kai
 {
@@ -25,11 +25,11 @@ namespace kai
 		apDrive_modeAuto = 2,
 	};
 
-	class _APmav_drive : public _APmav_move
+	class _AProver_LiDAR : public _APmav_move
 	{
 	public:
-		_APmav_drive();
-		~_APmav_drive();
+		_AProver_LiDAR();
+		~_AProver_LiDAR();
 
 		virtual bool loadConfig(void) override;
 		bool saveConfig(bool bExport) override;
@@ -48,7 +48,7 @@ namespace kai
 		virtual void updateDrive(void);
 		static void *getUpdate(void *This)
 		{
-			((_APmav_drive *)This)->update();
+			((_AProver_LiDAR *)This)->update();
 			return NULL;
 		}
 

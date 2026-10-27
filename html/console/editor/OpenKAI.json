@@ -3,7 +3,7 @@
   "title": "OpenKAI editor class catalog",
   "description": "Source-derived editor metadata; not a JSON Schema validator. See SCHEMA.md.",
   "generator": "tools/generate-schema.py",
-  "sourceDigest": "9dc65dcf550ab8d14e319a4d33c8969ab5397cc641e247fc02aaeac5288780ee",
+  "sourceDigest": "f71d1c3729cdf613508356a93bb199e254abb67e1f53fb9011b73395832504a8",
   "categories": [
     "Actuator",
     "Actuator/Articulated",
@@ -6681,375 +6681,6 @@
       "configurable": true
     },
     {
-      "name": "_APmav_drive",
-      "category": "Autopilot/FC/ArduPilot",
-      "source": "src/Autopilot/FC/ArduPilot/_APmav_drive.h:28",
-      "baseClasses": [
-        "_APmav_move"
-      ],
-      "parameters": [
-        {
-          "path": [
-            "_APmav_base"
-          ],
-          "type": "string",
-          "declaredIn": "_APmav_move",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_move.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "n",
-          "cppType": "string",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_GeoFence"
-          ],
-          "type": "string",
-          "declaredIn": "_APmav_drive",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_drive.cpp:77",
-          "typeEvidence": "declaration",
-          "cppVariable": "n",
-          "cppType": "string",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_OctreeGrid"
-          ],
-          "type": "string",
-          "declaredIn": "_APmav_drive",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_drive.cpp:72",
-          "typeEvidence": "declaration",
-          "cppVariable": "n",
-          "cppType": "string",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_SelectableOctGrid"
-          ],
-          "type": "string",
-          "declaredIn": "_APmav_drive",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_drive.cpp:71",
-          "typeEvidence": "declaration",
-          "cppVariable": "n",
-          "cppType": "string",
-          "dependency": true
-        },
-        {
-          "path": [
-            "apModeMove"
-          ],
-          "type": "integer",
-          "declaredIn": "_APmav_drive",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_drive.cpp:27",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_apModeMove",
-          "cppType": "int",
-          "default": 0
-        },
-        {
-          "path": [
-            "bLog"
-          ],
-          "type": "boolean",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bLog",
-          "cppType": "bool",
-          "default": false
-        },
-        {
-          "path": [
-            "bON"
-          ],
-          "type": "boolean",
-          "source": "src/Instance/InstanceMgr.cpp:createAll",
-          "declaredIn": "BASE",
-          "extraction": "audited-adapter",
-          "default": true,
-          "description": "false disables this instance; true enables it."
-        },
-        {
-          "path": [
-            "class"
-          ],
-          "type": "string",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:57",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_class",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "iRCservo"
-          ],
-          "type": "integer",
-          "declaredIn": "_APmav_drive",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_drive.cpp:32",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_iRCservo",
-          "cppType": "uint8_t",
-          "default": 6
-        },
-        {
-          "path": [
-            "iRCsteer"
-          ],
-          "type": "integer",
-          "declaredIn": "_APmav_drive",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_drive.cpp:23",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_iRCsteer",
-          "cppType": "uint8_t",
-          "default": 1
-        },
-        {
-          "path": [
-            "iRCthrottle"
-          ],
-          "type": "integer",
-          "declaredIn": "_APmav_drive",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_drive.cpp:24",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_iRCthrottle",
-          "cppType": "uint8_t",
-          "default": 3
-        },
-        {
-          "path": [
-            "name"
-          ],
-          "type": "string",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:56",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_name",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "octGridOccu"
-          ],
-          "type": "number",
-          "declaredIn": "_APmav_drive",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_drive.cpp:28",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_octGridOccu",
-          "cppType": "float",
-          "default": 1
-        },
-        {
-          "path": [
-            "pwmD"
-          ],
-          "type": "number",
-          "declaredIn": "_APmav_drive",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_drive.cpp:22",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_pwmD",
-          "cppType": "float",
-          "default": 500
-        },
-        {
-          "path": [
-            "pwmM"
-          ],
-          "type": "number",
-          "declaredIn": "_APmav_drive",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_drive.cpp:21",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_pwmM",
-          "cppType": "float",
-          "default": 1500
-        },
-        {
-          "path": [
-            "pwmServoOFF"
-          ],
-          "type": "number",
-          "declaredIn": "_APmav_drive",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_drive.cpp:34",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_pwmServoOFF",
-          "cppType": "float",
-          "default": 1500
-        },
-        {
-          "path": [
-            "pwmServoON"
-          ],
-          "type": "number",
-          "declaredIn": "_APmav_drive",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_drive.cpp:33",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_pwmServoON",
-          "cppType": "float",
-          "default": 2000
-        },
-        {
-          "path": [
-            "speed"
-          ],
-          "type": "number",
-          "declaredIn": "_APmav_drive",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_drive.cpp:20",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_speed",
-          "cppType": "float",
-          "default": 0.0
-        },
-        {
-          "path": [
-            "speedGo"
-          ],
-          "type": "number",
-          "declaredIn": "_APmav_drive",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_drive.cpp:29",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_speedGo",
-          "cppType": "float",
-          "default": 0.2
-        },
-        {
-          "path": [
-            "steer"
-          ],
-          "type": "number",
-          "declaredIn": "_APmav_drive",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_drive.cpp:19",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_steer",
-          "cppType": "float",
-          "default": 0.0
-        },
-        {
-          "path": [
-            "steerTurn"
-          ],
-          "type": "number",
-          "declaredIn": "_APmav_drive",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_drive.cpp:30",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_steerTurn",
-          "cppType": "float",
-          "default": 0.2
-        },
-        {
-          "path": [
-            "tOutBtn"
-          ],
-          "type": "integer",
-          "declaredIn": "_APmav_drive",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_drive.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_tOutBtn",
-          "cppType": "uint64_t",
-          "default": 100000000
-        },
-        {
-          "path": [
-            "thread",
-            "FPS"
-          ],
-          "type": "number",
-          "declaredIn": "_Thread",
-          "source": "src/Base/_Thread.cpp:60",
-          "typeEvidence": "declaration",
-          "cppVariable": "FPS",
-          "cppType": "float",
-          "default": 30,
-          "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "thread",
-            "bLog"
-          ],
-          "type": "boolean",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bLog",
-          "cppType": "bool",
-          "default": false,
-          "embeddedClass": "_Thread"
-        }
-      ],
-      "dependencies": [
-        {
-          "path": [
-            "_APmav_base"
-          ],
-          "targetClass": "_APmav_base",
-          "targetKind": "module",
-          "multiple": false,
-          "declaredIn": "_APmav_move",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_move.cpp:59",
-          "required": true,
-          "containers": []
-        },
-        {
-          "path": [
-            "_GeoFence"
-          ],
-          "targetClass": "_GeoFence",
-          "targetKind": "module",
-          "multiple": false,
-          "declaredIn": "_APmav_drive",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_drive.cpp:78",
-          "required": true,
-          "containers": []
-        },
-        {
-          "path": [
-            "_OctreeGrid"
-          ],
-          "targetClass": "_SelectableOctGrid",
-          "targetKind": "module",
-          "multiple": false,
-          "declaredIn": "_APmav_drive",
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_drive.cpp:73",
-          "description": "_SelectableOctGrid is preferred; _OctreeGrid is a legacy fallback.",
-          "containers": []
-        },
-        {
-          "path": [
-            "_SelectableOctGrid"
-          ],
-          "targetClass": "_SelectableOctGrid",
-          "targetKind": "module",
-          "multiple": false,
-          "source": "src/Autopilot/FC/ArduPilot/_APmav_drive.cpp:link",
-          "declaredIn": "_APmav_drive",
-          "extraction": "audited-adapter",
-          "description": "_SelectableOctGrid is preferred; _OctreeGrid is a legacy fallback.",
-          "containers": []
-        }
-      ],
-      "containers": [
-        {
-          "path": [
-            "thread"
-          ],
-          "type": "object"
-        }
-      ],
-      "diagnostics": [],
-      "creatable": true,
-      "instanceKind": "module",
-      "buildConditions": [
-        [
-          "if defined(WITH_ARDUPILOT) && defined(USE_MAVLINK)"
-        ]
-      ],
-      "configurable": true
-    },
-    {
       "name": "_APmav_follow",
       "category": "Autopilot/FC/ArduPilot",
       "source": "src/Autopilot/FC/ArduPilot/_APmav_follow.h:45",
@@ -11035,7 +10666,7 @@
     {
       "name": "MavlinkStream",
       "category": "DataObject",
-      "source": "src/DataObject/MavlinkStream.h:69",
+      "source": "src/DataObject/MavlinkStream.h:70",
       "baseClasses": [
         "DataObjBase"
       ],
@@ -11081,7 +10712,7 @@
           ],
           "type": "integer",
           "declaredIn": "MavlinkStream",
-          "source": "src/DataObject/MavlinkStream.cpp:79",
+          "source": "src/DataObject/MavlinkStream.cpp:80",
           "typeEvidence": "declaration",
           "cppVariable": "nMsgQueue",
           "cppType": "size_t",
@@ -11671,6 +11302,21 @@
       "name": "MavBatteryStatus",
       "category": "DataObject/Mavlink",
       "source": "src/DataObject/Mavlink/MavBatteryStatus.h:15",
+      "baseClasses": [
+        "MavMsgBase"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
+    },
+    {
+      "name": "MavButtonChange",
+      "category": "DataObject/Mavlink",
+      "source": "src/DataObject/Mavlink/MavButtonChange.h:14",
       "baseClasses": [
         "MavMsgBase"
       ],
@@ -15894,7 +15540,7 @@
     {
       "name": "Modules",
       "category": "Instance",
-      "source": "src/Instance/Modules.h:289",
+      "source": "src/Instance/Modules.h:288",
       "baseClasses": [],
       "parameters": [],
       "dependencies": [],
@@ -39809,7 +39455,7 @@
     "sourceFiles": 449,
     "classCount": 215,
     "classDeclarations": 215,
-    "creatableClassCount": 126,
+    "creatableClassCount": 125,
     "factoryClassesWithoutDeclaration": [
       "_TestJSON",
       "_TestWebSocket"
@@ -39847,8 +39493,6 @@
       "src/Autopilot/FC/ArduPilot/_APmav_copter.h",
       "src/Autopilot/FC/ArduPilot/_APmav_depthVision.cpp",
       "src/Autopilot/FC/ArduPilot/_APmav_depthVision.h",
-      "src/Autopilot/FC/ArduPilot/_APmav_drive.cpp",
-      "src/Autopilot/FC/ArduPilot/_APmav_drive.h",
       "src/Autopilot/FC/ArduPilot/_APmav_follow.cpp",
       "src/Autopilot/FC/ArduPilot/_APmav_follow.h",
       "src/Autopilot/FC/ArduPilot/_APmav_land.cpp",
@@ -39907,6 +39551,8 @@
       "src/DataObject/Mavlink/MavAttitudeQuaternion.h",
       "src/DataObject/Mavlink/MavBatteryStatus.cpp",
       "src/DataObject/Mavlink/MavBatteryStatus.h",
+      "src/DataObject/Mavlink/MavButtonChange.cpp",
+      "src/DataObject/Mavlink/MavButtonChange.h",
       "src/DataObject/Mavlink/MavCommandAck.cpp",
       "src/DataObject/Mavlink/MavCommandAck.h",
       "src/DataObject/Mavlink/MavCommandInt.cpp",
@@ -40265,10 +39911,10 @@
       "src/Vision/_VideoFile.h",
       "src/main.cpp"
     ],
-    "configReads": 645,
-    "resolvedReads": 633,
-    "moduleLookups": 140,
-    "resolvedLookups": 135,
+    "configReads": 628,
+    "resolvedReads": 616,
+    "moduleLookups": 138,
+    "resolvedLookups": 133,
     "unresolvedReads": 12,
     "unresolvedLookups": 5,
     "diagnosticsCount": 17,

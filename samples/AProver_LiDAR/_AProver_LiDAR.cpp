@@ -1,17 +1,17 @@
-#include "_APmav_drive.h"
+#include "_AProver_LiDAR.h"
 
 namespace kai
 {
 
-	_APmav_drive::_APmav_drive()
+	_AProver_LiDAR::_AProver_LiDAR()
 	{
 	}
 
-	_APmav_drive::~_APmav_drive()
+	_AProver_LiDAR::~_AProver_LiDAR()
 	{
 	}
 
-	bool _APmav_drive::loadConfig(void)
+	bool _AProver_LiDAR::loadConfig(void)
 	{
 		IF_F(!this->_APmav_move::loadConfig());
 		const json &j = *m_pJ;
@@ -36,7 +36,7 @@ namespace kai
 		return true;
 	}
 
-	bool _APmav_drive::saveConfig(bool bExport)
+	bool _AProver_LiDAR::saveConfig(bool bExport)
 	{
 		IF_F(!_APmav_move::saveConfig(false));
 
@@ -60,7 +60,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _APmav_drive::link(InstanceMgr *pM)
+	bool _AProver_LiDAR::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_APmav_move::link(pM));
 		const json &j = *m_pJ;
@@ -81,13 +81,13 @@ namespace kai
 		return true;
 	}
 
-	bool _APmav_drive::start(void)
+	bool _AProver_LiDAR::start(void)
 	{
 		NULL_F(m_pT);
 		return m_pT->startThread(getUpdate, this);
 	}
 
-	bool _APmav_drive::check(void)
+	bool _AProver_LiDAR::check(void)
 	{
 		NULL_F(m_pOctGrid);
 		NULL_F(m_pGfence);
@@ -95,7 +95,7 @@ namespace kai
 		return this->_APmav_move::check();
 	}
 
-	void _APmav_drive::update(void)
+	void _AProver_LiDAR::update(void)
 	{
 		while (m_pT->bRun())
 		{
@@ -110,12 +110,12 @@ namespace kai
 		}
 	}
 
-	void _APmav_drive::onPause(void)
+	void _AProver_LiDAR::onPause(void)
 	{
 		releaseRCoverride();
 	}
 
-	bool _APmav_drive::updateCtrl(void)
+	bool _AProver_LiDAR::updateCtrl(void)
 	{
 		IF_F(!check());
 
@@ -207,20 +207,20 @@ namespace kai
 		return true;
 	}
 
-	void _APmav_drive::setSteerSpeed(float steer, float spd)
+	void _AProver_LiDAR::setSteerSpeed(float steer, float spd)
 	{
 		m_steer = steer;
 		m_speed = spd;
 	}
 
-	void _APmav_drive::updateDrive(void)
+	void _AProver_LiDAR::updateDrive(void)
 	{
 		setRCchan(m_iRCservo, m_bServoON ? m_pwmServoON : m_pwmServoOFF, false);
 		setRCchan(m_iRCsteer, constrain(m_steer * m_pwmD + m_pwmM, m_pwmM - m_pwmD, m_pwmM + m_pwmD), false);
 		setRCchan(m_iRCthrottle, constrain(m_speed * m_pwmD + m_pwmM, m_pwmM - m_pwmD, m_pwmM + m_pwmD), true); // flash cmd to AP mavlink
 	}
 
-	void _APmav_drive::console(void *pConsole)
+	void _AProver_LiDAR::console(void *pConsole)
 	{
 		NULL_(pConsole);
 		this->_APmav_move::console(pConsole);
@@ -232,7 +232,7 @@ namespace kai
 		pC->addMsg("bServoON = " + i2str(m_bServoON));
 	}
 
-	void _APmav_drive::console(const json &j, void *pJSONbase)
+	void _AProver_LiDAR::console(const json &j, void *pJSONbase)
 	{
 		_JSONbase *pJb = (_JSONbase *)pJSONbase;
 		string cmd;

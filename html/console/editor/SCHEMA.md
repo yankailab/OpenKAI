@@ -126,7 +126,7 @@ A dependency means the owning instance looks up a module or DataObject by name. 
 
 The resulting launch value is `"vGeometry": [{"PCLframeIn": "cloud"}]`. `_ApDrive.motors` uses an object map instead, for example `"motors": {"left": {"_ActuatorBase": "motor"}}`.
 
-`required: true` is emitted only for a clear, immediate unconditional scalar-link failure check. A guard that fails only when a supplied name cannot be resolved does not make an omitted connection required. Its absence does not guarantee an optional link; conditional validation and hardware state remain in C++. `_APmav_drive` supports `_SelectableOctGrid` with `_OctreeGrid` as a legacy fallback, so neither alias is independently marked required. Thread scheduling references describe the source as written; the editor cannot make an embedded `_Thread` factory-creatable.
+`required: true` is emitted only for a clear, immediate unconditional scalar-link failure check. A guard that fails only when a supplied name cannot be resolved does not make an omitted connection required. Its absence does not guarantee an optional link; conditional validation and hardware state remain in C++. Thread scheduling references describe the source as written; the editor cannot make an embedded `_Thread` factory-creatable.
 
 ## Extraction and audit boundaries
 

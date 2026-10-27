@@ -554,11 +554,6 @@ def adapters(records, files, constants, symbol):
         if parameter['path'] == ['vPCLframesIn']:
             parameter['dependency'] = True
             parameter['extraction'] = 'audited-adapter'
-    dep('_APmav_drive',['_SelectableOctGrid'],'_SelectableOctGrid','src/Autopilot/FC/ArduPilot/_APmav_drive.cpp:link')
-    for dependency in records['_APmav_drive']['dependencies']:
-        if dependency['path'] in (['_SelectableOctGrid'],['_OctreeGrid']):
-            dependency.pop('required',None)
-            dependency['description']='_SelectableOctGrid is preferred; _OctreeGrid is a legacy fallback.'
     records['_ROS_fastLio']['_embedded'].append((['node'],'ROS_fastLio'))
     records['_ROS_fastLio']['containers'].append({'path':['node'],'type':'object'})
     param('_ROS_fastLio',['node'],'object','src/ROS/_ROS_fastLio.cpp:loadConfig')

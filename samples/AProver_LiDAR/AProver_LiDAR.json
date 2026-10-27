@@ -1,7 +1,7 @@
 {
 	"APP": {
 		"class": "InstanceMgr",
-		"appName": "apDrive",
+		"appName": "apLiDAR",
 		"bLog": true,
 		"bStdErr": true
 	},
@@ -15,7 +15,7 @@
 			"/serialAP",
 			"/apMavlink",
 			"apBase",
-			"apDrive"
+			"apLiDAR"
 		]
 	},
 	"wsServer": {
@@ -49,7 +49,7 @@
 		"msgFinishSend": "",
 		"msgFinishRecv": "EOJ",
 		"vBASE": [
-			"apDrive",
+			"apLiDAR",
 			"geoFence",
 			"octGrid",
 			"viewer"
@@ -151,8 +151,8 @@
 		},
 		"_TransformRigid": "apBaseTransform"
 	},
-	"apDrive": {
-		"class": "_APmav_drive",
+	"apLiDAR": {
+		"class": "_AProver_LiDAR",
 		"bON": true,
 		"bLog": true,
 		"thread": {

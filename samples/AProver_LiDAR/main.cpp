@@ -1,5 +1,6 @@
-#include <OpenKAI/Instance/InstanceMgr.h>
 #include <csignal>
+#include "../../src/Instance/InstanceMgr.h"
+#include "_AProver_LiDAR.h"
 
 using namespace kai;
 
@@ -32,17 +33,22 @@ int main(int argc, char *argv[])
 	printf("Using JSON file: %s\n", argStr.c_str());
 
 	InstanceMgr *pMgr = new InstanceMgr();
+	// add user app modules
+	_AProver_LiDAR *pAPL = new _AProver_LiDAR();
+
 	if (pMgr == nullptr)
-	{
 		goto exit;
-	}
+
+	if (pAPL == nullptr)
+		goto exit;
+
 
 	signal(SIGINT, signalHandler);
-
 #ifdef USE_GLOG
 	FLAGS_logtostderr = 1;
 	google::InitGoogleLogging(argv[0]);
 #endif
+
 
 	if (!pMgr->loadJsonFiles(argStr))
 	{
@@ -56,6 +62,9 @@ int main(int argc, char *argv[])
 	}
 
 	if (g_stopRequested || !pMgr->createAll())
+		goto exit;
+
+	if (!pMgr->addExternalModule(pAPL, "apLiDAR"))
 		goto exit;
 
 	if (g_stopRequested || !pMgr->initAll())
@@ -81,5 +90,6 @@ exit:
 
 	if (g_stopRequested)
 		printf("\nSIGINT\n");
+
 	return 0;
 }

@@ -80,7 +80,6 @@
 #include "../Autopilot/FC/ArduPilot/_APmav_move.h"
 #include "../Autopilot/FC/ArduPilot/_APmav_relay.h"
 #include "../Autopilot/FC/ArduPilot/_APmav_servo.h"
-#include "../Autopilot/FC/ArduPilot/_APmav_drive.h"
 #ifdef USE_OPENCV
 #include "../Autopilot/FC/ArduPilot/_APmav_depthVision.h"
 #ifdef USE_OPENCV_CONTRIB

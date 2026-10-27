@@ -91,7 +91,6 @@ namespace kai
 		ADD_MODULE(_APmav_move);
 		ADD_MODULE(_APmav_relay);
 		ADD_MODULE(_APmav_servo);
-		ADD_MODULE(_APmav_drive);
 #ifdef USE_OPENCV
 		ADD_MODULE(_APmav_depthVision);
 #ifdef USE_OPENCV_CONTRIB

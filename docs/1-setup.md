@@ -273,7 +273,23 @@ sudo apt-get -y install libunwind-dev libgoogle-glog-dev libevent-dev gsl-bin li
 git clone --depth 1 https://github.com/yankailab/OpenKAI.git
 cd OpenKAI
 mkdir build && cd build
-cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_AS_LIB=ON -DWITH_DEFAULT_MODULES=ON ../
+cmake -DCMAKE_BUILD_TYPE=Release ../
 make all -j$(nproc)
 sudo make install
 ```
+
+The default build creates the OpenKAI shared library. Add `-DBUILD_EXECUTABLE=ON`
+to also build the `OpenKAI` executable for launching configurations in `jsonCfg/`.
+Add `-DBUILD_SAMPLES=ON` to build all samples, each linked to the shared library.
+Both options default to `OFF` and can be enabled independently.
+
+Each sample lives in `samples/<name>/` with its own `main.cpp` and `CMakeLists.txt`:
+
+```cmake
+add_executable(MySample main.cpp)
+target_link_libraries(MySample PRIVATE OpenKAI::OpenKAI)
+```
+
+Sample CMake files are discovered automatically. Executables are written to
+`build/samples/<name>/`, and sample sources can include headers as
+`<OpenKAI/Instance/InstanceMgr.h>` without installing the library first.

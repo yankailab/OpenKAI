@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.18)
 project(OpenKAI VERSION 0.0.1)
 set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "")
 
-option(BUILD_AS_LIB "Build as library" OFF)
-option(BUILD_SHARED_LIBS "Build shared library" ON)
+option(BUILD_EXECUTABLE "Build the OpenKAI executable alongside the shared library" OFF)
+option(BUILD_SAMPLES "Build all sample programs" OFF)
 
 option(USE_CUDA "Use NVIDIA CUDA" OFF)
 option(USE_DYNAMIXEL "Use Dynamixel" OFF)
@@ -81,7 +81,7 @@ set(OpenKAI_include /usr/local/include /usr/include)
 set(OpenKAI_lib pthread uuid Eigen3::Eigen gsl gslcblas m ncurses ssl crypto rt uvc usb-1.0)
 
 # Common
-file(GLOB_RECURSE OpenKAI_cpp src/main.cpp src/Base/*.cpp src/Base/*.cc src/Base/*.c)
+file(GLOB_RECURSE OpenKAI_cpp src/Base/*.cpp src/Base/*.cc src/Base/*.c)
 
 file(GLOB_RECURSE Arithmetic_cpp src/Arithmetic/*.cpp src/Arithmetic/*.cc src/Arithmetic/*.c)
 list(APPEND OpenKAI_cpp ${Arithmetic_cpp})
@@ -308,7 +308,6 @@ if(WITH_ARDUPILOT AND USE_MAVLINK)
   	src/Autopilot/FC/ArduPilot/_APmav_rcChannel.cpp
   	src/Autopilot/FC/ArduPilot/_APmav_relay.cpp
   	src/Autopilot/FC/ArduPilot/_APmav_servo.cpp
-  	src/Autopilot/FC/ArduPilot/_APmav_drive.cpp
   )
   if(USE_OPENCV)
     list(APPEND OpenKAI_cpp
@@ -645,13 +644,6 @@ if(USE_GLOG)
 endif()
 
 if(WITH_SLAM AND USE_GLIM)
-  if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    message(WARNING
-      "GLIM is enabled in Debug: point-cloud processing is unoptimized (-O0) "
-      "and may not keep up with live sensors. For live SLAM with debug symbols, "
-      "use the 'GLIM: build optimized' VSCode task "
-      "or configure with -DCMAKE_BUILD_TYPE=RelWithDebInfo.")
-  endif()
   find_package(glim REQUIRED CONFIG)
   add_definitions(-DUSE_GLIM)
   list(APPEND OpenKAI_lib glim::glim)
@@ -940,26 +932,36 @@ if(USE_CUDA)
   )
 endif()
 
-# Exe or Lib
-if(BUILD_AS_LIB)
-
-  if(USE_CUDA)
-    cuda_add_library(OpenKAI ${OpenKAI_cpp})
-  else()
-    add_library(OpenKAI ${OpenKAI_cpp})
-  endif()
-
+# Always build the framework as a shared library, without an entry point.
+if(USE_CUDA)
+  cuda_add_library(OpenKAI SHARED ${OpenKAI_cpp})
 else()
+  add_library(OpenKAI SHARED ${OpenKAI_cpp})
+endif()
+add_library(OpenKAI::OpenKAI ALIAS OpenKAI)
 
-  if(USE_CUDA)
-    cuda_add_executable(OpenKAI ${OpenKAI_cpp})
-  else()
-    add_executable(OpenKAI ${OpenKAI_cpp})
-  endif()
-
-endif() # build_as_lib
+# Support the installed <OpenKAI/...> header layout before installation too.
+include(GNUInstallDirs)
+file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/include")
+file(CREATE_LINK "${CMAKE_CURRENT_SOURCE_DIR}/src"
+  "${CMAKE_CURRENT_BINARY_DIR}/include/OpenKAI" SYMBOLIC)
+target_include_directories(OpenKAI PUBLIC
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>"
+  "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
+  ${OpenKAI_include})
+target_link_directories(OpenKAI PUBLIC ${OpenKAI_libDir})
+target_compile_features(OpenKAI PUBLIC cxx_std_17)
+# Public headers must use the same feature definitions as the library.
+get_directory_property(OpenKAI_compile_definitions COMPILE_DEFINITIONS)
+target_compile_definitions(OpenKAI PUBLIC ${OpenKAI_compile_definitions})
 
 target_link_libraries(OpenKAI ${OpenKAI_lib})
+
+if(BUILD_EXECUTABLE)
+  add_executable(OpenKAI_executable src/main.cpp)
+  set_target_properties(OpenKAI_executable PROPERTIES OUTPUT_NAME OpenKAI)
+  target_link_libraries(OpenKAI_executable PRIVATE OpenKAI::OpenKAI)
+endif()
 
 if(WITH_UNIVERSE AND USE_MAVLINK)
   add_custom_command(TARGET OpenKAI POST_BUILD
@@ -1005,8 +1007,17 @@ if(USE_ROS)
   ament_package()
 endif()
 
+if(BUILD_SAMPLES)
+  file(GLOB OpenKAI_sample_cmake_files CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/samples/*/CMakeLists.txt")
+  foreach(sample_cmake_file IN LISTS OpenKAI_sample_cmake_files)
+    get_filename_component(sample_dir "${sample_cmake_file}" DIRECTORY)
+    get_filename_component(sample_name "${sample_dir}" NAME)
+    add_subdirectory("${sample_dir}" "samples/${sample_name}")
+  endforeach()
+endif()
+
 # Install
-include(GNUInstallDirs)
 if(WITH_UNIVERSE)
   install(DIRECTORY html/common DESTINATION ${CMAKE_INSTALL_BINDIR}/html)
   install(DIRECTORY html/viewer/_SelectableOctGrid DESTINATION ${CMAKE_INSTALL_BINDIR}/html/viewer)
@@ -1028,6 +1039,11 @@ set_target_properties(OpenKAI PROPERTIES
 
 install(TARGETS OpenKAI
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+
+if(BUILD_EXECUTABLE)
+  install(TARGETS OpenKAI_executable
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+endif()
 
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/src/
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/OpenKAI
