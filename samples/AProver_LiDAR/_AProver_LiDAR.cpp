@@ -184,6 +184,8 @@ namespace kai
 		// m_pAP->setMode(m_apModeMove);
 		// m_pAP->setArm(true);
 
+//		m_pAP->getMavlinkStream()->clComponentArmDisarm(true, 255);
+
 		// move
 		if (m_dMode == apDrive_modeManual)
 		{

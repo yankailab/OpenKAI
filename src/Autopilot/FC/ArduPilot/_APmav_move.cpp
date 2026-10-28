@@ -15,6 +15,9 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::loadConfig());
 
+		jKv(*m_pJ, "mySystemID", m_mySystemID);
+		jKv(*m_pJ, "myComponentID", m_myComponentID);
+
 		m_pRCchan[0] = nullptr;
 		m_pRCchan[1] = &m_rcOverride.chan1_raw;
 		m_pRCchan[2] = &m_rcOverride.chan2_raw;
@@ -44,6 +47,9 @@ namespace kai
 	bool _APmav_move::saveConfig(bool bExport)
 	{
 		IF_F(!_ModuleBase::saveConfig(false));
+
+		(*m_pJ)["mySystemID"] = m_mySystemID;
+		(*m_pJ)["myComponentID"] = m_myComponentID;
 
 		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
@@ -227,7 +233,7 @@ namespace kai
 
 		IF_(!bSendCmd);
 		NULL_(m_pAP);
-		m_pAP->getMavlinkStream()->add<MavRcChannelsOverride>(m_rcOverride);
+		m_pAP->getMavlinkStream()->add<MavRcChannelsOverride>(m_rcOverride, m_mySystemID, m_myComponentID);
 	}
 
 	void _APmav_move::releaseRCoverride(void)
@@ -239,7 +245,7 @@ namespace kai
 		}
 
 		NULL_(m_pAP);
-		m_pAP->getMavlinkStream()->add<MavRcChannelsOverride>(m_rcOverride);
+		m_pAP->getMavlinkStream()->add<MavRcChannelsOverride>(m_rcOverride, m_mySystemID, m_myComponentID);
 	}
 
 	void _APmav_move::console(void *pConsole)

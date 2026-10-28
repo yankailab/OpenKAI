@@ -165,6 +165,7 @@ namespace kai
 #endif
 
 #ifdef WITH_NET
+		ADD_MODULE(_HttpServer);
 		ADD_MODULE(_Uploader);
 #endif
 

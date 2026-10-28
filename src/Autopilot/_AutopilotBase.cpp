@@ -39,7 +39,6 @@ namespace kai
 		string tfName;
 		jKv(*m_pJ, "_TransformRigid", tfName);
 		m_pTf = dynamic_cast<_TransformRigid *>(static_cast<_ModuleBase *>(pM->findModule(tfName)));
-		IF_Le_F(!tfName.empty() && !m_pTf, "_TransformRigid not found: " + tfName);
 
 		return true;
 	}
@@ -122,15 +121,26 @@ namespace kai
 
 		_Console *pC = (_Console *)pConsole;
 		pC->addMsg("-State-", 1);
-		pC->addMsg("\tARM:", getArm());
+		const char *armMsg = "\tARM: unknown";
+		switch (getArm())
+		{
+		case apArm_disarm:
+			armMsg = "\tARM: disarmed";
+			break;
+		case apArm_arm:
+			armMsg = "\tARM: armed";
+			break;
+		default:
+			break;
+		}
+		pC->addMsg(armMsg, 1);
 
 		pC->addMsg("-Mode-", 1);
 		pC->addMsg("\tapMode:" + i2str(getMode()), 1);
 
 		pC->addMsg("Global Pos-----------------------", 1);
-		const Vector3d translation = m_pTf ? m_pTf->getTranslation() : Vector3d::Zero();
-		pC->addMsg("\tlat=\t" + lf2str(translation.x(), 7) + "\tlon=\t" + lf2str(translation.y(), 7), 1);
-		pC->addMsg("\talt=\t" + lf2str(translation.z(), 2) + "\trelAlt=\t" + lf2str(m_rAlt, 2), 1);
+		pC->addMsg("\tlat=\t" + lf2str(m_vPosGlobal.x(), 7) + "\tlon=\t" + lf2str(m_vPosGlobal.y(), 7), 1);
+		pC->addMsg("\talt=\t" + lf2str(m_vPosGlobal.z(), 2) + "\trelAlt=\t" + lf2str(m_rAlt, 2), 1);
 
 		pC->addMsg("-Home Pos-", 1);
 		pC->addMsg("\tlat=\t" + f2str(m_vHomePos.x(), 7) + "\tlon=\t" + f2str(m_vHomePos.y(), 7) + "\talt=\t" + f2str(m_vHomePos.z(), 7), 1);

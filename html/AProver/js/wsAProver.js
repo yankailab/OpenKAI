@@ -77,7 +77,7 @@ function sendControl() {
     }
 
     try {
-        wsSocket.send(JSON.stringify({ cmd: 'ctrlBtn', module: 'apDrive', btn: activeControl.btn }) + strEOJ);
+        wsSocket.send(JSON.stringify({ cmd: 'ctrlBtn', module: 'apRover', btn: activeControl.btn }) + strEOJ);
         return true;
     } catch (error) {
         stopControl();
@@ -94,7 +94,7 @@ function onStartClick() {
     }
 
     try {
-        wsSocket.send(JSON.stringify({ cmd: 'startAuto', module: 'apDrive' }) + strEOJ);
+        wsSocket.send(JSON.stringify({ cmd: 'startAuto', module: 'apRover' }) + strEOJ);
         $('#controlFeedback').textContent = 'Auto mode start command sent.';
     } catch (error) {
         $('#controlFeedback').textContent = 'Could not send auto mode start command.';
@@ -111,7 +111,7 @@ function onCutterClick(bServoON) {
     }
 
     try {
-        wsSocket.send(JSON.stringify({ cmd: 'setServo', module: 'apDrive', bServoON }) + strEOJ);
+        wsSocket.send(JSON.stringify({ cmd: 'setServo', module: 'apRover', bServoON }) + strEOJ);
         const state = bServoON ? 'ON' : 'OFF';
         feedback.textContent = isJapanese ? `カッター${state}コマンドを送信しました。` : `Cutter ${state} command sent.`;
     } catch (error) {

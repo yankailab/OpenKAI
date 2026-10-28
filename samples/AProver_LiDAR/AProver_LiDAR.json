@@ -1,22 +1,29 @@
 {
 	"APP": {
 		"class": "InstanceMgr",
-		"appName": "apLiDAR",
+		"appName": "apRover",
 		"bLog": true,
 		"bStdErr": true
 	},
 	"console": {
 		"class": "_Console",
-		"bON": false,
+		"bON": true,
 		"thread": {
 			"FPS": 10
 		},
 		"vBASE": [
-			"/serialAP",
-			"/apMavlink",
 			"apBase",
-			"apLiDAR"
+			"apRover"
 		]
+	},
+
+
+	"httpServer": {
+		"class": "_HttpServer",
+		"bON": true,
+		"host": "127.0.0.1",
+		"port": 8081,
+		"webRoot": "html"
 	},
 	"wsServer": {
 		"BytePacketStreamIn": "wsServer_tx",
@@ -49,12 +56,14 @@
 		"msgFinishSend": "",
 		"msgFinishRecv": "EOJ",
 		"vBASE": [
-			"apLiDAR",
+			"apRover",
 			"geoFence",
 			"octGrid",
 			"viewer"
 		]
 	},
+
+
 	"serialAP": {
 		"BytePacketStreamIn": "serialAP_tx",
 		"BytePacketStreamOut": "serialAP_rx",
@@ -88,6 +97,8 @@
 		"bW2R": false,
 		"bWbroadcast": false
 	},
+
+
 	"apMavlink": {
 		"class": "_Mavlink",
 		"MavlinkStream": "apMavlink_stream",
@@ -105,7 +116,7 @@
 		"iMavComm": 0
 	},
 	"apBase": {
-		"class": "_APmav_base",
+		"class": "_APmav_rover",
 		"bON": true,
 		"thread": {
 			"FPS": 10
@@ -124,13 +135,17 @@
 				"id": 30,
 				"tInt": 0.5
 			},
+			"buttonChange": {
+				"id": 257,
+				"tInt": 0.2
+			},
 			"gpsRawINT": {
 				"id": 24,
 				"tInt": 1
 			},
 			"localPosition": {
 				"id": 32,
-				"tInt": 0.6
+				"tInt": 0.5
 			},
 			"globalPosition": {
 				"id": 33,
@@ -151,7 +166,9 @@
 		},
 		"_TransformRigid": "apBaseTransform"
 	},
-	"apLiDAR": {
+
+
+	"apRover": {
 		"class": "_AProver_LiDAR",
 		"bON": true,
 		"bLog": true,
@@ -183,18 +200,8 @@
 		"_APmav_base": "apBase",
 		"estD": 1
 	},
-	"pcFile": {
-		"class": "_PCLfile",
-		"bON": false,
-		"bLog": true,
-		"thread": {
-			"FPS": 1
-		},
-		"vfName": [
-			"data/PointCloud/StanfordBunny/bun000.ply"
-		],
-		"PCLframeOut": "pcFilePoints"
-	},
+
+
 	"viewCam": {
 		"class": "_OCVwindow",
 		"bON": false,
@@ -238,6 +245,8 @@
 		"type": "dataObject",
 		"class": "PCLframe"
 	},
+
+
 	"octGrid": {
 		"class": "_SelectableOctGrid",
 		"thread": {
@@ -254,7 +263,6 @@
 		"dTexpirePCL": 500000000,
 		"nPminBuild": 100,
 		"vPCLframesIn": [
-			"pcFilePoints",
 			"scPC"
 		]
 	},
@@ -297,12 +305,6 @@
 				"nP": 400000,
 				"nL": 0,
 				"matPointSize": 2
-			},
-			{
-				"PCLframeIn": "pcFilePoints",
-				"nP": 400000,
-				"nL": 0,
-				"matPointSize": 2
 			}
 		],
 		"vSelectableOctGrid": [
@@ -318,6 +320,9 @@
 			}
 		]
 	},
+
+
+	
 	"pcFilePoints": {
 		"type": "dataObject",
 		"class": "PCLframe"

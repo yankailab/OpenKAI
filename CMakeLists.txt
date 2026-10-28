@@ -202,13 +202,18 @@ if(WITH_ALL_MODULES)
   set(WITH_VISION ON CACHE BOOL "" FORCE)
 endif()
 
+# HTTP is shared by standalone servers and the web viewers.
+if(WITH_NET OR WITH_UNIVERSE)
+  find_package(Boost 1.70 CONFIG REQUIRED)
+  add_definitions(-DBOOST_ERROR_CODE_HEADER_ONLY)
+  list(APPEND OpenKAI_include ${Boost_INCLUDE_DIRS})
+  list(APPEND OpenKAI_cpp src/Net/HttpServer.cpp)
+endif()
+
 # Optional modules
 if(WITH_UNIVERSE)
-  find_package(Boost 1.70 CONFIG REQUIRED)
-  add_definitions(-DWITH_UNIVERSE -DBOOST_ERROR_CODE_HEADER_ONLY)
-  list(APPEND OpenKAI_include ${Boost_INCLUDE_DIRS})
+  add_definitions(-DWITH_UNIVERSE)
   list(APPEND OpenKAI_cpp
-	src/Net/HttpServer.cpp
 	src/IO/WebSocketStream.cpp
 	src/UI/Viewer/Web/_WebSelectableOctGrid.cpp
 	src/UI/Viewer/SelectableOctGridSources.cpp
@@ -461,6 +466,7 @@ endif()
 if(WITH_NET)
   add_definitions(-DWITH_NET)
   list(APPEND OpenKAI_cpp
+	src/Net/_HttpServer.cpp
 	src/Net/base64.cpp
 	src/Net/_Uploader.cpp
 	src/Net/HttpClient.cpp

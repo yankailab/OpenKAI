@@ -61,19 +61,20 @@ int main(int argc, char *argv[])
 		freopen("/dev/null", "w", stderr);
 	}
 
-	if (g_stopRequested || !pMgr->createAll())
+
+	if (!pMgr->createAll())
 		goto exit;
 
-	if (!pMgr->addExternalModule(pAPL, "apLiDAR"))
+	if (!pMgr->addExternalModule(pAPL, "apRover"))
 		goto exit;
 
-	if (g_stopRequested || !pMgr->initAll())
+	if (!pMgr->initAll())
 		goto exit;
 
-	if (g_stopRequested || !pMgr->linkAll())
+	if (!pMgr->linkAll())
 		goto exit;
 
-	if (g_stopRequested || !pMgr->startAll())
+	if (!pMgr->startAll())
 		goto exit;
 
 	while (!g_stopRequested && !pMgr->bComplete())

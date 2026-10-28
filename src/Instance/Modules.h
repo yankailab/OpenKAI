@@ -156,6 +156,7 @@
 #endif
 
 #ifdef WITH_NET
+#include "../Net/_HttpServer.h"
 #include "../Net/_Uploader.h"
 #endif
 

@@ -68,7 +68,9 @@ namespace kai
 	protected:
 		_APmav_base *m_pAP = nullptr;
 
-		mavlink_rc_channels_override_t m_rcOverride;
+		uint8_t m_mySystemID = 255;
+		uint8_t m_myComponentID = MAV_COMP_ID_MISSIONPLANNER;
+		mavlink_rc_channels_override_t m_rcOverride{};
 		uint16_t *m_pRCchan[19] = {};
 	};
 

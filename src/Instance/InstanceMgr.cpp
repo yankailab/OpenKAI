@@ -300,14 +300,17 @@ namespace kai
 	bool InstanceMgr::addExternalModule(void *pModule, const string &name)
 	{
 		NULL_F(pModule);
+
 		IF_Le_F(findModule(name), "Module already existed: " + name);
-		IF_Le_F(!findJson(name), "Module not found in JSON: " + name);
+		JsonCfg *pJc = findJsonCfg(name);
+		IF_Le_F(!pJc, "Module not found in JSON: " + name);
 
 		_ModuleBase *pM = static_cast<_ModuleBase *>(pModule);
 		pM->setName(name);
+		pM->setConfig(pJc, jK(*pJc->getJson(), name));
 		m_vModules.push_back(pM);
-		LOG_I("Added: " + name);
 
+		LOG_I("Added: " + name);
 		return true;
 	}
 

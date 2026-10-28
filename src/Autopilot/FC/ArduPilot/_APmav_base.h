@@ -51,9 +51,6 @@ namespace kai
 		virtual MavlinkStream *getMavlinkStream(void);
 
 
-
-
-
 		// gimbal, payloads
 		virtual void setMount(AP_MOUNT &mount);
 
@@ -93,10 +90,6 @@ namespace kai
 
 		int32_t m_customMode = -1;
 		int32_t m_customModeFC = -1;
-
-
-
-
 
 
 		int8_t m_gpsFixType = -1;
