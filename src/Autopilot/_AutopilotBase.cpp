@@ -77,11 +77,13 @@ namespace kai
 	bool _AutopilotBase::setMode(AP_MODE m)
 	{
 		m_mode = m;
+		return true;
 	}
 
 	bool _AutopilotBase::setArm(AP_ARM a)
 	{
 		m_arm = a;
+		return true;
 	}
 
 	AP_MODE _AutopilotBase::getMode(void)

@@ -19,14 +19,14 @@ int main(int argc, char *argv[])
 {
 	if (argc < 2)
 	{
-		printf("Usage: ./OpenKAI [JSON file]\n");
+		printf("Usage: ./AProver_LiDAR [JSON file]\n");
 		return 0;
 	}
 
 	string argStr(argv[1]);
 	if (argStr == "-h" || argStr == "--help")
 	{
-		printf("Usage: ./OpenKAI [JSON file]\n");
+		printf("Usage: ./AProver_LiDAR [JSON file]\n");
 		return 0;
 	}
 
@@ -83,6 +83,9 @@ int main(int argc, char *argv[])
 	}
 
 exit:
+	// Queue neutral drive and cutter-off while the MAVLink/IO workers are still alive.
+	if (pAPL)
+		pAPL->stop();
 	if (pMgr)
 	{
 		pMgr->stopAll();

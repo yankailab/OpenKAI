@@ -93,6 +93,8 @@ namespace kai
 		// Restoring a different root clears occupancy before publishing its header.
 		bool saveConfig(bool bExport) override;
 		virtual const vector<UUID128> &getSelectedCells(void);
+		// Checks live counts while holding both the grid and selection locks.
+		virtual bool bSelectedOccupied(float threshold);
 
 		// Cell snapshots are the grid's only stream output.
 		virtual int get(OCTGRID_CELLS *pOut, uint64_t tExpire = 0, size_t nMaxCells = SIZE_MAX);

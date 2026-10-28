@@ -223,6 +223,21 @@ namespace kai
 		return m_vSelectedCells;
 	}
 
+	bool _SelectableOctGrid::bSelectedOccupied(float threshold)
+	{
+		std::lock_guard<std::mutex> gridLock(m_gridMutex);
+		std::lock_guard<std::mutex> selectionLock(m_cellsMutex);
+		const uint64_t now = getTns();
+		const uint64_t expire = m_dTexpireCell > 0 && now > m_dTexpireCell ? now - m_dTexpireCell : 0;
+		for (const auto &id : m_vSelectedCells)
+		{
+			const auto *cell = getCell(id);
+			if (cell && !bExpired(cell->m_tStamp, expire) && cell->m_nP > threshold)
+				return true;
+		}
+		return false;
+	}
+
 	void _SelectableOctGrid::updateDrawAssets(void)
 	{
 		IF_(!check());

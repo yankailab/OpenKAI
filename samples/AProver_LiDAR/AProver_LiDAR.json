@@ -7,7 +7,7 @@
 	},
 	"console": {
 		"class": "_Console",
-		"bON": true,
+		"bON": false,
 		"thread": {
 			"FPS": 10
 		},
@@ -20,7 +20,7 @@
 	"httpServer": {
 		"class": "_HttpServer",
 		"bON": true,
-		"host": "127.0.0.1",
+		"host": "0.0.0.0",
 		"port": 8081,
 		"webRoot": "html"
 	},
@@ -57,6 +57,7 @@
 		"vBASE": [
 			"apRover",
 			"geoFence",
+			"scepter",
 			"octGrid",
 			"viewer"
 		]
@@ -182,8 +183,12 @@
 		"iRCsteer": 1,
 		"iRCthrottle": 3,
 		"tOutBtn": 200000000,
+		"apModeMove": 0,
+		"tOutNav": 2000000000,
 		"speedGo": 0.5,
 		"steerTurn": 0.5,
+		"bumperTurnDeg": 60,
+		"hdgToleranceDeg": 5,
 		"octGridOccu": 10,
 		"iRCservo": 6,
 		"pwmServoON": 2000,
@@ -195,9 +200,10 @@
 		"thread": {
 			"FPS": 5
 		},
-		"_JSONbase": "",
-		"_APmav_base": "apBase",
-		"estD": 1
+		"_JSONbase": "wsConsole",
+		"type": 1,
+		"estD": 1,
+		"vPolygon": []
 	},
 
 
@@ -210,7 +216,7 @@
 		"bFullScreen": 0,
 		"RGBframeIn": "camRGB"
 	},
-	"cam": {
+	"scepter": {
 		"class": "_Scepter",
 		"bON": true,
 		"bLog": true,
@@ -248,9 +254,11 @@
 
 	"octGrid": {
 		"class": "_SelectableOctGrid",
+		"bON": true,
 		"thread": {
 			"FPS": 10
 		},
+		"vPorigin": [0, 0, 0],
 		"vRootCellSize": [
 			5,
 			5,
@@ -261,12 +269,15 @@
 		"dTexpireCell": 300000000,
 		"dTexpirePCL": 500000000,
 		"nPminBuild": 100,
+		"vSelectedCells": [],
 		"vPCLframesIn": [
 			"scPC"
 		]
 	},
 	"viewer": {
 		"class": "_WebSelectableOctGrid",
+		"webRoot": "html/viewer/_SelectableOctGrid",
+		"bON": true,
 		"thread": {
 			"FPS": 30
 		},
@@ -316,6 +327,35 @@
 					1
 				],
 				"_SelectableOctGrid": "octGrid"
+			}
+		]
+	},
+	"scepterViewer": {
+		"class": "_WebGeometry",
+		"webRoot": "html/viewer/_Scepter",
+		"bON": true,
+		"thread": {
+			"FPS": 30
+		},
+		"host": "0.0.0.0",
+		"port": 8082,
+		"nClientMax": 8,
+		"nPbuf": 400000,
+		"nLbuf": 0,
+		"dTexpire": 500000000,
+		"bAutoBound": true,
+		"bShowGrid": true,
+		"vCamLookAt": [0, 0, 0],
+		"vCamEye": [0, -1, -4],
+		"vCamUp": [0, -1, 0],
+		"camFov": 70,
+		"vCamNF": [0.01, 1000000],
+		"vGeometry": [
+			{
+				"PCLframeIn": "scPC",
+				"nP": 400000,
+				"nL": 0,
+				"matPointSize": 2
 			}
 		]
 	},

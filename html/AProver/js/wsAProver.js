@@ -7,7 +7,15 @@ window.onload = function () {
     bindControlButton('#btnLeft', 'L', 'Left');
     bindControlButton('#btnRight', 'R', 'Right');
     bindControlButton('#btnBack', 'B', 'Backward');
-    bindControlButton('#btnStop', 'S', 'STOP');
+    $('#btnStop').addEventListener('pointerdown', event => {
+        if (event.button !== 0) return;
+        event.preventDefault();
+        onStopClick();
+    });
+    // Keyboard and assistive activation do not produce a pointerdown event.
+    $('#btnStop').addEventListener('click', event => {
+        if (event.detail === 0) onStopClick();
+    });
     $('#btnStart').addEventListener('click', onStartClick);
     $('#btnCutterOn').addEventListener('click', () => onCutterClick(1));
     $('#btnCutterOff').addEventListener('click', () => onCutterClick(0));
@@ -68,16 +76,16 @@ function stopControl() {
     $('#controlFeedback').textContent = 'Control released. No commands being sent.';
 }
 
-function sendControl() {
-    if (!activeControl) return false;
-    if (typeof wsSocket === 'undefined' || wsSocket.readyState !== WebSocket.OPEN) {
+function sendControl(btn = activeControl?.btn) {
+    if (!btn) return false;
+    if (!wsSocket || wsSocket.readyState !== WebSocket.OPEN) {
         stopControl();
         $('#controlFeedback').textContent = 'Rover disconnected. No command sent.';
         return false;
     }
 
     try {
-        wsSocket.send(JSON.stringify({ cmd: 'ctrlBtn', module: 'apRover', btn: activeControl.btn }) + strEOJ);
+        wsSocket.send(JSON.stringify({ cmd: 'ctrlBtn', module: 'apRover', btn }) + strEOJ);
         return true;
     } catch (error) {
         stopControl();
@@ -86,9 +94,14 @@ function sendControl() {
     }
 }
 
+function onStopClick() {
+    stopControl();
+    if (sendControl('S')) $('#controlFeedback').textContent = 'STOP command sent.';
+}
+
 function onStartClick() {
     stopControl();
-    if (typeof wsSocket === 'undefined' || wsSocket.readyState !== WebSocket.OPEN) {
+    if (!wsSocket || wsSocket.readyState !== WebSocket.OPEN) {
         $('#controlFeedback').textContent = 'Rover disconnected. No command sent.';
         return;
     }
@@ -105,7 +118,7 @@ function onStartClick() {
 function onCutterClick(bServoON) {
     const feedback = $('#cutterFeedback');
     const isJapanese = document.documentElement.lang === 'ja';
-    if (typeof wsSocket === 'undefined' || wsSocket.readyState !== WebSocket.OPEN) {
+    if (!wsSocket || wsSocket.readyState !== WebSocket.OPEN) {
         feedback.textContent = isJapanese ? 'ローバーが未接続のため、コマンドを送信できません。' : 'Rover disconnected. No command sent.';
         return;
     }
@@ -119,14 +132,22 @@ function onCutterClick(bServoON) {
     }
 }
 
-function cmdHandler(event) {
-    $('#cmdState').value = (event.data + "\n\n" + $('#cmdState').value).slice(0, 12000);
-
-    const jCmd = JSON.parse(event.data);
+function handleCmd(jCmd) {
     if (jCmd.cmd == 'geoFence') {
         updateRobotPosition(jCmd.vP);
         updateGeoFenceOverlay(jCmd);
     } else if (jCmd.cmd == 'loadGeoFence') {
         loadGeoFencePolygon(jCmd);
+    } else if (jCmd.cmd == 'setGeoFence') {
+        $('#selectionStatus').textContent = jCmd.bSuccess ? 'Geofence saved.' : 'Could not save geofence.';
+    } else if (jCmd.cmd == 'startAuto') {
+        $('#controlFeedback').textContent = jCmd.bSuccess ? 'Auto mode started.' :
+            (jCmd.error || 'Auto mode rejected. Check the emergency button, saved fence and GPS heading.');
+    } else if (jCmd.cmd == 'ctrlBtn' && !jCmd.bSuccess) {
+        stopControl();
+        $('#controlFeedback').textContent = jCmd.error || 'Control rejected. Check the emergency button.';
+    } else if (jCmd.cmd == 'setServo') {
+        $('#cutterFeedback').textContent = jCmd.bSuccess ? 'Cutter command accepted.' :
+            (jCmd.error || 'Cutter command rejected. Check the emergency button.');
     }
 };

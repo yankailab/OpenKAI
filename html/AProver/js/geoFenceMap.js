@@ -133,7 +133,7 @@ function clearAll() {
 }
 
 function loadPolygon() {
-    if (typeof wsSocket === 'undefined' || wsSocket.readyState !== WebSocket.OPEN) {
+    if (!wsSocket || wsSocket.readyState !== WebSocket.OPEN) {
         selectionStatusEl.textContent = 'Rover disconnected. Could not load geofence.';
         return;
     }
@@ -185,6 +185,11 @@ function sendPolygon() {
         return;
     }
 
+    if (!wsSocket || wsSocket.readyState !== WebSocket.OPEN) {
+        selectionStatusEl.textContent = 'Rover disconnected. Could not save geofence.';
+        return;
+    }
+
     var cmd = {
         cmd: 'setGeoFence',
         module: 'geoFence',
@@ -192,10 +197,12 @@ function sendPolygon() {
         vPolygon: getCoordinateArray()
     };
 
-    cmdStr = JSON.stringify(cmd) + strEOJ;
-    wsSocket.send(cmdStr);
-
-//    alert(JSON.stringify(cmdStr, null, 2));
+    try {
+        wsSocket.send(JSON.stringify(cmd) + strEOJ);
+        selectionStatusEl.textContent = 'Saving geofence…';
+    } catch (error) {
+        selectionStatusEl.textContent = 'Could not send geofence save command.';
+    }
 }
 
 // Click map to add a vertex
