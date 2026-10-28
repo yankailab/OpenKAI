@@ -52,7 +52,7 @@ namespace kai
 
 			updateApMavRecv();
 
-//			updateApMavSend();
+			updateApMavSend();
 		}
 	}
 

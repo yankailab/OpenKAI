@@ -49,6 +49,12 @@ namespace kai
 
 		// Mavlink
 		virtual MavlinkStream *getMavlinkStream(void);
+		virtual int getMyType(void);
+		virtual uint8_t getMySysID(void);
+		virtual uint8_t getMyComID(void);
+		virtual uint8_t getTargetSysID(void);
+		virtual uint8_t getTargetComID(void);
+
 
 
 		// gimbal, payloads
@@ -74,10 +80,10 @@ namespace kai
 
 	protected:
 		MavlinkStream *m_pMavStream = nullptr;
-		int m_myType = MAV_TYPE_GCS;
 
-		uint8_t m_mySysID = 0;
-		uint8_t m_myComID = 0;
+		int m_myType = MAV_TYPE_GCS;
+		uint8_t m_mySysID = 255;
+		uint8_t m_myComID = MAV_COMP_ID_MISSIONPLANNER;
 		uint8_t m_targetSysID = 0;
 		uint8_t m_targetComID = 0;
 

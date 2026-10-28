@@ -58,12 +58,9 @@ namespace kai
 
 		BytePacketStream *m_pBpStreamOut = nullptr;	// StreamOut: byte packets to be written to IO
 
-		int m_mySystemID = 255;
-		int m_myComponentID = MAV_COMP_ID_MISSIONPLANNER;
-		int m_myType = MAV_TYPE_GCS;
-		int m_devSystemID = -1;
-		int m_devComponentID = -1;
-		int m_devType = 0;
+		// device filter
+		uint8_t m_devSysID = 0;
+		uint8_t m_devComID = 0;
 	};
 
 }

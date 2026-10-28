@@ -134,7 +134,7 @@ namespace kai
 		if (auto *pM = m_pMavStream->get<MavGlobalPositionINT>(); pM && pM->bValid())
 		{
 			const auto &msg = pM->get();
-			m_vPosGlobal = Vector3d(msg.lat * 1e-7, msg.lon * 1e-7, msg.alt * 1e-3);
+			m_vPosGlobal = Vector4d(msg.lat * 1e-7, msg.lon * 1e-7, msg.alt * 1e-3, msg.hdg * 1e-1);
 			m_rAlt = ((float)(msg.relative_alt)) * 1e-3;
 		}
 
@@ -153,9 +153,9 @@ namespace kai
 		if (auto *pM = m_pMavStream->get<MavHomePosition>(); pM && pM->bValid())
 		{
 			const auto &msg = pM->get();
-			m_vHomePos.x() = ((double)(msg.latitude)) * 1e-7;
-			m_vHomePos.y() = ((double)(msg.longitude)) * 1e-7;
-			m_vHomePos.z() = ((double)(msg.altitude)) * 1e-3;
+			m_vPosHome.x() = ((double)(msg.latitude)) * 1e-7;
+			m_vPosHome.y() = ((double)(msg.longitude)) * 1e-7;
+			m_vPosHome.z() = ((double)(msg.altitude)) * 1e-3;
 		}
 		else
 		{
@@ -268,6 +268,31 @@ namespace kai
 	MavlinkStream *_APmav_base::getMavlinkStream(void)
 	{
 		return m_pMavStream;
+	}
+
+	int _APmav_base::getMyType(void)
+	{
+		return m_myType;
+	}
+
+	uint8_t _APmav_base::getMySysID(void)
+	{
+		return m_mySysID;
+	}
+
+	uint8_t _APmav_base::getMyComID(void)
+	{
+		return m_myComID;
+	}
+
+	uint8_t _APmav_base::getTargetSysID(void)
+	{
+		return m_targetSysID;
+	}
+
+	uint8_t _APmav_base::getTargetComID(void)
+	{
+		return m_targetComID;
 	}
 
 	void _APmav_base::console(void *pConsole)

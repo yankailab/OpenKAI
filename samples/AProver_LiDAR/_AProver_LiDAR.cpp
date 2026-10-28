@@ -156,11 +156,10 @@ namespace kai
 		bool bFenceBreach = false;
 		if (m_pGfence)
 		{
-			// Vector4d vPos = m_pAP->getGlobalPos();
-			// float hdg = m_pAP->getHdg();
-			// m_pGfence->setPosHdg(Vector2d(vPos.x(), vPos.y()), hdg);
+			Vector4d vPos = m_pAP->getPosGlobal();
+			m_pGfence->setPosHdg(Vector2d(vPos.x(), vPos.y()), vPos.w());
 
-			// bFenceBreach = m_pGfence->bBreach();
+			bFenceBreach = m_pGfence->bBreach();
 		}
 
 		// stop in Standby mode
@@ -171,20 +170,14 @@ namespace kai
 		}
 
 		// check AP mode and arming
-		// if (m_pAP->getMode() == m_apModeMove)
-		// {
-		// 	if (!m_pAP->bArmed())
-		// 		m_pAP->setArm(true);
-		// }
-		// else
-		// {
-		// 	m_pAP->setMode(m_apModeMove);
-		// }
-
-		// m_pAP->setMode(m_apModeMove);
-		// m_pAP->setArm(true);
-
-//		m_pAP->getMavlinkStream()->clComponentArmDisarm(true, 255);
+		if (m_pAP->getMode() == m_apModeMove)
+		{
+			m_pAP->setArm(apArm_arm);
+		}
+		else
+		{
+			m_pAP->setCustomMode(AP_ROVER_MANUAL);
+		}
 
 		// move
 		if (m_dMode == apDrive_modeManual)
@@ -213,6 +206,18 @@ namespace kai
 	{
 		m_steer = steer;
 		m_speed = spd;
+	}
+
+	void _AProver_LiDAR::updateButton(void)
+	{
+		IF_(!check());
+
+		if (auto *pM = m_pAP->getMavlinkStream()->get<MavButtonChange>(); pM && pM->bValid())
+		{
+			const auto &msg = pM->get();
+			m_bEmergencyBtn = (msg.state & (1u << 0)) != 0;
+			m_bBumper = (msg.state & (1u << 1)) != 0;
+		}
 	}
 
 	void _AProver_LiDAR::updateDrive(void)
@@ -297,7 +302,7 @@ namespace kai
 		{
 			const json *servoON = jK(j, "bServoON");
 			const bool bSuccess = servoON && (servoON->is_boolean() ||
-				(servoON->is_number_integer() && (*servoON == 0 || *servoON == 1)));
+											  (servoON->is_number_integer() && (*servoON == 0 || *servoON == 1)));
 			if (bSuccess)
 				m_bServoON = servoON->is_boolean() ? servoON->get<bool>() : *servoON == 1;
 

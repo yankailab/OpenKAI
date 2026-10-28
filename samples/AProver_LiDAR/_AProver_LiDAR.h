@@ -5,6 +5,7 @@
 #include <OpenKAI/Navigation/_GeoFence.h>
 #include <OpenKAI/Universe/Grid/_SelectableOctGrid.h>
 #include <OpenKAI/Autopilot/FC/ArduPilot/_APmav_move.h>
+#include <OpenKAI/Autopilot/FC/ArduPilot/_APmav_rover.h>
 
 namespace kai
 {
@@ -44,6 +45,7 @@ namespace kai
 
 	protected:
 		virtual void onPause(void);
+		virtual void updateButton(void);
 		virtual bool updateCtrl(void);
 		virtual void updateDrive(void);
 		static void *getUpdate(void *This)
@@ -77,7 +79,8 @@ namespace kai
 		float m_pwmServoON = 2000;
 		float m_pwmServoOFF = 1500;
 
-
+		bool m_bEmergencyBtn = false;
+		bool m_bBumper = false;
 
 	};
 

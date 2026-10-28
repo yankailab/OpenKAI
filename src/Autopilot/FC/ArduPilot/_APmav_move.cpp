@@ -15,9 +15,6 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::loadConfig());
 
-		jKv(*m_pJ, "mySystemID", m_mySystemID);
-		jKv(*m_pJ, "myComponentID", m_myComponentID);
-
 		m_pRCchan[0] = nullptr;
 		m_pRCchan[1] = &m_rcOverride.chan1_raw;
 		m_pRCchan[2] = &m_rcOverride.chan2_raw;
@@ -47,9 +44,6 @@ namespace kai
 	bool _APmav_move::saveConfig(bool bExport)
 	{
 		IF_F(!_ModuleBase::saveConfig(false));
-
-		(*m_pJ)["mySystemID"] = m_mySystemID;
-		(*m_pJ)["myComponentID"] = m_myComponentID;
 
 		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
@@ -105,7 +99,7 @@ namespace kai
 		spt.yaw = 0.0;
 		spt.yaw_rate = 0.0;
 		spt.type_mask = 0b0000010111000111;
-		m_pAP->getMavlinkStream()->add<MavSetPositionTargetLocalNED>(spt);
+		m_pAP->getMavlinkStream()->add<MavSetPositionTargetLocalNED>(spt, m_pAP->getMySysID(), m_pAP->getMyComID());
 	}
 
 	void _APmav_move::setHdg(float y, float r, bool bYaw, bool bYawRate, uint8_t frame)
@@ -128,7 +122,7 @@ namespace kai
 		if (!bYawRate)
 			spt.type_mask |= IGN_YAW_RATE;
 
-		m_pAP->getMavlinkStream()->add<MavSetPositionTargetLocalNED>(spt);
+		m_pAP->getMavlinkStream()->add<MavSetPositionTargetLocalNED>(spt, m_pAP->getMySysID(), m_pAP->getMyComID());
 	}
 
 	void _APmav_move::setVlocal(const Vector4f &vSpd, bool bYaw, bool bYawRate, uint8_t frame)
@@ -148,7 +142,7 @@ namespace kai
 		if (!bYawRate)
 			spt.type_mask |= IGN_YAW_RATE;
 
-		m_pAP->getMavlinkStream()->add<MavSetPositionTargetLocalNED>(spt);
+		m_pAP->getMavlinkStream()->add<MavSetPositionTargetLocalNED>(spt, m_pAP->getMySysID(), m_pAP->getMyComID());
 	}
 
 	void _APmav_move::setPlocal(const Vector4f &vP, bool bYaw, bool bYawRate, uint8_t frame)
@@ -168,7 +162,7 @@ namespace kai
 		if (!bYawRate)
 			spt.type_mask |= IGN_YAW_RATE;
 
-		m_pAP->getMavlinkStream()->add<MavSetPositionTargetLocalNED>(spt);
+		m_pAP->getMavlinkStream()->add<MavSetPositionTargetLocalNED>(spt, m_pAP->getMySysID(), m_pAP->getMyComID());
 	}
 
 	void _APmav_move::setPglobal(const Vector4d &vP, bool bYaw, bool bYawRate, uint8_t frame)
@@ -190,7 +184,7 @@ namespace kai
 		if (!bYawRate)
 			spt.type_mask |= IGN_YAW_RATE;
 
-		m_pAP->getMavlinkStream()->add<MavSetPositionTargetGlobalINT>(spt);
+		m_pAP->getMavlinkStream()->add<MavSetPositionTargetGlobalINT>(spt, m_pAP->getMySysID(), m_pAP->getMyComID());
 	}
 
 	void _APmav_move::doReposition(const Vector4d &vP,
@@ -211,7 +205,7 @@ namespace kai
 		D.y = (int32_t)(vP.y() * 1e7);
 		D.z = vP.z();
 
-		m_pAP->getMavlinkStream()->add<MavCommandInt>(D);
+		m_pAP->getMavlinkStream()->add<MavCommandInt>(D, m_pAP->getMySysID(), m_pAP->getMyComID());
 	}
 
 	void _APmav_move::setYawSpeed(float steer, float speed, float yawMode)
@@ -220,7 +214,9 @@ namespace kai
 
 		m_pAP->getMavlinkStream()->clNavSetYawSpeed(steer,
 											  speed,
-											  yawMode);
+											  yawMode,
+											  m_pAP->getMySysID(),
+											  m_pAP->getMyComID());
 	}
 
 	void _APmav_move::setRCchan(uint8_t iChan, uint16_t v, bool bSendCmd)
@@ -233,7 +229,7 @@ namespace kai
 
 		IF_(!bSendCmd);
 		NULL_(m_pAP);
-		m_pAP->getMavlinkStream()->add<MavRcChannelsOverride>(m_rcOverride, m_mySystemID, m_myComponentID);
+		m_pAP->getMavlinkStream()->add<MavRcChannelsOverride>(m_rcOverride, m_pAP->getMySysID(), m_pAP->getMyComID());
 	}
 
 	void _APmav_move::releaseRCoverride(void)
@@ -245,7 +241,7 @@ namespace kai
 		}
 
 		NULL_(m_pAP);
-		m_pAP->getMavlinkStream()->add<MavRcChannelsOverride>(m_rcOverride, m_mySystemID, m_myComponentID);
+		m_pAP->getMavlinkStream()->add<MavRcChannelsOverride>(m_rcOverride, m_pAP->getMySysID(), m_pAP->getMyComID());
 	}
 
 	void _APmav_move::console(void *pConsole)

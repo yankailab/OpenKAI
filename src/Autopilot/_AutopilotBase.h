@@ -61,8 +61,9 @@ namespace kai
 
 		// status
 		virtual float getRelativeAlt(void);
-		virtual const Vector4d& getHomePos(void);
+		virtual const Vector4d& getPosGlobal(void);
 		virtual const Vector3f& getVelocity(void);
+		virtual const Vector4d& getPosHome(void);
 
 		virtual float getBattery(void);
 
@@ -85,9 +86,9 @@ namespace kai
 
 		// read only
 		float m_rAlt;
-		Vector3d m_vPosGlobal = Vector3d::Zero();
+		Vector4d m_vPosGlobal = Vector4d::Zero();	// lat, lon, alt, hdg
 		Vector3f m_vVelocity = Vector3f::Zero();
-		Vector4d m_vHomePos = Vector4d::Zero();
+		Vector4d m_vPosHome = Vector4d::Zero();		// lat, lon, alt, hdg (optional)
 		int8_t m_battery = -1;	// remaining percentage in integer, -1:unknown
 
 	};

@@ -99,14 +99,19 @@ namespace kai
 		return m_rAlt;
 	}
 
-	const Vector4d &_AutopilotBase::getHomePos(void)
+	const Vector4d &_AutopilotBase::getPosGlobal(void)
 	{
-		return m_vHomePos;
+		return m_vPosGlobal;
 	}
 
 	const Vector3f &_AutopilotBase::getVelocity(void)
 	{
 		return m_vVelocity;
+	}
+
+	const Vector4d &_AutopilotBase::getPosHome(void)
+	{
+		return m_vPosHome;
 	}
 
 	float _AutopilotBase::getBattery(void)
@@ -141,9 +146,10 @@ namespace kai
 		pC->addMsg("Global Pos-----------------------", 1);
 		pC->addMsg("\tlat=\t" + lf2str(m_vPosGlobal.x(), 7) + "\tlon=\t" + lf2str(m_vPosGlobal.y(), 7), 1);
 		pC->addMsg("\talt=\t" + lf2str(m_vPosGlobal.z(), 2) + "\trelAlt=\t" + lf2str(m_rAlt, 2), 1);
+		pC->addMsg("\thdg=\t" + lf2str(m_vPosGlobal.w(), 2), 1);
 
 		pC->addMsg("-Home Pos-", 1);
-		pC->addMsg("\tlat=\t" + f2str(m_vHomePos.x(), 7) + "\tlon=\t" + f2str(m_vHomePos.y(), 7) + "\talt=\t" + f2str(m_vHomePos.z(), 7), 1);
+		pC->addMsg("\tlat=\t" + f2str(m_vPosHome.x(), 7) + "\tlon=\t" + f2str(m_vPosHome.y(), 7) + "\talt=\t" + f2str(m_vPosHome.z(), 7), 1);
 
 		pC->addMsg("-Velocity-", 1);
 		pC->addMsg("\tvx=\t" + f2str(m_vVelocity.x()) +

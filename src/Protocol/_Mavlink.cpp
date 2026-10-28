@@ -27,14 +27,8 @@ namespace kai
 		m_pTr = createThread(jK(j, "threadR"), "threadR");
 		NULL_F(m_pTr);
 
-		jKv(j, "mySystemID", m_mySystemID);
-		jKv(j, "myComponentID", m_myComponentID);
-		jKv(j, "myType", m_myType);
-
-		jKv(j, "devSystemID", m_devSystemID);
-		jKv(j, "devComponentID", m_devComponentID);
-		jKv(j, "devType", m_devType);
-
+		jKv(j, "devSysID", m_devSysID);
+		jKv(j, "devComID", m_devComID);
 		jKv(j, "iMavComm", m_iMavComm);
 
 		m_status = {};
@@ -49,12 +43,8 @@ namespace kai
 		IF_F(m_pTr && !m_pTr->saveConfig(false));
 
 		json &j = *m_pJ;
-		j["mySystemID"] = m_mySystemID;
-		j["myComponentID"] = m_myComponentID;
-		j["myType"] = m_myType;
-		j["devSystemID"] = m_devSystemID;
-		j["devComponentID"] = m_devComponentID;
-		j["devType"] = m_devType;
+		j["devSysID"] = m_devSysID;
+		j["devComID"] = m_devComID;
 		j["iMavComm"] = m_iMavComm;
 
 		IF__(!bExport, true);
@@ -144,15 +134,16 @@ namespace kai
 			IF_CONT(!readMessage(&msg));
 			m_pTr->skipSleep();
 
-			if (m_devSystemID < 0)
-				m_devSystemID = msg.sysid;
+			// If specified ignore messages from other senders.
+			if (m_devSysID > 0)
+			{
+				IF_CONT(msg.sysid != m_devSysID);
+			}
 
-			if (m_devComponentID < 0)
-				m_devComponentID = msg.compid;
-
-			// Ignore messages from other senders.
-			IF_CONT(msg.sysid != m_devSystemID);
-			IF_CONT(msg.compid != m_devComponentID);
+			if (m_devComID > 0)
+			{
+				IF_CONT(msg.compid != m_devComID);
+			}
 
 			m_pMavStream->decode(msg);
 		}
@@ -207,8 +198,7 @@ namespace kai
 
 		_Console *pC = (_Console *)pConsole;
 		pC->addMsg("BytePacketStream linked", 0);
-		pC->addMsg("mySysID = " + i2str(m_mySystemID) + " myComID = " + i2str(m_myComponentID) + " myType = " + i2str(m_myType));
-		pC->addMsg("devSysID = " + i2str(m_devSystemID) + " devComID = " + i2str(m_devComponentID) + " devType = " + i2str(m_devType));
+		pC->addMsg("devSysID = " + i2str(m_devSysID) + " devComID = " + i2str(m_devComID));
 		pC->addMsg("Dropped packets = " + i2str(m_nDroppedPackets.load()));
 	}
 
