@@ -30,6 +30,7 @@ namespace kai
         virtual bool start(void) override;
         virtual bool check(void) override;
         virtual void console(void *pConsole) override;
+        virtual void console(const json &j, void *pJSONbase) override;
 
         virtual bool saveConfig(bool bExport) override;
 

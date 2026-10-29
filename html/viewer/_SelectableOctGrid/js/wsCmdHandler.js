@@ -62,6 +62,9 @@ function cmdHandler(event) {
 }
 
 function handleCmd(jCmd) {
+  if (['getConfig', 'setConfig', 'saveConfig'].includes(jCmd.cmd)) {
+    window.dispatchEvent(new CustomEvent('transformcommand', { detail: jCmd }));
+  }
   if (jCmd.cmd === 'setGridConfig') {
     window.dispatchEvent(new CustomEvent('gridconfig', { detail: jCmd }));
   }

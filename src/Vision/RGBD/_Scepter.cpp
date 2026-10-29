@@ -846,6 +846,7 @@ namespace kai
 			}
 		}
 
+		transformPCL(vPCL);
 		m_pPCLout->set(vPCL, tNow);
 	}
 

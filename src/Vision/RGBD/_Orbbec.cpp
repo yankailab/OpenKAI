@@ -3001,6 +3001,7 @@ namespace kai
 			}
 		}
 
+		transformPCL(vPCL);
 		pPCLout->set(vPCL, tDNs);
 	}
 

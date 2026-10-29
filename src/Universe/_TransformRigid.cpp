@@ -6,6 +6,7 @@
  */
 
 #include "_TransformRigid.h"
+#include "../Protocol/_JSONbase.h"
 
 namespace kai
 {
@@ -285,6 +286,80 @@ namespace kai
         pC->addMsg("vT = (" + f2str(m_vT.x()) + "," + f2str(m_vT.y()) + ", " + f2str(m_vT.z()) + ")");
         pC->addMsg("vAngle(R,P,Y) = (" + f2str(m_vAngle.x()) + "," + f2str(m_vAngle.y()) + ", " + f2str(m_vAngle.z()) + ")");
         pC->addMsg("vR = (" + f2str(m_vR.x()) + "," + f2str(m_vR.y()) + ", " + f2str(m_vR.z()) + ", " + f2str(m_vR.w()) + ")");
+    }
+
+    void _TransformRigid::console(const json &j, void *pJSONbase)
+    {
+        auto *transport = static_cast<_JSONbase *>(pJSONbase);
+        if (!transport || !j.is_object() || !j.contains("cmd") || !j["cmd"].is_string()) return;
+        const string cmd = j["cmd"].get<string>();
+        if (cmd != "getConfig" && cmd != "setConfig" && cmd != "saveConfig") return;
+
+        json reply = {{"cmd", cmd}, {"module", getName()}, {"bSuccess", true}};
+        if (j.contains("requestId")) reply["requestId"] = j["requestId"];
+        {
+            std::lock_guard<std::recursive_mutex> lock(m_mtxPose);
+            try
+            {
+                if (cmd == "setConfig")
+                {
+                    const json config = j.value("config", json());
+                    if (!config.is_object()) throw std::invalid_argument("Expected a config object");
+                    Vector3d translation = m_vT;
+                    Vector3d angles = m_vAngle;
+                    for (const auto &field : config.items())
+                    {
+                        const string &key = field.key();
+                        if (key != "vT" && key != "vAngle")
+                            throw std::invalid_argument("Unknown transform setting: " + key);
+                        const json &values = field.value();
+                        if (!values.is_array() || values.size() != 3)
+                            throw std::invalid_argument(key + " requires three finite numbers");
+                        Vector3d &target = key == "vT" ? translation : angles;
+                        for (size_t i = 0; i < 3; ++i)
+                        {
+                            const json &value = values[i];
+                            if (value.is_number()) target[i] = value.get<double>();
+                            else if (value.is_string())
+                            {
+                                const string text = value.get<string>();
+                                size_t consumed = 0;
+                                target[i] = std::stod(text, &consumed);
+                                if (consumed != text.size())
+                                    throw std::invalid_argument(key + " requires three finite numbers");
+                            }
+                            else throw std::invalid_argument(key + " requires three finite numbers");
+                            if (!std::isfinite(target[i]))
+                                throw std::invalid_argument(key + " requires three finite numbers");
+                        }
+                    }
+                    // Validate the complete request before publishing one locked pose update.
+                    if (config.contains("vAngle"))
+                    {
+                        m_vT = translation;
+                        setAngles(angles);
+                    }
+                    else if (config.contains("vT")) setTranslation(translation);
+                }
+                else if (cmd == "saveConfig")
+                {
+                    reply["bSuccess"] = saveConfig(true);
+                    if (!reply["bSuccess"].get<bool>())
+                        reply["error"] = "Could not save the launch configuration";
+                }
+            }
+            catch (const std::exception &e)
+            {
+                reply["bSuccess"] = false;
+                reply["error"] = e.what();
+            }
+            // Quaternion setters may have changed the pose since the last console request.
+            updateEulerAngles();
+            reply["config"] = {{"vT", {m_vT.x(), m_vT.y(), m_vT.z()}},
+                {"vR", {m_vR.x(), m_vR.y(), m_vR.z(), m_vR.w()}},
+                {"vAngle", {m_vAngle.x(), m_vAngle.y(), m_vAngle.z()}}};
+        }
+        transport->sendJson(reply);
     }
 
 }

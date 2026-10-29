@@ -77,6 +77,10 @@ namespace kai
 
 		string n;
 
+		jKv(j, "_TransformRigid", n);
+		m_pTf = dynamic_cast<_TransformRigid *>(static_cast<_ModuleBase *>(pM->findModule(n)));
+		IF_Le_F(!n.empty() && !m_pTf, "_TransformRigid not found: " + n);
+
 		n = "";
 		jKv(j, "RGBDframeOut", n);
 		m_pRGBDout = dynamic_cast<RGBDframe *>(static_cast<DataObjBase *>(pM->findDataObject(n)));
@@ -118,6 +122,17 @@ namespace kai
 	bool _RGBDbase::check(void)
 	{
 		return _RGBbase::check();
+	}
+
+	void _RGBDbase::transformPCL(vector<GEOMETRY_POINT> &points)
+	{
+		NULL_(m_pTf);
+		// Use one pose for the whole cloud, even while the transform is adjusted.
+		const Isometry3f pose = m_pTf->getPoseCombinedf();
+		for (GEOMETRY_POINT &point : points)
+		{
+			point.m_vP = pose * point.m_vP;
+		}
 	}
 
 	Vector2f _RGBDbase::getDepthRange(void)

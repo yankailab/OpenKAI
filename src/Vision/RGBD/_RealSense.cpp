@@ -521,8 +521,8 @@ namespace kai
         if (m_bTemporal) depth = m_temporal.process(depth);
         if (m_bHoleFilling) depth = m_holeFilling.process(depth);
         const uint64_t stamp = frameNs(depth);
-        // Points always use the depth optical frame, including when display
-        // alignment is enabled. GLIM's IMU extrinsics therefore stay valid.
+        // Generate points in the depth optical frame regardless of display
+        // alignment, then apply the optional output transform in updatePC.
         updatePC(depth, color, rgb, stamp);
         if (m_bAlign && color)
         {
@@ -574,6 +574,7 @@ namespace kai
             }
             cloud.push_back({point, c, stamp});
         }
+        transformPCL(cloud);
         m_pPCLout->set(cloud, stamp);
     }
 

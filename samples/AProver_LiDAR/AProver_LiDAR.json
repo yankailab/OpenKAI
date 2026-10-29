@@ -58,6 +58,7 @@
 			"apRover",
 			"geoFence",
 			"scepter",
+			"scepterTransform",
 			"octGrid",
 			"viewer"
 		]
@@ -236,6 +237,7 @@
 			4.0
 		],
 		"PCLframeOut": "scPC",
+		"_TransformRigid": "scepterTransform",
 		"bPCL": true,
 		"scPixelFormat": 4,
 		"bRGB": true,
@@ -245,6 +247,11 @@
 		"bIR": false,
 		"RGBframeOut": "camRGB",
 		"DframeOut": "camDepth"
+	},
+	"scepterTransform": {
+		"class": "_TransformRigid",
+		"vT": [0, 0, 0],
+		"vR": [0, 0, 0, 1]
 	},
 	"scPC": {
 		"type": "dataObject",

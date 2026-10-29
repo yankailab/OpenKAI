@@ -59,6 +59,19 @@ The **Grid config** form below Point scale sends root origin and size through
 stream updates leave the inputs unchanged. Updating the root rebuilds occupancy
 and preserves selected volumes within the new root.
 
+The **Transform** panel targets a `_TransformRigid` instance by its backend name;
+the default `scepterTransform` matches `samples/AProver_LiDAR/AProver_LiDAR.json`.
+The target must be listed in the command module's `vBASE`, as it is in that sample.
+Connecting the command socket or changing the target loads its local translation
+and roll/pitch/yaw. Translation is in metres and rotation is displayed in degrees;
+commands send angles in radians. **Load** reloads the current backend values.
+**Apply & save** applies all six values together and then saves `vT` and quaternion
+`vR` to that instance's original JSON file. A save error leaves the runtime change
+applied and reports the failure; the JSON must be writable. The panel uses the
+existing `getConfig`, `setConfig`, and `saveConfig` commands on the command socket.
+Linked RGBD producers apply the combined transform, including any parent, to new
+point clouds before publishing them.
+
 The **Grid cell picker** panel supports persistent red selections, Load, Clear,
 and Send. Load retrieves backend selections over the independent command socket
 and merges them without duplicate IDs, remapping volumes when root headers differ.

@@ -1,6 +1,9 @@
 #include "../../src/Universe/_TransformRigid.h"
 #include "../../src/Universe/Geometry/PointCloud/Pipeline/_PCmerge.h"
 #include "../../src/Universe/Geometry/PointCloud/_PCLfile.h"
+#ifdef WITH_PROTOCOL
+#include "../../src/Protocol/_JSONbase.h"
+#endif
 #ifdef WITH_SENSOR
 #include "../../src/Sensor/LiDAR/Livox/_Livox2.h"
 #include "../../src/Sensor/LiDAR/RoboSense/Airy/_Airy.h"
@@ -18,6 +21,10 @@
 #include <limits>
 #include <thread>
 #include <unistd.h>
+
+#if defined(WITH_VISION) && defined(USE_OPENCV)
+void testRGBDTransform(void);
+#endif
 
 namespace
 {
@@ -210,6 +217,111 @@ namespace
 		assert(transform.getPose().matrix().isApprox(before.matrix()));
 	}
 
+#ifdef WITH_PROTOCOL
+	class TransformReplyTransport : public _JSONbase
+	{
+	public:
+		vector<json> replies;
+		bool sendJson(const json &reply) override
+		{
+			replies.push_back(reply);
+			return true;
+		}
+	};
+
+	void testConsole(void)
+	{
+		char path[] = "/tmp/openkai-transform-console-XXXXXX";
+		const int fd = mkstemp(path);
+		assert(fd >= 0);
+		close(fd);
+		JsonCfg cfg;
+		cfg.setJson({{"mount", {{"class", "_TransformRigid"}, {"vT", {0, 0, 0}}, {"vR", {0, 0, 0, 1}}}},
+			{"unrelated", "preserve"}});
+		assert(cfg.saveToFile(path));
+		assert(cfg.readFromFile(path));
+		_TransformRigid transform;
+		transform.setName("mount");
+		transform.setConfig(&cfg, &(*cfg.getJson())["mount"]);
+		assert(transform.loadConfig());
+		TransformReplyTransport transport;
+		// Exercise the same virtual dispatch used by _WSconsole.
+		BASE &module = transform;
+		const auto command = [&](const string &cmd, const json &config = json()) -> json
+		{
+			const size_t before = transport.replies.size();
+			module.console({{"cmd", cmd}, {"module", "mount"}, {"requestId", "transform-test"},
+				{"config", config}}, &transport);
+			assert(transport.replies.size() == before + 1);
+			const json &reply = transport.replies.back();
+			assert(reply.at("cmd") == cmd && reply.at("module") == "mount");
+			assert(reply.at("requestId") == "transform-test");
+			return reply;
+		};
+		json reply = command("getConfig");
+		assert(reply.at("bSuccess") == true);
+		assert(reply.at("config").at("vT") == json({0, 0, 0}));
+		assert(reply.at("config").at("vAngle") == json({0, 0, 0}));
+		reply = command("setConfig", {{"vT", {"1.5", 2, -3}}, {"vAngle", {0.2, "-0.3", 0.4}}});
+		assert(reply.at("bSuccess") == true);
+		assert(transform.getTranslation().isApprox(Vector3d(1.5, 2, -3)));
+		assert(transform.getAngles().isApprox(Vector3d(0.2, -0.3, 0.4)));
+		assert(transform.getPoseCombinedf().matrix().isApprox(transform.getPose().matrix().cast<float>()));
+		assert(readConfig(path).at("mount").at("vT") == json({0, 0, 0}));
+		// A translation-only edit must preserve a rotation supplied directly as a quaternion.
+		transform.setRotation(0, 0, 0.5, 0.5);
+		const Quaterniond directRotation = transform.getRotation();
+		reply = command("setConfig", {{"vT", {1.5, 2, -3}}});
+		assert(reply.at("bSuccess") == true);
+		assert(transform.getRotation().coeffs().isApprox(directRotation.coeffs()));
+		assert(std::abs(reply.at("config").at("vAngle")[2].get<double>() - std::acos(-1.0) / 2) < 1e-12);
+		assert(command("setConfig", {{"vAngle", {0.2, -0.3, 0.4}}}).at("bSuccess") == true);
+		const Isometry3d applied = transform.getPose();
+		const vector<json> invalid = {json(), json::array(),
+			{{"vT", {4, 5, 6}}, {"vAngle", {0, "nan", 0}}},
+			{{"vT", {4, 5, 6}}, {"vAngle", {0, 1}}},
+			{{"vT", {4, 5, "6junk"}}}, {{"vT", {4, false, 6}}},
+			{{"vT", {4, "1e9999", 6}}}, {{"vT", {4, "inf", 6}}},
+			{{"vT", {4, 5, 6}}, {"unknown", 7}}};
+		for (const json &config : invalid)
+		{
+			reply = command("setConfig", config);
+			assert(reply.at("bSuccess") == false && reply.contains("error"));
+			assert(transform.getPose().matrix().isApprox(applied.matrix()));
+			assert(reply.at("config").at("vT") == json({1.5, 2, -3}));
+		}
+		reply = command("setConfig", {{"vT", {7, 8, 9}}});
+		assert(reply.at("bSuccess") == true);
+		assert(transform.getAngles().isApprox(Vector3d(0.2, -0.3, 0.4)));
+		reply = command("saveConfig");
+		assert(reply.at("bSuccess") == true);
+		const json saved = readConfig(path);
+		assertSavedPose(saved.at("mount"), Vector3d(7, 8, 9), transform.getRotation());
+		assert(!saved.at("mount").contains("vAngle"));
+		assert(saved.at("unrelated") == "preserve");
+		JsonCfg reloadedCfg;
+		assert(reloadedCfg.readFromFile(path));
+		_TransformRigid reloaded;
+		reloaded.setName("mount");
+		reloaded.setConfig(&reloadedCfg, &(*reloadedCfg.getJson())["mount"]);
+		assert(reloaded.loadConfig());
+		assert(reloaded.getPose().matrix().isApprox(transform.getPose().matrix()));
+		assert(reloaded.getAngles().isApprox(transform.getAngles()));
+		const size_t beforeIgnored = transport.replies.size();
+		module.console({{"cmd", "unsupported"}}, &transport);
+		module.console({{"cmd", 3}}, &transport);
+		module.console(json::array(), &transport);
+		module.console({{"cmd", "setConfig"}, {"config", {{"vT", {0, 0, 0}}}}}, nullptr);
+		assert(transport.replies.size() == beforeIgnored);
+		assert(transform.getTranslation().isApprox(Vector3d(7, 8, 9)));
+		_TransformRigid unconfigured;
+		unconfigured.console({{"cmd", "saveConfig"}}, &transport);
+		assert(transport.replies.back().at("bSuccess") == false);
+		assert(transport.replies.back().contains("error"));
+		assert(std::remove(path) == 0);
+	}
+#endif
+
 	void addModules(InstanceMgr &instances, JsonCfg &cfg)
 	{
 		for (auto &entry : cfg.getJson()->items())
@@ -393,6 +505,12 @@ namespace
 int main()
 {
 	testPose();
+#ifdef WITH_PROTOCOL
+	testConsole();
+#endif
+#if defined(WITH_VISION) && defined(USE_OPENCV)
+	testRGBDTransform();
+#endif
 	testTree(false);
 	testTree(true);
 	testInvalidTrees();

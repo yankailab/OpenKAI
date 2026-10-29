@@ -11,6 +11,7 @@
 #include "../../DataObject/RGBDframe.h"
 #include "../../DataObject/PCLframe.h"
 #include "../../DataObject/IMUstream.h"
+#include "../../Universe/_TransformRigid.h"
 
 #include "../_RGBbase.h"
 
@@ -34,6 +35,10 @@ namespace kai
 		virtual float getDepthOffset(void);
 
 	protected:
+		void transformPCL(vector<GEOMETRY_POINT> &points);
+
+		_TransformRigid *m_pTf = nullptr;
+
 		// Output frames own their pixels; depth channels are calibrated CV_32FC1.
 		RGBDframe *m_pRGBDout = nullptr;
 		RGBDframe *m_pRGBDtRGBout = nullptr;	// RGBD transformed to RGB

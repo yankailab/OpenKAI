@@ -58,6 +58,33 @@
           <label>Max <input id="grid-max-level" type="range" min="0" max="40" step="1" value="40" aria-label="Maximum grid level"><output id="grid-max-level-value" for="grid-max-level">40</output></label>
         </fieldset>
       </div>
+      <details open class="transform-panel">
+        <summary>Transform</summary>
+        <form id="transform-config" class="grid-config transform-config">
+          <label class="transform-target">Backend instance
+            <input id="transform-module" value="scepterTransform" required spellcheck="false" autocomplete="off">
+          </label>
+          <fieldset id="transform-fields" disabled>
+            <fieldset class="grid-vector">
+              <legend>Translation (m)</legend>
+              <label>X <input id="transform-x" type="number" step="any" value="0" required aria-label="Transform translation X"></label>
+              <label>Y <input id="transform-y" type="number" step="any" value="0" required aria-label="Transform translation Y"></label>
+              <label>Z <input id="transform-z" type="number" step="any" value="0" required aria-label="Transform translation Z"></label>
+            </fieldset>
+            <fieldset class="grid-vector">
+              <legend>Rotation (degrees)</legend>
+              <label>Roll <input id="transform-roll" type="number" step="any" value="0" required aria-label="Transform roll"></label>
+              <label>Pitch <input id="transform-pitch" type="number" step="any" value="0" required aria-label="Transform pitch"></label>
+              <label>Yaw <input id="transform-yaw" type="number" step="any" value="0" required aria-label="Transform yaw"></label>
+            </fieldset>
+          </fieldset>
+          <div class="tools">
+            <button id="transform-load" type="button" disabled>Load</button>
+            <button id="transform-save" type="submit" disabled>Apply &amp; save</button>
+          </div>
+          <output id="transform-status" role="status">Connect Commands to load the transform.</output>
+        </form>
+      </details>
       <details open class="picker-panel">
         <summary>Grid cell picker</summary>
         <p>Click a cell to select or deselect it.</p>

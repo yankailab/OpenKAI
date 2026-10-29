@@ -1,9 +1,11 @@
 import { GeometryConnection } from '../../../common/js/geometryConnection.js';
 import { decodeFrame, STREAM_TYPES } from './protocol.js';
 import { Viewer3D } from './viewer3D.js';
+import { TransformControls } from './transformControls.js';
 
 const $ = selector => document.querySelector(selector);
 const viewer = new Viewer3D($('#viewport'));
+const transformControls = new TransformControls();
 const pending = new Map(), names = new Map(), visibility = new Map();
 const counts = Object.fromEntries(STREAM_TYPES.map(type => [type, 0]));
 const states = Object.fromEntries(STREAM_TYPES.map(type => [type, 'Ready']));
@@ -190,5 +192,5 @@ function draw(now) {
   animation = requestAnimationFrame(draw);
 }
 animation = requestAnimationFrame(draw);
-window.addEventListener('pagehide', () => { for (const type of STREAM_TYPES) connections[type].stop(); cancelAnimationFrame(animation); viewer.dispose(); });
+window.addEventListener('pagehide', () => { for (const type of STREAM_TYPES) connections[type].stop(); cancelAnimationFrame(animation); transformControls.dispose(); viewer.dispose(); });
 if (location.hash === '#connect') { history.replaceState(null, '', location.pathname + location.search); start(); }

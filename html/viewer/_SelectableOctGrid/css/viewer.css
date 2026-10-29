@@ -10,6 +10,13 @@ input[type=range] { padding: 0; width: 112px; accent-color: #64dcb5; }
 .grid-config .grid-vector label { display: block; }
 .grid-vector input { display: block; width: 100%; padding: 6px 3px; margin-top: 4px; }
 #grid-config-status { display: block; margin-top: 8px; font-size: 12px; color: #aabac8; }
+.transform-config { margin-top: 12px; }
+.transform-config label { font-size: 12px; }
+.transform-config .transform-target { display: block; margin-bottom: 12px; }
+.transform-target input { display: block; width: 100%; margin-top: 6px; padding: 6px; }
+.transform-config .tools { gap: 6px; }
+.transform-config button { padding-inline: 8px; }
+#transform-status { display: block; margin-top: 8px; font-size: 12px; color: #aabac8; overflow-wrap: anywhere; }
 .grid-levels { width: 100%; min-width: 0; margin: 0; padding: 0; border: 0; }
 .grid-levels legend { padding: 0; margin-bottom: 8px; font-size: 12px; color: #aabac8; }
 .grid-levels label { display: grid; grid-template-columns: 28px minmax(0, 1fr) 2ch; margin-top: 6px; }

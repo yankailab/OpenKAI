@@ -382,6 +382,7 @@ namespace kai
             const Vector3f vC = Vector3f(p.r, p.g, p.b) / 255.0f;
             vPCL.push_back({vP, vC, tStamp});
         }
+        transformPCL(vPCL);
         m_pPCLout->set(vPCL, tStamp);
     }
 
