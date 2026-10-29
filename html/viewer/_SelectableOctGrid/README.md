@@ -84,3 +84,25 @@ Geometry uses `/stream/points`, `/stream/lines` and `/stream/cells` on the same
 HTTP port, with independent snapshots, acknowledgements and reconnects. All
 available types render on the same canvas; missing or failed streams affect only
 their own geometry. Cells-only viewers can set both `nPbuf` and `nLbuf` to zero.
+
+## Checks
+
+The native grid regression covers dense 640×480 clouds with a 300 ms cell expiry
+to catch processing delays, cell IDs and colors, repeated-frame handling, and
+stale-input rejection:
+
+```sh
+python3 test/run_octree_grid_tests.py build
+python3 test/run_transform_rigid_tests.py build
+```
+
+With the Scepter connected and other camera applications stopped, check the
+actual browser's occupied cells, mouse picking, Send persistence, and Clear/Load:
+
+```sh
+python3 test/UI/SelectableGridLive.py build/OpenKAI --ip 192.168.16.101
+```
+
+The live check requires Chrome/Chromium. It uses temporary ports and a camera/grid
+launch configuration without rover modules; Send writes only the temporary JSON.
+Results are saved to `/tmp/openkai-grid-live.log` and `/tmp/openkai-grid-live.png`.

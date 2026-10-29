@@ -4,6 +4,8 @@ const radiansPerDegree = Math.PI / 180;
 export class TransformControls {
   constructor() {
     this.pending = null; this.sequence = 0; this.loaded = false; this.socket = null;
+    // Shared command servers broadcast replies to every viewer tab.
+    this.clientId = Array.from(crypto.getRandomValues(new Uint32Array(4)), value => value.toString(16)).join('-');
     this.translation = ['x', 'y', 'z'].map(axis => $(`#transform-${axis}`));
     this.rotation = ['roll', 'pitch', 'yaw'].map(axis => $(`#transform-${axis}`));
     this.onState = () => {
@@ -59,7 +61,7 @@ export class TransformControls {
       $('#transform-status').textContent = 'Enter a backend instance name without the reserved EOJ delimiter.';
       return;
     }
-    const requestId = `transform-${++this.sequence}`;
+    const requestId = `transform-${this.clientId}-${++this.sequence}`;
     if (!window.wsSendCmd({ cmd, module, requestId, ...(config ? { config } : {}) })) {
       $('#transform-status').textContent = cmd === 'saveConfig' ?
         'Transform applied; save request failed.' : 'Transform request failed. Check the command connection.';

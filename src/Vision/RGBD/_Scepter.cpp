@@ -289,7 +289,8 @@ namespace kai
 	json _Scepter::configValues(void)
 	{
 		json j = {{"bRGB", m_bRGB}, {"bDepth", m_bDepth}, {"bIR", m_bIR},
-			{"bPCL", m_bPCL}, {"bPCLrgb", m_bPCLrgb}, {"pclStride", m_pclStride}, {"dScale", m_dScale}};
+			{"bPCL", m_bPCL}, {"bPCLrgb", m_bPCLrgb}, {"pclStride", m_pclStride},
+			{"pclColorMaxAgeMs", m_pclColorMaxAgeMs}, {"dScale", m_dScale}};
 		visitScControls(m_scCtrl, [&](const char *key, auto &value, const char *) { j[key] = value; });
 		return j;
 	}
@@ -301,6 +302,10 @@ namespace kai
 			schema.push_back(scFieldSpec(key, false, "Streams and point cloud"));
 		json stride = scFieldSpec("pclStride", uint16_t(1), "Streams and point cloud");
 		stride["min"] = 1; schema.push_back(stride);
+		json colorAge = scFieldSpec("pclColorMaxAgeMs", 1000, "Streams and point cloud");
+		colorAge["max"] = 10000;
+		colorAge["hint"] = "Reuse aligned color for at most this many milliseconds; 0 requires the same capture. Depth keeps updating when color expires.";
+		schema.push_back(colorAge);
 		schema.push_back(scFieldSpec("dScale", 1.0f, "Streams and point cloud"));
 		visitScControls(m_scCtrl, [&](const char *key, auto &value, const char *category) {
 			schema.push_back(scFieldSpec(key, value, category));
@@ -367,7 +372,7 @@ namespace kai
 		}
 		if (device)
 		{
-			m_bPCLframe = false;
+			clearScFrames();
 			applyScControls(candidate, changed, false, errors);
 			if (restart)
 			{
@@ -391,6 +396,7 @@ namespace kai
 		jKv(patch, "bRGB", m_bRGB); jKv(patch, "bDepth", m_bDepth); jKv(patch, "bIR", m_bIR);
 		jKv(patch, "bPCL", m_bPCL); jKv(patch, "bPCLrgb", m_bPCLrgb);
 		jKv(patch, "pclStride", m_pclStride); jKv(patch, "dScale", m_dScale);
+		jKv(patch, "pclColorMaxAgeMs", m_pclColorMaxAgeMs);
 		return errors.empty();
 	}
 
@@ -610,7 +616,7 @@ namespace kai
 	{
 		std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
 		m_bOpened = false;
-		m_bPCLframe = false;
+		clearScFrames();
 
 		if (m_scDevHandle)
 		{
@@ -622,6 +628,15 @@ namespace kai
 
 		delete[] m_pScDevListInfo;
 		m_pScDevListInfo = nullptr;
+	}
+
+	void _Scepter::clearScFrames(void)
+	{
+		std::lock_guard<std::mutex> lock(m_mutexPCL);
+		m_bPCLframe = false;
+		m_pclFrame = {};
+		m_colorPCL.release();
+		m_tColorPCL = m_tColorDevice = 0;
 	}
 
 	bool _Scepter::start(void)
@@ -638,6 +653,16 @@ namespace kai
 		return this->_RGBDbase::check();
 	}
 
+	std::unique_lock<std::recursive_mutex> _Scepter::lockScForWork(void)
+	{
+		// Outer capture/console entrypoints take admission before waiting for the
+		// SDK lock. A waiting command keeps the next capture from reacquiring the
+		// unfair recursive mutex indefinitely when capture exceeds its FPS budget.
+		// Nested open/close/setter calls must use the recursive mutex directly.
+		std::lock_guard<std::mutex> admission(m_scAdmission);
+		return std::unique_lock<std::recursive_mutex>(m_mutexScFrame);
+	}
+
 	void _Scepter::update(void)
 	{
 		ScStatus status = scInitialize();
@@ -651,7 +676,12 @@ namespace kai
 
 		while (m_pT->bRun())
 		{
-			if (!open())
+			bool opened;
+			{
+				auto lock = lockScForWork();
+				opened = open();
+			}
+			if (!opened)
 			{
 				LOG_E("Cannot open Scense");
 				m_pT->sleepT(NSEC_SEC);
@@ -669,13 +699,13 @@ namespace kai
 
 	bool _Scepter::updateScRGBD(void)
 	{
-		std::lock_guard<std::recursive_mutex> frameLock(m_mutexScFrame);
+		auto frameLock = lockScForWork();
 		IF_F(!m_bOpened || !m_scDevHandle);
-		// A new capture invalidates the previous SDK buffers, even if it fails.
-		m_bPCLframe = false;
+		// Readiness is independent for each channel. A timeout or color-only
+		// capture must not discard depth that the PCL worker has not consumed.
 		ScFrame scfRGB = {};
-		m_scfDepth = {};
-		m_scfTransformedRGB = {};
+		ScFrame scfDepth = {};
+		ScFrame scfTransformedRGB = {};
 		ScFrame scfTransformedDepth = {};
 		ScFrame scfIR = {};
 		ScFrameReady sFr = {0};
@@ -691,6 +721,7 @@ namespace kai
 		Mat mDepth;
 		Mat mtRGB;
 		Mat mtDepth;
+		ScPCLframe pclFrame;
 		const uint64_t tStamp = getTns();
 
 		if (m_bRGB && sFr.color == 1)
@@ -708,12 +739,32 @@ namespace kai
 
 		if (m_bDepth && sFr.depth == 1)
 		{
-			status = scGetFrame(m_scDevHandle, SC_DEPTH_FRAME, &m_scfDepth);
-			if (status == SC_OK && m_scfDepth.pixelFormat == SC_PIXEL_FORMAT_DEPTH_MM16 &&
-				copyScFrame(m_scfDepth, mDepth))
+			status = scGetFrame(m_scDevHandle, SC_DEPTH_FRAME, &scfDepth);
+			if (status == SC_OK && scfDepth.pixelFormat == SC_PIXEL_FORMAT_DEPTH_MM16 &&
+				copyScFrame(scfDepth, mDepth))
 			{
 				m_vSizeD = Vector2i(mDepth.cols, mDepth.rows);
-				m_bPCLframe = true;
+				if (m_pPCLout && (m_bPCL || m_bPCLrgb))
+				{
+					// Finish SDK work before releasing the capture lock. Requiring
+					// the PCL worker to acquire it can starve that worker while the
+					// capture thread repeatedly blocks waiting for the next frame.
+					ScFrame depth = scfDepth;
+					depth.pFrameData = mDepth.data;
+					depth.dataLen = mDepth.total() * mDepth.elemSize();
+					pclFrame.m_points.resize(mDepth.total());
+					if (scConvertDepthFrameToPointCloudVector(m_scDevHandle, &depth, pclFrame.m_points.data()) == SC_OK)
+					{
+						pclFrame.m_width = mDepth.cols;
+						pclFrame.m_height = mDepth.rows;
+						pclFrame.m_stride = m_pclStride;
+						pclFrame.m_scale = m_dScale;
+						pclFrame.m_bColor = m_bPCLrgb && m_btRGB;
+						pclFrame.m_colorMaxAgeMs = m_pclColorMaxAgeMs;
+						pclFrame.m_tStamp = tStamp;
+						pclFrame.m_tDevice = scfDepth.deviceTimestamp;
+					}
+				}
 				mDepth.convertTo(mDepth, CV_32FC1, m_dScale, m_dOfs);
 				if (m_pDout)
 				{
@@ -724,10 +775,10 @@ namespace kai
 
 		if (m_btRGB && sFr.transformedColor == 1)
 		{
-			status = scGetFrame(m_scDevHandle, SC_TRANSFORM_COLOR_IMG_TO_DEPTH_SENSOR_FRAME, &m_scfTransformedRGB);
-			if (status != SC_OK || !copyScFrame(m_scfTransformedRGB, mtRGB))
+			status = scGetFrame(m_scDevHandle, SC_TRANSFORM_COLOR_IMG_TO_DEPTH_SENSOR_FRAME, &scfTransformedRGB);
+			if (status != SC_OK || !copyScFrame(scfTransformedRGB, mtRGB) || mtRGB.type() != CV_8UC3)
 			{
-				m_scfTransformedRGB = {};
+				mtRGB.release();
 			}
 		}
 
@@ -767,6 +818,23 @@ namespace kai
 			m_pRGBDtRGBout->set(mRGB, mtDepth, tStamp);
 		}
 
+		{
+			std::lock_guard<std::mutex> lock(m_mutexPCL);
+			if (!mtRGB.empty())
+			{
+				m_colorPCL = mtRGB;
+				m_tColorPCL = tStamp;
+				m_tColorDevice = scfTransformedRGB.deviceTimestamp;
+			}
+			if (pclFrame.m_tStamp)
+			{
+				// One pending slot keeps the latest frame when postprocessing is
+				// slower than capture, without building a backlog of stale depth.
+				m_pclFrame = std::move(pclFrame);
+				m_bPCLframe = true;
+			}
+		}
+
 		return true;
 	}
 
@@ -785,43 +853,40 @@ namespace kai
 	{
 		NULL_(m_pPCLout);
 
-		vector<ScVector3f> points;
+		ScPCLframe frame;
 		Mat color;
-		int width;
-		int height;
-		int stride;
-		float scale;
 		{
-			std::lock_guard<std::recursive_mutex> frameLock(m_mutexScFrame);
-
-			IF_(!m_bOpened || !m_scDevHandle || !m_bPCLframe || (!m_bPCL && !m_bPCLrgb));
-			stride = m_pclStride;
-			scale = m_dScale;
+			std::lock_guard<std::mutex> lock(m_mutexPCL);
+			IF_(!m_bPCLframe);
+			frame = std::move(m_pclFrame);
 			m_bPCLframe = false;
 
-			// Use this frame's dimensions; the device may reject a requested resolution.
-			width = m_scfDepth.width;
-			height = m_scfDepth.height;
-			points.resize(size_t(m_scfDepth.width) * m_scfDepth.height);
-
-			IF_(scConvertDepthFrameToPointCloudVector(m_scDevHandle, &m_scfDepth, points.data()) != SC_OK);
-
-			if (m_bPCLrgb && m_scfTransformedRGB.pFrameData &&
-				m_scfTransformedRGB.width == m_scfDepth.width &&
-				m_scfTransformedRGB.height == m_scfDepth.height)
+			const uint64_t now = getTns();
+			const uint64_t maxAge = uint64_t(frame.m_colorMaxAgeMs) * NSEC_MSEC;
+			const uint64_t depthTime = frame.m_tDevice;
+			const uint64_t skew = depthTime > m_tColorDevice ? depthTime - m_tColorDevice : m_tColorDevice - depthTime;
+			const bool sameCapture = frame.m_tStamp == m_tColorPCL;
+			const bool recent = m_tColorPCL && now >= m_tColorPCL && now - m_tColorPCL <= maxAge &&
+				(!depthTime || !m_tColorDevice || skew <= uint64_t(frame.m_colorMaxAgeMs));
+			if (frame.m_bColor && !m_colorPCL.empty() &&
+				m_colorPCL.cols == frame.m_width && m_colorPCL.rows == frame.m_height &&
+				(frame.m_colorMaxAgeMs == 0 ? sameCapture : recent))
 			{
-				if (!copyScFrame(m_scfTransformedRGB, color) || color.type() != CV_8UC3)
-				{
-					color.release();
-				}
+				// Each capture assigns a new owned Mat; the worker can retain this
+				// snapshot after releasing the PCL lock without another image copy.
+				color = m_colorPCL;
 			}
 		}
 
 		constexpr float c_b = 1.0f / 255.0f;
-		const uint64_t tNow = getTns();
+		const int width = frame.m_width;
+		const int height = frame.m_height;
+		const int stride = frame.m_stride;
+		const float scale = frame.m_scale;
+		const uint64_t tStamp = frame.m_tStamp;
 
 		vector<GEOMETRY_POINT> vPCL;
-		vPCL.reserve(points.size());
+		vPCL.reserve(frame.m_points.size());
 
 		// Sample in image space so XYZ and aligned color use the same original
 		// pixel. Keep SDK conversion at native resolution to preserve calibration.
@@ -830,7 +895,7 @@ namespace kai
 			for (int x = 0; x < width; x += stride)
 			{
 				const size_t k = size_t(y) * width + x;
-				const auto &p = points[k];
+				const auto &p = frame.m_points[k];
 
 				// Keep validation and scaling scalar, as in Orbbec. Eigen expression
 				// evaluation per pixel is costly in unoptimized camera/debug builds.
@@ -842,12 +907,12 @@ namespace kai
 					const uint8_t *pC = color.ptr<uint8_t>() + k * 3;
 					vC = Vector3f(pC[2] * c_b, pC[1] * c_b, pC[0] * c_b);
 				}
-				vPCL.push_back({vP, vC, tNow});
+				vPCL.push_back({vP, vC, tStamp});
 			}
 		}
 
 		transformPCL(vPCL);
-		m_pPCLout->set(vPCL, tNow);
+		m_pPCLout->set(vPCL, tStamp);
 	}
 
 	void _Scepter::console(const json &j, void *pJSONbase)
@@ -862,7 +927,7 @@ namespace kai
 		
 		if (j.contains("requestId")) reply["requestId"] = j["requestId"];
 		{
-			std::lock_guard<std::recursive_mutex> lock(m_mutexScFrame);
+			auto lock = lockScForWork();
 			try
 			{
 				if (cmd == "setConfig")

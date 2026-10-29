@@ -33,6 +33,7 @@ namespace kai
 		jKv(j, "port", m_port);
 		jKv(j, "tOutMs", m_tOutMs);
 		jKv(j, "nClientMax", m_nClientMax);
+		jKv(j, "bReadAllClients", m_bReadAllClients);
 
 		return true;
 	}
@@ -47,6 +48,7 @@ namespace kai
 		j["port"] = m_port;
 		j["tOutMs"] = m_tOutMs;
 		j["nClientMax"] = m_nClientMax;
+		j["bReadAllClients"] = m_bReadAllClients;
 
 		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
@@ -343,16 +345,16 @@ namespace kai
 	void _WebSocketServer::cbMessage(ws_cli_conn_t client,
 									 const unsigned char *msg, uint64_t size, int type)
 	{
+		// Client callbacks run concurrently. Keep timestamp creation and enqueue
+		// ordered so readers using the packet timestamp cursor cannot skip input.
+		std::unique_lock<std::mutex> readLock(m_readMutex);
+		while (m_bReadPaused && !m_bStopping)
 		{
-			std::unique_lock<std::mutex> lock(m_readMutex);
-			while (m_bReadPaused && !m_bStopping)
-			{
-				m_readReady.wait(lock);
-			}
-			if (m_bStopping)
-			{
-				return;
-			}
+			m_readReady.wait(readLock);
+		}
+		if (m_bStopping)
+		{
+			return;
 		}
 
 		std::shared_ptr<wsClient> pClient;
@@ -373,11 +375,13 @@ namespace kai
 		{
 			pStream->add({{vB, getTns()}});
 		}
-		// The server stream retains the former default-client routing.
-		if (m_pBpStreamOut && bDefaultClient)
+		// Default routing remains first-client-only; command servers can opt in
+		// to receiving complete messages from every accepted connection.
+		if (m_pBpStreamOut && (bDefaultClient || m_bReadAllClients))
 		{
 			m_pBpStreamOut->add({{vB, getTns()}});
 		}
+		readLock.unlock();
 
 		LOG_I("Received message: " + string(reinterpret_cast<const char *>(msg), size) + ", size: " + i2str(size) + ", type: " + i2str(type) + ", from: " + string(ws_getaddress(client)));
 	}

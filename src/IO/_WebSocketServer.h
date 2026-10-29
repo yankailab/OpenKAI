@@ -77,6 +77,7 @@ namespace kai
 		std::mutex m_clientMutex;
 		int m_nClientMax = 128;
 		WSSOCKET_MODE m_wsMode = wsSocket_txt_bcast;
+		bool m_bReadAllClients = false; // Merge complete client messages into the server input stream.
 
 		string m_host = "localhost";
 		uint16_t m_port = 8080;

@@ -7,6 +7,8 @@ function labelFor(key) {
 export class ScepterControls {
   constructor() {
     this.fields = new Map(); this.pending = null; this.sequence = 0; this.loaded = false;
+    // Command replies can be broadcast to several viewer tabs.
+    this.clientId = Array.from(crypto.getRandomValues(new Uint32Array(4)), value => value.toString(16)).join('-');
     this.onState = () => {
       const connected = window.wsSocket?.readyState === WebSocket.OPEN;
       if (!connected) { this.clearPending(); this.loaded = false; $('#configStatus').textContent = 'Command connection disconnected'; }
@@ -32,7 +34,7 @@ export class ScepterControls {
     if (this.pending) return;
     const module = $('#cameraModule').value.trim();
     if (!module) { $('#configStatus').textContent = 'Enter a camera module name'; return; }
-    const requestId = `camera-${++this.sequence}`;
+    const requestId = `camera-${this.clientId}-${++this.sequence}`;
     if (!window.wsSendCmd({ module, cmd, requestId, ...(config ? { config } : {}) })) return;
     this.pending = requestId;
     $('#configStatus').textContent = cmd === 'setConfig' ? 'Applying camera setting…' : cmd === 'saveConfig' ? 'Saving configuration…' : 'Loading current parameters…';

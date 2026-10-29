@@ -76,6 +76,8 @@ namespace kai
 
 	class _Scepter : public _RGBDbase
 	{
+		friend struct ScepterColorTestAccess;
+
 	public:
 		_Scepter();
 		virtual ~_Scepter();
@@ -141,6 +143,7 @@ namespace kai
 		bool updateScRGBD(void);
 
 	private:
+		std::unique_lock<std::recursive_mutex> lockScForWork(void);
 		void update(void);
 		static void *getUpdate(void *This)
 		{
@@ -149,6 +152,7 @@ namespace kai
 		}
 
 		void updatePCL(void);
+		void clearScFrames(void); // caller holds m_mutexScFrame
 		void updateTPP(void);
 		static void *getTPP(void *This)
 		{
@@ -157,12 +161,13 @@ namespace kai
 		}
 
 	protected:
-		// SDK frame buffers remain valid only until the next capture. Serialize
-		// capture/conversion/close; the PCL worker publishes owned data afterwards.
+		// The capture thread converts depth while holding the SDK lock. The PCL
+		// worker consumes owned snapshots without waiting for the next SDK capture.
+		std::mutex m_scAdmission;
 		std::recursive_mutex m_mutexScFrame;
-		bool m_bPCLframe = false;
 		bool m_bScInitialized = false;
 		int m_pclStride = 1; // Sample every Nth depth pixel in both axes; 1 keeps all points.
+		int m_pclColorMaxAgeMs = 1000; // Bounded reuse of aligned color; 0 requires the same capture.
 		uint32_t m_nDevice = 0;
 		ScDeviceInfo *m_pScDevListInfo = nullptr;
 		ScDeviceHandle m_scDevHandle = 0;
@@ -170,8 +175,26 @@ namespace kai
 		ScCtrl m_scCtrl;
 		uint64_t m_tFrameInterval = 0; // minimal interval between frame reading
 
-		ScFrame m_scfDepth = {0};
-		ScFrame m_scfTransformedRGB = {0};
+		struct ScPCLframe
+		{
+			vector<ScVector3f> m_points;
+			int m_width = 0;
+			int m_height = 0;
+			int m_stride = 1;
+			float m_scale = 0.001f;
+			bool m_bColor = false;
+			int m_colorMaxAgeMs = 1000;
+			uint64_t m_tStamp = 0;
+			uint64_t m_tDevice = 0;
+		};
+
+		// Lock order, when both are needed: m_mutexScFrame then m_mutexPCL.
+		std::mutex m_mutexPCL;
+		ScPCLframe m_pclFrame;
+		bool m_bPCLframe = false;
+		Mat m_colorPCL;
+		uint64_t m_tColorPCL = 0;
+		uint64_t m_tColorDevice = 0;
 
 	};
 

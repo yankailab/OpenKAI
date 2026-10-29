@@ -1,439 +1,523 @@
 {
-	"APP": {
-		"class": "InstanceMgr",
-		"appName": "apRover",
-		"bLog": true,
-		"bStdErr": true
-	},
-	"console": {
-		"class": "_Console",
-		"bON": false,
-		"thread": {
-			"FPS": 10
-		},
-		"vBASE": [
-			"apRover"
-		]
-	},
-
-
-	"httpServer": {
-		"class": "_HttpServer",
-		"bON": true,
-		"host": "0.0.0.0",
-		"port": 8081,
-		"webRoot": "html"
-	},
-	"wsServer": {
-		"BytePacketStreamIn": "wsServer_tx",
-		"BytePacketStreamOut": "wsServer_rx",
-		"class": "_WebSocketServer",
-		"bON": true,
-		"thread": {
-			"FPS": 30
-		},
-		"threadR": {
-			"FPS": 1
-		},
-		"host": "0.0.0.0",
-		"port": 7890,
-		"wsMode": 2,
-		"nClientMax": 1,
-		"tOutMs": 10000
-	},
-	"wsConsole": {
-		"class": "_WSconsole",
-		"bON": true,
-		"thread": {
-			"FPS": 10
-		},
-		"threadR": {
-			"FPS": 30
-		},
-		"BytePacketStreamIn": "wsServer_rx",
-		"BytePacketStreamOut": "wsServer_tx",
-		"msgFinishSend": "",
-		"msgFinishRecv": "EOJ",
-		"vBASE": [
-			"apRover",
-			"geoFence",
-			"scepter",
-			"scepterTransform",
-			"octGrid",
-			"viewer"
-		]
-	},
-
-
-	"serialAP": {
-		"BytePacketStreamIn": "serialAP_tx",
-		"BytePacketStreamOut": "serialAP_rx",
-		"class": "_SerialPort",
-		"bON": false,
-		"thread": {
-			"FPS": 10
-		},
-		"threadR": {
-			"FPS": 10
-		},
-		"port": "/dev/ttyACM0",
-		"/port": "/dev/ttyAMA0",
-		"//port": "/dev/ttyS0",
-		"baud": 115200
-	},
-	"udpAP": {
-		"BytePacketStreamIn": "udpAP_tx",
-		"BytePacketStreamOut": "udpAP_rx",
-		"class": "_UDP",
-		"bON": true,
-		"thread": {
-			"FPS": 30
-		},
-		"threadR": {
-			"FPS": 30
-		},
-		"addrRemote": "192.168.16.203",
-		"portRemote": 24602,
-		"/portLocal": 24600,
-		"bW2R": false,
-		"bWbroadcast": false
-	},
-
-
-	"apMavlink": {
-		"class": "_Mavlink",
-		"MavlinkStream": "apMavlink_stream",
-		"bON": true,
-		"thread": {
-			"FPS": 10
-		},
-		"bLog": false,
-		"/BytePacketStreamIn": "serialAP_rx",
-		"/BytePacketStreamOut": "serialAP_tx",
-		"BytePacketStreamIn": "udpAP_rx",
-		"BytePacketStreamOut": "udpAP_tx",
-		"/devSystemID": 0,
-		"mySystemID": 255,
-		"iMavComm": 0
-	},
-	"apBase": {
-		"class": "_APmav_rover",
-		"bON": true,
-		"thread": {
-			"FPS": 10
-		},
-		"_StateControl": "state",
-		"MavlinkStream": "apMavlink_stream",
-		"apType": 1,
-		"ieSendHB": 1,
-		"ieSendMsgInt": 1,
-		"mavMsgInt": {
-			"heartbeat": {
-				"id": 0,
-				"tInt": 0.3
-			},
-			"attitude": {
-				"id": 30,
-				"tInt": 0.5
-			},
-			"buttonChange": {
-				"id": 257,
-				"tInt": 0.2
-			},
-			"gpsRawINT": {
-				"id": 24,
-				"tInt": 1
-			},
-			"localPosition": {
-				"id": 32,
-				"tInt": 0.5
-			},
-			"globalPosition": {
-				"id": 33,
-				"tInt": 0.2
-			},
-			"homePosition": {
-				"id": 242,
-				"tInt": 10
-			},
-			"batteryStatus": {
-				"id": 147,
-				"tInt": 10
-			},
-			"missionCurrent": {
-				"id": 42,
-				"tInt": 1
-			}
-		},
-		"_TransformRigid": "apBaseTransform"
-	},
-
-
-	"apRover": {
-		"class": "_AProver_LiDAR",
-		"bON": true,
-		"bLog": true,
-		"thread": {
-			"FPS": 10
-		},
-		"_APmav_base": "apBase",
-		"_SelectableOctGrid": "octGrid",
-		"_GeoFence": "geoFence",
-		"pwmM": 1500,
-		"pwmD": 500,
-		"iRCsteer": 1,
-		"iRCthrottle": 3,
-		"tOutBtn": 200000000,
-		"apModeMove": 0,
-		"tOutNav": 2000000000,
-		"speedGo": 0.5,
-		"steerTurn": 0.5,
-		"bumperTurnDeg": 60,
-		"hdgToleranceDeg": 5,
-		"octGridOccu": 10,
-		"iRCservo": 6,
-		"pwmServoON": 2000,
-		"pwmServoOFF": 1500
-	},
-	"geoFence": {
-		"class": "_GeoFence",
-		"bON": true,
-		"thread": {
-			"FPS": 5
-		},
-		"_JSONbase": "wsConsole",
-		"type": 1,
-		"estD": 1,
-		"vPolygon": []
-	},
-
-
-	"viewCam": {
-		"class": "_OCVwindow",
-		"bON": false,
-		"thread": {
-			"FPS": 20
-		},
-		"bFullScreen": 0,
-		"RGBframeIn": "camRGB"
-	},
-	"scepter": {
-		"class": "_Scepter",
-		"bON": true,
-		"bLog": true,
-		"thread": {
-			"FPS": 10
-		},
-		"threadPP": {
-			"FPS": 10
-		},
-		"devURI": "",
-		"vSizeRGB": [
-			640,
-			480
-		],
-		"vRangeD": [
-			0,
-			4.0
-		],
-		"PCLframeOut": "scPC",
-		"_TransformRigid": "scepterTransform",
-		"bPCL": true,
-		"scPixelFormat": 4,
-		"bRGB": true,
-		"bDepth": true,
-		"btRGB": true,
-		"btDepth": false,
-		"bIR": false,
-		"RGBframeOut": "camRGB",
-		"DframeOut": "camDepth"
-	},
-	"scepterTransform": {
-		"class": "_TransformRigid",
-		"vT": [0, 0, 0],
-		"vR": [0, 0, 0, 1]
-	},
-	"scPC": {
-		"type": "dataObject",
-		"class": "PCLframe"
-	},
-
-
-	"octGrid": {
-		"class": "_SelectableOctGrid",
-		"bON": true,
-		"thread": {
-			"FPS": 10
-		},
-		"vPorigin": [0, 0, 0],
-		"vRootCellSize": [
-			5,
-			5,
-			5
-		],
-		"nMaxLevel": 5,
-		"nMaxCells": 18333,
-		"dTexpireCell": 300000000,
-		"dTexpirePCL": 500000000,
-		"nPminBuild": 100,
-		"vSelectedCells": [],
-		"vPCLframesIn": [
-			"scPC"
-		]
-	},
-	"viewer": {
-		"class": "_WebSelectableOctGrid",
-		"webRoot": "html/viewer/_SelectableOctGrid",
-		"bON": true,
-		"thread": {
-			"FPS": 30
-		},
-		"host": "0.0.0.0",
-		"port": 8080,
-		"nClientMax": 8,
-		"nPbuf": 400000,
-		"nLbuf": 100000,
-		"dTexpire": 0,
-		"bAutoBound": true,
-		"bShowGrid": true,
-		"vCamLookAt": [
-			0,
-			0,
-			0
-		],
-		"vCamEye": [
-			0,
-			-1,
-			-4
-		],
-		"vCamUp": [
-			0,
-			-1,
-			0
-		],
-		"camFov": 70,
-		"vCamNF": [
-			0.01,
-			1000000
-		],
-		"vGeometry": [
-			{
-				"PCLframeIn": "scPC",
-				"nP": 400000,
-				"nL": 0,
-				"matPointSize": 2
-			}
-		],
-		"vSelectableOctGrid": [
-			{
-				"nC": 18333,
-				"matCol": [
-					0.3,
-					0.8,
-					1,
-					1
-				],
-				"_SelectableOctGrid": "octGrid"
-			}
-		]
-	},
-	"scepterViewer": {
-		"class": "_WebGeometry",
-		"webRoot": "html/viewer/_Scepter",
-		"bON": true,
-		"thread": {
-			"FPS": 30
-		},
-		"host": "0.0.0.0",
-		"port": 8082,
-		"nClientMax": 8,
-		"nPbuf": 400000,
-		"nLbuf": 0,
-		"dTexpire": 500000000,
-		"bAutoBound": true,
-		"bShowGrid": true,
-		"vCamLookAt": [0, 0, 0],
-		"vCamEye": [0, -1, -4],
-		"vCamUp": [0, -1, 0],
-		"camFov": 70,
-		"vCamNF": [0.01, 1000000],
-		"vGeometry": [
-			{
-				"PCLframeIn": "scPC",
-				"nP": 400000,
-				"nL": 0,
-				"matPointSize": 2
-			}
-		]
-	},
-
-
-	
-	"pcFilePoints": {
-		"type": "dataObject",
-		"class": "PCLframe"
-	},
-	"camRGB": {
-		"type": "dataObject",
-		"class": "RGBframe"
-	},
-	"camDepth": {
-		"type": "dataObject",
-		"class": "RGBframe"
-	},
-	"apMavlink_stream": {
-		"type": "dataObject",
-		"class": "MavlinkStream",
-		"nMsgQueue": 1024
-	},
-	"wsServer_tx": {
-		"type": "dataObject",
-		"class": "BytePacketStream",
-		"nPacket": 256,
-		"nPbuf": 2000
-	},
-	"wsServer_rx": {
-		"type": "dataObject",
-		"class": "BytePacketStream",
-		"nPacket": 256,
-		"nPbuf": 2000
-	},
-	"serialAP_tx": {
-		"type": "dataObject",
-		"class": "BytePacketStream",
-		"nPacket": 1024,
-		"nPbuf": 512
-	},
-	"serialAP_rx": {
-		"type": "dataObject",
-		"class": "BytePacketStream",
-		"nPacket": 1024,
-		"nPbuf": 512
-	},
-	"udpAP_tx": {
-		"type": "dataObject",
-		"class": "BytePacketStream",
-		"nPacket": 256,
-		"nPbuf": 2000
-	},
-	"udpAP_rx": {
-		"type": "dataObject",
-		"class": "BytePacketStream",
-		"nPacket": 256,
-		"nPbuf": 2000
-	},
-	"apBaseTransform": {
-		"class": "_TransformRigid",
-		"vT": [
-			0.0,
-			0.0,
-			0.0
-		],
-		"vR": [
-			0.0,
-			0.0,
-			0.0,
-			1.0
-		]
-	}
+    "APP": {
+        "appName": "apRover",
+        "bLog": true,
+        "bStdErr": true,
+        "class": "InstanceMgr"
+    },
+    "apBase": {
+        "MavlinkStream": "apMavlink_stream",
+        "_StateControl": "state",
+        "_TransformRigid": "apBaseTransform",
+        "apType": 1,
+        "bON": true,
+        "class": "_APmav_rover",
+        "ieSendHB": 1,
+        "ieSendMsgInt": 1,
+        "mavMsgInt": {
+            "attitude": {
+                "id": 30,
+                "tInt": 0.5
+            },
+            "batteryStatus": {
+                "id": 147,
+                "tInt": 10
+            },
+            "buttonChange": {
+                "id": 257,
+                "tInt": 0.2
+            },
+            "globalPosition": {
+                "id": 33,
+                "tInt": 0.2
+            },
+            "gpsRawINT": {
+                "id": 24,
+                "tInt": 1
+            },
+            "heartbeat": {
+                "id": 0,
+                "tInt": 0.3
+            },
+            "homePosition": {
+                "id": 242,
+                "tInt": 10
+            },
+            "localPosition": {
+                "id": 32,
+                "tInt": 0.5
+            },
+            "missionCurrent": {
+                "id": 42,
+                "tInt": 1
+            }
+        },
+        "thread": {
+            "FPS": 10
+        }
+    },
+    "apBaseTransform": {
+        "class": "_TransformRigid",
+        "thread": {},
+        "vR": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+        ],
+        "vT": [
+            0.0,
+            0.0,
+            0.0
+        ]
+    },
+    "apMavlink": {
+        "/BytePacketStreamIn": "serialAP_rx",
+        "/BytePacketStreamOut": "serialAP_tx",
+        "/devSystemID": 0,
+        "BytePacketStreamIn": "udpAP_rx",
+        "BytePacketStreamOut": "udpAP_tx",
+        "MavlinkStream": "apMavlink_stream",
+        "bLog": false,
+        "bON": true,
+        "class": "_Mavlink",
+        "iMavComm": 0,
+        "mySystemID": 255,
+        "thread": {
+            "FPS": 10
+        },
+        "threadR": {
+            "FPS": 10
+        }
+    },
+    "apMavlink_stream": {
+        "class": "MavlinkStream",
+        "nMsgQueue": 1024,
+        "type": "dataObject"
+    },
+    "apRover": {
+        "_APmav_base": "apBase",
+        "_GeoFence": "geoFence",
+        "_SelectableOctGrid": "octGrid",
+        "apModeMove": 0,
+        "bLog": true,
+        "bON": true,
+        "bumperTurnDeg": 60,
+        "class": "_AProver_LiDAR",
+        "hdgToleranceDeg": 5,
+        "iRCservo": 6,
+        "iRCsteer": 1,
+        "iRCthrottle": 3,
+        "octGridOccu": 10,
+        "pwmD": 500,
+        "pwmM": 1500,
+        "pwmServoOFF": 1500,
+        "pwmServoON": 2000,
+        "speedGo": 0.5,
+        "steerTurn": 0.5,
+        "tOutBtn": 200000000,
+        "tOutNav": 2000000000,
+        "thread": {
+            "FPS": 10
+        }
+    },
+    "camDepth": {
+        "class": "RGBframe",
+        "type": "dataObject"
+    },
+    "camRGB": {
+        "class": "RGBframe",
+        "type": "dataObject"
+    },
+    "console": {
+        "bON": false,
+        "class": "_Console",
+        "thread": {
+            "FPS": 10
+        },
+        "vBASE": [
+            "apRover"
+        ]
+    },
+    "geoFence": {
+        "_JSONbase": "wsConsole",
+        "bON": true,
+        "class": "_GeoFence",
+        "estD": 1,
+        "thread": {
+            "FPS": 5
+        },
+        "type": 1,
+        "vPolygon": []
+    },
+    "httpServer": {
+        "bON": true,
+        "class": "_HttpServer",
+        "host": "0.0.0.0",
+        "port": 8081,
+        "thread": {},
+        "webRoot": "html"
+    },
+    "octGrid": {
+        "bLog": false,
+        "bON": true,
+        "class": "_SelectableOctGrid",
+        "dTexpireCell": 1500000000,
+        "dTexpirePCL": 500000000,
+        "nMaxCells": 18333,
+        "nMaxLevel": 5,
+        "nPminBuild": 100,
+        "name": "octGrid",
+        "thread": {
+            "FPS": 10,
+            "bLog": false,
+            "class": "_Thread",
+            "name": "thread"
+        },
+        "vPCLframesIn": [
+            "scPC"
+        ],
+        "vPorigin": [
+            -0.02500000037252903,
+            0.0,
+            2.3499999046325684
+        ],
+        "vRootCellSize": [
+            3.0,
+            3.0,
+            3.0
+        ],
+        "vSelectedCells": [
+            "05000000000000000000000000001230",
+            "05000000000000000000000000001030",
+            "05000000000000000000000000000230",
+            "05000000000000000000000000000030",
+            "05000000000000000000000000009214",
+            "05000000000000000000000000009014",
+            "05000000000000000000000000008214",
+            "0500000000000000000000000000cb06",
+            "0500000000000000000000000000d906",
+            "0500000000000000000000000000db06",
+            "05000000000000000000000000004922",
+            "05000000000000000000000000004b22",
+            "05000000000000000000000000005922",
+            "05000000000000000000000000005b22",
+            "05000000000000000000000000005a22",
+            "05000000000000000000000000004a22",
+            "05000000000000000000000000004822",
+            "0500000000000000000000000000da06",
+            "0500000000000000000000000000d806",
+            "0500000000000000000000000000ca06",
+            "0500000000000000000000000000c306",
+            "0500000000000000000000000000d306",
+            "0500000000000000000000000000d106",
+            "05000000000000000000000000004122",
+            "05000000000000000000000000004322",
+            "05000000000000000000000000005122",
+            "05000000000000000000000000005322",
+            "05000000000000000000000000004022",
+            "0500000000000000000000000000d206",
+            "0500000000000000000000000000d006",
+            "0500000000000000000000000000c206",
+            "05000000000000000000000000004222",
+            "05000000000000000000000000005022",
+            "05000000000000000000000000005222",
+            "05000000000000000000000000001b22",
+            "05000000000000000000000000001922",
+            "05000000000000000000000000000b22",
+            "05000000000000000000000000000922",
+            "05000000000000000000000000009b06",
+            "05000000000000000000000000008a06",
+            "05000000000000000000000000009806",
+            "05000000000000000000000000000822",
+            "05000000000000000000000000000a22",
+            "05000000000000000000000000001822",
+            "05000000000000000000000000001a22",
+            "05000000000000000000000000008b06",
+            "05000000000000000000000000009906",
+            "05000000000000000000000000009a06"
+        ]
+    },
+    "pcFilePoints": {
+        "class": "PCLframe",
+        "type": "dataObject"
+    },
+    "scPC": {
+        "class": "PCLframe",
+        "type": "dataObject"
+    },
+    "scepter": {
+        "DframeOut": "camDepth",
+        "PCLframeOut": "scPC",
+        "RGBframeOut": "camRGB",
+        "_TransformRigid": "scepterTransform",
+        "bDepth": true,
+        "bIR": false,
+        "bLog": true,
+        "bON": true,
+        "bPCL": true,
+        "bPCLrgb": true,
+        "bRGB": true,
+        "btDepth": false,
+        "btRGB": true,
+        "class": "_Scepter",
+        "devURI": "",
+        "pclColorMaxAgeMs": 2000,
+        "scFrameRate": 5,
+        "scPixelFormat": 4,
+        "thread": {
+            "FPS": 10
+        },
+        "threadPP": {
+            "FPS": 10
+        },
+        "vRangeD": [
+            0,
+            4.0
+        ],
+        "vSizeRGB": [
+            640,
+            480
+        ]
+    },
+    "scepterTransform": {
+        "bLog": false,
+        "class": "_TransformRigid",
+        "name": "scepterTransform",
+        "thread": {
+            "FPS": 30,
+            "bLog": false,
+            "class": "_Thread",
+            "name": "thread"
+        },
+        "vR": [
+            -5.336750069161485e-18,
+            -0.08715574274765815,
+            0.9961946980917455,
+            6.099933241728101e-17
+        ],
+        "vT": [
+            0.0,
+            0.0,
+            0.0
+        ]
+    },
+    "scepterViewer": {
+        "bAutoBound": true,
+        "bON": true,
+        "bShowGrid": true,
+        "camFov": 70,
+        "class": "_WebGeometry",
+        "dTexpire": 0,
+        "host": "0.0.0.0",
+        "nClientMax": 8,
+        "nLbuf": 0,
+        "nPbuf": 400000,
+        "port": 8082,
+        "thread": {
+            "FPS": 30
+        },
+        "vCamEye": [
+            0,
+            -1,
+            -4
+        ],
+        "vCamLookAt": [
+            0,
+            0,
+            0
+        ],
+        "vCamNF": [
+            0.01,
+            1000000
+        ],
+        "vCamUp": [
+            0,
+            -1,
+            0
+        ],
+        "vGeometry": [
+            {
+                "PCLframeIn": "scPC",
+                "matPointSize": 2,
+                "nL": 0,
+                "nP": 400000
+            }
+        ],
+        "webRoot": "html/viewer/_Scepter"
+    },
+    "serialAP": {
+        "//port": "/dev/ttyS0",
+        "/port": "/dev/ttyAMA0",
+        "BytePacketStreamIn": "serialAP_tx",
+        "BytePacketStreamOut": "serialAP_rx",
+        "bON": false,
+        "baud": 115200,
+        "class": "_SerialPort",
+        "port": "/dev/ttyACM0",
+        "thread": {
+            "FPS": 10
+        },
+        "threadR": {
+            "FPS": 10
+        }
+    },
+    "serialAP_rx": {
+        "class": "BytePacketStream",
+        "nPacket": 1024,
+        "nPbuf": 512,
+        "type": "dataObject"
+    },
+    "serialAP_tx": {
+        "class": "BytePacketStream",
+        "nPacket": 1024,
+        "nPbuf": 512,
+        "type": "dataObject"
+    },
+    "udpAP": {
+        "/portLocal": 24600,
+        "BytePacketStreamIn": "udpAP_tx",
+        "BytePacketStreamOut": "udpAP_rx",
+        "addrRemote": "192.168.16.203",
+        "bON": true,
+        "bW2R": false,
+        "bWbroadcast": false,
+        "class": "_UDP",
+        "portRemote": 24602,
+        "thread": {
+            "FPS": 30
+        },
+        "threadR": {
+            "FPS": 30
+        }
+    },
+    "udpAP_rx": {
+        "class": "BytePacketStream",
+        "nPacket": 256,
+        "nPbuf": 2000,
+        "type": "dataObject"
+    },
+    "udpAP_tx": {
+        "class": "BytePacketStream",
+        "nPacket": 256,
+        "nPbuf": 2000,
+        "type": "dataObject"
+    },
+    "viewCam": {
+        "RGBframeIn": "camRGB",
+        "bFullScreen": 0,
+        "bON": false,
+        "class": "_OCVwindow",
+        "thread": {
+            "FPS": 20
+        }
+    },
+    "viewer": {
+        "bAutoBound": true,
+        "bON": true,
+        "bShowGrid": true,
+        "camFov": 70,
+        "class": "_WebSelectableOctGrid",
+        "dTexpire": 0,
+        "host": "0.0.0.0",
+        "nClientMax": 8,
+        "nLbuf": 100000,
+        "nPbuf": 400000,
+        "port": 8080,
+        "thread": {
+            "FPS": 30
+        },
+        "vCamEye": [
+            0,
+            -1,
+            -4
+        ],
+        "vCamLookAt": [
+            0,
+            0,
+            0
+        ],
+        "vCamNF": [
+            0.01,
+            1000000
+        ],
+        "vCamUp": [
+            0,
+            -1,
+            0
+        ],
+        "vGeometry": [
+            {
+                "PCLframeIn": "scPC",
+                "matPointSize": 2,
+                "nL": 0,
+                "nP": 400000
+            }
+        ],
+        "vSelectableOctGrid": [
+            {
+                "_SelectableOctGrid": "octGrid",
+                "matCol": [
+                    0.3,
+                    0.8,
+                    1,
+                    1
+                ],
+                "nC": 18333
+            }
+        ],
+        "webRoot": "html/viewer/_SelectableOctGrid"
+    },
+    "wsConsole": {
+        "BytePacketStreamIn": "wsServer_rx",
+        "BytePacketStreamOut": "wsServer_tx",
+        "bON": true,
+        "class": "_WSconsole",
+        "msgFinishRecv": "EOJ",
+        "msgFinishSend": "",
+        "thread": {
+            "FPS": 10
+        },
+        "threadR": {
+            "FPS": 30
+        },
+        "vBASE": [
+            "apRover",
+            "geoFence",
+            "scepter",
+            "scepterTransform",
+            "octGrid",
+            "viewer"
+        ]
+    },
+    "wsServer": {
+        "BytePacketStreamIn": "wsServer_tx",
+        "BytePacketStreamOut": "wsServer_rx",
+        "bON": true,
+        "bReadAllClients": true,
+        "class": "_WebSocketServer",
+        "host": "0.0.0.0",
+        "nClientMax": 8,
+        "port": 7890,
+        "tOutMs": 10000,
+        "thread": {
+            "FPS": 30
+        },
+        "threadR": {
+            "FPS": 1
+        },
+        "wsMode": 3
+    },
+    "wsServer_rx": {
+        "class": "BytePacketStream",
+        "nPacket": 256,
+        "nPbuf": 2000,
+        "type": "dataObject"
+    },
+    "wsServer_tx": {
+        "class": "BytePacketStream",
+        "nPacket": 256,
+        "nPbuf": 2000,
+        "type": "dataObject"
+    }
 }

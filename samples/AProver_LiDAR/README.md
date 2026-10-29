@@ -19,12 +19,14 @@ backend process running through all three steps.
 
 1. Open **http://ROVER:8082/** for the Scepter viewer. Click **Start**, leaving
    the camera module as `scepter` and command port as `7890`. Configure the
-   sensor, keep depth capture and point-cloud output (`bDepth`, `bPCL`) enabled,
-   then click **Save config** and close the page. Saved settings update the
+   sensor, keep depth capture and point-cloud output (`bDepth`, `bPCL`) enabled.
+   For colored points, also keep `bPCLrgb` and color-to-depth alignment
+   (`scTransformColorToDepth`, initialized by `btRGB` in the sample) enabled.
+   Then click **Save config**. Saved settings update the
    `scepter` section of the original launch JSON.
 2. Open **http://ROVER:8080/** for the selectable grid viewer and click **Start**.
    Set the grid origin/size if needed. Pick the proximity volumes in front of
-   the rover, then click **Send** in the cell picker and close the page. This
+   the rover, then click **Send** in the cell picker. This
    saves `octGrid.vPorigin`, `octGrid.vRootCellSize` and
    `octGrid.vSelectedCells` in the same JSON and applies the selection immediately.
    **Load** retrieves the running selections. Both viewers consume `scPC`, the
@@ -36,12 +38,28 @@ backend process running through all three steps.
    movement; release stops after the button timeout. Tap **STOP** to enter
    standby. Cutter **ON/OFF** controls the cutter independently.
 
-The command connection allows one browser at a time; close each configuration
-page before opening the next. Each viewer is served on its own stream port so
+The command server accepts up to eight browser connections. `bReadAllClients`
+routes commands from every connected page, and `wsMode: 3` broadcasts replies,
+so both viewers can stay open while configuring the camera or grid.
+Each viewer is served on its own stream port so
 its existing host/port defaults work without changes to the shared viewer code.
 When opening a viewer's `index.html` directly, enter port `8082` for Scepter or
 `8080` for the grid before **Start**. Do not launch the viewers through the static
 operation server on port `8081` unless you also change their stream port.
+
+Both viewers use `dTexpire: 0` to retain the latest point cloud until the next
+frame arrives, including during camera configuration or capture delays.
+The octree rejects input points older than 500 ms (`dTexpirePCL`) and retains
+observed cells for 1.5 seconds (`dTexpireCell`) to bridge Wi-Fi frame gaps while
+displaying and picking occupied cells. This also retains obstacle occupancy for
+up to 1.5 seconds after its last observation. Cells still expire when updates stop.
+
+The Scepter settings use 5 FPS ToF capture and compressed BGR color at 640×480
+to reduce traffic over Wi-Fi. `pclColorMaxAgeMs: 2000` lets fresh depth points
+reuse the most recent aligned color for up to two seconds when color frames
+drop. Color can lag moving objects during that interval; depth positions and
+timestamps still come from the new depth frame. Expired color falls back to
+white. Set `pclColorMaxAgeMs` to `0` to require color from the same capture.
 
 ## Motion and settings
 

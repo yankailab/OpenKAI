@@ -47,15 +47,24 @@ namespace kai
 		{
 			NULL_(pCell);
 
+			// This is the innermost loop for every point at every octree level.
+			// Evaluate the three-channel mean directly: Eigen expressions here
+			// dominate dense-cloud builds without compiler optimization.
+			float *color = pCell->m_vC.data();
+			const float *sample = p.m_vC.data();
 			if (pCell->m_nP <= 0)
 			{
-				pCell->m_vC = Vector4f(p.m_vC.x(), p.m_vC.y(), p.m_vC.z(), 1);
+				for (unsigned axis = 0; axis < 3; ++axis)
+					color[axis] = sample[axis];
 			}
 			else
 			{
-				Vector4f color = Vector4f(p.m_vC.x(), p.m_vC.y(), p.m_vC.z(), 1);
-				pCell->m_vC = (pCell->m_vC * (float)pCell->m_nP + color) / (float)(pCell->m_nP + 1);
+				const float count = float(pCell->m_nP);
+				const float nextCount = float(pCell->m_nP + 1);
+				for (unsigned axis = 0; axis < 3; ++axis)
+					color[axis] = (color[axis] * count + sample[axis]) / nextCount;
 			}
+			color[3] = 1.f;
 
 			pCell->m_nP++;
 			pCell->m_tStamp = tNow;
@@ -248,7 +257,9 @@ namespace kai
 
 			for (const GEOMETRY_POINT &point : m_vInputPoints)
 			{
-				if (bExpired(point.m_tStamp, tExpire) || !point.m_vP.allFinite())
+				const float *position = point.m_vP.data();
+				if (bExpired(point.m_tStamp, tExpire) || !std::isfinite(position[0]) ||
+					!std::isfinite(position[1]) || !std::isfinite(position[2]))
 				{
 					continue;
 				}
@@ -261,11 +272,18 @@ namespace kai
 	OCTGRID_PCL_CELL *_OctreeGrid::addCellPoint(const GEOMETRY_POINT &gP, const uint64_t &tNow, int nMaxLevTo, bool bAdd)
 	{
 		NULL_N(m_pCell);
-		IF_N(!bInCell(gP.m_vP, m_vPorigin, m_vRootCellSize));
+		const float *point = gP.m_vP.data();
+		const float *origin = m_vPorigin.data();
+		const float *rootSize = m_vRootCellSize.data();
+		float center[3], size[3];
+		for (unsigned axis = 0; axis < 3; ++axis)
+		{
+			IF_N(std::fabs(point[axis] - origin[axis]) > rootSize[axis] * 0.5f);
+			center[axis] = origin[axis];
+			size[axis] = rootSize[axis];
+		}
 
 		OCTREE_CELL<OCTGRID_PCL_CELL> *pCell = m_pCell;
-		Vector3f vPc = m_vPorigin;
-		Vector3f vSize = m_vRootCellSize;
 
 		if (nMaxLevTo < 0 || nMaxLevTo > m_nMaxLevel)
 			nMaxLevTo = m_nMaxLevel;
@@ -274,7 +292,8 @@ namespace kai
 
 		for (int iL = 0; iL <= nMaxLevTo; iL++)
 		{
-			uint8_t iC = childIdx(gP.m_vP, vPc);
+			const uint8_t iC = (point[0] >= center[0] ? 4 : 0) |
+				(point[1] >= center[1] ? 2 : 0) | (point[2] >= center[2] ? 1 : 0);
 
 			// PCL at this level
 			OCTGRID_PCL_CELL *pPcl = bAdd ? pCell->addT() : pCell->getT();
@@ -294,8 +313,11 @@ namespace kai
 				NULL_N(pChild);
 			}
 
-			vPc = childCenter(vPc, vSize, iC);
-			vSize = vHalf(vSize);
+			for (unsigned axis = 0; axis < 3; ++axis)
+			{
+				center[axis] += size[axis] * ((iC & (4 >> axis)) ? 0.25f : -0.25f);
+				size[axis] *= 0.5f;
+			}
 			pCell = pChild;
 		}
 

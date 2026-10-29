@@ -22,10 +22,21 @@ color, filters/IR, network/time, AI module, and SDK preset. Every serializable
 `ScCtrl` field is included, plus stream capture switches, point cloud stride and
 scale. Hot-plug function pointers and user-data pointers remain C++ only.
 
+`pclColorMaxAgeMs` bounds reuse of the last aligned color image when depth and
+color arrive separately or color frames are lost. The default is 1000 ms;
+`0` requires color from the same capture. Both host age and camera timestamp
+difference must be within the limit, and image dimensions must match. Depth
+continues updating with white points if color is unavailable or expires.
+Retained frames are cleared when the camera closes or configuration is applied.
+Increasing the limit can smooth color gaps on Wi-Fi at the cost of color lag
+on moving objects. It does not change depth positions or their timestamps.
+
 A field change sends a `setConfig` patch immediately. Invalid types/ranges are
 rejected before any changes are made. SDK failures are returned per field. A
 closed camera rejects live edits. Stream profile changes pause and restart
 capture; the command handler shares the frame lock with capture and conversion.
+Waiting commands run between captures, even when capture takes longer than the
+configured worker interval. Sending replies does not hold the camera lock.
 Model-specific controls can be rejected by the device. Limits in the form check
 the SDK types and documented ranges, not device-specific capability discovery.
 
@@ -61,20 +72,33 @@ text messages. `module` and `requestId` route and correlate replies.
 
 Replies contain `bSuccess`, `config`, `deviceOpen` and optional `errors`/`error`.
 `getConfig` replies also contain the categorized control `schema`.
+Request IDs include a random viewer identifier to distinguish replies across tabs.
+For concurrent command clients, configure `_WebSocketServer` with
+`bReadAllClients: true`, `wsMode: 3`, and a sufficient `nClientMax` (the
+`AProver_LiDAR` sample uses eight). Each request must be sent as one complete
+WebSocket message, including its `EOJ` terminator, as this viewer does.
 
 ## Checks
 
+The color-buffer regression test runs without a camera and covers independent
+depth/color arrivals, SDK buffer reuse, capture timeouts, color expiry,
+configuration resets, preservation of depth timestamps, publication while
+the SDK is blocked waiting for the next capture, and configuration replies
+between consecutive captures:
+
 ```sh
-cmake --build build -j 4
-python3 test/scepter/native.py build
-python3 test/scepter/config.py build
-python3 test/scepter/browser.py build/OpenKAI
+python3 test/run_scepter_color_tests.py build
 ```
 
-Native checks use the installed SDK with simulated calls, requiring no camera.
-They cover frame handling, configuration initialization and saving, malformed commands, offline edits,
-SDK rejections, exposure dependencies and stream restart. The browser check needs
-Chromium/Chrome and localhost sockets. It uses temporary ports/config/save files,
-checks the actual WSconsole connection, controls, persistence, fragmented replies
-and disconnection, and checks live points if a camera opens. It writes a screenshot
-to `/tmp/openkai-scepter-viewer.png`.
+```sh
+python3 test/Sensor/ScepterLive.py build/OpenKAI --ip 192.168.16.101
+```
+
+The live check requires a reachable camera, Chromium/Chrome and localhost sockets.
+Stop other camera applications first. It uses temporary ports and a camera-only
+launch file, connects a second command client before the browser, and checks
+Refresh, editing the host color-cache age, saving, and continuing colored clouds.
+Save writes only the temporary JSON; the original runtime color-cache age is
+restored before shutdown. It writes `/tmp/openkai-scepter-live.png` and
+`/tmp/openkai-scepter-live.log`. Add `--single-client` to isolate capture locking
+from command routing.

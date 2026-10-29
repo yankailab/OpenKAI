@@ -129,9 +129,20 @@ namespace kai
 		NULL_(m_pTf);
 		// Use one pose for the whole cloud, even while the transform is adjusted.
 		const Isometry3f pose = m_pTf->getPoseCombinedf();
+		float matrix[3][4];
+		for (unsigned row = 0; row < 3; ++row)
+			for (unsigned col = 0; col < 4; ++col)
+				matrix[row][col] = pose(row, col);
+		// Dense frames must reach consumers before their freshness deadline.
+		// Avoid constructing an Eigen transform expression for every pixel,
+		// which is expensive in unoptimized camera/debug builds.
 		for (GEOMETRY_POINT &point : points)
 		{
-			point.m_vP = pose * point.m_vP;
+			float *position = point.m_vP.data();
+			const float x = position[0], y = position[1], z = position[2];
+			for (unsigned row = 0; row < 3; ++row)
+				position[row] = matrix[row][0] * x + matrix[row][1] * y +
+					matrix[row][2] * z + matrix[row][3];
 		}
 	}
 
