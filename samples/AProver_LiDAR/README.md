@@ -68,8 +68,9 @@ An obstacle causes a pivot until it clears. A fence encounter chooses the pivot
 direction from the incoming heading and the reflected heading at the boundary.
 A bumper contact reverses until released, then pivots by `bumperTurnDeg` from
 the heading at release before resuming normal avoidance. An emergency button
-press enters standby and switches the cutter off; releasing it does not resume
-motion or the cutter. Auto also stops with the cutter off if its fence or
+press enters standby and switches the cutter off; releasing it returns to idle
+manual mode with the cutter off. A new command is required to move or restart
+the cutter. Auto also stops with the cutter off if its fence or
 position/heading telemetry becomes invalid.
 
 | Section/key | Meaning |
@@ -80,14 +81,23 @@ position/heading telemetry becomes invalid.
 | `apRover.hdgToleranceDeg` | Heading tolerance for completing the bumper turn. |
 | `apRover.tOutBtn` | Manual command timeout in nanoseconds; default 200 ms. The UI repeats held commands every 100 ms. |
 | `apRover.tOutNav` | Maximum auto position/heading age in nanoseconds; default 2 s. |
+| `apRover.bEmergencyActiveLow`, `bBumperActiveLow` | Set `true` when the input is LOW while pressed. This sample enables both; omitted settings retain HIGH-means-pressed behavior. |
 | `apRover.apModeMove` | ArduRover driving mode; default 0 (MANUAL). The controller requests this mode and arming when moving. |
 | `apRover.iRCsteer`, `iRCthrottle`, `iRCservo` | One-based MAVLink RC override channels. |
 | `apRover.pwmM`, `pwmD` | Neutral PWM and command range. |
 | `apRover.pwmServoON`, `pwmServoOFF` | Cutter channel PWM values. |
 | `geoFence.estD` | Forward prediction distance in metres. |
 
-The hardware reports the emergency button in `BUTTON_CHANGE.state` bit 0 and
-the bumper in bit 1 (set means pressed). Turning uses steering with neutral
+The hardware reports the emergency input in `BUTTON_CHANGE.state` bit 0 and
+the bumper in bit 1. ArduPilot sends raw electrical levels; its button-function
+inversion option does not invert this telemetry. With this sample's pull-up
+wiring, a cleared bit means pressed and a set bit means released. Both released
+is state `3`; emergency pressed is state `2`. The polarity settings above map
+these levels to logical button states. Button changes are logged with raw and
+interpreted states; emergency rejection messages also show the raw state and
+report age. Missing reports do not release a held emergency button.
+
+Turning uses steering with neutral
 throttle, matching the sample's skid-steer pivot behavior; the ArduRover motor
 configuration must support it. `GLOBAL_POSITION_INT` supplies latitude,
 longitude and heading; unknown headings cannot start or continue auto mode.

@@ -100,6 +100,8 @@
         "_GeoFence": "geoFence",
         "_SelectableOctGrid": "octGrid",
         "apModeMove": 0,
+        "bBumperActiveLow": true,
+        "bEmergencyActiveLow": true,
         "bLog": true,
         "bON": true,
         "bumperTurnDeg": 60,
@@ -113,8 +115,8 @@
         "pwmM": 1500,
         "pwmServoOFF": 1500,
         "pwmServoON": 2000,
-        "speedGo": 0.5,
-        "steerTurn": 0.5,
+        "speedGo": 0.45,
+        "steerTurn": 0.45,
         "tOutBtn": 200000000,
         "tOutNav": 2000000000,
         "thread": {
@@ -141,14 +143,44 @@
     },
     "geoFence": {
         "_JSONbase": "wsConsole",
+        "bLog": false,
         "bON": true,
         "class": "_GeoFence",
-        "estD": 1,
+        "estD": 1.0,
+        "name": "geoFence",
         "thread": {
-            "FPS": 5
+            "FPS": 5,
+            "bLog": false,
+            "class": "_Thread",
+            "name": "thread"
         },
         "type": 1,
-        "vPolygon": []
+        "vP": [
+            35.8421412,
+            139.5246955
+        ],
+        "vPolygon": [
+            [
+                35.841173,
+                139.522902
+            ],
+            [
+                35.842661,
+                139.522399
+            ],
+            [
+                35.843063,
+                139.525806
+            ],
+            [
+                35.840938,
+                139.52523
+            ],
+            [
+                35.840499,
+                139.523229
+            ]
+        ]
     },
     "httpServer": {
         "bON": true,
@@ -251,7 +283,9 @@
         "PCLframeOut": "scPC",
         "RGBframeOut": "camRGB",
         "_TransformRigid": "scepterTransform",
+        "bConfidence": true,
         "bDepth": true,
+        "bIMU": false,
         "bIR": false,
         "bLog": true,
         "bON": true,
@@ -261,19 +295,84 @@
         "btDepth": false,
         "btRGB": true,
         "class": "_Scepter",
-        "devURI": "",
-        "pclColorMaxAgeMs": 2000,
-        "scFrameRate": 5,
+        "dOfs": 0.0,
+        "dScale": 0.0010000000474974513,
+        "devFPS": 30,
+        "devFPSd": 30,
+        "devURI": "192.168.16.101",
+        "fConfidenceThr": 0.0,
+        "name": "scepter",
+        "pclColorMaxAgeMs": 3000,
+        "pclStride": 1,
+        "scAIModuleEnabled": false,
+        "scAIModuleInputFrames": [],
+        "scAIModuleParams": [],
+        "scAIModulePreviewFrames": [],
+        "scAIModuleWorkMode": 0,
+        "scAutoExposureRGB": true,
+        "scAutoExposureToF": true,
+        "scColorAECMaxExposureTime": 4000,
+        "scColorAECROIHeight": 480,
+        "scColorAECROIWidth": 640,
+        "scColorAECROIX": 0,
+        "scColorAECROIY": 0,
+        "scColorGain": 1.0,
+        "scColorHeight": 480,
+        "scColorWidth": 640,
+        "scConfidenceFilterEnabled": true,
+        "scConfidenceFilterThreshold": 1,
+        "scDHCPEnabled": false,
+        "scDeviceIPAddr": "",
+        "scDeviceSubnetMask": "",
+        "scExposureTimeRGB": 4000,
+        "scExposureTimeToF": 4000,
+        "scFillHoleEnabled": false,
+        "scFlyingPixelFilterEnabled": true,
+        "scFlyingPixelFilterThreshold": 5,
+        "scFrameRate": 10,
+        "scHDR": false,
+        "scHDRExposureTimes": [],
+        "scHWTriggerInterval": 0,
+        "scHWTriggerPolarity": 0,
+        "scHWTriggerWidth": 0,
+        "scIRGMMCorrectionEnabled": false,
+        "scIRGMMCorrectionThreshold": 1,
+        "scIRGMMGain": 50,
+        "scNTPServerIP": "",
+        "scParamsJsonFile": "",
         "scPixelFormat": 4,
+        "scScanTime": 3000,
+        "scSoftwareTriggerFrameCount": 1,
+        "scSpatialFilterEnabled": true,
+        "scTimeFilterEnabled": true,
+        "scTimeFilterThreshold": 1,
+        "scTimeSyncMode": 0,
+        "scToFHeight": 480,
+        "scToFWidth": 640,
+        "scTransformColorToDepth": true,
+        "scTransformDepthToColor": false,
+        "scWDR": true,
+        "scWDRExposureTimes": [],
+        "scWorkMode": 0,
         "thread": {
-            "FPS": 10
+            "FPS": 10,
+            "bLog": false,
+            "class": "_Thread",
+            "name": "thread"
         },
         "threadPP": {
-            "FPS": 10
+            "FPS": 10,
+            "bLog": false,
+            "class": "_Thread",
+            "name": "threadPP"
         },
         "vRangeD": [
-            0,
+            0.0,
             4.0
+        ],
+        "vSizeD": [
+            640,
+            480
         ],
         "vSizeRGB": [
             640,

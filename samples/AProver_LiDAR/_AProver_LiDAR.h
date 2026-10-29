@@ -99,6 +99,10 @@ namespace kai
 		float m_pwmServoON = 2000;
 		float m_pwmServoOFF = 1500;
 
+		bool m_bEmergencyActiveLow = false; // BUTTON_CHANGE bit 0
+		bool m_bBumperActiveLow = false; // BUTTON_CHANGE bit 1
+		uint8_t m_buttonState = 0;
+		uint64_t m_tButtonState = 0;
 		bool m_bEmergencyBtn = false;
 		bool m_bBumper = false;
 

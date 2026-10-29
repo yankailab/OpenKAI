@@ -46,6 +46,8 @@ namespace kai
 		jKv(j, "iRCservo", m_iRCservo);
 		jKv(j, "pwmServoON", m_pwmServoON);
 		jKv(j, "pwmServoOFF", m_pwmServoOFF);
+		jKv(j, "bEmergencyActiveLow", m_bEmergencyActiveLow);
+		jKv(j, "bBumperActiveLow", m_bBumperActiveLow);
 
 		IF_Le_F(!std::isfinite(m_speedGo) || m_speedGo <= 0 || m_speedGo > 1 ||
 				!std::isfinite(m_steerTurn) || m_steerTurn <= 0 || m_steerTurn > 1,
@@ -82,6 +84,8 @@ namespace kai
 		j["iRCservo"] = m_iRCservo;
 		j["pwmServoON"] = m_pwmServoON;
 		j["pwmServoOFF"] = m_pwmServoOFF;
+		j["bEmergencyActiveLow"] = m_bEmergencyActiveLow;
+		j["bBumperActiveLow"] = m_bBumperActiveLow;
 
 		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
@@ -202,7 +206,8 @@ namespace kai
 			return true;
 		}
 
-		if (m_dMode == apLiDAR_modeManual && getTns() - m_tLastBtn > m_tOutBtn)
+		const bool manualCommand = m_btnPressed != apLiDAR_btnNone || m_bDirectControl;
+		if (m_dMode == apLiDAR_modeManual && manualCommand && getTns() - m_tLastBtn > m_tOutBtn)
 			stopControl(false);
 
 		Vector4d position;
@@ -226,6 +231,12 @@ namespace kai
 		if (m_pAP->getCustomMode() != m_apModeMove)
 		{
 			m_pAP->setCustomMode(m_apModeMove);
+			setSteerSpeed(0, 0);
+			return true;
+		}
+		// Releasing the emergency button restores manual mode; a new command arms it.
+		if (m_dMode == apLiDAR_modeManual && !manualCommand)
+		{
 			setSteerSpeed(0, 0);
 			return true;
 		}
@@ -329,8 +340,21 @@ namespace kai
 		uint64_t timestamp = 0;
 		if (stream->snapshot<MavButtonChange>(msg, timestamp))
 		{
-			m_bEmergencyBtn = (msg.state & (1u << 0)) != 0;
-			m_bBumper = (msg.state & (1u << 1)) != 0;
+			const bool emergencyWasPressed = m_bEmergencyBtn;
+			// ArduPilot reports raw pin levels, including pull-ups, not logical presses.
+			m_bEmergencyBtn = ((msg.state & (1u << 0)) != 0) != m_bEmergencyActiveLow;
+			m_bBumper = ((msg.state & (1u << 1)) != 0) != m_bBumperActiveLow;
+			if (!m_tButtonState || m_buttonState != msg.state)
+				LOG_I("BUTTON_CHANGE state=" + i2str(msg.state) +
+					", emergency=" + i2str(m_bEmergencyBtn) + ", bumper=" + i2str(m_bBumper));
+			m_buttonState = msg.state;
+			m_tButtonState = timestamp;
+			if (emergencyWasPressed && !m_bEmergencyBtn)
+			{
+				// Return to manual without restoring old movement or cutter commands.
+				stopControl(true);
+				m_dMode = apLiDAR_modeManual;
+			}
 		}
 	}
 
@@ -354,6 +378,9 @@ namespace kai
 		pC->addMsg("dMode = " + i2str(m_dMode));
 		pC->addMsg("bServoON = " + i2str(m_bServoON));
 		pC->addMsg("emergency = " + i2str(m_bEmergencyBtn) + ", bumper = " + i2str(m_bBumper));
+		if (m_tButtonState)
+			pC->addMsg("BUTTON_CHANGE state = " + i2str(m_buttonState) +
+				", age ms = " + std::to_string((getTns() - m_tButtonState) / 1000000));
 		pC->addMsg("bumperState = " + i2str(m_bumperState));
 	}
 
@@ -456,7 +483,9 @@ namespace kai
 			return;
 
 		if (!bSuccess && m_bEmergencyBtn)
-			error = "Emergency button is pressed";
+			error = "Emergency button is pressed (BUTTON_CHANGE.state=" + i2str(m_buttonState) +
+				", bit 0 active=" + (m_bEmergencyActiveLow ? "LOW" : "HIGH") +
+				", age=" + std::to_string((getTns() - m_tButtonState) / 1000000) + " ms)";
 		NULL_(pJb);
 		json jr = {{"cmd", cmd}, {"bSuccess", bSuccess}};
 		if (!error.empty())

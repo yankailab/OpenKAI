@@ -76,7 +76,7 @@ struct Fixture
     _GeoFence fence;
     RoverHarness rover;
 
-    explicit Fixture(double turn = 60)
+    explicit Fixture(double turn = 60, bool emergencyActiveLow = false, bool bumperActiveLow = false)
     {
         cfg.setJson({
             {"stream", {{"class", "MavlinkStream"}}},
@@ -86,7 +86,8 @@ struct Fixture
             {"fence", {{"class", "_GeoFence"}, {"type", _GeoFence_polygon}, {"estD", 2},
                 {"vPolygon", {{-0.001, -0.001}, {-0.001, 0.001}, {0.001, 0.001}, {0.001, -0.001}}}}},
             {"rover", {{"class", "_AProver_LiDAR"}, {"bumperTurnDeg", turn}, {"hdgToleranceDeg", 5}, {"tOutBtn", NSEC_SEC},
-                {"speedGo", 0.3}, {"steerTurn", 0.4}, {"octGridOccu", 2}}},
+                {"speedGo", 0.3}, {"steerTurn", 0.4}, {"octGridOccu", 2},
+                {"bEmergencyActiveLow", emergencyActiveLow}, {"bBumperActiveLow", bumperActiveLow}}},
         });
         auto &config = *cfg.getJson();
         auto load = [&](BASE &object, const char *name)
@@ -103,7 +104,7 @@ struct Fixture
         autopilot.attach(stream);
         rover.attach(autopilot, grid, fence);
         position(0);
-        buttons(0);
+        buttons((emergencyActiveLow ? 1 : 0) | (bumperActiveLow ? 2 : 0));
     }
 
     void position(double heading, double lat = 0, double lon = 0)
@@ -195,7 +196,7 @@ void testEmergency()
     f.start();
     f.rover.command({{"cmd", "setServo"}, {"bServoON", true}});
     assert(f.rover.cutter());
-    f.buttons(1);
+    f.buttons(1); // Emergency is bit 0; bumper is bit 1.
     assert(f.rover.updateCtrl());
     assert(f.rover.mode() == apLiDAR_modeStandby && !f.rover.cutter());
     assert(f.rover.speed() == 0 && f.rover.steer() == 0);
@@ -210,9 +211,138 @@ void testEmergency()
     mavlink_rc_channels_override_t rc{};
     mavlink_msg_rc_channels_override_decode(&messages.back(), &rc);
     assert(rc.chan1_raw == 1500 && rc.chan3_raw == 1500 && rc.chan6_raw == 1500);
+    f.autopilot.report(AP_ROVER_HOLD, apArm_disarm);
+    f.autopilot.setArm(apArm_disarm);
     f.buttons(0);
     assert(f.rover.updateCtrl());
-    assert(f.rover.mode() == apLiDAR_modeStandby && !f.rover.cutter());
+    assert(f.rover.mode() == apLiDAR_modeManual && !f.rover.cutter());
+    assert(f.rover.speed() == 0 && f.rover.steer() == 0);
+    assert(f.autopilot.requestedMode() == AP_ROVER_MANUAL);
+    f.autopilot.report(AP_ROVER_MANUAL, apArm_disarm);
+    f.rover.expireManual(); // Idle manual mode must survive an old command timestamp.
+    assert(f.rover.updateCtrl());
+    assert(f.rover.mode() == apLiDAR_modeManual && !f.rover.cutter());
+    assert(f.rover.speed() == 0 && f.rover.steer() == 0);
+    assert(f.autopilot.requestedArm() == apArm_disarm);
+
+    f.rover.command({{"cmd", "ctrlBtn"}, {"btn", "F"}});
+    assert(f.rover.updateCtrl());
+    assert(f.autopilot.requestedArm() == apArm_arm && f.rover.speed() == 0);
+    f.autopilot.report(AP_ROVER_MANUAL, apArm_arm);
+    assert(f.rover.updateCtrl());
+    assert(f.rover.mode() == apLiDAR_modeManual && f.rover.speed() > 0);
+    f.rover.command({{"cmd", "ctrlBtn"}, {"btn", "S"}});
+    assert(f.rover.updateCtrl()); // Reading the released button again must not undo STOP.
+    assert(f.rover.mode() == apLiDAR_modeStandby && f.rover.speed() == 0);
+}
+
+void testEmergencyDuringManual()
+{
+    for (const json &command : {
+        json{{"cmd", "ctrlBtn"}, {"btn", "F"}},
+        json{{"cmd", "setSteerSpeed"}, {"steer", -0.2}, {"speed", 0.5}}})
+    {
+        Fixture f;
+        f.rover.command(command);
+        assert(f.rover.updateCtrl());
+        assert(f.rover.speed() > 0);
+
+        f.buttons(1);
+        f.rover.command(command); // The console can observe the press before the worker.
+        assert(f.rover.mode() == apLiDAR_modeStandby && !f.rover.cutter());
+        assert(f.rover.speed() == 0 && f.rover.steer() == 0);
+        assert(f.rover.updateCtrl());
+        assert(f.rover.mode() == apLiDAR_modeStandby);
+
+        f.buttons(0);
+        f.rover.command({{"cmd", "setServo"}, {"bServoON", false}}); // Console observes release first.
+        assert(f.rover.mode() == apLiDAR_modeManual);
+        f.rover.expireManual();
+        assert(f.rover.updateCtrl());
+        assert(f.rover.mode() == apLiDAR_modeManual && !f.rover.cutter());
+        assert(f.rover.speed() == 0 && f.rover.steer() == 0); // Old movement must stay cleared.
+
+        f.rover.command(command);
+        assert(f.rover.updateCtrl());
+        assert(f.rover.mode() == apLiDAR_modeManual && f.rover.speed() > 0);
+        f.rover.expireManual(); // Fresh movement still requires repeated commands.
+        assert(f.rover.updateCtrl());
+        assert(f.rover.mode() == apLiDAR_modeStandby);
+        assert(f.rover.speed() == 0 && f.rover.steer() == 0);
+    }
+}
+
+void testActiveLowEmergency()
+{
+    for (const bool bumperActiveLow : {false, true})
+    {
+        Fixture f(60, true, bumperActiveLow);
+        const uint8_t idleState = bumperActiveLow ? 3 : 1;
+        const uint8_t pressedState = bumperActiveLow ? 2 : 0;
+        f.start(); // Emergency bit 0 is HIGH while released.
+        assert(f.rover.speed() > 0 && f.rover.steer() == 0);
+        f.rover.command({{"cmd", "setServo"}, {"bServoON", true}});
+        assert(f.rover.cutter());
+
+        f.buttons(pressedState); // Emergency bit 0 goes LOW on press; live hardware reports 3 -> 2.
+        assert(f.rover.updateCtrl());
+        assert(f.rover.mode() == apLiDAR_modeStandby && !f.rover.cutter());
+        assert(f.rover.speed() == 0 && f.rover.steer() == 0);
+        for (const json &command : {
+            json{{"cmd", "ctrlBtn"}, {"btn", "F"}},
+            json{{"cmd", "setSteerSpeed"}, {"steer", -0.2}, {"speed", 0.5}},
+            json{{"cmd", "startAuto"}},
+            json{{"cmd", "setServo"}, {"bServoON", true}}})
+        {
+            f.rover.command(command);
+            assert(f.rover.updateCtrl());
+            assert(f.rover.mode() == apLiDAR_modeStandby && !f.rover.cutter());
+            assert(f.rover.speed() == 0 && f.rover.steer() == 0);
+        }
+
+        // BUTTON_CHANGE is event-driven: silence must never release a held emergency.
+        f.stream.get<MavButtonChange>()->updateTstamp(getTns() - 3 * NSEC_SEC);
+        f.rover.expireManual();
+        assert(f.rover.updateCtrl());
+        assert(f.rover.mode() == apLiDAR_modeStandby && !f.rover.cutter());
+        assert(f.rover.speed() == 0 && f.rover.steer() == 0);
+
+        f.buttons(idleState); // HIGH on release must clear emergency, not assert it.
+        assert(f.rover.updateCtrl());
+        assert(f.rover.mode() == apLiDAR_modeManual && !f.rover.cutter());
+        assert(f.rover.speed() == 0 && f.rover.steer() == 0);
+        f.rover.command({{"cmd", "ctrlBtn"}, {"btn", "F"}});
+        assert(f.rover.updateCtrl());
+        assert(f.rover.mode() == apLiDAR_modeManual && f.rover.speed() > 0);
+        assert(!f.rover.cutter());
+        f.start();
+        assert(f.rover.speed() > 0 && f.rover.steer() == 0);
+        assert(!f.rover.cutter());
+
+        auto &config = (*f.cfg.getJson())["rover"];
+        config.erase("bEmergencyActiveLow");
+        config.erase("bBumperActiveLow");
+        assert(f.rover.saveConfig(false));
+        assert(config.at("bEmergencyActiveLow") == true);
+        assert(config.at("bBumperActiveLow") == bumperActiveLow);
+    }
+}
+
+void testActiveLowBumper()
+{
+    Fixture f(60, false, true);
+    f.start(); // Bumper bit 1 is HIGH while released; emergency bit 0 remains LOW.
+    assert(f.rover.speed() > 0 && f.rover.steer() == 0);
+    f.buttons(0);
+    assert(f.rover.updateCtrl());
+    assert(f.rover.mode() == apLiDAR_modeAuto);
+    assert(f.rover.speed() < 0 && f.rover.steer() == 0);
+    f.buttons(2);
+    assert(f.rover.updateCtrl());
+    assert(f.rover.speed() == 0 && f.rover.steer() > 0);
+    f.position(60);
+    assert(f.rover.updateCtrl());
+    assert(f.rover.speed() > 0 && f.rover.steer() == 0);
 }
 
 void testBumper()
@@ -425,6 +555,9 @@ int main(int argc, char **argv)
     testManualAndStop();
     testObstacle();
     testEmergency();
+    testEmergencyDuringManual();
+    testActiveLowEmergency();
+    testActiveLowBumper();
     testBumper();
     testModeAndArmingGate();
     testWorkerStop();
