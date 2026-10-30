@@ -96,7 +96,9 @@ function sendControl(btn = activeControl?.btn) {
 
 function onStopClick() {
     stopControl();
-    if (sendControl('S')) $('#controlFeedback').textContent = 'STOP command sent.';
+    if (sendControl('S')) $('#controlFeedback').textContent = 'Movement STOP command sent.';
+    // Attempt cutter OFF even if the movement STOP could not be sent.
+    onCutterClick(0);
 }
 
 function onStartClick() {

@@ -1,3 +1,5 @@
+:root { --emergency-stop-height: calc(64px + env(safe-area-inset-top, 0px)); }
+body { padding-top: var(--emergency-stop-height); }
 button { min-height: 44px; touch-action: manipulation; -webkit-user-select: none; user-select: none; }
 button:hover:not(:disabled) { background: #30475d; }
 button:active:not(:disabled) { filter: brightness(.85); }
@@ -14,15 +16,15 @@ summary:focus-visible { outline: 2px solid #64dcb5; outline-offset: 2px; }
 .drive-pad button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 56px; padding: 6px 4px; font-size: 12px; line-height: 1.25; touch-action: none; -webkit-touch-callout: none; }
 .drive-pad button.is-held { filter: brightness(.85); }
 .direction-icon { font-size: 23px; line-height: 1; }
-#btnStop { grid-column: 2; grid-row: 2; color: #fff; background: #b52c37; border: 2px solid #ff8c95; font-size: 16px; font-weight: 750; }
+#btnStop { position: fixed; top: 0; left: 0; z-index: 1100; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; height: var(--emergency-stop-height); padding: env(safe-area-inset-top, 0px) 16px 0; color: #fff; background: #b52c37; border: 2px solid #ff8c95; border-radius: 0; box-shadow: 0 4px 12px #0006; font-size: 20px; font-weight: 750; }
 #btnStop:hover { background: #cc3541; }
 .stop-icon { font-size: 14px; line-height: 1; }
 .control-feedback { margin-top: 12px; }
 .selection-status { margin: 12px 0; color: #89d6bf; font-size: 12px; line-height: 1.5; }
 .geofence-actions, .cutter-actions { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; width: 100%; }
 .geofence-actions button, .cutter-actions button { width: 100%; padding: 8px 4px; }
-#btnCutterOn { color: #fff; background: #b52c37; border-color: #ff8c95; }
-#btnCutterOn:hover:not(:disabled) { background: #cc3541; }
+#btnCutterOn { color: #271307; background: #f97316; border-color: #fdba74; }
+#btnCutterOn:hover:not(:disabled) { background: #fb923c; }
 @media (max-width: 480px) {
   .drive-pad { gap: 8px; }
 }
