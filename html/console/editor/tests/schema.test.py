@@ -54,7 +54,7 @@ class StreamReferenceSchemaTest(unittest.TestCase):
         self.assertEqual(tree[("_TransformRigidParent",)]["targetClass"], "_TransformRigid")
         self.assertEqual(tree[("_TransformRigidChildren",)]["targetClass"], "_TransformRigid")
         self.assertTrue(tree[("_TransformRigidChildren",)]["multiple"])
-        for name in ("_Livox2", "_Airy", "_E1R", "_PCLfile", "_PCmerge", "_PCrecv", "_PCsend",
+        for name in ("_Livox1", "_Livox2", "_Airy", "_E1R", "_PCLfile", "_PCmerge", "_PCrecv", "_PCsend",
                      "_PCcrop", "_PCremove", "_PCdownSample", "_PCregistCol", "_OctreeBase",
                      "_GeometryViewerBase", "_NavBase", "_AutopilotBase", "_LCalign"):
             with self.subTest(class_name=name):
@@ -226,7 +226,7 @@ class StreamReferenceSchemaTest(unittest.TestCase):
 
     def test_imu_producers_use_stream_ports_and_embedded_threads(self):
         self.assertNotIn("_IMUbase", self.classes)
-        producers = {"_Airy": ("thread",), "_Livox2": ("thread",),
+        producers = {"_Airy": ("thread",), "_Livox1": ("thread",), "_Livox2": ("thread",),
                      "_RealSense": ("thread", "threadPP"), "_Orbbec": ("thread", "threadPP")}
         for name, threads in producers.items():
             with self.subTest(class_name=name):
@@ -314,6 +314,7 @@ class StreamReferenceSchemaTest(unittest.TestCase):
                 "RGBDframeOut": "RGBDframe", "RGBDtRGBframeOut": "RGBDframe",
                 "RGBDtDframeOut": "RGBDframe", "PCLframeOut": "PCLframe", "IMUstreamOut": "IMUstream",
             },
+            "_Livox1": {"PCLframeOut": "PCLframe", "IMUstreamOut": "IMUstream"},
             "_Livox2": {"PCLframeOut": "PCLframe", "IMUstreamOut": "IMUstream"},
             "_GLIM": {"PCLframeIn": "PCLframe", "IMUstreamIn": "IMUstream", "PCLframeOut": "PCLframe", "PCLmapOut": "PCLmap"},
             "_WebGLIM": {"PCLmapIn": "PCLmap"},

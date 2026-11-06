@@ -1,0 +1,21 @@
+#workspace { grid-template-columns: 260px minmax(240px, 1fr) 340px; }
+#imuPanel { border-right: 1px solid #253242; }
+#orientation { height: 180px; width: 100%; }
+#orientation canvas { display: block; width: 100%; height: 100%; }
+.axisLegend { display: flex; justify-content: center; gap: 22px; font-size: 12px; }
+.axisLegend span:nth-child(1) { color: #ff6666; }
+.axisLegend span:nth-child(2) { color: #69dc8d; }
+.axisLegend span:nth-child(3) { color: #669eff; }
+.graph { margin: 14px 0; }
+.graph figcaption { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 5px; }
+.graph canvas { display: block; width: 100%; height: 64px; background: #090f17; border-radius: 4px; }
+#angles { margin-top: 12px; font-size: 11px; }
+#deviceStatus { display: grid; grid-template-columns: 1fr 1fr; gap: 5px 12px; margin: 10px 0; font-size: 12px; }
+#deviceStatus dt { color: #9aafc4; }
+#deviceStatus dd { margin: 0; overflow-wrap: anywhere; text-align: right; }
+@media (max-width: 1050px) {
+  #workspace { grid-template-columns: 215px minmax(180px, 1fr) 285px; }
+}
+@media (max-width: 760px) {
+  #imuGraphs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+}

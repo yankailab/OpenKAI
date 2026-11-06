@@ -5,7 +5,8 @@
 #include "../../src/Protocol/_JSONbase.h"
 #endif
 #ifdef WITH_SENSOR
-#include "../../src/Sensor/LiDAR/Livox/_Livox2.h"
+#include "../../src/Sensor/LiDAR/Livox/Livox1/_Livox1.h"
+#include "../../src/Sensor/LiDAR/Livox/Livox2/_Livox2.h"
 #include "../../src/Sensor/LiDAR/RoboSense/Airy/_Airy.h"
 #include "../../src/Sensor/LiDAR/RoboSense/E1R/_E1R.h"
 #endif
@@ -24,6 +25,16 @@
 
 #if defined(WITH_VISION) && defined(USE_OPENCV)
 void testRGBDTransform(void);
+#endif
+
+#ifdef WITH_SENSOR
+namespace kai
+{
+	struct Livox1TestAccess
+	{
+		static void transform(_Livox1 &driver, _TransformRigid *value) { driver.m_pTf = value; }
+	};
+}
 #endif
 
 namespace
@@ -75,6 +86,15 @@ namespace
 	public:
 		void transform(_TransformRigid *value) { this->m_pTf = value; }
 	};
+
+#ifdef WITH_SENSOR
+	template <>
+	class SaveHarness<_Livox1> : public _Livox1
+	{
+	public:
+		void transform(_TransformRigid *value) { Livox1TestAccess::transform(*this, value); }
+	};
+#endif
 
 	json readConfig(const string &path)
 	{
@@ -524,6 +544,8 @@ int main()
 #ifdef WITH_SENSOR
 	testConsumerConfigIsolation<_Airy>("_Airy", {{"bReflectivity", false}});
 	testConsumerConfigIsolation<_E1R>("_E1R", {{"bReflectivity", false}});
+	testConsumerConfigIsolation<_Livox1>("_Livox1", {{"lvxIP", "127.0.0.2"},
+		{"bIMUpreview", true}, {"bIMUstab", true}}, {{"bIMUstab", false}});
 	testConsumerConfigIsolation<_Livox2>("_Livox2", {{"lvxIP", "127.0.0.2"},
 		{"bIMUpreview", true}, {"bIMUstab", true}}, {{"bIMUstab", false}});
 #endif

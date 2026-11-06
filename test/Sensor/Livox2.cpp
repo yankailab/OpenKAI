@@ -1,5 +1,5 @@
 #ifdef OPENKAI_LIVOX2_TEST
-#include "../../src/Sensor/LiDAR/Livox/_Livox2.h"
+#include "../../src/Sensor/LiDAR/Livox/Livox2/_Livox2.h"
 #include <cassert>
 #include <chrono>
 #include <iostream>

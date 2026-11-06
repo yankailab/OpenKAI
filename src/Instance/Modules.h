@@ -197,7 +197,8 @@
 #include "../Sensor/LineScanner/_SporSensor.h"
 #endif
 #if defined(WITH_UNIVERSE)
-#include "../Sensor/LiDAR/Livox/_Livox2.h"
+#include "../Sensor/LiDAR/Livox/Livox1/_Livox1.h"
+#include "../Sensor/LiDAR/Livox/Livox2/_Livox2.h"
 #include "../Sensor/LiDAR/RoboSense/E1R/_E1R.h"
 #include "../Sensor/LiDAR/RoboSense/Airy/_Airy.h"
 #endif // 3D

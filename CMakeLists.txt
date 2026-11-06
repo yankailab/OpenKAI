@@ -523,7 +523,8 @@ if(WITH_SENSOR)
   endif()
   if(WITH_UNIVERSE)
     list(APPEND OpenKAI_cpp
-		src/Sensor/LiDAR/Livox/_Livox2.cpp
+		src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp
+		src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp
 		src/Sensor/LiDAR/RoboSense/E1R/_E1R.cpp
 		src/Sensor/LiDAR/RoboSense/Airy/_Airy.cpp
     )
@@ -988,6 +989,8 @@ if(WITH_UNIVERSE)
     COMMAND ${CMAKE_COMMAND} -E copy_directory
       "${PROJECT_SOURCE_DIR}/html/viewer/_RealSense" "$<TARGET_FILE_DIR:OpenKAI>/html/viewer/_RealSense"
     COMMAND ${CMAKE_COMMAND} -E copy_directory
+      "${PROJECT_SOURCE_DIR}/html/viewer/_Livox1" "$<TARGET_FILE_DIR:OpenKAI>/html/viewer/_Livox1"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
       "${PROJECT_SOURCE_DIR}/html/viewer/_Livox2" "$<TARGET_FILE_DIR:OpenKAI>/html/viewer/_Livox2"
     COMMAND ${CMAKE_COMMAND} -E copy_directory
       "${PROJECT_SOURCE_DIR}/html/viewer/_E1R" "$<TARGET_FILE_DIR:OpenKAI>/html/viewer/_E1R"
@@ -1030,6 +1033,7 @@ if(WITH_UNIVERSE)
   install(DIRECTORY html/viewer/_GeometryBase DESTINATION ${CMAKE_INSTALL_BINDIR}/html/viewer)
   install(DIRECTORY html/viewer/_Orbbec DESTINATION ${CMAKE_INSTALL_BINDIR}/html/viewer)
   install(DIRECTORY html/viewer/_RealSense DESTINATION ${CMAKE_INSTALL_BINDIR}/html/viewer)
+  install(DIRECTORY html/viewer/_Livox1 DESTINATION ${CMAKE_INSTALL_BINDIR}/html/viewer)
   install(DIRECTORY html/viewer/_Livox2 DESTINATION ${CMAKE_INSTALL_BINDIR}/html/viewer)
   install(DIRECTORY html/viewer/_E1R DESTINATION ${CMAKE_INSTALL_BINDIR}/html/viewer)
   install(DIRECTORY html/viewer/_Airy DESTINATION ${CMAKE_INSTALL_BINDIR}/html/viewer)

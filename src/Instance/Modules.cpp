@@ -206,6 +206,7 @@ namespace kai
 		ADD_MODULE(_LeddarVu);
 #endif
 #if defined(WITH_UNIVERSE)
+		ADD_MODULE(_Livox1);
 		ADD_MODULE(_Livox2);
 		ADD_MODULE(_E1R);
 		ADD_MODULE(_Airy);

@@ -233,10 +233,16 @@ sudo make install
 
 
 ## (Optional) Livox
-In direct connection mode configure the host ip
-IP: 192.168.1.50
-Netmask: 255.255.255.0
-Gateway: 192.168.1.1
+The native `_Livox1` (Avia generation) and `_Livox2` (Mid-360 generation)
+drivers implement the Ethernet protocols directly; no Livox SDK is required.
+Enable `WITH_SENSOR` and `WITH_UNIVERSE` when building. Use
+`jsonCfg/Livox1.json` or `jsonCfg/Livox2.json`, and set `Lvx1.lvxIP` to the
+sensor's address. Configure the host Ethernet interface on the same subnet.
+`lvxHostIP: "0.0.0.0"` selects the host interface from the route to the sensor.
+
+See the [Livox1 viewer setup](../html/viewer/_Livox1/README.md) or
+[Livox2 viewer setup](../html/viewer/_Livox2/README.md) for UDP ports,
+build options, and sensor controls.
 
 
 

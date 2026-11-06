@@ -3,7 +3,7 @@
   "title": "OpenKAI editor class catalog",
   "description": "Source-derived editor metadata; not a JSON Schema validator. See SCHEMA.md.",
   "generator": "tools/generate-schema.py",
-  "sourceDigest": "f71d1c3729cdf613508356a93bb199e254abb67e1f53fb9011b73395832504a8",
+  "sourceDigest": "28515443aa769658f1e6958479b819af628fbd82b56e1b9b58b873778fcfb6a4",
   "categories": [
     "Actuator",
     "Actuator/Articulated",
@@ -30,7 +30,8 @@
     "SLAM",
     "Sensor/Distance",
     "Sensor/IMU",
-    "Sensor/LiDAR/Livox",
+    "Sensor/LiDAR/Livox/Livox1",
+    "Sensor/LiDAR/Livox/Livox2",
     "Sensor/LiDAR/RoboSense/Airy",
     "Sensor/LiDAR/RoboSense/E1R",
     "Sensor/LineScanner",
@@ -6009,7 +6010,7 @@
           "typeEvidence": "declaration",
           "cppVariable": "m_myComID",
           "cppType": "uint8_t",
-          "default": 0
+          "defaultExpression": "MAV_COMP_ID_MISSIONPLANNER"
         },
         {
           "path": [
@@ -6021,7 +6022,7 @@
           "typeEvidence": "declaration",
           "cppVariable": "m_mySysID",
           "cppType": "uint8_t",
-          "default": 0
+          "default": 255
         },
         {
           "path": [
@@ -6296,7 +6297,7 @@
           "typeEvidence": "declaration",
           "cppVariable": "m_myComID",
           "cppType": "uint8_t",
-          "default": 0
+          "defaultExpression": "MAV_COMP_ID_MISSIONPLANNER"
         },
         {
           "path": [
@@ -6308,7 +6309,7 @@
           "typeEvidence": "declaration",
           "cppVariable": "m_mySysID",
           "cppType": "uint8_t",
-          "default": 0
+          "default": 255
         },
         {
           "path": [
@@ -8480,7 +8481,7 @@
           "typeEvidence": "declaration",
           "cppVariable": "m_myComID",
           "cppType": "uint8_t",
-          "default": 0
+          "defaultExpression": "MAV_COMP_ID_MISSIONPLANNER"
         },
         {
           "path": [
@@ -8492,7 +8493,7 @@
           "typeEvidence": "declaration",
           "cppVariable": "m_mySysID",
           "cppType": "uint8_t",
-          "default": 0
+          "default": 255
         },
         {
           "path": [
@@ -15276,6 +15277,18 @@
         },
         {
           "path": [
+            "bReadAllClients"
+          ],
+          "type": "boolean",
+          "declaredIn": "_WebSocketServer",
+          "source": "src/IO/_WebSocketServer.cpp:36",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_bReadAllClients",
+          "cppType": "bool",
+          "default": false
+        },
+        {
+          "path": [
             "class"
           ],
           "type": "string",
@@ -15540,7 +15553,7 @@
     {
       "name": "Modules",
       "category": "Instance",
-      "source": "src/Instance/Modules.h:288",
+      "source": "src/Instance/Modules.h:290",
       "baseClasses": [],
       "parameters": [],
       "dependencies": [],
@@ -15553,7 +15566,7 @@
     {
       "name": "_GeoFence",
       "category": "Navigation",
-      "source": "src/Navigation/_GeoFence.h:14",
+      "source": "src/Navigation/_GeoFence.h:26",
       "baseClasses": [
         "_ModuleBase"
       ],
@@ -15564,7 +15577,7 @@
           ],
           "type": "string",
           "declaredIn": "_GeoFence",
-          "source": "src/Navigation/_GeoFence.cpp:34",
+          "source": "src/Navigation/_GeoFence.cpp:41",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -15611,7 +15624,7 @@
           ],
           "type": "number",
           "declaredIn": "_GeoFence",
-          "source": "src/Navigation/_GeoFence.cpp:21",
+          "source": "src/Navigation/_GeoFence.cpp:27",
           "typeEvidence": "declaration",
           "cppVariable": "m_estD",
           "cppType": "float",
@@ -15663,7 +15676,7 @@
           ],
           "type": "json",
           "declaredIn": "_GeoFence",
-          "source": "src/Navigation/_GeoFence.cpp:20",
+          "source": "src/Navigation/_GeoFence.cpp:26",
           "typeEvidence": "unresolved",
           "cppVariable": "m_type",
           "cppType": "_GeoFence_TYPE",
@@ -15675,7 +15688,7 @@
           ],
           "type": "array",
           "declaredIn": "_GeoFence",
-          "source": "src/Navigation/_GeoFence.cpp:22",
+          "source": "src/Navigation/_GeoFence.cpp:28",
           "typeEvidence": "declaration",
           "cppVariable": "m_vP",
           "cppType": "Vector2d",
@@ -15687,7 +15700,7 @@
           ],
           "type": "array",
           "declaredIn": "_GeoFence",
-          "source": "src/Navigation/_GeoFence.cpp:23",
+          "source": "src/Navigation/_GeoFence.cpp:29",
           "typeEvidence": "declaration",
           "cppVariable": "m_vPolygon",
           "cppType": "vector<vector<double> >"
@@ -15702,7 +15715,7 @@
           "targetKind": "module",
           "multiple": false,
           "declaredIn": "_GeoFence",
-          "source": "src/Navigation/_GeoFence.cpp:35",
+          "source": "src/Navigation/_GeoFence.cpp:43",
           "containers": []
         }
       ],
@@ -16236,6 +16249,157 @@
       "configurable": true
     },
     {
+      "name": "_HttpServer",
+      "category": "Net",
+      "source": "src/Net/_HttpServer.h:12",
+      "baseClasses": [
+        "_ModuleBase"
+      ],
+      "parameters": [
+        {
+          "path": [
+            "bLog"
+          ],
+          "type": "boolean",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:58",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_bLog",
+          "cppType": "bool",
+          "default": false
+        },
+        {
+          "path": [
+            "bON"
+          ],
+          "type": "boolean",
+          "source": "src/Instance/InstanceMgr.cpp:createAll",
+          "declaredIn": "BASE",
+          "extraction": "audited-adapter",
+          "default": true,
+          "description": "false disables this instance; true enables it."
+        },
+        {
+          "path": [
+            "class"
+          ],
+          "type": "string",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:57",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_class",
+          "cppType": "string",
+          "default": ""
+        },
+        {
+          "path": [
+            "host"
+          ],
+          "type": "string",
+          "declaredIn": "_HttpServer",
+          "source": "src/Net/_HttpServer.cpp:15",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_host",
+          "cppType": "string",
+          "default": "127.0.0.1"
+        },
+        {
+          "path": [
+            "nClientMax"
+          ],
+          "type": "integer",
+          "declaredIn": "_HttpServer",
+          "source": "src/Net/_HttpServer.cpp:18",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_maxClients",
+          "cppType": "int",
+          "default": 32
+        },
+        {
+          "path": [
+            "name"
+          ],
+          "type": "string",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:56",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_name",
+          "cppType": "string",
+          "default": ""
+        },
+        {
+          "path": [
+            "port"
+          ],
+          "type": "integer",
+          "declaredIn": "_HttpServer",
+          "source": "src/Net/_HttpServer.cpp:16",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_port",
+          "cppType": "int",
+          "default": 80
+        },
+        {
+          "path": [
+            "thread",
+            "FPS"
+          ],
+          "type": "number",
+          "declaredIn": "_Thread",
+          "source": "src/Base/_Thread.cpp:60",
+          "typeEvidence": "declaration",
+          "cppVariable": "FPS",
+          "cppType": "float",
+          "default": 30,
+          "embeddedClass": "_Thread"
+        },
+        {
+          "path": [
+            "thread",
+            "bLog"
+          ],
+          "type": "boolean",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:58",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_bLog",
+          "cppType": "bool",
+          "default": false,
+          "embeddedClass": "_Thread"
+        },
+        {
+          "path": [
+            "webRoot"
+          ],
+          "type": "string",
+          "declaredIn": "_HttpServer",
+          "source": "src/Net/_HttpServer.cpp:17",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_root",
+          "cppType": "string",
+          "default": "html"
+        }
+      ],
+      "dependencies": [],
+      "containers": [
+        {
+          "path": [
+            "thread"
+          ],
+          "type": "object"
+        }
+      ],
+      "diagnostics": [],
+      "creatable": true,
+      "instanceKind": "module",
+      "buildConditions": [
+        [
+          "ifdef WITH_NET"
+        ]
+      ],
+      "configurable": true
+    },
+    {
       "name": "_Uploader",
       "category": "Net",
       "source": "src/Net/_Uploader.h:27",
@@ -16692,7 +16856,7 @@
           ],
           "type": "string",
           "declaredIn": "_Mavlink",
-          "source": "src/Protocol/_Mavlink.cpp:71",
+          "source": "src/Protocol/_Mavlink.cpp:61",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
           "dependency": true
@@ -16703,7 +16867,7 @@
           ],
           "type": "string",
           "declaredIn": "_Mavlink",
-          "source": "src/Protocol/_Mavlink.cpp:76",
+          "source": "src/Protocol/_Mavlink.cpp:66",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
           "dependency": true
@@ -16714,7 +16878,7 @@
           ],
           "type": "string",
           "declaredIn": "_Mavlink",
-          "source": "src/Protocol/_Mavlink.cpp:81",
+          "source": "src/Protocol/_Mavlink.cpp:71",
           "typeEvidence": "instance-lookup",
           "cppVariable": "n",
           "dependency": true
@@ -16756,38 +16920,26 @@
         },
         {
           "path": [
-            "devComponentID"
+            "devComID"
           ],
           "type": "integer",
           "declaredIn": "_Mavlink",
-          "source": "src/Protocol/_Mavlink.cpp:35",
+          "source": "src/Protocol/_Mavlink.cpp:31",
           "typeEvidence": "declaration",
-          "cppVariable": "m_devComponentID",
-          "cppType": "int",
-          "default": -1
+          "cppVariable": "m_devComID",
+          "cppType": "uint8_t",
+          "default": 0
         },
         {
           "path": [
-            "devSystemID"
+            "devSysID"
           ],
           "type": "integer",
           "declaredIn": "_Mavlink",
-          "source": "src/Protocol/_Mavlink.cpp:34",
+          "source": "src/Protocol/_Mavlink.cpp:30",
           "typeEvidence": "declaration",
-          "cppVariable": "m_devSystemID",
-          "cppType": "int",
-          "default": -1
-        },
-        {
-          "path": [
-            "devType"
-          ],
-          "type": "integer",
-          "declaredIn": "_Mavlink",
-          "source": "src/Protocol/_Mavlink.cpp:36",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_devType",
-          "cppType": "int",
+          "cppVariable": "m_devSysID",
+          "cppType": "uint8_t",
           "default": 0
         },
         {
@@ -16796,47 +16948,11 @@
           ],
           "type": "integer",
           "declaredIn": "_Mavlink",
-          "source": "src/Protocol/_Mavlink.cpp:38",
+          "source": "src/Protocol/_Mavlink.cpp:32",
           "typeEvidence": "declaration",
           "cppVariable": "m_iMavComm",
           "cppType": "uint8_t",
           "defaultExpression": "MAVLINK_COMM_0"
-        },
-        {
-          "path": [
-            "myComponentID"
-          ],
-          "type": "integer",
-          "declaredIn": "_Mavlink",
-          "source": "src/Protocol/_Mavlink.cpp:31",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_myComponentID",
-          "cppType": "int",
-          "defaultExpression": "MAV_COMP_ID_MISSIONPLANNER"
-        },
-        {
-          "path": [
-            "mySystemID"
-          ],
-          "type": "integer",
-          "declaredIn": "_Mavlink",
-          "source": "src/Protocol/_Mavlink.cpp:30",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_mySystemID",
-          "cppType": "int",
-          "default": 255
-        },
-        {
-          "path": [
-            "myType"
-          ],
-          "type": "integer",
-          "declaredIn": "_Mavlink",
-          "source": "src/Protocol/_Mavlink.cpp:32",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_myType",
-          "cppType": "int",
-          "defaultExpression": "MAV_TYPE_GCS"
         },
         {
           "path": [
@@ -16916,7 +17032,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_Mavlink",
-          "source": "src/Protocol/_Mavlink.cpp:72",
+          "source": "src/Protocol/_Mavlink.cpp:62",
           "required": true,
           "containers": []
         },
@@ -16928,7 +17044,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_Mavlink",
-          "source": "src/Protocol/_Mavlink.cpp:77",
+          "source": "src/Protocol/_Mavlink.cpp:67",
           "required": true,
           "containers": []
         },
@@ -16940,7 +17056,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_Mavlink",
-          "source": "src/Protocol/_Mavlink.cpp:82",
+          "source": "src/Protocol/_Mavlink.cpp:72",
           "required": true,
           "containers": []
         }
@@ -20571,9 +20687,504 @@
       "configurable": false
     },
     {
+      "name": "_Livox1",
+      "category": "Sensor/LiDAR/Livox/Livox1",
+      "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.h:25",
+      "baseClasses": [
+        "_ModuleBase"
+      ],
+      "parameters": [
+        {
+          "path": [
+            "IMUstreamOut"
+          ],
+          "type": "string",
+          "declaredIn": "_Livox1",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:77",
+          "typeEvidence": "declaration",
+          "cppVariable": "name",
+          "cppType": "string",
+          "dependency": true
+        },
+        {
+          "path": [
+            "PCLframeOut"
+          ],
+          "type": "string",
+          "declaredIn": "_Livox1",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:73",
+          "typeEvidence": "declaration",
+          "cppVariable": "name",
+          "cppType": "string",
+          "dependency": true
+        },
+        {
+          "path": [
+            "_TransformRigid"
+          ],
+          "type": "string",
+          "declaredIn": "_Livox1",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:67",
+          "typeEvidence": "declaration",
+          "cppVariable": "tfName",
+          "cppType": "string",
+          "dependency": true
+        },
+        {
+          "path": [
+            "bIMUpreview"
+          ],
+          "type": "boolean",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:664",
+          "declaredIn": "_Livox1",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_bIMUpreview",
+          "cppType": "bool",
+          "typeEvidence": "declaration",
+          "default": false
+        },
+        {
+          "path": [
+            "bIMUstab"
+          ],
+          "type": "boolean",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:664",
+          "declaredIn": "_Livox1",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_bIMUstab",
+          "cppType": "bool",
+          "typeEvidence": "declaration",
+          "default": false
+        },
+        {
+          "path": [
+            "bLog"
+          ],
+          "type": "boolean",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:58",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_bLog",
+          "cppType": "bool",
+          "default": false
+        },
+        {
+          "path": [
+            "bON"
+          ],
+          "type": "boolean",
+          "source": "src/Instance/InstanceMgr.cpp:createAll",
+          "declaredIn": "BASE",
+          "extraction": "audited-adapter",
+          "default": true,
+          "description": "false disables this instance; true enables it."
+        },
+        {
+          "path": [
+            "bReflectivity"
+          ],
+          "type": "boolean",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:664",
+          "declaredIn": "_Livox1",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_bReflectivity",
+          "cppType": "bool",
+          "typeEvidence": "declaration",
+          "default": true
+        },
+        {
+          "path": [
+            "class"
+          ],
+          "type": "string",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:57",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_class",
+          "cppType": "string",
+          "default": ""
+        },
+        {
+          "path": [
+            "frameDurationMs"
+          ],
+          "type": "integer",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:665",
+          "declaredIn": "_Livox1",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_frameDurationNs",
+          "cppType": "uint64_t",
+          "typeEvidence": "declaration",
+          "default": 100
+        },
+        {
+          "path": [
+            "lvxCoordinate"
+          ],
+          "type": "integer",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:660",
+          "declaredIn": "_Livox1",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_lvxCfg.m_coordinate",
+          "cppType": "uint8_t",
+          "typeEvidence": "declaration",
+          "default": 0
+        },
+        {
+          "path": [
+            "lvxFan"
+          ],
+          "type": "boolean",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:663",
+          "declaredIn": "_Livox1",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_lvxCfg.m_fan",
+          "cppType": "bool",
+          "typeEvidence": "declaration",
+          "default": true
+        },
+        {
+          "path": [
+            "lvxHighSensitivity"
+          ],
+          "type": "boolean",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:663",
+          "declaredIn": "_Livox1",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_lvxCfg.m_highSensitivity",
+          "cppType": "bool",
+          "typeEvidence": "declaration",
+          "default": true
+        },
+        {
+          "path": [
+            "lvxHostIP"
+          ],
+          "type": "string",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:657",
+          "declaredIn": "_Livox1",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_lvxCfg.m_hostIP",
+          "cppType": "uint32_t",
+          "typeEvidence": "declaration"
+        },
+        {
+          "path": [
+            "lvxHostPortCmd"
+          ],
+          "type": "integer",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:658",
+          "declaredIn": "_Livox1",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_hostPortCmd",
+          "cppType": "uint16_t",
+          "typeEvidence": "declaration",
+          "default": 56000
+        },
+        {
+          "path": [
+            "lvxHostPortIMU"
+          ],
+          "type": "integer",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:659",
+          "declaredIn": "_Livox1",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_lvxCfg.m_hostPortIMU",
+          "cppType": "uint16_t",
+          "typeEvidence": "declaration",
+          "default": 56002
+        },
+        {
+          "path": [
+            "lvxHostPortPCL"
+          ],
+          "type": "integer",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:659",
+          "declaredIn": "_Livox1",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_lvxCfg.m_hostPortPCL",
+          "cppType": "uint16_t",
+          "typeEvidence": "declaration",
+          "default": 56001
+        },
+        {
+          "path": [
+            "lvxIMUdataEn"
+          ],
+          "type": "integer",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:662",
+          "declaredIn": "_Livox1",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_lvxCfg.m_imuDataEn",
+          "cppType": "uint8_t",
+          "typeEvidence": "declaration",
+          "default": 1
+        },
+        {
+          "path": [
+            "lvxIP"
+          ],
+          "type": "string",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:657",
+          "declaredIn": "_Livox1",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_lvxIP",
+          "cppType": "uint32_t",
+          "typeEvidence": "declaration"
+        },
+        {
+          "path": [
+            "lvxPortBroadcast"
+          ],
+          "type": "integer",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:658",
+          "declaredIn": "_Livox1",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_broadcastPort",
+          "cppType": "uint16_t",
+          "typeEvidence": "declaration",
+          "default": 55000
+        },
+        {
+          "path": [
+            "lvxPortCmd"
+          ],
+          "type": "integer",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:658",
+          "declaredIn": "_Livox1",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_lvxCmdPort",
+          "cppType": "uint16_t",
+          "typeEvidence": "declaration",
+          "default": 65000
+        },
+        {
+          "path": [
+            "lvxReturnMode"
+          ],
+          "type": "integer",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:661",
+          "declaredIn": "_Livox1",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_lvxCfg.m_returnMode",
+          "cppType": "uint8_t",
+          "typeEvidence": "declaration",
+          "default": 0
+        },
+        {
+          "path": [
+            "lvxSN"
+          ],
+          "type": "string",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:657",
+          "declaredIn": "_Livox1",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_lvxSN",
+          "cppType": "string",
+          "typeEvidence": "declaration"
+        },
+        {
+          "path": [
+            "lvxSampling"
+          ],
+          "type": "boolean",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:663",
+          "declaredIn": "_Livox1",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_lvxCfg.m_sampling",
+          "cppType": "bool",
+          "typeEvidence": "declaration",
+          "default": true
+        },
+        {
+          "path": [
+            "lvxScanPattern"
+          ],
+          "type": "integer",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:661",
+          "declaredIn": "_Livox1",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_lvxCfg.m_scanPattern",
+          "cppType": "uint8_t",
+          "typeEvidence": "declaration",
+          "default": 0
+        },
+        {
+          "path": [
+            "lvxWorkMode"
+          ],
+          "type": "integer",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:662",
+          "declaredIn": "_Livox1",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_lvxCfg.m_workMode",
+          "cppType": "uint8_t",
+          "typeEvidence": "declaration",
+          "default": 1
+        },
+        {
+          "path": [
+            "nMaxFramePoints"
+          ],
+          "type": "integer",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:666",
+          "declaredIn": "_Livox1",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_nMaxFramePoints",
+          "cppType": "int",
+          "typeEvidence": "declaration",
+          "default": 100000
+        },
+        {
+          "path": [
+            "name"
+          ],
+          "type": "string",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:56",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_name",
+          "cppType": "string",
+          "default": ""
+        },
+        {
+          "path": [
+            "receiveBufferBytes"
+          ],
+          "type": "integer",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:660",
+          "declaredIn": "_Livox1",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_receiveBufferBytes",
+          "cppType": "int",
+          "typeEvidence": "declaration",
+          "default": 4194304
+        },
+        {
+          "path": [
+            "tOutSec"
+          ],
+          "type": "integer",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:665",
+          "declaredIn": "_Livox1",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_timeoutNs",
+          "cppType": "uint64_t",
+          "typeEvidence": "declaration",
+          "default": 10
+        },
+        {
+          "path": [
+            "thread",
+            "FPS"
+          ],
+          "type": "number",
+          "declaredIn": "_Thread",
+          "source": "src/Base/_Thread.cpp:60",
+          "typeEvidence": "declaration",
+          "cppVariable": "FPS",
+          "cppType": "float",
+          "default": 30,
+          "embeddedClass": "_Thread"
+        },
+        {
+          "path": [
+            "thread",
+            "bLog"
+          ],
+          "type": "boolean",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:58",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_bLog",
+          "cppType": "bool",
+          "default": false,
+          "embeddedClass": "_Thread"
+        },
+        {
+          "path": [
+            "vColorDefault"
+          ],
+          "type": "array",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:666",
+          "declaredIn": "_Livox1",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_vColorDefault",
+          "cppType": "Vector3f",
+          "typeEvidence": "declaration"
+        },
+        {
+          "path": [
+            "vRangeD"
+          ],
+          "type": "array",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:667",
+          "declaredIn": "_Livox1",
+          "extraction": "audited-adapter",
+          "cppVariable": "m_vRangeD",
+          "cppType": "Vector2f",
+          "typeEvidence": "declaration"
+        }
+      ],
+      "dependencies": [
+        {
+          "path": [
+            "IMUstreamOut"
+          ],
+          "targetClass": "IMUstream",
+          "targetKind": "dataObject",
+          "multiple": false,
+          "declaredIn": "_Livox1",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:78",
+          "containers": []
+        },
+        {
+          "path": [
+            "PCLframeOut"
+          ],
+          "targetClass": "PCLframe",
+          "targetKind": "dataObject",
+          "multiple": false,
+          "declaredIn": "_Livox1",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:74",
+          "required": true,
+          "containers": []
+        },
+        {
+          "path": [
+            "_TransformRigid"
+          ],
+          "targetClass": "_TransformRigid",
+          "targetKind": "module",
+          "multiple": false,
+          "declaredIn": "_Livox1",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:68",
+          "containers": []
+        }
+      ],
+      "containers": [
+        {
+          "path": [
+            "thread"
+          ],
+          "type": "object"
+        }
+      ],
+      "diagnostics": [],
+      "creatable": true,
+      "instanceKind": "module",
+      "buildConditions": [
+        [
+          "ifdef WITH_SENSOR",
+          "if defined(WITH_UNIVERSE)"
+        ]
+      ],
+      "configurable": true
+    },
+    {
       "name": "_Livox2",
-      "category": "Sensor/LiDAR/Livox",
-      "source": "src/Sensor/LiDAR/Livox/_Livox2.h:161",
+      "category": "Sensor/LiDAR/Livox/Livox2",
+      "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.h:161",
       "baseClasses": [
         "_ModuleBase"
       ],
@@ -20584,7 +21195,7 @@
           ],
           "type": "string",
           "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:77",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:77",
           "typeEvidence": "declaration",
           "cppVariable": "name",
           "cppType": "string",
@@ -20596,7 +21207,7 @@
           ],
           "type": "string",
           "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:73",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:73",
           "typeEvidence": "declaration",
           "cppVariable": "name",
           "cppType": "string",
@@ -20608,7 +21219,7 @@
           ],
           "type": "string",
           "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:67",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:67",
           "typeEvidence": "declaration",
           "cppVariable": "tfName",
           "cppType": "string",
@@ -20619,7 +21230,7 @@
             "bIMUpreview"
           ],
           "type": "boolean",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:626",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:626",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_bIMUpreview",
@@ -20632,7 +21243,7 @@
             "bIMUstab"
           ],
           "type": "boolean",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:626",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:626",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_bIMUstab",
@@ -20668,7 +21279,7 @@
             "bReflectivity"
           ],
           "type": "boolean",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:626",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:626",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_bReflectivity",
@@ -20693,7 +21304,7 @@
             "frameDurationMs"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:627",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:627",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_frameDurationNs",
@@ -20706,7 +21317,7 @@
             "lvxDetectMode"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:624",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:624",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxCfg.m_detectMode",
@@ -20718,7 +21329,7 @@
             "lvxFrameRate"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:623",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:623",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxCfg.m_frameRate",
@@ -20730,7 +21341,7 @@
             "lvxHostIP"
           ],
           "type": "string",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:619",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:619",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxCfg.m_hostIP",
@@ -20742,7 +21353,7 @@
             "lvxHostPortCmd"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:620",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:620",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_hostPortCmd",
@@ -20755,7 +21366,7 @@
             "lvxHostPortIMU"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:622",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:622",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxCfg.m_hostPortIMU",
@@ -20767,7 +21378,7 @@
             "lvxHostPortPCL"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:621",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:621",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxCfg.m_hostPortPCL",
@@ -20779,7 +21390,7 @@
             "lvxHostPortState"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:621",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:621",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxCfg.m_hostPortState",
@@ -20791,7 +21402,7 @@
             "lvxIMUdataEn"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:625",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:625",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxCfg.m_imuDataEn",
@@ -20803,7 +21414,7 @@
             "lvxIP"
           ],
           "type": "string",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:619",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:619",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxIP",
@@ -20815,7 +21426,7 @@
             "lvxPCLdataType"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:622",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:622",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxCfg.m_pclDataType",
@@ -20827,7 +21438,7 @@
             "lvxPatternMode"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:623",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:623",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxCfg.m_patternMode",
@@ -20839,7 +21450,7 @@
             "lvxPortQuery"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:620",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:620",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_queryPort",
@@ -20852,7 +21463,7 @@
             "lvxSN"
           ],
           "type": "string",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:619",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:619",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxSN",
@@ -20864,7 +21475,7 @@
             "lvxWorkMode"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:625",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:625",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxCfg.m_workMode",
@@ -20876,7 +21487,7 @@
             "lvxWorkModeAfterBoot"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:624",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:624",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxCfg.m_workModeAfterBoot",
@@ -20888,7 +21499,7 @@
             "nMaxFramePoints"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:628",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:628",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_nMaxFramePoints",
@@ -20913,7 +21524,7 @@
             "receiveBufferBytes"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:620",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:620",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_receiveBufferBytes",
@@ -20926,7 +21537,7 @@
             "tOutSec"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:627",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:627",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_timeoutNs",
@@ -20967,7 +21578,7 @@
             "vColorDefault"
           ],
           "type": "array",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:628",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:628",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_vColorDefault",
@@ -20979,7 +21590,7 @@
             "vRangeD"
           ],
           "type": "array",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:629",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:629",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_vRangeD",
@@ -20996,7 +21607,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:78",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:78",
           "containers": []
         },
         {
@@ -21007,7 +21618,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:74",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:74",
           "required": true,
           "containers": []
         },
@@ -21019,7 +21630,7 @@
           "targetKind": "module",
           "multiple": false,
           "declaredIn": "_Livox2",
-          "source": "src/Sensor/LiDAR/Livox/_Livox2.cpp:68",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:68",
           "containers": []
         }
       ],
@@ -26196,7 +26807,7 @@
           ],
           "type": "array",
           "declaredIn": "_TransformRigid",
-          "source": "src/Universe/_TransformRigid.cpp:55",
+          "source": "src/Universe/_TransformRigid.cpp:56",
           "typeEvidence": "declaration",
           "cppVariable": "vN",
           "cppType": "vector<string>",
@@ -26208,7 +26819,7 @@
           ],
           "type": "string",
           "declaredIn": "_TransformRigid",
-          "source": "src/Universe/_TransformRigid.cpp:46",
+          "source": "src/Universe/_TransformRigid.cpp:47",
           "typeEvidence": "declaration",
           "cppVariable": "nP",
           "cppType": "string",
@@ -26295,7 +26906,7 @@
           ],
           "type": "array",
           "declaredIn": "_TransformRigid",
-          "source": "src/Universe/_TransformRigid.cpp:31",
+          "source": "src/Universe/_TransformRigid.cpp:32",
           "typeEvidence": "jKv-vector-overload",
           "cppVariable": "m_vR.coeffs()"
         },
@@ -26305,7 +26916,7 @@
           ],
           "type": "array",
           "declaredIn": "_TransformRigid",
-          "source": "src/Universe/_TransformRigid.cpp:30",
+          "source": "src/Universe/_TransformRigid.cpp:31",
           "typeEvidence": "declaration",
           "cppVariable": "m_vT",
           "cppType": "Vector3d",
@@ -26321,7 +26932,7 @@
           "targetKind": "module",
           "multiple": true,
           "declaredIn": "_TransformRigid",
-          "source": "src/Universe/_TransformRigid.cpp:58",
+          "source": "src/Universe/_TransformRigid.cpp:59",
           "containers": []
         },
         {
@@ -26332,7 +26943,7 @@
           "targetKind": "module",
           "multiple": false,
           "declaredIn": "_TransformRigid",
-          "source": "src/Universe/_TransformRigid.cpp:47",
+          "source": "src/Universe/_TransformRigid.cpp:48",
           "containers": []
         }
       ],
@@ -28827,7 +29438,7 @@
           ],
           "type": "integer",
           "declaredIn": "_OctreeGrid",
-          "source": "src/Universe/Grid/_OctreeGrid.cpp:126",
+          "source": "src/Universe/Grid/_OctreeGrid.cpp:135",
           "typeEvidence": "declaration",
           "cppVariable": "m_dTexpireCell",
           "cppType": "uint64_t",
@@ -28839,7 +29450,7 @@
           ],
           "type": "integer",
           "declaredIn": "_OctreeGrid",
-          "source": "src/Universe/Grid/_OctreeGrid.cpp:127",
+          "source": "src/Universe/Grid/_OctreeGrid.cpp:136",
           "typeEvidence": "declaration",
           "cppVariable": "m_dTexpirePCL",
           "cppType": "uint64_t",
@@ -28851,7 +29462,7 @@
           ],
           "type": "integer",
           "declaredIn": "_OctreeGrid",
-          "source": "src/Universe/Grid/_OctreeGrid.cpp:125",
+          "source": "src/Universe/Grid/_OctreeGrid.cpp:134",
           "typeEvidence": "declaration",
           "cppVariable": "m_nMaxLevel",
           "cppType": "int",
@@ -28903,7 +29514,7 @@
           ],
           "type": "array",
           "declaredIn": "_OctreeGrid",
-          "source": "src/Universe/Grid/_OctreeGrid.cpp:128",
+          "source": "src/Universe/Grid/_OctreeGrid.cpp:137",
           "typeEvidence": "declaration",
           "cppVariable": "m_vPCLframesIn",
           "cppType": "vector<string>",
@@ -28916,7 +29527,7 @@
           ],
           "type": "array",
           "declaredIn": "_OctreeGrid",
-          "source": "src/Universe/Grid/_OctreeGrid.cpp:123",
+          "source": "src/Universe/Grid/_OctreeGrid.cpp:132",
           "typeEvidence": "declaration",
           "cppVariable": "m_vPorigin",
           "cppType": "Vector3f",
@@ -28928,7 +29539,7 @@
           ],
           "type": "array",
           "declaredIn": "_OctreeGrid",
-          "source": "src/Universe/Grid/_OctreeGrid.cpp:124",
+          "source": "src/Universe/Grid/_OctreeGrid.cpp:133",
           "typeEvidence": "declaration",
           "cppVariable": "m_vRootCellSize",
           "cppType": "Vector3f",
@@ -28974,7 +29585,7 @@
       ],
       "diagnostics": [
         {
-          "source": "src/Universe/Grid/_OctreeGrid.cpp:177",
+          "source": "src/Universe/Grid/_OctreeGrid.cpp:186",
           "kind": "unresolved-module-reference",
           "expression": "name",
           "resolution": "Covered by the vPCLframesIn DataObject adapter; names are loaded before link."
@@ -29050,7 +29661,7 @@
           ],
           "type": "integer",
           "declaredIn": "_OctreeGrid",
-          "source": "src/Universe/Grid/_OctreeGrid.cpp:126",
+          "source": "src/Universe/Grid/_OctreeGrid.cpp:135",
           "typeEvidence": "declaration",
           "cppVariable": "m_dTexpireCell",
           "cppType": "uint64_t",
@@ -29062,7 +29673,7 @@
           ],
           "type": "integer",
           "declaredIn": "_OctreeGrid",
-          "source": "src/Universe/Grid/_OctreeGrid.cpp:127",
+          "source": "src/Universe/Grid/_OctreeGrid.cpp:136",
           "typeEvidence": "declaration",
           "cppVariable": "m_dTexpirePCL",
           "cppType": "uint64_t",
@@ -29086,7 +29697,7 @@
           ],
           "type": "integer",
           "declaredIn": "_OctreeGrid",
-          "source": "src/Universe/Grid/_OctreeGrid.cpp:125",
+          "source": "src/Universe/Grid/_OctreeGrid.cpp:134",
           "typeEvidence": "declaration",
           "cppVariable": "m_nMaxLevel",
           "cppType": "int",
@@ -29167,7 +29778,7 @@
           ],
           "type": "array",
           "declaredIn": "_OctreeGrid",
-          "source": "src/Universe/Grid/_OctreeGrid.cpp:128",
+          "source": "src/Universe/Grid/_OctreeGrid.cpp:137",
           "typeEvidence": "declaration",
           "cppVariable": "m_vPCLframesIn",
           "cppType": "vector<string>",
@@ -29180,7 +29791,7 @@
           ],
           "type": "array",
           "declaredIn": "_OctreeGrid",
-          "source": "src/Universe/Grid/_OctreeGrid.cpp:123",
+          "source": "src/Universe/Grid/_OctreeGrid.cpp:132",
           "typeEvidence": "declaration",
           "cppVariable": "m_vPorigin",
           "cppType": "Vector3f",
@@ -29192,7 +29803,7 @@
           ],
           "type": "array",
           "declaredIn": "_OctreeGrid",
-          "source": "src/Universe/Grid/_OctreeGrid.cpp:124",
+          "source": "src/Universe/Grid/_OctreeGrid.cpp:133",
           "typeEvidence": "declaration",
           "cppVariable": "m_vRootCellSize",
           "cppType": "Vector3f",
@@ -31117,7 +31728,7 @@
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:96",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:100",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -31129,7 +31740,7 @@
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:111",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:115",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -31141,7 +31752,7 @@
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:101",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:105",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -31153,7 +31764,7 @@
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:106",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:110",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -31165,7 +31776,7 @@
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:81",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:85",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -31177,7 +31788,7 @@
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:91",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:95",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -31189,7 +31800,7 @@
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:86",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:90",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -31202,6 +31813,18 @@
           "type": "string",
           "declaredIn": "_RGBbase",
           "source": "src/Vision/_RGBbase.cpp:54",
+          "typeEvidence": "declaration",
+          "cppVariable": "n",
+          "cppType": "string",
+          "dependency": true
+        },
+        {
+          "path": [
+            "_TransformRigid"
+          ],
+          "type": "string",
+          "declaredIn": "_RGBDbase",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:80",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -31574,7 +32197,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:97",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:101",
           "containers": []
         },
         {
@@ -31585,7 +32208,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:112",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:116",
           "containers": []
         },
         {
@@ -31596,7 +32219,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:102",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:106",
           "containers": []
         },
         {
@@ -31607,7 +32230,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:107",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:111",
           "containers": []
         },
         {
@@ -31618,7 +32241,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:82",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:86",
           "containers": []
         },
         {
@@ -31629,7 +32252,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:92",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:96",
           "containers": []
         },
         {
@@ -31640,7 +32263,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:87",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:91",
           "containers": []
         },
         {
@@ -31652,6 +32275,17 @@
           "multiple": false,
           "declaredIn": "_RGBbase",
           "source": "src/Vision/_RGBbase.cpp:55",
+          "containers": []
+        },
+        {
+          "path": [
+            "_TransformRigid"
+          ],
+          "targetClass": "_TransformRigid",
+          "targetKind": "module",
+          "multiple": false,
+          "declaredIn": "_RGBDbase",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:81",
           "containers": []
         }
       ],
@@ -34307,7 +34941,7 @@
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:96",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:100",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -34319,7 +34953,7 @@
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:111",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:115",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -34331,7 +34965,7 @@
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:101",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:105",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -35575,7 +36209,7 @@
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:106",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:110",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -35587,7 +36221,7 @@
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:81",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:85",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -35599,7 +36233,7 @@
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:91",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:95",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -35611,7 +36245,7 @@
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:86",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:90",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -35637,6 +36271,18 @@
           "source": "src/Vision/RGBD/_Orbbec.cpp:configValues",
           "declaredIn": "_Orbbec",
           "extraction": "audited-adapter"
+        },
+        {
+          "path": [
+            "_TransformRigid"
+          ],
+          "type": "string",
+          "declaredIn": "_RGBDbase",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:80",
+          "typeEvidence": "declaration",
+          "cppVariable": "n",
+          "cppType": "string",
+          "dependency": true
         },
         {
           "path": [
@@ -36058,7 +36704,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:97",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:101",
           "containers": []
         },
         {
@@ -36069,7 +36715,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:112",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:116",
           "containers": []
         },
         {
@@ -36080,7 +36726,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:102",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:106",
           "containers": []
         },
         {
@@ -36091,7 +36737,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:107",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:111",
           "containers": []
         },
         {
@@ -36102,7 +36748,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:82",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:86",
           "containers": []
         },
         {
@@ -36113,7 +36759,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:92",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:96",
           "containers": []
         },
         {
@@ -36124,7 +36770,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:87",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:91",
           "containers": []
         },
         {
@@ -36136,6 +36782,17 @@
           "multiple": false,
           "declaredIn": "_RGBbase",
           "source": "src/Vision/_RGBbase.cpp:55",
+          "containers": []
+        },
+        {
+          "path": [
+            "_TransformRigid"
+          ],
+          "targetClass": "_TransformRigid",
+          "targetKind": "module",
+          "multiple": false,
+          "declaredIn": "_RGBDbase",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:81",
           "containers": []
         }
       ],
@@ -36179,7 +36836,7 @@
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:96",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:100",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -36191,7 +36848,7 @@
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:111",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:115",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -36203,7 +36860,7 @@
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:101",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:105",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -36215,7 +36872,7 @@
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:106",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:110",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -36227,7 +36884,7 @@
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:81",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:85",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -36239,7 +36896,7 @@
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:91",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:95",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -36251,7 +36908,7 @@
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:86",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:90",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -36280,6 +36937,18 @@
           "cppVariable": "m_SN",
           "cppType": "string",
           "typeEvidence": "declaration"
+        },
+        {
+          "path": [
+            "_TransformRigid"
+          ],
+          "type": "string",
+          "declaredIn": "_RGBDbase",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:80",
+          "typeEvidence": "declaration",
+          "cppVariable": "n",
+          "cppType": "string",
+          "dependency": true
         },
         {
           "path": [
@@ -36891,7 +37560,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:97",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:101",
           "containers": []
         },
         {
@@ -36902,7 +37571,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:112",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:116",
           "containers": []
         },
         {
@@ -36913,7 +37582,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:102",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:106",
           "containers": []
         },
         {
@@ -36924,7 +37593,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:107",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:111",
           "containers": []
         },
         {
@@ -36935,7 +37604,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:82",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:86",
           "containers": []
         },
         {
@@ -36946,7 +37615,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:92",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:96",
           "containers": []
         },
         {
@@ -36957,7 +37626,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:87",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:91",
           "containers": []
         },
         {
@@ -36969,6 +37638,17 @@
           "multiple": false,
           "declaredIn": "_RGBbase",
           "source": "src/Vision/_RGBbase.cpp:55",
+          "containers": []
+        },
+        {
+          "path": [
+            "_TransformRigid"
+          ],
+          "targetClass": "_TransformRigid",
+          "targetKind": "module",
+          "multiple": false,
+          "declaredIn": "_RGBDbase",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:81",
           "containers": []
         }
       ],
@@ -37063,7 +37743,7 @@
     {
       "name": "_RGBDbase",
       "category": "Vision/RGBD",
-      "source": "src/Vision/RGBD/_RGBDbase.h:19",
+      "source": "src/Vision/RGBD/_RGBDbase.h:20",
       "baseClasses": [
         "_RGBbase"
       ],
@@ -37074,7 +37754,7 @@
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:96",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:100",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -37086,7 +37766,7 @@
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:111",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:115",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -37098,7 +37778,7 @@
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:101",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:105",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -37110,7 +37790,7 @@
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:106",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:110",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -37122,7 +37802,7 @@
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:81",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:85",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -37134,7 +37814,7 @@
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:91",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:95",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -37146,7 +37826,7 @@
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:86",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:90",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -37159,6 +37839,18 @@
           "type": "string",
           "declaredIn": "_RGBbase",
           "source": "src/Vision/_RGBbase.cpp:54",
+          "typeEvidence": "declaration",
+          "cppVariable": "n",
+          "cppType": "string",
+          "dependency": true
+        },
+        {
+          "path": [
+            "_TransformRigid"
+          ],
+          "type": "string",
+          "declaredIn": "_RGBDbase",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:80",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -37471,7 +38163,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:97",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:101",
           "containers": []
         },
         {
@@ -37482,7 +38174,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:112",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:116",
           "containers": []
         },
         {
@@ -37493,7 +38185,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:102",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:106",
           "containers": []
         },
         {
@@ -37504,7 +38196,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:107",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:111",
           "containers": []
         },
         {
@@ -37515,7 +38207,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:82",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:86",
           "containers": []
         },
         {
@@ -37526,7 +38218,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:92",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:96",
           "containers": []
         },
         {
@@ -37537,7 +38229,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:87",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:91",
           "containers": []
         },
         {
@@ -37549,6 +38241,17 @@
           "multiple": false,
           "declaredIn": "_RGBbase",
           "source": "src/Vision/_RGBbase.cpp:55",
+          "containers": []
+        },
+        {
+          "path": [
+            "_TransformRigid"
+          ],
+          "targetClass": "_TransformRigid",
+          "targetKind": "module",
+          "multiple": false,
+          "declaredIn": "_RGBDbase",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:81",
           "containers": []
         }
       ],
@@ -37579,7 +38282,7 @@
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:96",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:100",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -37591,7 +38294,7 @@
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:111",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:115",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -37603,7 +38306,7 @@
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:101",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:105",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -37615,7 +38318,7 @@
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:106",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:110",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -37627,7 +38330,7 @@
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:81",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:85",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -37639,7 +38342,7 @@
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:91",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:95",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -37651,7 +38354,7 @@
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:86",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:90",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -37664,6 +38367,18 @@
           "type": "string",
           "declaredIn": "_RGBbase",
           "source": "src/Vision/_RGBbase.cpp:54",
+          "typeEvidence": "declaration",
+          "cppVariable": "n",
+          "cppType": "string",
+          "dependency": true
+        },
+        {
+          "path": [
+            "_TransformRigid"
+          ],
+          "type": "string",
+          "declaredIn": "_RGBDbase",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:80",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -38525,7 +39240,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:97",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:101",
           "containers": []
         },
         {
@@ -38536,7 +39251,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:112",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:116",
           "containers": []
         },
         {
@@ -38547,7 +39262,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:102",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:106",
           "containers": []
         },
         {
@@ -38558,7 +39273,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:107",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:111",
           "containers": []
         },
         {
@@ -38569,7 +39284,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:82",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:86",
           "containers": []
         },
         {
@@ -38580,7 +39295,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:92",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:96",
           "containers": []
         },
         {
@@ -38591,7 +39306,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:87",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:91",
           "containers": []
         },
         {
@@ -38603,6 +39318,17 @@
           "multiple": false,
           "declaredIn": "_RGBbase",
           "source": "src/Vision/_RGBbase.cpp:55",
+          "containers": []
+        },
+        {
+          "path": [
+            "_TransformRigid"
+          ],
+          "targetClass": "_TransformRigid",
+          "targetKind": "module",
+          "multiple": false,
+          "declaredIn": "_RGBDbase",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:81",
           "containers": []
         }
       ],
@@ -38646,7 +39372,7 @@
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:96",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:100",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -38754,7 +39480,7 @@
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:111",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:115",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -38766,7 +39492,7 @@
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:101",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:105",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -38778,7 +39504,7 @@
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:106",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:110",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -38790,7 +39516,7 @@
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:81",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:85",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -38802,7 +39528,7 @@
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:91",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:95",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -38814,7 +39540,7 @@
           ],
           "type": "string",
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:86",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:90",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -38827,6 +39553,18 @@
           "type": "string",
           "declaredIn": "_RGBbase",
           "source": "src/Vision/_RGBbase.cpp:54",
+          "typeEvidence": "declaration",
+          "cppVariable": "n",
+          "cppType": "string",
+          "dependency": true
+        },
+        {
+          "path": [
+            "_TransformRigid"
+          ],
+          "type": "string",
+          "declaredIn": "_RGBDbase",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:80",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -39320,7 +40058,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:97",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:101",
           "containers": []
         },
         {
@@ -39331,7 +40069,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:112",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:116",
           "containers": []
         },
         {
@@ -39342,7 +40080,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:102",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:106",
           "containers": []
         },
         {
@@ -39353,7 +40091,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:107",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:111",
           "containers": []
         },
         {
@@ -39364,7 +40102,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:82",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:86",
           "containers": []
         },
         {
@@ -39375,7 +40113,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:92",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:96",
           "containers": []
         },
         {
@@ -39386,7 +40124,7 @@
           "targetKind": "dataObject",
           "multiple": false,
           "declaredIn": "_RGBDbase",
-          "source": "src/Vision/RGBD/_RGBDbase.cpp:87",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:91",
           "containers": []
         },
         {
@@ -39398,6 +40136,17 @@
           "multiple": false,
           "declaredIn": "_RGBbase",
           "source": "src/Vision/_RGBbase.cpp:55",
+          "containers": []
+        },
+        {
+          "path": [
+            "_TransformRigid"
+          ],
+          "targetClass": "_TransformRigid",
+          "targetKind": "module",
+          "multiple": false,
+          "declaredIn": "_RGBDbase",
+          "source": "src/Vision/RGBD/_RGBDbase.cpp:81",
           "containers": []
         }
       ],
@@ -39452,10 +40201,10 @@
     ]
   },
   "audit": {
-    "sourceFiles": 449,
-    "classCount": 215,
-    "classDeclarations": 215,
-    "creatableClassCount": 125,
+    "sourceFiles": 454,
+    "classCount": 217,
+    "classDeclarations": 217,
+    "creatableClassCount": 127,
     "factoryClassesWithoutDeclaration": [
       "_TestJSON",
       "_TestWebSocket"
@@ -39717,6 +40466,8 @@
       "src/Net/HttpClient.h",
       "src/Net/HttpServer.cpp",
       "src/Net/HttpServer.h",
+      "src/Net/_HttpServer.cpp",
+      "src/Net/_HttpServer.h",
       "src/Net/_Uploader.cpp",
       "src/Net/_Uploader.h",
       "src/Net/base64.cpp",
@@ -39760,10 +40511,13 @@
       "src/Sensor/Distance/_TOFsense.cpp",
       "src/Sensor/Distance/_TOFsense.h",
       "src/Sensor/IMU/IMUpreview.h",
-      "src/Sensor/LiDAR/Livox/Livox2Protocol.h",
-      "src/Sensor/LiDAR/Livox/_Livox2.cpp",
-      "src/Sensor/LiDAR/Livox/_Livox2.h",
-      "src/Sensor/LiDAR/Livox/livox_lidar_def.h",
+      "src/Sensor/LiDAR/Livox/Livox1/Livox1Protocol.h",
+      "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp",
+      "src/Sensor/LiDAR/Livox/Livox1/_Livox1.h",
+      "src/Sensor/LiDAR/Livox/Livox2/Livox2Protocol.h",
+      "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp",
+      "src/Sensor/LiDAR/Livox/Livox2/_Livox2.h",
+      "src/Sensor/LiDAR/Livox/Livox2/livox_lidar_def.h",
       "src/Sensor/LiDAR/RoboSense/Airy/AiryProtocol.h",
       "src/Sensor/LiDAR/RoboSense/Airy/_Airy.cpp",
       "src/Sensor/LiDAR/RoboSense/Airy/_Airy.h",
@@ -39911,10 +40665,10 @@
       "src/Vision/_VideoFile.h",
       "src/main.cpp"
     ],
-    "configReads": 628,
-    "resolvedReads": 616,
-    "moduleLookups": 138,
-    "resolvedLookups": 133,
+    "configReads": 633,
+    "resolvedReads": 621,
+    "moduleLookups": 142,
+    "resolvedLookups": 137,
     "unresolvedReads": 12,
     "unresolvedLookups": 5,
     "diagnosticsCount": 17,
@@ -40043,7 +40797,7 @@
         "className": "_WebMavlinkStream"
       },
       {
-        "source": "src/Universe/Grid/_OctreeGrid.cpp:177",
+        "source": "src/Universe/Grid/_OctreeGrid.cpp:186",
         "kind": "unresolved-module-reference",
         "expression": "name",
         "resolution": "Covered by the vPCLframesIn DataObject adapter; names are loaded before link.",

@@ -6,8 +6,9 @@ Use `nsec2sec<T>()` and `sec2nsec()` at interfaces that use seconds.
 
 Point-cloud and IMU capture timestamps also use nanoseconds. Sensor clock origins
 are preserved: Orbbec timestamps are multiplied by `NSEC_USEC` on input, while
-Livox timestamps already use nanoseconds. Pair sensor streams only when they
-share a capture clock. Geometry expiry against `getTns()` requires timestamps
+Livox nanosecond timestamps are retained. `_Livox1` also converts the legacy
+GPS date/hour and microsecond offset into Unix nanoseconds. Pair sensor streams
+only when they share a capture clock. Geometry expiry against `getTns()` requires timestamps
 on the host monotonic clock; set expiry to zero for unaligned device clocks.
 
 Configuration migrated from microseconds must multiply the previous value by
