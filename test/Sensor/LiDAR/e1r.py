@@ -216,7 +216,7 @@ def run(args, output):
             result['schemaFields'] = len(schema)
             points = helpers.WebSocket(f'ws://127.0.0.1:{port}/stream/points', timeout=args.timeout)
             hello = json.loads(points.receive())
-            assert hello['version'] == 6 and hello['stream'] == 'points', hello
+            assert hello['version'] == 7 and hello['stream'] == 'points', hello
             points.send('start')
             expected_x = 32767 / 32768
             cloud = receive_cloud(points, (lambda cloud: bool(cloud)) if args.live else

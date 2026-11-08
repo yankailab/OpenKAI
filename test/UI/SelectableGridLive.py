@@ -90,7 +90,7 @@ class GridBrowser(LIVE.Browser):
                 .project(viewer.camera);
               if (Math.abs(position.x) > .85 || Math.abs(position.y) > .85 ||
                   position.z < -1 || position.z > 1) continue;
-              const depth = boxes.grid.cells[boxes.cellIndices[i] * 20] & 63;
+              const depth = boxes.grid.cells[boxes.cellIndices[i] * 20 + 15] & 63;
               const distance = position.x ** 2 + position.y ** 2;
               if (!best || depth > best.depth || (depth === best.depth && distance < best.distance))
                 best = {depth, distance, x: rect.left + (position.x + 1) * rect.width / 2,

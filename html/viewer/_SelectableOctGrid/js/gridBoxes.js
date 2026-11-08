@@ -71,7 +71,7 @@ export class GridBoxes extends THREE.Group {
     const total = grid ? grid.cells.length / CELL_BYTES : 0;
     let count = 0;
     for (let i = 0; i < total; ++i) {
-      const depth = grid.cells[i * CELL_BYTES] & 63;
+      const depth = grid.cells[i * CELL_BYTES + 15] & 63;
       if (depth >= this.minLevel && depth <= this.maxLevel) ++count;
     }
     let transparent = opacity < 1 || !this.material.depthTest;
@@ -101,7 +101,7 @@ export class GridBoxes extends THREE.Group {
     if (count) {
       let instance = 0;
       for (let i = 0; i < total; ++i) {
-        const depth = grid.cells[i * CELL_BYTES] & 63;
+        const depth = grid.cells[i * CELL_BYTES + 15] & 63;
         if (depth < this.minLevel || depth > this.maxLevel) continue;
         const box = cellBox(grid, i);
         this.cellIndices[instance] = i;

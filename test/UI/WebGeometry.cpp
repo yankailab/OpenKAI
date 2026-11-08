@@ -123,6 +123,39 @@ namespace
 			assert(rejected && frame == before && frame.capacity() == capacity);
 		}
 	}
+
+	void cellIDWireTest()
+	{
+		OCTGRID_CELLS grid;
+		grid.m_header = {{1, -2, 3}, {8, 16, 32}, 40, 123456789};
+		const UUID128 id(0x89abcdef01234567, 0x280123456789abcd);
+		OCTGRID_CELL cell;
+		cell.setID(id);
+		cell.m_vC[0] = 11; cell.m_vC[1] = 22; cell.m_vC[2] = 33; cell.m_vC[3] = 44;
+		grid.m_vCell.push_back(cell);
+		const uint8_t expectedID[] = {0x67, 0x45, 0x23, 0x01, 0xef, 0xcd, 0xab, 0x89,
+			0xcd, 0xab, 0x89, 0x67, 0x45, 0x23, 0x01, 0x28};
+		const float bounds[6] = {-3, -10, -13, 5, 6, 19};
+		std::vector<uint8_t> frame;
+		wire::begin(frame, wire::Type::Cells, 8, grid.m_header.m_tStamp);
+		wire::cells(frame, 3, .5f, bounds, grid);
+		wire::finish(frame, 1);
+		assert(readU32(frame, 0) == 0x37443357 && readU32(frame, 4) == 7);
+		assert(frame.size() == wire::HeaderBytes + wire::ObjectBytes + wire::GridHeaderBytes + 20);
+		const size_t header = wire::HeaderBytes + wire::ObjectBytes;
+		assert(readU32(frame, header + 24) == 40 && readU32(frame, header + 32) == 123456789);
+		const size_t payload = header + wire::GridHeaderBytes;
+		assert(std::memcmp(frame.data() + payload, expectedID, sizeof(expectedID)) == 0);
+		assert(std::memcmp(frame.data() + payload + 16, cell.m_vC, 4) == 0);
+		OCTGRID_CELL decoded;
+		std::memcpy(&decoded, frame.data() + payload, sizeof(decoded));
+		const UUID128 decodedID = decoded.id();
+		assert(decodedID.m_uint64[0] == id.m_uint64[0] && decodedID.m_uint64[1] == id.m_uint64[1]);
+		std::array<float, 3> originalCenter, originalSize, decodedCenter, decodedSize;
+		assert(octgridCellBox(grid.m_header, id, originalCenter, originalSize));
+		assert(octgridCellBox(grid.m_header, decodedID, decodedCenter, decodedSize));
+		assert(decodedCenter == originalCenter && decodedSize == originalSize);
+	}
 }
 
 int main()
@@ -130,5 +163,6 @@ int main()
 	configuredCapsTest();
 	largeFrameTest();
 	oversizedFrameTest();
-	std::cout << "Web geometry configured caps, large point frames and frame limits passed\n";
+	cellIDWireTest();
+	std::cout << "Web geometry configured caps, large point frames, frame limits and cell IDs passed\n";
 }

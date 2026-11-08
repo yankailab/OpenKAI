@@ -21,7 +21,7 @@ also works: enter the OpenKAI backend host and ports, then click **Start** to
 navigate to its served viewer. The host in the page is the OpenKAI computer;
 the scanner address is the separate `address` setting, initially `192.168.80.8`.
 
-This uses the same folder structure, vendored three.js, `_WebGeometry` version-6
+This uses the same folder structure, vendored three.js, `_WebGeometry` version-7
 `/stream/points` and `/stream/lines` WebSockets, and `_WSconsole` JSON commands as
 the Orbbec, RealSense and Scepter viewers. The default command port is **7890**
 and module name is **sporSensor**. No new point-cloud transport is introduced.

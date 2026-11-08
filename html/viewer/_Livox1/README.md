@@ -123,7 +123,7 @@ Devices without an IMU do not provide preview samples.
 
 The viewer imports the same `html/common/js/geometryProtocol.js`,
 `geometryConnection.js`, and `geometryViewer3D.js` as `_Livox2`. Point clouds
-and lines retain the existing `_WebGeometry` version-6 binary format at
+and lines retain the existing `_WebGeometry` version-7 binary format at
 `/stream/points` and `/stream/lines`, including render-credit flow control.
 No LiDAR-specific streaming format is introduced.
 
@@ -170,7 +170,7 @@ they do not access a physical LiDAR. The browser test uses installed
 Chrome/Chromium and Python's standard library. Default
 mode exercises fragmented replies, Avia controls, unsupported parameters,
 validation, request correlation, acknowledgements, saving, IMU lifecycle, stale
-samples, the version-6 binary point and line streams, render credits, and mobile
+samples, the version-7 binary point and line streams, render credits, and mobile
 layout. `--response` additionally renders a captured driver `getConfig` reply.
 `--screenshot /tmp/livox1.png` saves a desktop preview.
 

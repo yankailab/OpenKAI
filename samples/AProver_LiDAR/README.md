@@ -47,6 +47,10 @@ When opening a viewer's `index.html` directly, enter port `8082` for Scepter or
 `8080` for the grid before **Start**. Do not launch the viewers through the static
 operation server on port `8081` unless you also change their stream port.
 
+The sample's 48 saved selections use the current octree ID layout: reserved
+bits 127–126, depth bits 125–120, and path bits 119–0. Their JSON strings encode
+the 16 bytes in little-endian order. Only this layout is supported.
+
 Both viewers use `dTexpire: 0` to retain the latest point cloud until the next
 frame arrives, including during camera configuration or capture delays.
 The octree rejects input points older than 500 ms (`dTexpirePCL`) and retains

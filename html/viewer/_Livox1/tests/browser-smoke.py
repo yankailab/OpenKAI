@@ -294,7 +294,7 @@ def check_mock_geometry(browser):
             const vertices = count * (type === 'lines' ? 2 : 1);
             const buffer = new ArrayBuffer(72 + Math.ceil(vertices * 15 / 4) * 4);
             const view = new DataView(buffer);
-            [0x36443357, 6, type === 'points' ? 1 : 2, 1, 1, buffer.byteLength, 0, 0]
+            [0x37443357, 7, type === 'points' ? 1 : 2, 1, 1, buffer.byteLength, 0, 0]
                 .forEach((value, i) => view.setUint32(i * 4, value, true));
             view.setUint32(32, 7, true); view.setUint32(36, count, true);
             view.setFloat32(40, 4, true); view.setFloat32(44, 1, true);
@@ -309,7 +309,7 @@ def check_mock_geometry(browser):
                 this.url = String(url); this.readyState = 1;
                 this.type = this.url.split('/').at(-1); sockets.push(this);
                 queueMicrotask(() => this.onmessage({data:JSON.stringify({
-                    type:'hello', version:6, stream:this.type, background:[0.035,0.045,0.065],
+                    type:'hello', version:7, stream:this.type, background:[0.035,0.045,0.065],
                     showGrid:true, autoBound:true,
                     camera:{type:0, eye:[-4,-4,3], target:[0,0,0], up:[0,0,1], fov:70, near:0.01, far:1000000}
                 })}));
@@ -326,7 +326,7 @@ def check_mock_geometry(browser):
             for (let attempt = 0; attempt < 40 && !$('#stats').textContent.startsWith('3 points · 1 lines'); ++attempt)
                 await new Promise(resolve => setTimeout(resolve, 50));
             assert($('#status').textContent === 'Connected', 'Both shared geometry streams must connect');
-            assert($('#stats').textContent.startsWith('3 points · 1 lines'), 'Version-6 binary points and lines must render');
+            assert($('#stats').textContent.startsWith('3 points · 1 lines'), 'Version-7 binary points and lines must render');
             assert($('#viewport canvas') && $('#welcome').hidden, 'Point cloud viewport must be visible');
             assert(sockets.length === 2 && sockets.every(socket => socket.binaryType === 'arraybuffer'),
                 'Geometry must use two binary WebSockets');
@@ -338,7 +338,7 @@ def check_mock_geometry(browser):
             $('#stop').click();
             assert($('#status').textContent === 'Stopped' && sockets.every(socket => socket.readyState === 3),
                 'Stop must close both streams');
-            return {points:3, lines:1, version:6, checks:['shared endpoints', 'binary decoding', 'render credits', 'Stop']};
+            return {points:3, lines:1, version:7, checks:['shared endpoints', 'binary decoding', 'render credits', 'Stop']};
         } finally {
             $('#stop').click(); window.WebSocket = nativeSocket; window.wsInit = init;
         }

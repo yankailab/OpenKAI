@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run octree occupancy, color, expiry and dense-cloud regressions."""
+"""Run octree ID layout, selection, occupancy, color, expiry and dense-cloud regressions."""
 import json
 import pathlib
 import shlex
@@ -18,7 +18,9 @@ def main():
     entry = next(item for item in entries if item["file"].endswith("/src/Universe/Grid/_OctreeGrid.cpp"))
     with tempfile.TemporaryDirectory(prefix="openkai-octree-grid-tests-") as temp:
         objects = []
-        for index, source in enumerate(["test/Universe/OctreeGrid.cpp", "src/Universe/Grid/_OctreeGrid.cpp"]):
+        sources = ["test/Universe/OctreeGrid.cpp", "src/Universe/Grid/_OctreeGrid.cpp",
+                   "src/Universe/Grid/_SelectableOctGrid.cpp"]
+        for index, source in enumerate(sources):
             obj = str(pathlib.Path(temp) / f"test-{index}.o")
             args = shlex.split(entry["command"])
             args[args.index("-o") + 1] = obj

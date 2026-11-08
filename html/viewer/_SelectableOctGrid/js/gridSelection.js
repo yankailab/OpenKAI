@@ -13,7 +13,7 @@ export function decodeSelection(command) {
     if (!result.every(Number.isFinite)) throw new Error('Invalid selection header');
     return result;
   };
-  const header = { origin: vector(command.vPorigin), size: vector(command.vRootCellSize), maxLevel: command.nMaxLevel ?? 40 };
+  const header = { origin: vector(command.vPorigin), size: vector(command.vRootCellSize), maxLevel: command.nMaxLevel };
   if (header.size.some(x => x <= 0) || !Number.isInteger(header.maxLevel) || header.maxLevel < 0 || header.maxLevel > 40 ||
       !Array.isArray(command.cellIDs)) throw new Error('Invalid selection data');
   const ids = new Map();
@@ -26,12 +26,12 @@ export function decodeSelection(command) {
 }
 
 export function childID(parent, child) {
-  const id = parent.slice(), depth = id[0] & 63;
+  const id = parent.slice(), depth = id[15] & 63;
   if (depth >= 40) throw new Error('Maximum grid depth reached');
-  const bit = 123 - depth * 3, byte = bit >> 3, shift = bit % 8;
+  const bit = 117 - depth * 3, byte = bit >> 3, shift = bit % 8;
   id[byte] |= (child << shift) & 255;
   if (shift > 5) id[byte + 1] |= child >> (8 - shift);
-  id[0] = (id[0] & 192) | (depth + 1);
+  id[15] = (id[15] & 192) | (depth + 1);
   return id;
 }
 
@@ -63,8 +63,8 @@ function selectedRegions(header, ids) {
   const tree = {};
   for (const id of ids.values()) {
     let node = tree;
-    for (let level = 0; level < (id[0] & 63) && !node.selected; ++level) {
-      const bit = 123 - level * 3, byte = bit >> 3, shift = bit % 8;
+    for (let level = 0; level < (id[15] & 63) && !node.selected; ++level) {
+      const bit = 117 - level * 3, byte = bit >> 3, shift = bit % 8;
       const child = ((id[byte] >> shift) | ((id[byte + 1] || 0) << (8 - shift))) & 7;
       node = (node.children ??= {})[child] ??= {};
     }
@@ -107,7 +107,7 @@ export function remapSelection(oldHeader, newHeader, ids, maxNodes = 100000) {
       if (overlap > 0) { covered += overlap; intersecting.push(region); }
     }
     if (!covered) return;
-    if (covered >= volume * (1 - 1e-12) || (id[0] & 63) >= newHeader.maxLevel || nodes >= maxNodes) {
+    if (covered >= volume * (1 - 1e-12) || (id[15] & 63) >= newHeader.maxLevel || nodes >= maxNodes) {
       result.set(cellIDKey(id), id);
       return;
     }

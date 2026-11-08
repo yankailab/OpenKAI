@@ -8,8 +8,6 @@
 
 namespace kai
 {
-	// 128-bit cell IDs: two reserved high bits, forty 3-bit child indices,
-	// and a 6-bit depth (0 = root). Unused child indices are zero.
 	constexpr int OCTGRID_MAX_LEVEL = 40;
 
 	struct OCTGRID_PCL_CELL
@@ -17,9 +15,10 @@ namespace kai
 		/*
 		cell ID format:
 		128 bit width from MSB to LSB
-		[2 bit] 0
-		[3 bit][3bit]... each 3-bit fragment correspondent to its cell index at the Level from 0 to 39, 40 levels at most (3 bit x 40 = 120 bit)
-		[6 bit] cell depth (0 = root, 40 = deepest); unused path segments are zero
+		[127:126] 2 reserved bits, zero
+		[125:120] 6-bit cell depth (0 = root, 40 = deepest)
+		[119:0] forty 3-bit child indices, from level 0 at bits 119:117
+		        to level 39 at bits 2:0; unused path segments are zero
 		*/
 		UUID128 m_ID = 0;
 

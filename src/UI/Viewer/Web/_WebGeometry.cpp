@@ -172,20 +172,17 @@ namespace kai
 		const uint64_t expiry = m_dTexpire && now > m_dTexpire ? now - m_dTexpire : 0;
 		bool changed = !stream.m_bPublished;
 		stream.m_geometry.resize(m_sources.m_vGeometry.size());
-		if (stream.type != webselectableoctgrid::Type::Cells)
+		for (size_t i = 0; i < m_sources.m_vGeometry.size(); ++i)
 		{
-			for (size_t i = 0; i < m_sources.m_vGeometry.size(); ++i)
+			const auto &source = m_sources.m_vGeometry[i];
+			if (includes(source, stream.type))
 			{
-				const auto &source = m_sources.m_vGeometry[i];
-				if (includes(source, stream.type))
-				{
-					changed = stream.m_geometry[i].refresh(source, stream.type, uint32_t(i), expiry) || changed;
-				}
+				changed = stream.m_geometry[i].refresh(source, stream.type, uint32_t(i), expiry) || changed;
 			}
-			if (!changed)
-			{
-				return;
-			}
+		}
+		if (!changed)
+		{
+			return;
 		}
 
 		std::shared_ptr<std::vector<uint8_t>> frame;
@@ -205,16 +202,14 @@ namespace kai
 		webselectableoctgrid::begin(*frame, stream.type, ++stream.sequence, now);
 		uint32_t count = 0;
 
+		for (size_t i = 0; i < m_sources.m_vGeometry.size(); ++i)
 		{
-			for (size_t i = 0; i < m_sources.m_vGeometry.size(); ++i)
+			if (!includes(m_sources.m_vGeometry[i], stream.type))
 			{
-				if (!includes(m_sources.m_vGeometry[i], stream.type))
-				{
-					continue;
-				}
-				stream.m_geometry[i].appendTo(*frame);
-				++count;
+				continue;
 			}
+			stream.m_geometry[i].appendTo(*frame);
+			++count;
 		}
 		webselectableoctgrid::finish(*frame, count);
 		stream.bytes = frame->size();

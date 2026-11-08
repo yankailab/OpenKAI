@@ -7,7 +7,7 @@ the backend host/ports and click **Start**. The geometry service serves the page
 and vendored three.js assets; no npm or external web server is needed.
 
 The layout, rendering and connection structure match the Orbbec and Scepter
-viewers. Point clouds use `_WebGeometry`'s version-6 `/stream/points` and
+viewers. Point clouds use `_WebGeometry`'s version-7 `/stream/points` and
 `/stream/lines` connections. Camera controls use the separate `_WSconsole`
 connection on port **7890**. The camera module defaults to **RealSense**.
 
@@ -104,7 +104,7 @@ and `acc` (XYZ arrays), plus `orientationValid`, `quaternion` (WXYZ) and `rpy`
 capture timestamps in nanoseconds, preserving precision in browsers. Treat
 `available` and `orientationValid` as validity flags; unavailable values must not
 be displayed as current samples. Polling does not consume the IMU stream.
-Only this command protocol and geometry version 6 are supported.
+Only this command protocol and geometry version 7 are supported.
 
 ## Validation
 

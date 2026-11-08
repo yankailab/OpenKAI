@@ -17,7 +17,7 @@ const frameBytes = 72 + Math.ceil(pointCount * 15 / 4) * 4;
 function pointHeader(buffer, count) {
   const view = new DataView(buffer);
   for (const [offset, value] of [
-    [0, 0x36443357], [4, 6], [8, 1], [16, 1], [20, buffer.byteLength], [32, 7], [36, count],
+    [0, 0x37443357], [4, 7], [8, 1], [16, 1], [20, buffer.byteLength], [32, 7], [36, count],
   ]) view.setUint32(offset, value, true);
   view.setFloat32(40, 2, true);
   view.setFloat32(44, 1, true);

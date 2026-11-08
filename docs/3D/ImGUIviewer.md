@@ -192,6 +192,9 @@ The grid publishes a root center/size/depth/timestamp header plus 20-byte record
 its UUID, center, full size, and color for future picking. The GPU renderer and
 CPU fallback generate the twelve edges from those boxes. Camera fitting,
 visibility, line width, and object opacity apply to grid boxes too.
+The ID has zero reserved bits 127–126, depth in bits 125–120, and forty
+three-bit child indices in bits 119–0. The first path index starts at bit 117;
+unused path segments are zero. The 16 stream bytes remain little-endian.
 
 Use grid `nMaxCells` to cap occupied cells (default 8333). `nMaxLines` is no longer accepted.
 Viewer `nCbuf` defaults to 100000; per-object `vSelectableOctGrid[].nC` can lower it, and
@@ -201,8 +204,9 @@ All occupied levels are included. Cell colors come from averaged point RGB with 
 override defaults to alpha 1). Empty or expired snapshots
 clear the previous boxes.
 
-See [the cell format and tests](WebViewer3D.md#occupied-cell-interface) for ID
-layout, snapshot semantics, and verification commands.
+See [the cell format](WebViewer3D.md#binary-protocol-version-7) and
+[cell interface tests](WebViewer3D.md#occupied-cell-interface) for ID layout,
+snapshot semantics, and verification commands.
 
 The viewer accepts `nPbuf: 0` and/or `nLbuf: 0` to disable collection of those
 types. Compact cell collection continues independently, allowing a cells-only

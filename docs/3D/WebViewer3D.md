@@ -239,7 +239,8 @@ The backend snapshots its current root and `m_vSelectedCells` and replies:
 ```
 
 `wsCmdHandler.js::handleCmd()` routes this reply to the picker. Valid IDs are
-added to that module's existing selection, ignoring duplicates. An empty reply
+added to that module's existing selection, ignoring duplicates. `nMaxLevel` is
+required and must be an integer from 0 to 40. An empty reply
 keeps existing selections. If the returned root differs from the current stream
 header, the same volume-remapping rules above apply before merging; IDs deeper
 than the current maximum level are also remapped. Invalid replies leave the
@@ -267,6 +268,15 @@ order as picker commands. `saveConfig(true)` updates `vPorigin`, `vRootCellSize`
 `vSelectedCells` directly in the bound module object, preserving its other fields
 and every other module in the original launch JSON file. `loadConfig()` reads
 those values on the next launch.
+
+Saved IDs use the version 7 cell layout described below.
+The final byte of each hexadecimal string contains the reserved bits and depth;
+the preceding 15 bytes contain the path in little-endian order. For example,
+`0000000000000000000000000000e001` selects child 7 at depth 1 (the positive half
+of all three axes); the root remains `00000000000000000000000000000000`.
+
+Saved selections must already use this layout; there is no format detection
+or conversion. The repository's sample selections use this format.
 
 The `octGridCellSelect` handler calls `saveConfig(true)` after validating and updating
 the selection, and reports file write failures to the browser. The launch JSON
@@ -410,7 +420,7 @@ across connections. A failed,
 missing, or empty stream does not prevent the other types from drawing. Stream
 status is shown separately when their connection states differ.
 
-Each connection receives a JSON `hello` with `version: 6`, its `stream` name
+Each connection receives a JSON `hello` with `version: 7`, its `stream` name
 (`points`, `lines`, or `cells`), all object names and camera settings. Any type's
 hello can initialize the page; later greetings do not reset the scene or camera.
 Each object also has a `selectableGrid` boolean, true for `_SelectableOctGrid`
@@ -458,7 +468,7 @@ endpoint that also forwards `/stream/points`, `/stream/lines` and `/stream/cells
 WebSocket upgrades. The browser selects
 `wss://` when the page is served over HTTPS.
 
-## Binary protocol, version 6
+## Binary protocol, version 7
 
 All integers and IEEE float32 values are little-endian. Each WebSocket binary
 message contains one complete snapshot of exactly one geometry type. An empty
@@ -466,8 +476,8 @@ stream is a 32-byte frame with an object count of zero. Reserved fields are zero
 
 | Frame header offset | Type | Value |
 | --- | --- | --- |
-| 0 | uint32 | `0x36443357` (`W3D6`) |
-| 4 | uint32 | Version `6` |
+| 0 | uint32 | `0x37443357` (`W3D7`) |
+| 4 | uint32 | Version `7` |
 | 8 | uint32 | Type: 1 points, 2 lines, 3 cells; must match the endpoint |
 | 12 | uint32 | Sequence number for this stream, wraps at 2^32 |
 | 16 | uint32 | Object count |
@@ -506,19 +516,28 @@ All sections and subsequent object headers remain four-byte aligned.
 | 32 | uint64 | Grid snapshot publication timestamp in nanoseconds |
 
 Next come C interleaved records: 16 ID bytes, three RGB8 bytes, and one alpha byte
-(0–255). The ID is
-little-endian, low 64-bit word first. Its top two bits are zero; bits 125–6
-hold up to 40 child indices, three bits per level, starting at bit 123. Bits
-5–0 hold the cell depth. Depth 0 identifies the root (ID zero); only `depth`
-child segments are used and all remaining path bits are zero. A child index
-uses X/Y/Z masks 4/2/1, with a set bit choosing the positive half of that axis.
+(0–255). The ID is little-endian, low 64-bit word first. Its layout from most
+to least significant bit is:
+
+| ID bits | Meaning |
+| --- | --- |
+| 127–126 | Reserved, zero |
+| 125–120 | Cell depth, 0–40 |
+| 119–0 | Forty three-bit child indices, levels 0–39 |
+
+The level-0 child index occupies bits 119–117; level 39 occupies bits 2–0.
+Extract level `L` with `(id >> (117 - 3 * L)) & 7`. Depth 0 identifies the root
+(ID zero); only `depth` child segments are used and all remaining path bits
+are zero. A child index uses X/Y/Z masks 4/2/1, with a set bit choosing the
+positive half of that axis. The reserved/depth byte is stream byte 15.
 
 Each cell costs exactly **20 bytes**. Cell records and sections are four-byte
 aligned without padding.
 
-Only version 6 is supported, with an exact version match required for both
+Only version 7 is supported, with an exact version match required for both
 the JSON greeting and binary frames. There is no protocol negotiation or
-conversion. Update the backend and browser assets together.
+conversion. Update the backend and browser assets together, including point/line
+viewers that share this protocol.
 Point and line payloads use 15 and 30 bytes per record respectively, plus
 per-object alignment padding. Full snapshots preserve reconnect and object
 removal behavior. Picker commands send 16-byte IDs as hexadecimal strings.

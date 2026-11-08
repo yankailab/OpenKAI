@@ -100,8 +100,8 @@ class Browser:
                   this.addEventListener('message', event => {
                     if (!(event.data instanceof ArrayBuffer)) return;
                     const v = new DataView(event.data), rgb = new Uint8Array(event.data);
-                    if (v.byteLength < 32 || v.getUint32(0, true) !== 0x36443357 ||
-                        v.getUint32(4, true) !== 6 || v.getUint32(8, true) !== 1 ||
+                    if (v.byteLength < 32 || v.getUint32(0, true) !== 0x37443357 ||
+                        v.getUint32(4, true) !== 7 || v.getUint32(8, true) !== 1 ||
                         v.getUint32(20, true) !== v.byteLength) throw Error('Bad cloud header');
                     let at = 32, count = 0, colored = false;
                     for (let n = v.getUint32(16, true); n > 0; --n) {

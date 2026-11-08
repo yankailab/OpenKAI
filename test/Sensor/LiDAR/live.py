@@ -101,7 +101,7 @@ def run(args, temp):
             geometry_port = config['sensorViewer']['port'] if args.glim else port
             points = helpers.WebSocket(f'ws://127.0.0.1:{geometry_port}/stream/points', timeout=15)
             hello = json.loads(points.receive())
-            assert hello['version'] == 6 and hello['stream'] == 'points', hello
+            assert hello['version'] == 7 and hello['stream'] == 'points', hello
             points.send('start')
             clouds = []
             start = time.monotonic()
@@ -142,7 +142,7 @@ def run(args, temp):
                 eventually(lambda: commands.request('getConfig'),
                            lambda r: r.get('status', {}).get('frames', 0) >= count_before + 3)
                 points = helpers.WebSocket(f'ws://127.0.0.1:{geometry_port}/stream/points', timeout=15)
-                assert json.loads(points.receive())['version'] == 6
+                assert json.loads(points.receive())['version'] == 7
                 points.send('start')
                 cloud = helpers.inspect_cloud(points.receive())
                 assert len(cloud) > 100, (data_type, len(cloud))

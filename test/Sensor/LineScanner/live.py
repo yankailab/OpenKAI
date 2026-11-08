@@ -157,7 +157,7 @@ def wait_http(url, process, timeout=30):
 def inspect_cloud(frame):
     assert isinstance(frame, bytes) and len(frame) >= 32
     magic, version, kind, _, count, length = struct.unpack_from("<6I", frame)
-    assert (magic, version, kind, length) == (0x36443357, 6, 1, len(frame))
+    assert (magic, version, kind, length) == (0x37443357, 7, 1, len(frame))
     at, points = 32, []
     for _ in range(count):
         _, size = struct.unpack_from("<2I", frame, at)
@@ -327,7 +327,7 @@ def main():
                 assert persisted["viewer"] == config["viewer"]
                 points = WebSocket(f"ws://127.0.0.1:{port}/stream/points")
                 hello = json.loads(points.receive())
-                assert hello["version"] == 6 and hello["stream"] == "points"
+                assert hello["version"] == 7 and hello["stream"] == "points"
                 points.send("start")
                 deadline = time.monotonic() + 25
                 cloud = []

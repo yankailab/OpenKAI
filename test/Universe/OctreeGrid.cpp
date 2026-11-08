@@ -8,6 +8,39 @@ using namespace kai;
 
 namespace
 {
+UUID128 idForPath(const vector<unsigned> &path)
+{
+    UUID128 id(0, uint64_t(path.size()) << 56);
+    // Assign each path bit independently to exercise UUID word-boundary handling.
+    for (size_t level = 0; level < path.size(); ++level)
+        for (unsigned bit = 0; bit < 3; ++bit)
+            if (path[level] & (1u << bit))
+            {
+                const unsigned offset = 117 - 3 * level + bit;
+                id.m_uint64[offset / 64] |= uint64_t(1) << (offset % 64);
+            }
+    return id;
+}
+
+bool sameID(const UUID128 &a, const UUID128 &b)
+{
+    return a.m_uint64[0] == b.m_uint64[0] && a.m_uint64[1] == b.m_uint64[1];
+}
+
+string idHex(const UUID128 &id)
+{
+    constexpr char digits[] = "0123456789abcdef";
+    OCTGRID_CELL cell;
+    cell.setID(id);
+    string result;
+    for (const uint8_t byte : cell.m_ID)
+    {
+        result += digits[byte >> 4];
+        result += digits[byte & 15];
+    }
+    return result;
+}
+
 class GridHarness : public _SelectableOctGrid
 {
 public:
@@ -74,8 +107,8 @@ void testCountsColorsAndPaths()
         const auto &position = points[octant * 2].m_vP;
         const auto *leaf = f.grid.getCell(position);
         assert(leaf && leaf->m_nP == 2 && f.grid.getCell(leaf->m_ID) == leaf);
-        assert(leaf->m_ID.m_uint64[0] == 2);
-        assert(leaf->m_ID.m_uint64[1] == (uint64_t(octant) << 59 | uint64_t(octant) << 56));
+        assert(leaf->m_ID.m_uint64[0] == 0);
+        assert(leaf->m_ID.m_uint64[1] == (uint64_t(2) << 56 | uint64_t(octant) << 53 | uint64_t(octant) << 50));
         assert((leaf->m_vC - Vector4f(.5f, 0, .5f, 1)).norm() < 1e-6f);
         std::array<float, 3> center, size;
         assert(octgridCellBox(snapshot.m_header, leaf->m_ID, center, size));
@@ -91,6 +124,118 @@ void testCountsColorsAndPaths()
     assert((leaf->m_vC - Vector4f(1.f / 3, 1.f / 3, 1.f / 3, 1)).norm() < 1e-6f);
     assert(!f.grid.addCellPoint({{2.01f, 0, 0}, {1, 1, 1}, getTns()}, getTns()));
     assert(f.grid.getCell(UUID128(0))->m_nP == 17);
+}
+
+void testCellIDLayoutAndGeometry()
+{
+    assert(sameID(idForPath({5}), UUID128(0, 0x01a0000000000000)));
+    assert(idHex(idForPath({5})) == "0000000000000000000000000000a001");
+    vector<unsigned> crossingPath(19, 0);
+    crossingPath.back() = 7;
+    assert(sameID(idForPath(crossingPath), UUID128(0x8000000000000000, 0x1300000000000003)));
+    assert(sameID(idForPath(vector<unsigned>(40, 7)), UUID128(UINT64_MAX, 0x28ffffffffffffff)));
+    vector<unsigned> lastPath(40, 0);
+    lastPath.back() = 5;
+    assert(sameID(idForPath(lastPath), UUID128(5, 0x2800000000000000)));
+
+    const OCTGRID_HEADER header = {{1, -2, 3}, {8, 16, 32}, 40, 0};
+    vector<unsigned> path;
+    std::array<uint64_t, 3> coordinates = {};
+    for (unsigned depth = 0; depth <= 40; ++depth)
+    {
+        const UUID128 id = idForPath(path);
+        OCTGRID_CELL record;
+        record.setID(id);
+        assert(record.m_ID[15] == depth && sameID(record.id(), id));
+        std::array<float, 3> center, size;
+        assert(octgridCellBox(header, id, center, size));
+        for (unsigned axis = 0; axis < 3; ++axis)
+        {
+            const double subdivisions = std::ldexp(1., depth);
+            const float expectedSize = header.m_vRootCellSize[axis] / subdivisions;
+            const float expectedCenter = header.m_vPorigin[axis] + header.m_vRootCellSize[axis] *
+                ((coordinates[axis] + .5) / subdivisions - .5);
+            assert(size[axis] == expectedSize && center[axis] == expectedCenter);
+        }
+        if (depth < 40)
+        {
+            const unsigned child = (depth * 5 + 3) % 8;
+            path.push_back(child);
+            for (unsigned axis = 0; axis < 3; ++axis)
+                coordinates[axis] = coordinates[axis] * 2 + bool(child & (4 >> axis));
+        }
+    }
+}
+
+void testDeepGeneratedIDsAndSelection()
+{
+    const UUID128 selectedID(UINT64_MAX, 0x28ffffffffffffff);
+    const string selectedHex = "ffffffffffffffffffffffffffffff28";
+    Fixture f({{"vRootCellSize", {2, 2, 2}}, {"nMaxLevel", 40}, {"nPminBuild", 0},
+               {"vSelectedCells", {selectedHex}}});
+    assert(f.grid.getSelectedCells().size() == 1);
+    assert(sameID(f.grid.getSelectedCells().front(), selectedID));
+    assert(!f.grid.bSelectedOccupied(0));
+    // The positive root corner chooses child 7 at every depth, including where
+    // float cell centers round to the input point near the deepest levels.
+    const Vector3f position(1, 1, 1);
+    f.publish({{position, {.2f, .4f, .6f}, 0}});
+    OCTGRID_CELLS snapshot;
+    assert(f.grid.get(&snapshot) == 41);
+    for (unsigned depth = 0; depth <= 40; ++depth)
+    {
+        const UUID128 id = idForPath(vector<unsigned>(depth, 7));
+        const auto *cell = f.grid.getCell(position, depth);
+        assert(cell && sameID(cell->m_ID, id));
+        assert(f.grid.getCell(id) == cell);
+        assert(sameID(snapshot.m_vCell[depth].id(), id));
+    }
+    assert(f.grid.bSelectedOccupied(0));
+    assert(!f.grid.bSelectedOccupied(1));
+    assert(f.grid.saveConfig(false));
+    assert((*f.config.getJson())["grid"]["vSelectedCells"] == json::array({selectedHex}));
+    assert(f.grid.loadConfig());
+    assert(sameID(f.grid.getSelectedCells().front(), selectedID));
+}
+
+void testInvalidCellIDs()
+{
+    Fixture f({{"vRootCellSize", {2, 2, 2}}, {"nMaxLevel", 40}, {"nPminBuild", 0},
+               {"vSelectedCells", {"0000000000000000000000000000e001"}}});
+    f.publish({{{1, 1, 1}, {1, 1, 1}, 0}});
+    OCTGRID_CELLS snapshot;
+    assert(f.grid.get(&snapshot) == 41);
+    const vector<UUID128> invalid = {
+        {0, uint64_t(41) << 56}, {0, uint64_t(63) << 56}, // Unsupported depths.
+        {0, uint64_t(1) << 62}, {0, uint64_t(1) << 63}, // Reserved bits.
+        {1, 0}, {0, uint64_t(1) << 53}, // Root with nonzero path bits.
+        {1, 0x01e0000000000000}, // A valid first child followed by unused path bits.
+        {uint64_t(1) << 63, uint64_t(18) << 56}, // Unused bits at the UUID word boundary.
+        {uint64_t(1) << 60, uint64_t(19) << 56},
+        {1, uint64_t(39) << 56}, // Final path segment must be zero before depth 40.
+        {1, uint64_t(7) << 59}, // Former depth-1 child-7 layout is invalid now.
+    };
+    for (const auto &id : invalid)
+    {
+        std::array<float, 3> center, size;
+        assert(!octgridCellBox(snapshot.m_header, id, center, size));
+        assert(!f.grid.getCell(id));
+        const UUID128 selected = f.grid.getSelectedCells().front();
+        f.grid.console({{"cmd", "octGridCellSelect"}, {"vPorigin", {"0", "0", "0"}},
+                        {"vRootCellSize", {"2", "2", "2"}}, {"cellIDs", {idHex(id)}}}, nullptr);
+        assert(f.grid.getSelectedCells().size() == 1 && sameID(f.grid.getSelectedCells().front(), selected));
+        (*f.config.getJson())["grid"]["vSelectedCells"] = json::array({idHex(id)});
+        assert(!f.grid.loadConfig());
+        (*f.config.getJson())["grid"]["vSelectedCells"] = json::array({idHex(selected)});
+        assert(f.grid.loadConfig());
+        f.publish({{{1, 1, 1}, {1, 1, 1}, 0}});
+    }
+    auto limitedHeader = snapshot.m_header;
+    limitedHeader.m_nMaxLevel = 18;
+    std::array<float, 3> center, size;
+    assert(!octgridCellBox(limitedHeader, idForPath(vector<unsigned>(19, 0)), center, size));
+    limitedHeader.m_nMaxLevel = 41;
+    assert(!octgridCellBox(limitedHeader, UUID128(0), center, size));
 }
 
 void testStaleAndInvalidPoints()
@@ -148,6 +293,9 @@ void testDenseSampleCloud()
 int main()
 {
     testCountsColorsAndPaths();
+    testCellIDLayoutAndGeometry();
+    testDeepGeneratedIDsAndSelection();
+    testInvalidCellIDs();
     testStaleAndInvalidPoints();
     testDenseSampleCloud();
     std::cout << "Octree grid regressions passed\n";

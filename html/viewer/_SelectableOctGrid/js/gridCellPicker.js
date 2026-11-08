@@ -116,7 +116,7 @@ export class GridCellPicker {
         for (let i = 0; i < mesh.geometry.instanceCount; ++i) {
           const at = mesh.cellIndices[i] * CELL_BYTES;
           if (mesh.grid.cells[at + 19] === 0) continue;
-          const depth = mesh.grid.cells[at] & 63;
+          const depth = mesh.grid.cells[at + 15] & 63;
           if (best && depth < best.depth) continue;
           let distance = near, end = far;
           for (let axis = 0; axis < 3; ++axis) {
@@ -188,7 +188,7 @@ export class GridCellPicker {
     let { header, ids } = decodeSelection(command);
     const sameRoot = header.origin.every((x, i) => x === source.header.origin[i]) &&
       header.size.every((x, i) => x === source.header.size[i]);
-    if (!sameRoot || [...ids.values()].some(id => (id[0] & 63) > source.header.maxLevel))
+    if (!sameRoot || [...ids.values()].some(id => (id[15] & 63) > source.header.maxLevel))
       ids = remapSelection(header, source.header, ids);
     let added = 0;
     for (const [key, id] of ids) if (!source.selected.has(key)) { source.selected.set(key, id); ++added; }

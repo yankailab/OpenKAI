@@ -11,8 +11,8 @@
 
 namespace kai::webselectableoctgrid
 {
-	constexpr uint32_t Magic = 0x36443357; // W3D6; RGB points/lines, RGBA cells
-	constexpr uint32_t Version = 6;
+	constexpr uint32_t Magic = 0x37443357; // W3D7; cell depth precedes the 120-bit path
+	constexpr uint32_t Version = 7;
 	enum class Type : uint32_t { Points = 1, Lines = 2, Cells = 3 };
 	constexpr std::array<Type, 3> Types = {Type::Points, Type::Lines, Type::Cells};
 	inline const char *name(Type type)

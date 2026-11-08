@@ -74,7 +74,7 @@ namespace kai
 		{
 			IF__(iLevel >= OCTGRID_MAX_LEVEL, 0);
 
-			return UUID128(iC) << (3 * (OCTGRID_MAX_LEVEL - 1 - iLevel) + 6);
+			return UUID128(iC) << (3 * (OCTGRID_MAX_LEVEL - 1 - iLevel));
 		}
 
 		static bool bHasChild(OCTREE_CELL<OCTGRID_PCL_CELL> *pCell)
@@ -288,7 +288,7 @@ namespace kai
 		if (nMaxLevTo < 0 || nMaxLevTo > m_nMaxLevel)
 			nMaxLevTo = m_nMaxLevel;
 
-		UUID128 cellID(0); // path to the current node; low six bits hold its depth
+		UUID128 cellID(0); // path to the current node in bits 119:0
 
 		for (int iL = 0; iL <= nMaxLevTo; iL++)
 		{
@@ -299,7 +299,7 @@ namespace kai
 			OCTGRID_PCL_CELL *pPcl = bAdd ? pCell->addT() : pCell->getT();
 			NULL_N(pPcl);
 			pPcl->m_ID = cellID;
-			pPcl->m_ID |= uint64_t(iL);
+			pPcl->m_ID.m_uint64[1] |= uint64_t(iL) << 56;
 			updatePCLcell(pPcl, gP, tNow);
 			IF__(iL >= nMaxLevTo, pPcl);
 
@@ -361,16 +361,16 @@ namespace kai
 	{
 		NULL_N(m_pCell);
 
-		const int nMaxLevTo = id.m_uint64[0] & 0x3f;
+		const int nMaxLevTo = (id.m_uint64[1] >> 56) & 0x3f;
 		IF_N(nMaxLevTo > OCTGRID_MAX_LEVEL || nMaxLevTo > m_nMaxLevel);
 		IF_N(id.m_uint64[1] >> 62); // verify if the header is 0x00b
 
 		OCTREE_CELL<OCTGRID_PCL_CELL> *pCell = m_pCell;
-		uint64_t high = id.m_uint64[1];
+		uint64_t high = id.m_uint64[1] & (UINT64_MAX >> 8);
 		uint64_t low = id.m_uint64[0];
 		for (int iL = 0; iL < nMaxLevTo; iL++)
 		{
-			const uint8_t iC = (high >> 59) & 7;
+			const uint8_t iC = (high >> 53) & 7;
 			pCell = pCell->m_pChild[iC];
 			NULL_N(pCell);
 

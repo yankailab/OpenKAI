@@ -45,18 +45,18 @@ namespace kai
 	};
 
 	// Decode without converting the 128-bit ID to a floating-point number.
-	// Level 0 is the root; depth child segments start at bit 123, then 120, ...
+	// Level 0 is the root; depth is at bits 125:120, child segments at 117, 114, ...
 	inline bool octgridCellBox(const OCTGRID_HEADER &header, const UUID128 &id,
 							   std::array<float, 3> &center, std::array<float, 3> &size)
 	{
-		unsigned depth = id.m_uint64[0] & 63;
+		unsigned depth = (id.m_uint64[1] >> 56) & 63;
 		IF_F(header.m_nMaxLevel > OCTGRID_MAX_LEVEL || depth > header.m_nMaxLevel || id.m_uint64[1] >> 62);
-		uint64_t high = id.m_uint64[1], low = id.m_uint64[0] & ~uint64_t(63);
+		uint64_t high = id.m_uint64[1] & (UINT64_MAX >> 8), low = id.m_uint64[0];
 		std::array<double, 3> c = {header.m_vPorigin[0], header.m_vPorigin[1], header.m_vPorigin[2]};
 		std::array<double, 3> s = {header.m_vRootCellSize[0], header.m_vRootCellSize[1], header.m_vRootCellSize[2]};
 		for (unsigned level = 0; level < depth; ++level)
 		{
-			const unsigned child = (high >> 59) & 7;
+			const unsigned child = (high >> 53) & 7;
 			for (unsigned axis = 0; axis < 3; ++axis)
 			{
 				c[axis] += s[axis] * ((child & (4 >> axis)) ? 0.25 : -0.25);
@@ -65,8 +65,8 @@ namespace kai
 			high = (high << 3) | (low >> 61);
 			low <<= 3;
 		}
-		// Consumed path bits may remain in the two reserved high bits.
-		IF_F((high & (UINT64_MAX >> 2)) || low);
+		// Consumed path bits may remain in the high reserved/depth byte.
+		IF_F((high & (UINT64_MAX >> 8)) || low);
 		for (unsigned axis = 0; axis < 3; ++axis)
 		{
 			center[axis] = float(c[axis]);

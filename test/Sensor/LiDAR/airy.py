@@ -171,7 +171,7 @@ def run(args, output):
             else:
                 points = helpers.WebSocket(f'ws://127.0.0.1:{port}/stream/points', timeout=30)
                 hello = json.loads(points.receive())
-                assert hello['version'] == 6 and hello['stream'] == 'points', hello
+                assert hello['version'] == 7 and hello['stream'] == 'points', hello
                 points.send('start')
             if args.capture:
                 replay = Replay(args.capture, replay_ports)
