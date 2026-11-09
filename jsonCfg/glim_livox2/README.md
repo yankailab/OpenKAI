@@ -8,7 +8,7 @@ build/OpenKAI jsonCfg/GLIM_livox2.json
 
 Open `http://localhost:8080/` for the GLIM map and SLAM controls, and
 `http://localhost:8081/` for the raw Livox point cloud, IMU, and sensor settings.
-Both use the existing WSconsole service on port 7890 (`GLIM` and `Lvx1`).
+Both use the existing `_JSONcmd` service on port 7890 (`GLIM` and `Lvx1`).
 Keep the sensor still for initialization, then click **Start** in the GLIM viewer.
 SLAM waits for IMU samples covering the complete scan before processing it.
 Stop SLAM before changing the sensor format, timing, work mode, or IMU settings.

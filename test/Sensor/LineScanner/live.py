@@ -292,7 +292,7 @@ def main():
                 for _ in range(2):
                     started = commands.request("startAcquisition")
                     assert started["bSuccess"] and started["status"]["acquiring"], started
-                # A sparse trigger stream must not block console commands or
+                # A sparse trigger stream must not block JSON commands or
                 # reset acquisition when the SDK's receive deadline expires.
                 restore_trigger = original_values["triggerMode"]
                 triggered = commands.request("setConfig", config={"triggerMode": 3})

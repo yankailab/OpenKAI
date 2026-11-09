@@ -36,7 +36,7 @@ namespace kai
         void stop() override;
         virtual void clear();
         void console(void *console) override;
-        void console(const json &request, void *endpoint) override;
+        void jsonCmd(const json &request, void *endpoint) override;
         LVX1_CONFIG getConfig();
         void setConfig(const LVX1_CONFIG &config);
 

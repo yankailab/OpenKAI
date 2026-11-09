@@ -208,14 +208,14 @@ def main():
     source = json.loads((ROOT / "samples/AProver_LiDAR/AProver_LiDAR.json").read_text())
     config = {key: source[key] for key in (
         "APP", "scepter", "scepterTransform", "scPC", "camRGB", "camDepth",
-        "scepterViewer", "wsConsole", "wsServer", "wsServer_rx", "wsServer_tx")}
+        "scepterViewer", "jsonCmd", "wsServer", "wsServer_rx", "wsServer_tx")}
     config["scepter"]["devURI"] = args.ip
     port, command_port = HELPERS.free_port(), HELPERS.free_port()
     while command_port == port:
         command_port = HELPERS.free_port()
     config["scepterViewer"].update(host="127.0.0.1", port=port)
     config["wsServer"].update(host="127.0.0.1", port=command_port)
-    config["wsConsole"]["vBASE"] = ["scepter"]
+    config["jsonCmd"]["vBASE"] = ["scepter"]
     with tempfile.TemporaryDirectory(prefix="openkai-scepter-live-") as temp:
         launch = Path(temp) / "Scepter.json"
         launch.write_text(json.dumps(config, indent=2))

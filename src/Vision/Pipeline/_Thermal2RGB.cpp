@@ -90,7 +90,7 @@ namespace kai
 		m_pRGBout->set(mOut, tStamp);
 	}
 
-	void _Thermal2RGB::console(const json &j, void *pJSONbase)
+	void _Thermal2RGB::jsonCmd(const json &j, void *pJSONbase)
 	{
 		string cmd;
 		IF_(!jKv(j, "cmd", cmd));
@@ -100,7 +100,7 @@ namespace kai
 			jKv<float>(j, "vTrange", m_vTrange);
 		}
 
-		this->_RGBbase::console(j, pJSONbase);
+		this->_RGBbase::jsonCmd(j, pJSONbase);
 	}
 
 }

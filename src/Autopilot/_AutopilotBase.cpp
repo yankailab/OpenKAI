@@ -163,7 +163,7 @@ namespace kai
 		pC->addMsg("\tbatt=\t" + f2str(m_battery));
 	}
 
-	void _AutopilotBase::console(const json &j, void *pJSONbase)
+	void _AutopilotBase::jsonCmd(const json &j, void *pJSONbase)
 	{
 		_JSONbase *pJb = (_JSONbase *)pJSONbase;
 		string cmd;

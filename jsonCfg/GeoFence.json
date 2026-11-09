@@ -36,8 +36,8 @@
 		"port": 7890,
 		"tOutMs": 10000
 	},
-	"wsConsole": {
-		"class": "_WSconsole",
+	"jsonCmd": {
+		"class": "_JSONcmd",
 		"bON": true,
 		"thread": {
 			"FPS": 1

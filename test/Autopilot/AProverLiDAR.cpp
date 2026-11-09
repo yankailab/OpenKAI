@@ -59,7 +59,7 @@ public:
         m_pGfence = &fence;
     }
 
-    void command(const json &command) { console(command, nullptr); }
+    void command(const json &command) { jsonCmd(command, nullptr); }
     float steer() const { return m_steer; }
     float speed() const { return m_speed; }
     AP_LIDAR_MODE mode() const { return m_dMode; }
@@ -248,14 +248,14 @@ void testEmergencyDuringManual()
         assert(f.rover.speed() > 0);
 
         f.buttons(1);
-        f.rover.command(command); // The console can observe the press before the worker.
+        f.rover.command(command); // The JSON command handler can observe the press before the worker.
         assert(f.rover.mode() == apLiDAR_modeStandby && !f.rover.cutter());
         assert(f.rover.speed() == 0 && f.rover.steer() == 0);
         assert(f.rover.updateCtrl());
         assert(f.rover.mode() == apLiDAR_modeStandby);
 
         f.buttons(0);
-        f.rover.command({{"cmd", "setServo"}, {"bServoON", false}}); // Console observes release first.
+        f.rover.command({{"cmd", "setServo"}, {"bServoON", false}}); // The JSON command handler observes release first.
         assert(f.rover.mode() == apLiDAR_modeManual);
         f.rover.expireManual();
         assert(f.rover.updateCtrl());
@@ -499,7 +499,7 @@ void testSampleConfigPersistence(const string &path)
         assert(instances.addExternalModule(new _AProver_LiDAR(), "apRover"));
         assert(instances.initAll());
         assert(instances.linkAll());
-        for (const char *name : {"apRover", "scepter", "octGrid", "geoFence", "viewer", "scepterViewer", "wsConsole"})
+        for (const char *name : {"apRover", "scepter", "octGrid", "geoFence", "viewer", "scepterViewer", "jsonCmd"})
             assert(instances.findModule(name));
         // No startAll(): this test must neither connect devices nor open network listeners.
     };
@@ -518,7 +518,7 @@ void testSampleConfigPersistence(const string &path)
             for (const auto &coordinate : before["octGrid"][key])
                 selection[key].push_back(coordinate.dump());
         }
-        grid->console(selection, nullptr); // Same native handler used by the grid viewer.
+        grid->jsonCmd(selection, nullptr); // Same native handler used by the grid viewer.
         auto controls = scepter->getCamCtrl();
         controls.m_confidenceFilter.threshold = 17;
         assert(scepter->setCamCtrl(controls)); // Applies cached controls while the device is closed.

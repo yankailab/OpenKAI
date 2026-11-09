@@ -339,7 +339,7 @@ and [Cesium model coordinate options](https://cesium.com/learn/cesiumjs/ref-doc/
 
 The only endpoint is **`/stream/mavlink`**. It uses ordinary WebSocket JSON text
 frames, without `EOJ`, geometry headers, subscription messages or acknowledgments.
-It is separate from the geometry streams and `_WSconsole`. Clients send no
+It is separate from the geometry streams and `_JSONcmd`. Clients send no
 application messages; an application message closes this read-only connection.
 
 The first frame is:

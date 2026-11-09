@@ -84,7 +84,7 @@ namespace kai
 		this->_ModuleBase::console(pConsole);
 	}
 
-	void _RGBbase::console(const json &j, void *pJSONbase)
+	void _RGBbase::jsonCmd(const json &j, void *pJSONbase)
 	{
 		string cmd;
 		IF_(!jKv(j, "cmd", cmd));

@@ -321,7 +321,7 @@ namespace kai
 		pC->addMsg("\txMag=\t" + i2str((int32_t)imu.xmag) + "\tyMag=\t" + i2str((int32_t)imu.ymag) + "\tzMag=\t" + i2str((int32_t)imu.zmag), 1);
 	}
 
-	void _APmav_base::console(const json &j, void *pJSONbase)
+	void _APmav_base::jsonCmd(const json &j, void *pJSONbase)
 	{
 		_JSONbase *pJb = (_JSONbase *)pJSONbase;
 		string cmd;

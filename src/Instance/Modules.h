@@ -164,7 +164,7 @@
 #include "../Protocol/_USR_CANET.h"
 #include "../Protocol/_SocketCAN.h"
 #include "../Protocol/_JSONbase.h"
-#include "../Protocol/_WSconsole.h"
+#include "../Protocol/_JSONcmd.h"
 #ifdef USE_MAVLINK
 #include "../Protocol/_Mavlink.h"
 #endif

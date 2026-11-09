@@ -22,7 +22,7 @@ namespace kai
         bool start() override;
         void stop() override;
         void console(void *pConsole) override;
-        void console(const json &request, void *pJSONbase) override;
+        void jsonCmd(const json &request, void *pJSONbase) override;
         void clear();
 
     protected:

@@ -74,5 +74,5 @@ function handleCmd(jCmd) {
   if (jCmd.cmd === 'ackTest') {
     // ackTest(jCmd);
   }
-  // _WSconsole also sends { cmd: 'hb' }; add application reply handlers here.
+  // _JSONcmd also sends { cmd: 'hb' }; add application reply handlers here.
 }

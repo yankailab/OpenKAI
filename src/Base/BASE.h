@@ -30,7 +30,7 @@ namespace kai
 		virtual bool saveConfig(bool bExport = false);
 
 		virtual void console(void *pConsole);
-		virtual void console(const json &j, void *pJSONbase);
+		virtual void jsonCmd(const json &j, void *pJSONbase);
 
 	protected:
 		JsonCfg *m_pJcfg = nullptr;

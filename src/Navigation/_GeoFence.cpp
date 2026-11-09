@@ -164,7 +164,7 @@ namespace kai
 		pC->addMsg("hdg: " + f2str(m_hdg));
 	}
 
-	void _GeoFence::console(const json &j, void *pJSONbase)
+	void _GeoFence::jsonCmd(const json &j, void *pJSONbase)
 	{
 		_JSONbase *pJb = (_JSONbase *)pJSONbase;
 		string cmd;

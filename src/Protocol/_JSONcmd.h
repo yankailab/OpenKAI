@@ -1,23 +1,23 @@
 /*
- * _WSconsole.h
+ * _JSONcmd.h
  *
  *  Created on: May 6, 2026
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Protocol__WSconsole_H_
-#define OpenKAI_src_Protocol__WSconsole_H_
+#ifndef OpenKAI_src_Protocol__JSONcmd_H_
+#define OpenKAI_src_Protocol__JSONcmd_H_
 
 #include "_JSONbase.h"
 
 namespace kai
 {
 
-	class _WSconsole : public _JSONbase
+	class _JSONcmd : public _JSONbase
 	{
 	public:
-		_WSconsole();
-		virtual ~_WSconsole();
+		_JSONcmd();
+		virtual ~_JSONcmd();
 
 		virtual bool loadConfig(void) override;
 		bool saveConfig(bool bExport) override;
@@ -38,7 +38,7 @@ namespace kai
 		void update(void);
 		static void *getUpdate(void *This)
 		{
-			((_WSconsole *)This)->update();
+			((_JSONcmd *)This)->update();
 			return NULL;
 		}
 
@@ -46,7 +46,7 @@ namespace kai
 		void updateR(void);
 		static void *getUpdateR(void *This)
 		{
-			((_WSconsole *)This)->updateR();
+			((_JSONcmd *)This)->updateR();
 			return NULL;
 		}
 

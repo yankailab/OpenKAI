@@ -221,7 +221,7 @@ void testInvalidCellIDs()
         assert(!octgridCellBox(snapshot.m_header, id, center, size));
         assert(!f.grid.getCell(id));
         const UUID128 selected = f.grid.getSelectedCells().front();
-        f.grid.console({{"cmd", "octGridCellSelect"}, {"vPorigin", {"0", "0", "0"}},
+        f.grid.jsonCmd({{"cmd", "octGridCellSelect"}, {"vPorigin", {"0", "0", "0"}},
                         {"vRootCellSize", {"2", "2", "2"}}, {"cellIDs", {idHex(id)}}}, nullptr);
         assert(f.grid.getSelectedCells().size() == 1 && sameID(f.grid.getSelectedCells().front(), selected));
         (*f.config.getJson())["grid"]["vSelectedCells"] = json::array({idHex(id)});

@@ -25,7 +25,7 @@ namespace kai
         bool open(void) override;
         void close(void) override;
         void console(void *pConsole) override;
-        void console(const json &j, void *pJSONbase) override;
+        void jsonCmd(const json &j, void *pJSONbase) override;
 
     private:
         std::unique_lock<std::recursive_mutex> lockDeviceForWork() const;

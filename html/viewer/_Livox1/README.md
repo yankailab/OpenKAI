@@ -34,7 +34,7 @@ and other second-generation protocol devices.
 
 ## Network configuration
 
-The sample runs `_WebGeometry` on TCP **8080** and `_WSconsole` on TCP **7890**.
+The sample runs `_WebGeometry` on TCP **8080** and `_JSONcmd` on TCP **7890**.
 `_Livox1` owns its UDP sockets, and the driver settings are on the `Lvx1` instance:
 
 ```json
@@ -130,7 +130,7 @@ No LiDAR-specific streaming format is introduced.
 The sensor's UDP commands and samples follow Livox's
 [legacy communication protocol](https://github.com/Livox-SDK/Livox-SDK/wiki/Livox-SDK-Communication-Protocol).
 
-Configuration and IMU preview use the separate `_WSconsole` WebSocket. Requests
+Configuration and IMU preview use the separate `_JSONcmd` WebSocket. Requests
 end with the literal `EOJ` delimiter; replies can span WebSocket messages.
 `module`, `cmd`, and `requestId` correlate each response:
 

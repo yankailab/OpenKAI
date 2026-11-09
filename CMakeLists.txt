@@ -477,7 +477,7 @@ endif()
 
 if(WITH_PROTOCOL)
   add_definitions(-DWITH_PROTOCOL)
-  file(GLOB_RECURSE Protocol_cpp src/Protocol/*.cpp src/Protocol/*.cc src/Protocol/*.c)
+  file(GLOB_RECURSE Protocol_cpp CONFIGURE_DEPENDS src/Protocol/*.cpp src/Protocol/*.cc src/Protocol/*.c)
   # The Modbus wrapper is added with its dependency below.
   list(REMOVE_ITEM Protocol_cpp "${CMAKE_CURRENT_SOURCE_DIR}/src/Protocol/_Modbus.cpp")
   if(NOT USE_MAVLINK)

@@ -288,7 +288,7 @@ namespace kai
         pC->addMsg("vR = (" + f2str(m_vR.x()) + "," + f2str(m_vR.y()) + ", " + f2str(m_vR.z()) + ", " + f2str(m_vR.w()) + ")");
     }
 
-    void _TransformRigid::console(const json &j, void *pJSONbase)
+    void _TransformRigid::jsonCmd(const json &j, void *pJSONbase)
     {
         auto *transport = static_cast<_JSONbase *>(pJSONbase);
         if (!transport || !j.is_object() || !j.contains("cmd") || !j["cmd"].is_string()) return;

@@ -41,7 +41,7 @@ namespace kai
 		virtual bool check(void);
 		virtual void update(void);
 		virtual void console(void *pConsole);
-		virtual void console(const json &j, void *pJSONbase);
+		virtual void jsonCmd(const json &j, void *pJSONbase);
 
 		virtual void setSteerSpeed(float steer, float spd);
 
@@ -91,7 +91,7 @@ namespace kai
 		bool m_bDirectControl = false;
 		float m_directSteer = 0;
 		float m_directSpeed = 0;
-		// The web console and control worker share modes, commands and RC outputs.
+		// The JSON command handler and control worker share modes, commands and RC outputs.
 		std::recursive_mutex m_ctrlMutex;
 
 		bool m_bServoON = false;

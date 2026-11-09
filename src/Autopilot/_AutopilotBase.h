@@ -49,7 +49,7 @@ namespace kai
 		virtual bool start(void);
 		virtual bool check(void);
 		virtual void console(void *pConsole);
-		virtual void console(const json &j, void *pJSONbase);
+		virtual void jsonCmd(const json &j, void *pJSONbase);
 
 		// general
 		virtual AP_TYPE getType(void);

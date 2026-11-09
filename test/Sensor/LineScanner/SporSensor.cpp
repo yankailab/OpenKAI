@@ -299,14 +299,14 @@ namespace
 		assert(points.empty());
 	}
 
-	void testConsoleProtocol()
+	void testJSONCmdProtocol()
 	{
 		SporHarness sensor;
 		sensor.setName("scanner");
 		ReplyTransport transport;
 		auto command = [&](const json &request) {
 			const auto count = transport.replies.size();
-			sensor.console(request, &transport);
+			sensor.jsonCmd(request, &transport);
 			assert(transport.replies.size() == count + 1);
 			const auto &reply = transport.replies.back();
 			assert(reply["cmd"] == request["cmd"]);
@@ -340,8 +340,8 @@ namespace
 			assert(reply["deviceOpen"] == false);
 		}
 		const auto count = transport.replies.size();
-		sensor.console({{"cmd", "unsupportedAction"}}, &transport);
-		sensor.console({{"cmd", 1}}, &transport);
+		sensor.jsonCmd({{"cmd", "unsupportedAction"}}, &transport);
+		sensor.jsonCmd({{"cmd", 1}}, &transport);
 		assert(transport.replies.size() == count);
 	}
 }
@@ -353,7 +353,7 @@ int main(int argc, char **argv)
 	testConfigurationRoundTrip();
 	testPointConversion();
 	testCapturedProfiles(argv[1]);
-	testConsoleProtocol();
+	testJSONCmdProtocol();
 	std::cout << "SporSensor configuration, profile geometry, timestamp, intensity, "
-		"side selection, stride, real capture, and console protocol regressions passed\n";
+		"side selection, stride, real capture, and JSON command protocol regressions passed\n";
 }

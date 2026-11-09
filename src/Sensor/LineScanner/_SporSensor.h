@@ -24,9 +24,8 @@ namespace kai
 		bool link(InstanceMgr *pM) override;
 		bool start(void) override;
 		bool check(void) override;
-		using _ModuleBase::console;
 		void console(void *pConsole) override;
-		void console(const json &j, void *pJSONbase) override;
+		void jsonCmd(const json &j, void *pJSONbase) override;
 		bool open(void);
 		void close(void);
 

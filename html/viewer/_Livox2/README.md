@@ -118,7 +118,7 @@ available to GLIM regardless of whether a browser is connected.
 
 Point clouds and lines use the existing `_WebGeometry` version-7 binary streams
 at `/stream/points` and `/stream/lines`, with credit-based flow control.
-Configuration and IMU preview use the separate `_WSconsole` WebSocket, with
+Configuration and IMU preview use the separate `_JSONcmd` WebSocket, with
 JSON requests followed by the literal `EOJ` delimiter. Replies may be fragmented
 across WebSocket messages. Both directions include `module` and `requestId`.
 

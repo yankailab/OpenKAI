@@ -9,7 +9,7 @@ build/OpenKAI jsonCfg/Airy.json
 
 Open `http://localhost:8080/` and click **Start**. Geometry uses the shared
 `_WebGeometry` `/stream/points` and `/stream/lines` endpoints. Sensor commands use
-`_WSconsole` on port **7890**, module **Airy**. The host field is the OpenKAI
+`_JSONcmd` on port **7890**, module **Airy**. The host field is the OpenKAI
 computer's address. Opening `index.html` directly also works as a launcher for
 that backend. Three.js assets are included locally; no new web packages or
 RoboSense SDK are required.

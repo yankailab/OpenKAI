@@ -31,6 +31,11 @@ GeometryBase needs only shared stylesheets.
   map resolves Three.js and OrbitControls to its local `vendor/` assets.
 - `img/OK.png`: the shared OpenKAI logo.
 
+Viewer commands use the `_JSONcmd` module, which dispatches requests to each
+target module's `jsonCmd(const json &, void *)` handler. The command WebSocket
+continues to use JSON objects followed by `EOJ`; the separate viewer streaming
+protocols are unchanged.
+
 Distinct protocols, controls, renderers, map assets and vendor directories remain
 with their UIs. Empty local `css/`, `js/` and `img/` folders retain `.gitkeep` files.
 

@@ -8,7 +8,7 @@ and vendored three.js assets; no npm or external web server is needed.
 
 The layout, rendering and connection structure match the Orbbec and Scepter
 viewers. Point clouds use `_WebGeometry`'s version-7 `/stream/points` and
-`/stream/lines` connections. Camera controls use the separate `_WSconsole`
+`/stream/lines` connections. Camera controls use the separate `_JSONcmd`
 connection on port **7890**. The camera module defaults to **RealSense**.
 
 ## Camera controls
@@ -79,7 +79,7 @@ while capture restarts; polling resumes automatically.
 
 ## JSON messages
 
-Requests are JSON objects followed by `EOJ`, using the existing WSconsole framing.
+Requests are JSON objects followed by `EOJ`, using the existing JSONcmd framing.
 Replies may span multiple WebSocket text messages. Both requests and replies
 carry `module` and `requestId` for routing and correlation.
 

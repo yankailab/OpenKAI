@@ -163,7 +163,8 @@ Many modules use this lifecycle vocabulary:
 | `check` | Validate prerequisites needed for an operation |
 | `update` | Run the worker loop and call named processing methods |
 | `stop`, `close`, destructor | Stop work and release owned resources as required by the class |
-| `console`, `draw` | Report state or render diagnostics |
+| `console(void *)`, `draw` | Report terminal state or render diagnostics |
+| `jsonCmd(const json &, void *)` | Handle JSON application commands dispatched by `_JSONcmd` |
 
 Reuse these names and the relevant base implementation when extending a module. Keep thread entry adapters short: the established `getUpdate` static function delegates to the instance's `update`. Preserve the module's pause/resume, pacing, and shutdown behavior. Distinguish owned resources from linked/borrowed module pointers, and document lifetime or locking constraints where they are not obvious.
 

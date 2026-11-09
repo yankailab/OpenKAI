@@ -7,7 +7,7 @@ and the vendored three.js assets; no npm or external web server is needed.
 
 The center is copied from `_GeometryBase` and uses `_WebGeometry`'s existing
 version-7 `/stream/points` and `/stream/lines` connections. Camera controls use a
-separate `_WSconsole` connection on port **7890**. The camera module name defaults
+separate `_JSONcmd` connection on port **7890**. The camera module name defaults
 to **Orbbec**, matching `jsonCfg/Orbbec.json`.
 
 ## Camera controls
@@ -42,7 +42,7 @@ controls; the former `_IMUbase` preview commands are removed.
 
 ## JSON messages
 
-Requests are JSON objects followed by `EOJ`, using the existing WSconsole framing.
+Requests are JSON objects followed by `EOJ`, using the existing JSONcmd framing.
 Replies are JSON objects, possibly split across WebSocket text messages. Requests
 and replies carry `module` and optional `requestId` for routing/correlation.
 

@@ -20,7 +20,7 @@ required. The full setup, configuration and wire format are documented in
 
 Keep application commands out of the stream transport. Add UI controls that call
 `wsSendCmd({ cmd: 'test', module: 'tester', v: 0 })` and handle their replies in
-`handleCmd(jCmd)`. This preserves `_WSconsole`'s `JSON + EOJ` request scheme.
+`handleCmd(jCmd)`. This preserves `_JSONcmd`'s `JSON + EOJ` request scheme.
 An optional backend configuration is in `jsonCfg/WebViewer3D_commands.json`;
 include it from your application's `APP.vInclude` when using commands.
 

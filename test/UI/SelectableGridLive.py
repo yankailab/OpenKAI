@@ -134,7 +134,7 @@ def main():
     source = json.loads((ROOT / "samples/AProver_LiDAR/AProver_LiDAR.json").read_text())
     config = {key: source[key] for key in (
         "APP", "scepter", "scepterTransform", "scPC", "camRGB", "camDepth",
-        "octGrid", "viewer", "wsConsole", "wsServer", "wsServer_rx", "wsServer_tx")}
+        "octGrid", "viewer", "jsonCmd", "wsServer", "wsServer_rx", "wsServer_tx")}
     config["scepter"]["devURI"] = args.ip
     config["octGrid"]["vSelectedCells"] = []
     port, command_port = LIVE.HELPERS.free_port(), LIVE.HELPERS.free_port()
@@ -142,7 +142,7 @@ def main():
         command_port = LIVE.HELPERS.free_port()
     config["viewer"].update(host="127.0.0.1", port=port)
     config["wsServer"].update(host="127.0.0.1", port=command_port)
-    config["wsConsole"]["vBASE"] = ["scepter", "scepterTransform", "octGrid", "viewer"]
+    config["jsonCmd"]["vBASE"] = ["scepter", "scepterTransform", "octGrid", "viewer"]
     with tempfile.TemporaryDirectory(prefix="openkai-grid-live-") as temp:
         launch = Path(temp) / "SelectableGrid.json"
         launch.write_text(json.dumps(config, indent=2))

@@ -135,7 +135,7 @@ namespace kai
 		pC->addMsg("\tcustom mode=\t" + i2str(getCustomMode()) + "\t" + getModeName(), 1);
 	}
 
-	void _APmav_rover::console(const json &j, void *pJSONbase)
+	void _APmav_rover::jsonCmd(const json &j, void *pJSONbase)
 	{
 		_JSONbase *pJb = (_JSONbase *)pJSONbase;
 		string cmd;

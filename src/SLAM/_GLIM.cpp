@@ -767,7 +767,7 @@ namespace kai
 			{"frame", "map"}};
 	}
 
-	void _GLIM::console(const json &j, void *pJSONbase)
+	void _GLIM::jsonCmd(const json &j, void *pJSONbase)
 	{
 		auto *transport = static_cast<_JSONbase *>(pJSONbase);
 		if (!transport || !j.is_object() || !j.contains("cmd") || !j["cmd"].is_string()) return;

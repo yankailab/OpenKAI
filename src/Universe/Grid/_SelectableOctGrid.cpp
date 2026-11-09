@@ -264,7 +264,7 @@ namespace kai
 		return int(n);
 	}
 
-	void _SelectableOctGrid::console(const json &j, void *pJSONbase)
+	void _SelectableOctGrid::jsonCmd(const json &j, void *pJSONbase)
 	{
 		_JSONbase *pJb = (_JSONbase *)pJSONbase;
 		string cmd;

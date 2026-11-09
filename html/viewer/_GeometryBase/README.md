@@ -50,7 +50,7 @@ The viewer uses the same [version-7 protocol](../../../docs/3D/WebViewer3D.md#bi
 as `_SelectableOctGrid`: `/stream/points` and `/stream/lines`, JSON `hello`, binary
 RGB snapshots, and `start`/`next` flow control. Each connection reconnects and
 clears independently. The backend reuses the existing protocol serialization.
-Cell streams and `_WSconsole` commands are not part of this viewer.
+Cell streams and `_JSONcmd` commands are not part of this viewer.
 
 Regression checks for both geometry viewers are documented in
 [`../tests/README.md`](../tests/README.md).

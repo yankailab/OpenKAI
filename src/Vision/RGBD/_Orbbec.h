@@ -160,7 +160,7 @@ namespace kai
 		void stop(void) override;
 		virtual bool check(void);
 		virtual void console(void *pConsole);
-		virtual void console(const json &j, void *pJSONbase);
+		virtual void jsonCmd(const json &j, void *pJSONbase);
 
 		virtual bool saveConfig(bool bExport) override;
 

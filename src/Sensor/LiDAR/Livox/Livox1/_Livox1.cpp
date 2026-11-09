@@ -855,7 +855,7 @@ namespace kai
             " frames=" + std::to_string(m_frames) + " IMU=" + std::to_string(m_imuSamples) + " " + m_lastError);
     }
 
-    void _Livox1::console(const json &request, void *pJSONbase)
+    void _Livox1::jsonCmd(const json &request, void *pJSONbase)
     {
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
         auto *endpoint = static_cast<_JSONbase *>(pJSONbase);

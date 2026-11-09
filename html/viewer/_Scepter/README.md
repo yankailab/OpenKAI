@@ -12,7 +12,7 @@ click **Start** to navigate to the backend's served viewer.
 
 The point cloud uses `_WebGeometry`'s version-7 `/stream/points` and
 `/stream/lines` connections, as in the Orbbec viewer. Camera commands use the
-existing `_WSconsole` connection on port **7890**, with module **scepter**.
+existing `_JSONcmd` connection on port **7890**, with module **scepter**.
 There is no IMU panel or IMU connection. All three.js assets are vendored.
 
 ## Controls and persistence

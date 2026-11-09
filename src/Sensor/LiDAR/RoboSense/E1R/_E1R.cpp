@@ -213,7 +213,7 @@ namespace kai
 
     void _E1R::receive(int fd, bool msop)
     {
-        // Bound each batch so DIFOP, stop and console edits cannot starve.
+        // Bound each batch so DIFOP, stop and JSON commands cannot starve.
         for (unsigned i = 0; i < 512; ++i)
         {
             uint8_t bytes[2048];
@@ -485,7 +485,7 @@ namespace kai
             " " + m_selectedIP + " frames=" + std::to_string(m_frames) + " " + m_lastError);
     }
 
-    void _E1R::console(const json &request, void *pJSONbase)
+    void _E1R::jsonCmd(const json &request, void *pJSONbase)
     {
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
         auto *endpoint = static_cast<_JSONbase *>(pJSONbase);

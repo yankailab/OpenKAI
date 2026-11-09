@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Exercise E1R UDP decoding, console controls and web geometry in OpenKAI.
+"""Exercise E1R UDP decoding, JSON commands and web geometry in OpenKAI.
 
 python3 test/Sensor/LiDAR/e1r.py [build/OpenKAI] [--live] [--output /tmp/e1r-test]
 The default uses synthetic UDP packets on loopback and a temporary launch file.
@@ -371,7 +371,7 @@ def main():
                     print(log.read_text()[-8000:])
                 raise
     print(json.dumps(result, indent=2))
-    print('PASS: E1R UDP, console, web geometry and shutdown')
+    print('PASS: E1R UDP, JSON commands, web geometry and shutdown')
 
 
 if __name__ == '__main__':

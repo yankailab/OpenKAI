@@ -173,7 +173,7 @@ namespace kai
 		ADD_MODULE(_SocketCAN);
 		ADD_MODULE(_USR_CANET);
 		ADD_MODULE(_JSONbase);
-		ADD_MODULE(_WSconsole);
+		ADD_MODULE(_JSONcmd);
 #ifdef USE_MAVLINK
 		ADD_MODULE(_Mavlink);
 #endif

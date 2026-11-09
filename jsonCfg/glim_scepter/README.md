@@ -2,7 +2,7 @@
 
 Run `build/OpenKAI jsonCfg/GLIM_scepter.json` and open
 `http://localhost:8080/`. The application uses the shared `html/viewer/_GLIM`
-frontend, WSconsole controls, incremental submap stream, trajectory, and PLY export.
+frontend, `_JSONcmd` controls, incremental submap stream, trajectory, and PLY export.
 
 Scepter cameras have no IMU. This profile loads GLIM's
 `libodometry_estimation_ct.so` for geometric odometry and disables IMU factors in

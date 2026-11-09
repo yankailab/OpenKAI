@@ -20,7 +20,7 @@ build/OpenKAI jsonCfg/E1R.json
 
 Open `http://localhost:8080/` and click **Start**. The point cloud uses the shared
 `_WebGeometry` `/stream/points` and `/stream/lines` endpoints. Commands use
-`_WSconsole` on port **7890**, module **E1R**. Enter the OpenKAI computer's address
+`_JSONcmd` on port **7890**, module **E1R**. Enter the OpenKAI computer's address
 in the viewer's host field. Opening `index.html` directly also works as a launcher
 for the backend's served viewer. Three.js assets are included locally, matching
 the other OpenKAI viewers; no additional web packages are required.

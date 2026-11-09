@@ -142,7 +142,7 @@
         ]
     },
     "geoFence": {
-        "_JSONbase": "wsConsole",
+        "_JSONbase": "jsonCmd",
         "bLog": false,
         "bON": true,
         "class": "_GeoFence",
@@ -567,11 +567,11 @@
         ],
         "webRoot": "html/viewer/_SelectableOctGrid"
     },
-    "wsConsole": {
+    "jsonCmd": {
         "BytePacketStreamIn": "wsServer_rx",
         "BytePacketStreamOut": "wsServer_tx",
         "bON": true,
-        "class": "_WSconsole",
+        "class": "_JSONcmd",
         "msgFinishRecv": "EOJ",
         "msgFinishSend": "",
         "thread": {

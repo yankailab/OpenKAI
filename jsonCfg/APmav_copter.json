@@ -37,8 +37,8 @@
 		"nClientMax": 1,
 		"tOutMs": 10000
 	},
-	"wsConsole": {
-		"class": "_WSconsole",
+	"jsonCmd": {
+		"class": "_JSONcmd",
 		"bON": true,
 		"thread": {
 			"FPS": 10

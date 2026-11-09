@@ -3016,7 +3016,7 @@ namespace kai
 		pC->addMsg("tRGBNs = " + li2str(m_tRGBNs) + ", dtRGBNs = " + li2str(m_dtRGBNs));
 	}
 
-	void _Orbbec::console(const json &j, void *pJSONbase)
+	void _Orbbec::jsonCmd(const json &j, void *pJSONbase)
 	{
 		std::lock_guard<std::recursive_mutex> lock(m_mtxDevice);
 		auto *pJb = static_cast<_JSONbase *>(pJSONbase);

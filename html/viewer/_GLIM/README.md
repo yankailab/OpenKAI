@@ -1,7 +1,7 @@
 # GLIM SLAM viewer
 
 Sensor-independent GLIM viewer with a dedicated `_WebGLIM` submap stream and
-ordinary `_WSconsole` commands. Three.js assets are local; no npm build or
+ordinary `_JSONcmd` commands. Three.js assets are local; no npm build or
 internet connection is required.
 
 From the OpenKAI repository root:
@@ -64,7 +64,7 @@ The viewer reads an independent submap DataObject:
 `_WebGLIM` is built when `WITH_SLAM`, `USE_GLIM` and `WITH_UNIVERSE` are enabled.
 It shares the HTTP server and camera configuration with other viewers and owns
 its submap protocol. It reads `PCLmapIn` rather than the flat `PCLframeOut` output or
-point/line geometry streams. Add the GLIM module name to `_WSconsole.vBASE` and
+point/line geometry streams. Add the GLIM module name to `_JSONcmd.vBASE` and
 enter that same module name in the viewer's command panel.
 
 For another sensor, connect its `PCLframeOut` and optional `IMUstreamOut` to GLIM through
@@ -169,7 +169,7 @@ reply shows the absolute backend path and written point count; this is not a
 browser download. A command may supply an explicit `.ply` path whose parent
 already exists. The default export directory is created automatically.
 
-## WSconsole commands
+## JSONcmd commands
 
 Send JSON terminated with `EOJ` on the command connection:
 
@@ -269,7 +269,7 @@ Transport tests cover slow-client catch-up, chunking, pose-only corrections,
 reconnection, session resets and route isolation with synthetic submaps.
 The browser test needs Chrome/Chromium, local sockets and, in hardware mode,
 camera access (USB or network). It uses temporary ports/configuration and the
-actual UI/WSconsole. The native suite covers CPU odometry with IMU and CT
+actual UI/JSONcmd. The native suite covers CPU odometry with IMU and CT
 odometry without IMU, including complete final-frame mapping on Stop.
 Artifacts: `/tmp/openkai-glim-viewer.png` and
 `/tmp/openkai-glim-browser-backend.log`.

@@ -29,7 +29,7 @@ namespace kai
 		virtual bool check(void);
 		virtual void clear(void);
 		virtual void console(void *pConsole);
-		virtual void console(const json &j, void *pJSONbase);
+		virtual void jsonCmd(const json &j, void *pJSONbase);
 		//		virtual void draw(void *pMat);
 
 		virtual bool saveConfig(bool bExport) override;

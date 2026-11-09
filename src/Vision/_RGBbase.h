@@ -30,7 +30,7 @@ namespace kai
 		virtual bool link(InstanceMgr *pM) override;
 		virtual bool check(void);
 		virtual void console(void *pConsole);
-		virtual void console(const json &j, void *pJSONbase);
+		virtual void jsonCmd(const json &j, void *pJSONbase);
 
 		virtual bool open(void);
 		virtual bool bOpened(void);

@@ -172,7 +172,7 @@ namespace kai
 		virtual bool start(void);
         void stop(void) override;
 		virtual void console(void *pConsole);
-        void console(const json &j, void *pJSONbase) override;
+        void jsonCmd(const json &j, void *pJSONbase) override;
 		virtual void clear(void);
 
 		LVX2_CONFIG getConfig(void);

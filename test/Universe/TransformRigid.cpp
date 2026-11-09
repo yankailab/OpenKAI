@@ -249,9 +249,9 @@ namespace
 		}
 	};
 
-	void testConsole(void)
+	void testJSONCmd(void)
 	{
-		char path[] = "/tmp/openkai-transform-console-XXXXXX";
+		char path[] = "/tmp/openkai-transform-jsoncmd-XXXXXX";
 		const int fd = mkstemp(path);
 		assert(fd >= 0);
 		close(fd);
@@ -265,12 +265,12 @@ namespace
 		transform.setConfig(&cfg, &(*cfg.getJson())["mount"]);
 		assert(transform.loadConfig());
 		TransformReplyTransport transport;
-		// Exercise the same virtual dispatch used by _WSconsole.
+		// Exercise the same virtual dispatch used by _JSONcmd.
 		BASE &module = transform;
 		const auto command = [&](const string &cmd, const json &config = json()) -> json
 		{
 			const size_t before = transport.replies.size();
-			module.console({{"cmd", cmd}, {"module", "mount"}, {"requestId", "transform-test"},
+			module.jsonCmd({{"cmd", cmd}, {"module", "mount"}, {"requestId", "transform-test"},
 				{"config", config}}, &transport);
 			assert(transport.replies.size() == before + 1);
 			const json &reply = transport.replies.back();
@@ -328,14 +328,14 @@ namespace
 		assert(reloaded.getPose().matrix().isApprox(transform.getPose().matrix()));
 		assert(reloaded.getAngles().isApprox(transform.getAngles()));
 		const size_t beforeIgnored = transport.replies.size();
-		module.console({{"cmd", "unsupported"}}, &transport);
-		module.console({{"cmd", 3}}, &transport);
-		module.console(json::array(), &transport);
-		module.console({{"cmd", "setConfig"}, {"config", {{"vT", {0, 0, 0}}}}}, nullptr);
+		module.jsonCmd({{"cmd", "unsupported"}}, &transport);
+		module.jsonCmd({{"cmd", 3}}, &transport);
+		module.jsonCmd(json::array(), &transport);
+		module.jsonCmd({{"cmd", "setConfig"}, {"config", {{"vT", {0, 0, 0}}}}}, nullptr);
 		assert(transport.replies.size() == beforeIgnored);
 		assert(transform.getTranslation().isApprox(Vector3d(7, 8, 9)));
 		_TransformRigid unconfigured;
-		unconfigured.console({{"cmd", "saveConfig"}}, &transport);
+		unconfigured.jsonCmd({{"cmd", "saveConfig"}}, &transport);
 		assert(transport.replies.back().at("bSuccess") == false);
 		assert(transport.replies.back().contains("error"));
 		assert(std::remove(path) == 0);
@@ -526,7 +526,7 @@ int main()
 {
 	testPose();
 #ifdef WITH_PROTOCOL
-	testConsole();
+	testJSONCmd();
 #endif
 #if defined(WITH_VISION) && defined(USE_OPENCV)
 	testRGBDTransform();

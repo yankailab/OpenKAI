@@ -45,7 +45,7 @@ namespace kai
 
     std::unique_lock<std::recursive_mutex> _RealSense::lockDeviceForWork() const
     {
-        // Only outer worker/console entrypoints use admission. A waiter holds
+        // Only outer worker/jsonCmd entrypoints use admission. A waiter holds
         // it until the current frame releases the device, preventing the frame
         // loop from immediately reacquiring an unfair mutex when over budget.
         // Nested config/open/close calls use the recursive device mutex directly.
@@ -95,7 +95,7 @@ namespace kai
     {
         std::lock_guard<std::recursive_mutex> lock(m_deviceMutex);
         IF_F(!_ModuleBase::loadConfig());
-        // Camera settings use the same validated schema as console updates.
+        // Camera settings use the same validated schema as JSON command updates.
         json patch = json::object(), errors;
         const json values = configValues();
         for (const auto &entry : values.items())
@@ -611,7 +611,7 @@ namespace kai
             " accel=" + std::to_string(m_nAccel.load()) + " gyro=" + std::to_string(m_nGyro.load()));
     }
 
-    void _RealSense::console(const json &j, void *pJSONbase)
+    void _RealSense::jsonCmd(const json &j, void *pJSONbase)
     {
         auto lock = lockDeviceForWork();
         auto *endpoint = static_cast<_JSONbase *>(pJSONbase);

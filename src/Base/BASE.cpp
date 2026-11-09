@@ -85,7 +85,7 @@ namespace kai
 		pC->addMsg(this->getName(), COLOR_PAIR(_Console_COL_NAME) | A_BOLD, _Console_X_NAME, 1);
 	}
 
-	void BASE::console(const json &j, void *pJSONbase)
+	void BASE::jsonCmd(const json &j, void *pJSONbase)
 	{
 	}
 

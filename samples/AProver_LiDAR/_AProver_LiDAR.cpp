@@ -384,7 +384,7 @@ namespace kai
 		pC->addMsg("bumperState = " + i2str(m_bumperState));
 	}
 
-	void _AProver_LiDAR::console(const json &j, void *pJSONbase)
+	void _AProver_LiDAR::jsonCmd(const json &j, void *pJSONbase)
 	{
 		std::lock_guard<std::recursive_mutex> lock(m_ctrlMutex);
 		_JSONbase *pJb = (_JSONbase *)pJSONbase;

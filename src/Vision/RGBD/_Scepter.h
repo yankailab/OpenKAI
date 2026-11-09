@@ -86,8 +86,7 @@ namespace kai
 		virtual bool link(InstanceMgr *pM) override;
 		virtual bool start(void);
 		virtual bool check(void);
-		using _RGBDbase::console;
-		virtual void console(const json &j, void *pJSONbase);
+		virtual void jsonCmd(const json &j, void *pJSONbase);
 
 		virtual bool saveConfig(bool bExport) override;
 

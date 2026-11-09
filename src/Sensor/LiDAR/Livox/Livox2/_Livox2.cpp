@@ -219,7 +219,7 @@ namespace kai
             if (ready == 0) m_pT->skipSleep();
             for (size_t i = 0; i < m_sockets.size(); ++i)
             {
-                // Release between bounded channel batches so console and stop cannot starve.
+                // Release between bounded channel batches so JSON commands and stop cannot starve.
                 std::lock_guard<std::recursive_mutex> lock(m_mutex);
                 if (sockets[i].revents & (POLLIN | POLLERR)) receive(i);
                 if (sockets[i].revents & (POLLHUP | POLLNVAL)) m_lastError = "Livox UDP socket closed unexpectedly";
@@ -818,7 +818,7 @@ namespace kai
             " frames=" + std::to_string(m_frames) + " IMU=" + std::to_string(m_imuSamples) + " " + m_lastError);
     }
 
-    void _Livox2::console(const json &request, void *pJSONbase)
+    void _Livox2::jsonCmd(const json &request, void *pJSONbase)
     {
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
         auto *endpoint = static_cast<_JSONbase *>(pJSONbase);

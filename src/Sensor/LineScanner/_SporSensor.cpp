@@ -628,7 +628,7 @@ namespace kai
 		if (!m_lastError.empty()) console->addMsg(m_lastError);
 	}
 
-	void _SporSensor::console(const json &j, void *pJSONbase)
+	void _SporSensor::jsonCmd(const json &j, void *pJSONbase)
 	{
 		auto *transport = static_cast<_JSONbase *>(pJSONbase);
 		if (!transport || !j.is_object() || !j.contains("cmd") || !j["cmd"].is_string()) return;
@@ -743,7 +743,7 @@ namespace kai
 			reply["status"] = status();
 			reply["device"] = m_device;
 		}
-		// Sending on the console transport must not hold the acquisition lock.
+		// Sending on the JSON command transport must not hold the acquisition lock.
 		transport->sendJson(reply);
 	}
 }

@@ -566,7 +566,7 @@ namespace kai
 		json errors = json::object();
 		applyScControls(m_scCtrl, json::object(), true, errors);
 		// Some cameras lack optional controls; keep capture usable and report
-		// unsupported settings when those controls are edited through the console.
+		// unsupported settings when those controls are edited through JSON commands.
 		if (!errors.empty()) LOG_I("Scepter controls: " + errors.dump());
 
 		// Read calibration after applying the resolution settings.
@@ -655,7 +655,7 @@ namespace kai
 
 	std::unique_lock<std::recursive_mutex> _Scepter::lockScForWork(void)
 	{
-		// Outer capture/console entrypoints take admission before waiting for the
+		// Outer capture/jsonCmd entrypoints take admission before waiting for the
 		// SDK lock. A waiting command keeps the next capture from reacquiring the
 		// unfair recursive mutex indefinitely when capture exceeds its FPS budget.
 		// Nested open/close/setter calls must use the recursive mutex directly.
@@ -915,7 +915,7 @@ namespace kai
 		m_pPCLout->set(vPCL, tStamp);
 	}
 
-	void _Scepter::console(const json &j, void *pJSONbase)
+	void _Scepter::jsonCmd(const json &j, void *pJSONbase)
 	{
 		auto *transport = static_cast<_JSONbase *>(pJSONbase);
 		if (!transport || !j.is_object() || !j.contains("cmd") || !j["cmd"].is_string()) return;

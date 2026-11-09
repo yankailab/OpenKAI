@@ -1,25 +1,25 @@
 /*
- * _WSconsole.cpp
+ * _JSONcmd.cpp
  *
  *  Created on: May 6, 2026
  *      Author: yankai
  */
 
-#include "_WSconsole.h"
+#include "_JSONcmd.h"
 
 namespace kai
 {
-	_WSconsole::_WSconsole()
+	_JSONcmd::_JSONcmd()
 	{
 	}
 
-	_WSconsole::~_WSconsole()
+	_JSONcmd::~_JSONcmd()
 	{
 		// Join before the derived vtable, dispatch targets and JSON state die.
 		stop();
 	}
 
-	bool _WSconsole::loadConfig(void)
+	bool _JSONcmd::loadConfig(void)
 	{
 		IF_F(!this->_JSONbase::loadConfig());
 
@@ -28,7 +28,7 @@ namespace kai
 		return true;
 	}
 
-	bool _WSconsole::saveConfig(bool bExport)
+	bool _JSONcmd::saveConfig(bool bExport)
 	{
 		IF_F(!_JSONbase::saveConfig(false));
 
@@ -36,7 +36,7 @@ namespace kai
 		return m_pJcfg->saveToFile();
 	}
 
-	bool _WSconsole::link(InstanceMgr *pM)
+	bool _JSONcmd::link(InstanceMgr *pM)
 	{
 		IF_F(!this->_JSONbase::link(pM));
 		const json &j = *m_pJ;
@@ -55,7 +55,7 @@ namespace kai
 		return true;
 	}
 
-	bool _WSconsole::start(void)
+	bool _JSONcmd::start(void)
 	{
 		NULL_F(m_pT);
 		NULL_F(m_pTr);
@@ -70,7 +70,7 @@ namespace kai
 		return true;
 	}
 
-	void _WSconsole::stop(void)
+	void _JSONcmd::stop(void)
 	{
 		// Stop remains valid after IO closes and before link()/start() succeeds.
 		// Signal both workers before joining: the receiver can wake the sender.
@@ -80,12 +80,12 @@ namespace kai
 		if (m_pT) m_pT->join();
 	}
 
-	bool _WSconsole::check(void)
+	bool _JSONcmd::check(void)
 	{
 		return this->_JSONbase::check();
 	}
 
-	void _WSconsole::update(void)
+	void _JSONcmd::update(void)
 	{
 		while (m_pT->bRun())
 		{
@@ -96,7 +96,7 @@ namespace kai
 		}
 	}
 
-	void _WSconsole::send(void)
+	void _JSONcmd::send(void)
 	{
 		IF_(!check());
 
@@ -106,7 +106,7 @@ namespace kai
 			sendHeartbeat();
 	}
 
-	void _WSconsole::sendHeartbeat(void)
+	void _JSONcmd::sendHeartbeat(void)
 	{
 		IF_(!check());
 
@@ -117,12 +117,12 @@ namespace kai
 		sendJson(j);
 	}
 
-	void _WSconsole::sendConfig(void)
+	void _JSONcmd::sendConfig(void)
 	{
 		IF_(!check());
 	}
 
-	void _WSconsole::updateR(void)
+	void _JSONcmd::updateR(void)
 	{
 		string strR = "";
 
@@ -140,7 +140,7 @@ namespace kai
 		}
 	}
 
-	void _WSconsole::handleJson(const string &str)
+	void _JSONcmd::handleJson(const string &str)
 	{
 		json j;
 		IF_(!str2JSON(str, j));
@@ -151,10 +151,10 @@ namespace kai
 		BASE *pB = findModule(m);
 		NULL_(pB);
 
-		pB->console(j, (void*)this);
+		pB->jsonCmd(j, (void*)this);
 	}
 
-	BASE *_WSconsole::findModule(const string &n)
+	BASE *_JSONcmd::findModule(const string &n)
 	{
 		for (BASE *pB : m_vpB)
 		{
@@ -166,7 +166,7 @@ namespace kai
 		return nullptr;
 	}
 
-	void _WSconsole::console(void *pConsole)
+	void _JSONcmd::console(void *pConsole)
 	{
 		NULL_(pConsole);
 		this->_JSONbase::console(pConsole);

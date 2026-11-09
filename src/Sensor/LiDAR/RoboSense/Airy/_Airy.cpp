@@ -667,7 +667,7 @@ namespace kai
             " " + m_selectedIP + " frames=" + std::to_string(m_frames) + " " + m_lastError);
     }
 
-    void _Airy::console(const json &request, void *pJSONbase)
+    void _Airy::jsonCmd(const json &request, void *pJSONbase)
     {
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
         auto *endpoint = static_cast<_JSONbase *>(pJSONbase);

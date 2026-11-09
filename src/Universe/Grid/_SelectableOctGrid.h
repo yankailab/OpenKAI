@@ -88,7 +88,7 @@ namespace kai
 		bool start(void) override;
 		bool check(void) override;
 		void console(void *pConsole) override;
-		void console(const json &j, void *pJSONbase) override;
+		void jsonCmd(const json &j, void *pJSONbase) override;
 
 		// Restoring a different root clears occupancy before publishing its header.
 		bool saveConfig(bool bExport) override;

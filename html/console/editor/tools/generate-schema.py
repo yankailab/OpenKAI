@@ -513,7 +513,7 @@ def generate():
                      'diagnosticsCount':sum(len(c['diagnostics']) for c in records.values()),
                      'diagnostics':[dict(d,className=c['name']) for c in records.values() for d in c['diagnostics']],
                      'limitations':['Static extraction does not evaluate C++ preprocessing or validate a particular binary build.',
-                                    'Ordinary extraction reads loadConfig/link; composed startup readers use explicit adapters. Runtime console commands are excluded.',
+                                    'Ordinary extraction reads loadConfig/link; composed startup readers use explicit adapters. Runtime JSON commands are excluded.',
                                     'Only safely parsed literal/arithmetic defaults are emitted. Missing default means unknown, not required.',
                                     'Dynamic/composed readers use audited adapters; diagnostics identify unresolved readers. Keep unknown JSON fields when round-tripping.',
                                     'A wildcard path can denote an array item or object member; containers records the parent shape.']}}

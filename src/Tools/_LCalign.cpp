@@ -292,7 +292,7 @@ namespace kai
 		pC->addMsg(msg);
 	}
 
-	void _LCalign::console(const json &j, void *pJSONbase)
+	void _LCalign::jsonCmd(const json &j, void *pJSONbase)
 	{
 		_JSONbase *pJb = (_JSONbase *)pJSONbase;
 

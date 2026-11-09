@@ -23,7 +23,7 @@ namespace kai
 		bool saveConfig(bool bExport) override;
 		virtual bool link(InstanceMgr *pM) override;
 		virtual bool start(void);
-		virtual void console(const json &j, void *pJSONbase);
+		virtual void jsonCmd(const json &j, void *pJSONbase);
 
 	private:
 		void filter(void);

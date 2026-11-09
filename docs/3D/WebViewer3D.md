@@ -4,7 +4,7 @@
 the same copying `PCLframe` and `LineFrame` DataObjects as `_ImGUIselectableOctGrid`, plus compact
 `_SelectableOctGrid::get(OCTGRID_CELLS*)` snapshots. The C++ process
 serves the browser application and three independent binary WebSockets on one port. A separate
-WebSocket connects JSON application commands to `_WSconsole`. Viewer-specific
+WebSocket connects JSON application commands to `_JSONcmd`. Viewer-specific
 assets, including a pinned three.js release, are in `html/viewer/_SelectableOctGrid/`;
 shared styles, scripts and the logo are in `html/common/`.
 There is no browser-side installation, npm build, CDN, or separate web server.
@@ -68,24 +68,25 @@ used in a hosted page URL. Command Connect/Disconnect affects only that socket.
 After an unexpected command disconnect, use Connect to reconnect; commands are
 never queued or replayed automatically.
 
-For the existing `_WSconsole` backend, enable `WITH_IO`, `USE_WSSERVER`,
+For the `_JSONcmd` backend, enable `WITH_IO`, `USE_WSSERVER`,
 and `WITH_PROTOCOL` in addition to your application's build options.
-Include the companion configuration in your application's `APP` block:
+`jsonCfg/WebViewer3D.json` includes the `wsCmdServer`, `jsonCmd`,
+`wsCmdServer_tx` and `wsCmdServer_rx` blocks; copy those blocks into your own
+application configuration when adding commands to another viewer.
 
-```json
-"vInclude": ["jsonCfg/WebViewer3D_commands.json"]
-```
-
-That file defines `_WebSocketServer` on port 7890 in text mode (`wsMode: 2`) and
-`_WSconsole` linked through two `BytePacketStream` data objects. The server's
-`BytePacketStreamOut` connects to the console's `BytePacketStreamIn`; replies
-use the reverse connection. Extend its `vBASE` list with the names of
-modules that should receive commands. `_WSconsole` dispatches using the JSON
-`module` field and calls that module's `console(const json &, void *)` method.
+The configuration defines `_WebSocketServer` on port 7890 in text mode
+(`wsMode: 2`) and `_JSONcmd` linked through two `BytePacketStream` data objects.
+The server's `BytePacketStreamOut` connects to `_JSONcmd`'s `BytePacketStreamIn`;
+replies use the reverse connection. Extend `jsonCmd.vBASE` with the names of
+modules that should receive commands. `_JSONcmd` dispatches using the JSON
+`module` field and calls that module's `jsonCmd(const json &, void *)` method.
 The module implements its own commands and can reply through `_JSONbase::sendJson()`.
-The companion config allows one command client because the existing server's
+The command configuration allows one command client because the existing server's
 configured byte streams target client 0; geometry streaming retains its own
 independent multi-client support.
+
+The `jsonCmd` method and `_JSONcmd` class names do not change the command
+envelope, `EOJ` framing, or independent geometry streaming protocol.
 
 The classic-script API is intentionally small and reusable:
 
@@ -126,7 +127,7 @@ It uses `wsSendCmd()` once per known grid module, with decimal-string coordinate
 }
 ```
 
-`_SelectableOctGrid::console()` validates all six values before applying them. Coordinates
+`_SelectableOctGrid::jsonCmd()` validates all six values before applying them. Coordinates
 must be finite float32 values and sizes must be positive. A changed root clears
 old occupancy, publishes the new header with an empty snapshot, and rebuilds from
 point sources on subsequent updates. Root changes are synchronized with the grid
@@ -190,7 +191,7 @@ remaining boundary cells cover the volume at a coarser depth.
 **Send** is enabled when there are selections and the independent command socket
 is connected. It calls the existing `wsSendCmd()` once per selected grid source,
 so grids with different root headers never share an ambiguous ID list. The JSON
-command received by `_SelectableOctGrid::console()` through `_WSconsole` is:
+command received by `_SelectableOctGrid::jsonCmd()` through `_JSONcmd` is:
 
 ```json
 {

@@ -34,8 +34,7 @@ namespace kai
 		~_GLIM() override;
 		bool loadConfig(void) override;
 		bool link(InstanceMgr *pM) override;
-		using _SLAMbase::console;
-		void console(const json &j, void *pJSONbase) override;
+		void jsonCmd(const json &j, void *pJSONbase) override;
 		json status(void);
 		bool saveConfig(bool bExport) override;
 		bool savePointCloud(const string &path, size_t &count, string &error);

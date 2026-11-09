@@ -290,7 +290,7 @@ namespace
 				[] { return blockedCapture.entered; });
 		}
 		auto command = std::async(std::launch::async, [&] {
-			f.driver.console({{"module", "scepter"}, {"cmd", "getConfig"},
+			f.driver.jsonCmd({{"module", "scepter"}, {"cmd", "getConfig"},
 				{"requestId", "camera-admission-test"}}, &transport);
 		});
 

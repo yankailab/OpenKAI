@@ -35,7 +35,7 @@ An unmatched gyro sample waits for a later acceleration sample; SLAM does not
 extrapolate or bridge acceleration outages longer than 100 ms.
 
 
-The Orbbec CPU odometry example requires an IMU. Run `build/OpenKAI jsonCfg/GLIM_scepter.json` for Scepter cameras without an IMU. Its isolated [glim_scepter profile](https://github.com/yankailab/OpenKAI/blob/master/jsonCfg/glim_scepter/README.md) selects CT odometry, disables `enable_imu` in both mapping configs, and uses identity sensor extrinsics. The map starts in the first camera's optical frame, without gravity alignment. No IMU module or synthetic inertial samples are needed. The shared frontend, WSconsole controls, submap stream and PLY export work with both profiles. The adapter checks the selected estimator's IMU requirement at startup.
+The Orbbec CPU odometry example requires an IMU. Run `build/OpenKAI jsonCfg/GLIM_scepter.json` for Scepter cameras without an IMU. Its isolated [glim_scepter profile](https://github.com/yankailab/OpenKAI/blob/master/jsonCfg/glim_scepter/README.md) selects CT odometry, disables `enable_imu` in both mapping configs, and uses identity sensor extrinsics. The map starts in the first camera's optical frame, without gravity alignment. No IMU module or synthetic inertial samples are needed. The shared frontend, `_JSONcmd` controls, submap stream and PLY export work with both profiles. The adapter checks the selected estimator's IMU requirement at startup.
 
 Scepter and Orbbec SDKs can be enabled in the same build. GLIM's spdlog must precede the Scepter SDK in the link order because the SDK exports an incompatible bundled spdlog; CMake declares the explicit dependency to preserve that order. Camera/SLAM saved controls for Scepter live under `jsonCfg/glim_scepter`, and its PLY output defaults to `data/glim_scepter`. The Orbbec settings remain separate. Sensor rates and preprocessing parameters still need tuning for the scene and camera.
 
@@ -70,7 +70,7 @@ trajectory accuracy; those require a GLIM-enabled integration or hardware run.
 `jsonCfg/GLIM_scepter.json` connect camera →
 `PCLframe` → `_GLIM` → `PCLmap` → `_WebGLIM`. GLIM publishes submaps to its
 `PCLmapOut` stream; the viewer names that same stream with `PCLmapIn`. The viewer
-uses the shared `HttpServer` with its own `/stream/glim` protocol. `_WSconsole`
+uses the shared `HttpServer` with its own `/stream/glim` protocol. `_JSONcmd`
 carries controls, parameters and pose/status independently. The viewer reads
 only the DataObject and does not depend on the GLIM estimator class or SDK.
 
@@ -126,7 +126,7 @@ Unknown fields, wrong types, invalid ranges and inconsistent point-count limits
 are rejected. The Save parameters button applies edits with `setConfig` before
 sending the no-argument `saveConfig` command.
 
-Commands use the usual `_WSconsole` envelope and trailing `EOJ`:
+Commands use the usual `_JSONcmd` envelope and trailing `EOJ`:
 
 ```json
 {"module":"GLIM","cmd":"getConfig","requestId":"1"}

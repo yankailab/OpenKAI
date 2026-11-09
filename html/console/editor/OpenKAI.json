@@ -3,7 +3,7 @@
   "title": "OpenKAI editor class catalog",
   "description": "Source-derived editor metadata; not a JSON Schema validator. See SCHEMA.md.",
   "generator": "tools/generate-schema.py",
-  "sourceDigest": "28515443aa769658f1e6958479b819af628fbd82b56e1b9b58b873778fcfb6a4",
+  "sourceDigest": "b3d690c5707038fddd403f3853db8b7c2dad2eecbcb60021b5bfdbd76e624c2a",
   "categories": [
     "Actuator",
     "Actuator/Articulated",
@@ -11183,7 +11183,7 @@
     {
       "name": "UGLIDcellStream",
       "category": "DataObject",
-      "source": "src/DataObject/UGLIDcellStream.h:44",
+      "source": "src/DataObject/UGLIDcellStream.h:45",
       "baseClasses": [
         "DataObjStream"
       ],
@@ -13638,7 +13638,7 @@
           ],
           "type": "string",
           "declaredIn": "_ADIO_EBYTE",
-          "source": "src/IO/_ADIO_EBYTE.cpp:48",
+          "source": "src/IO/_ADIO_EBYTE.cpp:49",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -13685,7 +13685,7 @@
           ],
           "type": "integer",
           "declaredIn": "_ADIO_EBYTE",
-          "source": "src/IO/_ADIO_EBYTE.cpp:26",
+          "source": "src/IO/_ADIO_EBYTE.cpp:27",
           "typeEvidence": "declaration",
           "cppVariable": "m_iID",
           "cppType": "int",
@@ -13814,7 +13814,7 @@
           "targetKind": "module",
           "multiple": false,
           "declaredIn": "_ADIO_EBYTE",
-          "source": "src/IO/_ADIO_EBYTE.cpp:49",
+          "source": "src/IO/_ADIO_EBYTE.cpp:50",
           "required": true,
           "containers": []
         }
@@ -14707,7 +14707,7 @@
           ],
           "type": "integer",
           "declaredIn": "_TCPserver",
-          "source": "src/IO/_TCPserver.cpp:36",
+          "source": "src/IO/_TCPserver.cpp:39",
           "typeEvidence": "declaration",
           "cppVariable": "m_nListen",
           "cppType": "int",
@@ -14719,7 +14719,7 @@
           ],
           "type": "integer",
           "declaredIn": "_TCPserver",
-          "source": "src/IO/_TCPserver.cpp:37",
+          "source": "src/IO/_TCPserver.cpp:40",
           "typeEvidence": "declaration",
           "cppVariable": "m_nSocket",
           "cppType": "unsigned int",
@@ -14743,7 +14743,7 @@
           ],
           "type": "integer",
           "declaredIn": "_TCPserver",
-          "source": "src/IO/_TCPserver.cpp:35",
+          "source": "src/IO/_TCPserver.cpp:38",
           "typeEvidence": "declaration",
           "cppVariable": "m_listenPort",
           "cppType": "uint16_t",
@@ -15225,7 +15225,7 @@
     {
       "name": "_WebSocketServer",
       "category": "IO",
-      "source": "src/IO/_WebSocketServer.h:42",
+      "source": "src/IO/_WebSocketServer.h:40",
       "baseClasses": [
         "_IObase"
       ],
@@ -15281,7 +15281,7 @@
           ],
           "type": "boolean",
           "declaredIn": "_WebSocketServer",
-          "source": "src/IO/_WebSocketServer.cpp:36",
+          "source": "src/IO/_WebSocketServer.cpp:224",
           "typeEvidence": "declaration",
           "cppVariable": "m_bReadAllClients",
           "cppType": "bool",
@@ -15305,7 +15305,7 @@
           ],
           "type": "string",
           "declaredIn": "_WebSocketServer",
-          "source": "src/IO/_WebSocketServer.cpp:32",
+          "source": "src/IO/_WebSocketServer.cpp:220",
           "typeEvidence": "declaration",
           "cppVariable": "m_host",
           "cppType": "string",
@@ -15317,7 +15317,7 @@
           ],
           "type": "integer",
           "declaredIn": "_WebSocketServer",
-          "source": "src/IO/_WebSocketServer.cpp:35",
+          "source": "src/IO/_WebSocketServer.cpp:223",
           "typeEvidence": "declaration",
           "cppVariable": "m_nClientMax",
           "cppType": "int",
@@ -15341,7 +15341,7 @@
           ],
           "type": "integer",
           "declaredIn": "_WebSocketServer",
-          "source": "src/IO/_WebSocketServer.cpp:33",
+          "source": "src/IO/_WebSocketServer.cpp:221",
           "typeEvidence": "declaration",
           "cppVariable": "m_port",
           "cppType": "uint16_t",
@@ -15353,7 +15353,7 @@
           ],
           "type": "integer",
           "declaredIn": "_WebSocketServer",
-          "source": "src/IO/_WebSocketServer.cpp:34",
+          "source": "src/IO/_WebSocketServer.cpp:222",
           "typeEvidence": "declaration",
           "cppVariable": "m_tOutMs",
           "cppType": "uint32_t",
@@ -15421,7 +15421,7 @@
           ],
           "type": "json",
           "declaredIn": "_WebSocketServer",
-          "source": "src/IO/_WebSocketServer.cpp:31",
+          "source": "src/IO/_WebSocketServer.cpp:219",
           "typeEvidence": "unresolved",
           "cppVariable": "m_wsMode",
           "cppType": "WSSOCKET_MODE",
@@ -16251,7 +16251,7 @@
     {
       "name": "_HttpServer",
       "category": "Net",
-      "source": "src/Net/_HttpServer.h:12",
+      "source": "src/Net/_HttpServer.h:16",
       "baseClasses": [
         "_ModuleBase"
       ],
@@ -16843,6 +16843,247 @@
       "configurable": true
     },
     {
+      "name": "_JSONcmd",
+      "category": "Protocol",
+      "source": "src/Protocol/_JSONcmd.h:16",
+      "baseClasses": [
+        "_JSONbase"
+      ],
+      "parameters": [
+        {
+          "path": [
+            "BytePacketStreamIn"
+          ],
+          "type": "string",
+          "declaredIn": "_ProtocolBase",
+          "source": "src/Protocol/_ProtocolBase.cpp:43",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "BytePacketStreamOut"
+          ],
+          "type": "string",
+          "declaredIn": "_ProtocolBase",
+          "source": "src/Protocol/_ProtocolBase.cpp:48",
+          "typeEvidence": "instance-lookup",
+          "cppVariable": "n",
+          "dependency": true
+        },
+        {
+          "path": [
+            "bLog"
+          ],
+          "type": "boolean",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:58",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_bLog",
+          "cppType": "bool",
+          "default": false
+        },
+        {
+          "path": [
+            "bON"
+          ],
+          "type": "boolean",
+          "source": "src/Instance/InstanceMgr.cpp:createAll",
+          "declaredIn": "BASE",
+          "extraction": "audited-adapter",
+          "default": true,
+          "description": "false disables this instance; true enables it."
+        },
+        {
+          "path": [
+            "class"
+          ],
+          "type": "string",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:57",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_class",
+          "cppType": "string",
+          "default": ""
+        },
+        {
+          "path": [
+            "ieSendHB"
+          ],
+          "type": "integer",
+          "declaredIn": "_JSONbase",
+          "source": "src/Protocol/_JSONbase.cpp:24",
+          "typeEvidence": "declaration",
+          "cppVariable": "v",
+          "cppType": "uint64_t",
+          "default": 1000000000
+        },
+        {
+          "path": [
+            "msgFinishRecv"
+          ],
+          "type": "string",
+          "declaredIn": "_JSONbase",
+          "source": "src/Protocol/_JSONbase.cpp:21",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_msgFinishRecv",
+          "cppType": "string",
+          "default": "EOJ"
+        },
+        {
+          "path": [
+            "msgFinishSend"
+          ],
+          "type": "string",
+          "declaredIn": "_JSONbase",
+          "source": "src/Protocol/_JSONbase.cpp:20",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_msgFinishSend",
+          "cppType": "string",
+          "default": ""
+        },
+        {
+          "path": [
+            "name"
+          ],
+          "type": "string",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:56",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_name",
+          "cppType": "string",
+          "default": ""
+        },
+        {
+          "path": [
+            "thread",
+            "FPS"
+          ],
+          "type": "number",
+          "declaredIn": "_Thread",
+          "source": "src/Base/_Thread.cpp:60",
+          "typeEvidence": "declaration",
+          "cppVariable": "FPS",
+          "cppType": "float",
+          "default": 30,
+          "embeddedClass": "_Thread"
+        },
+        {
+          "path": [
+            "thread",
+            "bLog"
+          ],
+          "type": "boolean",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:58",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_bLog",
+          "cppType": "bool",
+          "default": false,
+          "embeddedClass": "_Thread"
+        },
+        {
+          "path": [
+            "threadR",
+            "FPS"
+          ],
+          "type": "number",
+          "declaredIn": "_Thread",
+          "source": "src/Base/_Thread.cpp:60",
+          "typeEvidence": "declaration",
+          "cppVariable": "FPS",
+          "cppType": "float",
+          "default": 30,
+          "embeddedClass": "_Thread"
+        },
+        {
+          "path": [
+            "threadR",
+            "bLog"
+          ],
+          "type": "boolean",
+          "declaredIn": "BASE",
+          "source": "src/Base/BASE.cpp:58",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_bLog",
+          "cppType": "bool",
+          "default": false,
+          "embeddedClass": "_Thread"
+        },
+        {
+          "path": [
+            "vBASE"
+          ],
+          "type": "array",
+          "declaredIn": "_JSONcmd",
+          "source": "src/Protocol/_JSONcmd.cpp:45",
+          "typeEvidence": "declaration",
+          "cppVariable": "vB",
+          "cppType": "vector<string>",
+          "dependency": true
+        }
+      ],
+      "dependencies": [
+        {
+          "path": [
+            "BytePacketStreamIn"
+          ],
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
+          "multiple": false,
+          "declaredIn": "_ProtocolBase",
+          "source": "src/Protocol/_ProtocolBase.cpp:44",
+          "containers": []
+        },
+        {
+          "path": [
+            "BytePacketStreamOut"
+          ],
+          "targetClass": "BytePacketStream",
+          "targetKind": "dataObject",
+          "multiple": false,
+          "declaredIn": "_ProtocolBase",
+          "source": "src/Protocol/_ProtocolBase.cpp:49",
+          "containers": []
+        },
+        {
+          "path": [
+            "vBASE"
+          ],
+          "targetClass": "BASE",
+          "targetKind": "module",
+          "multiple": true,
+          "declaredIn": "_JSONcmd",
+          "source": "src/Protocol/_JSONcmd.cpp:49",
+          "containers": []
+        }
+      ],
+      "containers": [
+        {
+          "path": [
+            "thread"
+          ],
+          "type": "object"
+        },
+        {
+          "path": [
+            "threadR"
+          ],
+          "type": "object"
+        }
+      ],
+      "diagnostics": [],
+      "creatable": true,
+      "instanceKind": "module",
+      "buildConditions": [
+        [
+          "ifdef WITH_PROTOCOL"
+        ]
+      ],
+      "configurable": true
+    },
+    {
       "name": "_Mavlink",
       "category": "Protocol",
       "source": "src/Protocol/_Mavlink.h:14",
@@ -17112,7 +17353,7 @@
           ],
           "type": "boolean",
           "declaredIn": "_Modbus",
-          "source": "src/Protocol/_Modbus.cpp:26",
+          "source": "src/Protocol/_Modbus.cpp:29",
           "typeEvidence": "declaration",
           "cppVariable": "m_bModbusDebug",
           "cppType": "bool",
@@ -17147,7 +17388,7 @@
           ],
           "type": "string",
           "declaredIn": "_Modbus",
-          "source": "src/Protocol/_Modbus.cpp:40",
+          "source": "src/Protocol/_Modbus.cpp:43",
           "typeEvidence": "declaration",
           "cppVariable": "m_type",
           "cppType": "string",
@@ -17159,7 +17400,7 @@
           ],
           "type": "integer",
           "declaredIn": "_Modbus",
-          "source": "src/Protocol/_Modbus.cpp:27",
+          "source": "src/Protocol/_Modbus.cpp:30",
           "typeEvidence": "declaration",
           "cppVariable": "m_nErrReconnect",
           "cppType": "int",
@@ -17183,7 +17424,7 @@
           ],
           "type": "integer",
           "declaredIn": "_Modbus",
-          "source": "src/Protocol/_Modbus.cpp:31",
+          "source": "src/Protocol/_Modbus.cpp:34",
           "typeEvidence": "declaration",
           "cppVariable": "m_rtuBaud",
           "cppType": "int",
@@ -17195,7 +17436,7 @@
           ],
           "type": "string",
           "declaredIn": "_Modbus",
-          "source": "src/Protocol/_Modbus.cpp:30",
+          "source": "src/Protocol/_Modbus.cpp:33",
           "typeEvidence": "declaration",
           "cppVariable": "m_rtuParity",
           "cppType": "string",
@@ -17207,7 +17448,7 @@
           ],
           "type": "string",
           "declaredIn": "_Modbus",
-          "source": "src/Protocol/_Modbus.cpp:29",
+          "source": "src/Protocol/_Modbus.cpp:32",
           "typeEvidence": "declaration",
           "cppVariable": "m_rtuPort",
           "cppType": "string",
@@ -17219,7 +17460,7 @@
           ],
           "type": "integer",
           "declaredIn": "_Modbus",
-          "source": "src/Protocol/_Modbus.cpp:36",
+          "source": "src/Protocol/_Modbus.cpp:39",
           "typeEvidence": "declaration",
           "cppVariable": "m_tIntervalUsec",
           "cppType": "uint64_t",
@@ -17231,7 +17472,7 @@
           ],
           "type": "integer",
           "declaredIn": "_Modbus",
-          "source": "src/Protocol/_Modbus.cpp:37",
+          "source": "src/Protocol/_Modbus.cpp:40",
           "typeEvidence": "declaration",
           "cppVariable": "m_tOutSec",
           "cppType": "uint32_t",
@@ -17243,7 +17484,7 @@
           ],
           "type": "integer",
           "declaredIn": "_Modbus",
-          "source": "src/Protocol/_Modbus.cpp:38",
+          "source": "src/Protocol/_Modbus.cpp:41",
           "typeEvidence": "declaration",
           "cppVariable": "m_tOutUSec",
           "cppType": "uint32_t",
@@ -17255,7 +17496,7 @@
           ],
           "type": "string",
           "declaredIn": "_Modbus",
-          "source": "src/Protocol/_Modbus.cpp:33",
+          "source": "src/Protocol/_Modbus.cpp:36",
           "typeEvidence": "declaration",
           "cppVariable": "m_tcpAddr",
           "cppType": "string",
@@ -17267,7 +17508,7 @@
           ],
           "type": "integer",
           "declaredIn": "_Modbus",
-          "source": "src/Protocol/_Modbus.cpp:34",
+          "source": "src/Protocol/_Modbus.cpp:37",
           "typeEvidence": "declaration",
           "cppVariable": "m_tcpPort",
           "cppType": "int",
@@ -18355,247 +18596,6 @@
           "multiple": false,
           "declaredIn": "_USR_CANET",
           "source": "src/Protocol/_USR_CANET.cpp:64",
-          "containers": []
-        }
-      ],
-      "containers": [
-        {
-          "path": [
-            "thread"
-          ],
-          "type": "object"
-        },
-        {
-          "path": [
-            "threadR"
-          ],
-          "type": "object"
-        }
-      ],
-      "diagnostics": [],
-      "creatable": true,
-      "instanceKind": "module",
-      "buildConditions": [
-        [
-          "ifdef WITH_PROTOCOL"
-        ]
-      ],
-      "configurable": true
-    },
-    {
-      "name": "_WSconsole",
-      "category": "Protocol",
-      "source": "src/Protocol/_WSconsole.h:16",
-      "baseClasses": [
-        "_JSONbase"
-      ],
-      "parameters": [
-        {
-          "path": [
-            "BytePacketStreamIn"
-          ],
-          "type": "string",
-          "declaredIn": "_ProtocolBase",
-          "source": "src/Protocol/_ProtocolBase.cpp:43",
-          "typeEvidence": "instance-lookup",
-          "cppVariable": "n",
-          "dependency": true
-        },
-        {
-          "path": [
-            "BytePacketStreamOut"
-          ],
-          "type": "string",
-          "declaredIn": "_ProtocolBase",
-          "source": "src/Protocol/_ProtocolBase.cpp:48",
-          "typeEvidence": "instance-lookup",
-          "cppVariable": "n",
-          "dependency": true
-        },
-        {
-          "path": [
-            "bLog"
-          ],
-          "type": "boolean",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bLog",
-          "cppType": "bool",
-          "default": false
-        },
-        {
-          "path": [
-            "bON"
-          ],
-          "type": "boolean",
-          "source": "src/Instance/InstanceMgr.cpp:createAll",
-          "declaredIn": "BASE",
-          "extraction": "audited-adapter",
-          "default": true,
-          "description": "false disables this instance; true enables it."
-        },
-        {
-          "path": [
-            "class"
-          ],
-          "type": "string",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:57",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_class",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "ieSendHB"
-          ],
-          "type": "integer",
-          "declaredIn": "_JSONbase",
-          "source": "src/Protocol/_JSONbase.cpp:24",
-          "typeEvidence": "declaration",
-          "cppVariable": "v",
-          "cppType": "uint64_t",
-          "default": 1000000000
-        },
-        {
-          "path": [
-            "msgFinishRecv"
-          ],
-          "type": "string",
-          "declaredIn": "_JSONbase",
-          "source": "src/Protocol/_JSONbase.cpp:21",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_msgFinishRecv",
-          "cppType": "string",
-          "default": "EOJ"
-        },
-        {
-          "path": [
-            "msgFinishSend"
-          ],
-          "type": "string",
-          "declaredIn": "_JSONbase",
-          "source": "src/Protocol/_JSONbase.cpp:20",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_msgFinishSend",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "name"
-          ],
-          "type": "string",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:56",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_name",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "thread",
-            "FPS"
-          ],
-          "type": "number",
-          "declaredIn": "_Thread",
-          "source": "src/Base/_Thread.cpp:60",
-          "typeEvidence": "declaration",
-          "cppVariable": "FPS",
-          "cppType": "float",
-          "default": 30,
-          "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "thread",
-            "bLog"
-          ],
-          "type": "boolean",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bLog",
-          "cppType": "bool",
-          "default": false,
-          "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "threadR",
-            "FPS"
-          ],
-          "type": "number",
-          "declaredIn": "_Thread",
-          "source": "src/Base/_Thread.cpp:60",
-          "typeEvidence": "declaration",
-          "cppVariable": "FPS",
-          "cppType": "float",
-          "default": 30,
-          "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "threadR",
-            "bLog"
-          ],
-          "type": "boolean",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bLog",
-          "cppType": "bool",
-          "default": false,
-          "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "vBASE"
-          ],
-          "type": "array",
-          "declaredIn": "_WSconsole",
-          "source": "src/Protocol/_WSconsole.cpp:45",
-          "typeEvidence": "declaration",
-          "cppVariable": "vB",
-          "cppType": "vector<string>",
-          "dependency": true
-        }
-      ],
-      "dependencies": [
-        {
-          "path": [
-            "BytePacketStreamIn"
-          ],
-          "targetClass": "BytePacketStream",
-          "targetKind": "dataObject",
-          "multiple": false,
-          "declaredIn": "_ProtocolBase",
-          "source": "src/Protocol/_ProtocolBase.cpp:44",
-          "containers": []
-        },
-        {
-          "path": [
-            "BytePacketStreamOut"
-          ],
-          "targetClass": "BytePacketStream",
-          "targetKind": "dataObject",
-          "multiple": false,
-          "declaredIn": "_ProtocolBase",
-          "source": "src/Protocol/_ProtocolBase.cpp:49",
-          "containers": []
-        },
-        {
-          "path": [
-            "vBASE"
-          ],
-          "targetClass": "BASE",
-          "targetKind": "module",
-          "multiple": true,
-          "declaredIn": "_WSconsole",
-          "source": "src/Protocol/_WSconsole.cpp:49",
           "containers": []
         }
       ],
@@ -20735,7 +20735,7 @@
             "bIMUpreview"
           ],
           "type": "boolean",
-          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:664",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:678",
           "declaredIn": "_Livox1",
           "extraction": "audited-adapter",
           "cppVariable": "m_bIMUpreview",
@@ -20748,7 +20748,7 @@
             "bIMUstab"
           ],
           "type": "boolean",
-          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:664",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:678",
           "declaredIn": "_Livox1",
           "extraction": "audited-adapter",
           "cppVariable": "m_bIMUstab",
@@ -20784,7 +20784,7 @@
             "bReflectivity"
           ],
           "type": "boolean",
-          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:664",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:678",
           "declaredIn": "_Livox1",
           "extraction": "audited-adapter",
           "cppVariable": "m_bReflectivity",
@@ -20809,7 +20809,7 @@
             "frameDurationMs"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:665",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:679",
           "declaredIn": "_Livox1",
           "extraction": "audited-adapter",
           "cppVariable": "m_frameDurationNs",
@@ -20822,7 +20822,7 @@
             "lvxCoordinate"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:660",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:674",
           "declaredIn": "_Livox1",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxCfg.m_coordinate",
@@ -20835,7 +20835,7 @@
             "lvxFan"
           ],
           "type": "boolean",
-          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:663",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:677",
           "declaredIn": "_Livox1",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxCfg.m_fan",
@@ -20848,7 +20848,7 @@
             "lvxHighSensitivity"
           ],
           "type": "boolean",
-          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:663",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:677",
           "declaredIn": "_Livox1",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxCfg.m_highSensitivity",
@@ -20861,7 +20861,7 @@
             "lvxHostIP"
           ],
           "type": "string",
-          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:657",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:671",
           "declaredIn": "_Livox1",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxCfg.m_hostIP",
@@ -20873,7 +20873,7 @@
             "lvxHostPortCmd"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:658",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:672",
           "declaredIn": "_Livox1",
           "extraction": "audited-adapter",
           "cppVariable": "m_hostPortCmd",
@@ -20886,7 +20886,7 @@
             "lvxHostPortIMU"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:659",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:673",
           "declaredIn": "_Livox1",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxCfg.m_hostPortIMU",
@@ -20899,7 +20899,7 @@
             "lvxHostPortPCL"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:659",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:673",
           "declaredIn": "_Livox1",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxCfg.m_hostPortPCL",
@@ -20912,7 +20912,7 @@
             "lvxIMUdataEn"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:662",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:676",
           "declaredIn": "_Livox1",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxCfg.m_imuDataEn",
@@ -20925,7 +20925,7 @@
             "lvxIP"
           ],
           "type": "string",
-          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:657",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:671",
           "declaredIn": "_Livox1",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxIP",
@@ -20937,7 +20937,7 @@
             "lvxPortBroadcast"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:658",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:672",
           "declaredIn": "_Livox1",
           "extraction": "audited-adapter",
           "cppVariable": "m_broadcastPort",
@@ -20950,7 +20950,7 @@
             "lvxPortCmd"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:658",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:672",
           "declaredIn": "_Livox1",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxCmdPort",
@@ -20963,7 +20963,7 @@
             "lvxReturnMode"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:661",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:675",
           "declaredIn": "_Livox1",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxCfg.m_returnMode",
@@ -20976,7 +20976,7 @@
             "lvxSN"
           ],
           "type": "string",
-          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:657",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:671",
           "declaredIn": "_Livox1",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxSN",
@@ -20988,7 +20988,7 @@
             "lvxSampling"
           ],
           "type": "boolean",
-          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:663",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:677",
           "declaredIn": "_Livox1",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxCfg.m_sampling",
@@ -21001,7 +21001,7 @@
             "lvxScanPattern"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:661",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:675",
           "declaredIn": "_Livox1",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxCfg.m_scanPattern",
@@ -21014,7 +21014,7 @@
             "lvxWorkMode"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:662",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:676",
           "declaredIn": "_Livox1",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxCfg.m_workMode",
@@ -21027,7 +21027,7 @@
             "nMaxFramePoints"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:666",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:680",
           "declaredIn": "_Livox1",
           "extraction": "audited-adapter",
           "cppVariable": "m_nMaxFramePoints",
@@ -21052,7 +21052,7 @@
             "receiveBufferBytes"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:660",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:674",
           "declaredIn": "_Livox1",
           "extraction": "audited-adapter",
           "cppVariable": "m_receiveBufferBytes",
@@ -21065,7 +21065,7 @@
             "tOutSec"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:665",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:679",
           "declaredIn": "_Livox1",
           "extraction": "audited-adapter",
           "cppVariable": "m_timeoutNs",
@@ -21106,7 +21106,7 @@
             "vColorDefault"
           ],
           "type": "array",
-          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:666",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:680",
           "declaredIn": "_Livox1",
           "extraction": "audited-adapter",
           "cppVariable": "m_vColorDefault",
@@ -21118,7 +21118,7 @@
             "vRangeD"
           ],
           "type": "array",
-          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:667",
+          "source": "src/Sensor/LiDAR/Livox/Livox1/_Livox1.cpp:681",
           "declaredIn": "_Livox1",
           "extraction": "audited-adapter",
           "cppVariable": "m_vRangeD",
@@ -21230,7 +21230,7 @@
             "bIMUpreview"
           ],
           "type": "boolean",
-          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:626",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:640",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_bIMUpreview",
@@ -21243,7 +21243,7 @@
             "bIMUstab"
           ],
           "type": "boolean",
-          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:626",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:640",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_bIMUstab",
@@ -21279,7 +21279,7 @@
             "bReflectivity"
           ],
           "type": "boolean",
-          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:626",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:640",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_bReflectivity",
@@ -21304,7 +21304,7 @@
             "frameDurationMs"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:627",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:641",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_frameDurationNs",
@@ -21317,7 +21317,7 @@
             "lvxDetectMode"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:624",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:638",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxCfg.m_detectMode",
@@ -21329,7 +21329,7 @@
             "lvxFrameRate"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:623",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:637",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxCfg.m_frameRate",
@@ -21341,7 +21341,7 @@
             "lvxHostIP"
           ],
           "type": "string",
-          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:619",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:633",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxCfg.m_hostIP",
@@ -21353,7 +21353,7 @@
             "lvxHostPortCmd"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:620",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:634",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_hostPortCmd",
@@ -21366,7 +21366,7 @@
             "lvxHostPortIMU"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:622",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:636",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxCfg.m_hostPortIMU",
@@ -21378,7 +21378,7 @@
             "lvxHostPortPCL"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:621",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:635",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxCfg.m_hostPortPCL",
@@ -21390,7 +21390,7 @@
             "lvxHostPortState"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:621",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:635",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxCfg.m_hostPortState",
@@ -21402,7 +21402,7 @@
             "lvxIMUdataEn"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:625",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:639",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxCfg.m_imuDataEn",
@@ -21414,7 +21414,7 @@
             "lvxIP"
           ],
           "type": "string",
-          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:619",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:633",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxIP",
@@ -21426,7 +21426,7 @@
             "lvxPCLdataType"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:622",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:636",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxCfg.m_pclDataType",
@@ -21438,7 +21438,7 @@
             "lvxPatternMode"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:623",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:637",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxCfg.m_patternMode",
@@ -21450,7 +21450,7 @@
             "lvxPortQuery"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:620",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:634",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_queryPort",
@@ -21463,7 +21463,7 @@
             "lvxSN"
           ],
           "type": "string",
-          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:619",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:633",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxSN",
@@ -21475,7 +21475,7 @@
             "lvxWorkMode"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:625",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:639",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxCfg.m_workMode",
@@ -21487,7 +21487,7 @@
             "lvxWorkModeAfterBoot"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:624",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:638",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_lvxCfg.m_workModeAfterBoot",
@@ -21499,7 +21499,7 @@
             "nMaxFramePoints"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:628",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:642",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_nMaxFramePoints",
@@ -21524,7 +21524,7 @@
             "receiveBufferBytes"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:620",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:634",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_receiveBufferBytes",
@@ -21537,7 +21537,7 @@
             "tOutSec"
           ],
           "type": "integer",
-          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:627",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:641",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_timeoutNs",
@@ -21578,7 +21578,7 @@
             "vColorDefault"
           ],
           "type": "array",
-          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:628",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:642",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_vColorDefault",
@@ -21590,7 +21590,7 @@
             "vRangeD"
           ],
           "type": "array",
-          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:629",
+          "source": "src/Sensor/LiDAR/Livox/Livox2/_Livox2.cpp:643",
           "declaredIn": "_Livox2",
           "extraction": "audited-adapter",
           "cppVariable": "m_vRangeD",
@@ -29380,7 +29380,7 @@
     {
       "name": "_OctreeGrid",
       "category": "Universe/Grid",
-      "source": "src/Universe/Grid/_OctreeGrid.h:39",
+      "source": "src/Universe/Grid/_OctreeGrid.h:38",
       "baseClasses": [
         "_OctreeBase"
       ],
@@ -40477,6 +40477,8 @@
       "src/Primitive/vLongBit.h",
       "src/Protocol/_JSONbase.cpp",
       "src/Protocol/_JSONbase.h",
+      "src/Protocol/_JSONcmd.cpp",
+      "src/Protocol/_JSONcmd.h",
       "src/Protocol/_Mavlink.cpp",
       "src/Protocol/_Mavlink.h",
       "src/Protocol/_Modbus.cpp",
@@ -40491,8 +40493,6 @@
       "src/Protocol/_SocketCAN.h",
       "src/Protocol/_USR_CANET.cpp",
       "src/Protocol/_USR_CANET.h",
-      "src/Protocol/_WSconsole.cpp",
-      "src/Protocol/_WSconsole.h",
       "src/Protocol/_Xbee.cpp",
       "src/Protocol/_Xbee.h",
       "src/ROS/ROS_fastLio.cpp",
@@ -40806,7 +40806,7 @@
     ],
     "limitations": [
       "Static extraction does not evaluate C++ preprocessing or validate a particular binary build.",
-      "Ordinary extraction reads loadConfig/link; composed startup readers use explicit adapters. Runtime console commands are excluded.",
+      "Ordinary extraction reads loadConfig/link; composed startup readers use explicit adapters. Runtime JSON commands are excluded.",
       "Only safely parsed literal/arithmetic defaults are emitted. Missing default means unknown, not required.",
       "Dynamic/composed readers use audited adapters; diagnostics identify unresolved readers. Keep unknown JSON fields when round-tripping.",
       "A wildcard path can denote an array item or object member; containers records the parent shape."
