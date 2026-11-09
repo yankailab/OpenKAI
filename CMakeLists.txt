@@ -21,7 +21,6 @@ option(USE_OPENCV_CONTRIB "Use OpenCV contribution" OFF)
 option(USE_ONNXRUNTIME "Use ONNX Runtime" OFF)
 option(USE_ORBBEC "Use Orbbec" OFF)
 option(USE_REALSENSE "Use Intel RealSense" OFF)
-option(USE_ROS "Use ROS" OFF)
 option(USE_SCEPTER_SDK "Use Scepter SDK" OFF)
 option(USE_SPOR_SENSOR_SDK "Use Spor laser line scanner SDK" OFF)
 option(USE_WSSERVER "Build WebSocket IO modules" OFF)
@@ -43,7 +42,6 @@ option(WITH_NAVIGATION "" OFF)
 option(WITH_NET "" OFF)
 option(WITH_PROTOCOL "" OFF)
 option(WITH_SOLVER "" OFF)
-option(WITH_ROS "" OFF)
 option(WITH_SENSOR "" OFF)
 option(WITH_SLAM "" OFF)
 option(WITH_SWARM "" OFF)
@@ -496,14 +494,6 @@ if(WITH_SOLVER)
   )
 endif()
 
-if(WITH_ROS)
-  add_definitions(-DWITH_ROS)
-  file(GLOB_RECURSE ROS_cpp src/ROS/*.cpp src/ROS/*.cc src/ROS/*.c)
-  list(APPEND OpenKAI_cpp
-	${ROS_cpp}
-  )
-endif()
-
 # RealSense's embedded IMU preview also uses the shared orientation filter.
 if(WITH_SENSOR OR USE_REALSENSE)
   file(GLOB_RECURSE Dependencies_sensor src/Dependencies/SensorFusion/*.cpp src/Dependencies/SensorFusion/*.c)
@@ -664,7 +654,7 @@ if(WITH_SLAM AND USE_GLIM)
       "-Wl,--push-state,--no-as-needed" spdlog::spdlog "-Wl,--pop-state")
   endif()
   # Standalone GLIM installs headers under include/glim, while some releases
-  # export include/glim as their include root (the ROS layout is nested).
+  # export include/glim as their include root with an additional nested directory.
   get_target_property(OpenKAI_GLIM_INCLUDE_HINTS glim::glim INTERFACE_INCLUDE_DIRECTORIES)
   find_path(OpenKAI_GLIM_INCLUDE_DIR glim/odometry/odometry_estimation_base.hpp
     HINTS ${OpenKAI_GLIM_INCLUDE_HINTS} ${glim_INCLUDE_DIRS}
@@ -1019,17 +1009,6 @@ if(WITH_UNIVERSE)
       "${PROJECT_SOURCE_DIR}/html/viewer/_SporSensor" "$<TARGET_FILE_DIR:OpenKAI>/html/viewer/_SporSensor")
 endif()
 
-# Optional ROS2 configs
-if(USE_ROS)
-  find_package(ament_cmake REQUIRED)
-  find_package(rclcpp REQUIRED)
-  find_package(std_msgs REQUIRED)
-  find_package(sensor_msgs REQUIRED)
-  find_package(nav_msgs REQUIRED)
-
-  ament_target_dependencies(OpenKAI rclcpp std_msgs sensor_msgs nav_msgs)
-endif()
-
 if(BUILD_SAMPLES)
   file(GLOB OpenKAI_sample_cmake_files CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/samples/*/CMakeLists.txt")
@@ -1081,14 +1060,8 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/
 )
 
 include(CMakePackageConfigHelpers)
-if(USE_ROS)
-  # Let ament own OpenKAIConfig.cmake and load our target through its extras.
-  set(OpenKAI_cmake_install_dir "share/${PROJECT_NAME}/cmake")
-  set(OpenKAI_config_file "${CMAKE_CURRENT_BINARY_DIR}/OpenKAIPackage.cmake")
-else()
-  set(OpenKAI_cmake_install_dir "${CMAKE_INSTALL_LIBDIR}/cmake/OpenKAI")
-  set(OpenKAI_config_file "${CMAKE_CURRENT_BINARY_DIR}/OpenKAIConfig.cmake")
-endif()
+set(OpenKAI_cmake_install_dir "${CMAKE_INSTALL_LIBDIR}/cmake/OpenKAI")
+set(OpenKAI_config_file "${CMAKE_CURRENT_BINARY_DIR}/OpenKAIConfig.cmake")
 
 configure_package_config_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/cmake/OpenKAIConfig.cmake.in"
@@ -1100,15 +1073,11 @@ install(EXPORT OpenKAITargets
   NAMESPACE OpenKAI::
   DESTINATION "${OpenKAI_cmake_install_dir}")
 
-if(USE_ROS)
-  ament_package(CONFIG_EXTRAS "${OpenKAI_config_file}")
-else()
-  write_basic_package_version_file(
-    "${CMAKE_CURRENT_BINARY_DIR}/OpenKAIConfigVersion.cmake"
-    VERSION ${PROJECT_VERSION}
-    COMPATIBILITY SameMinorVersion)
-  install(FILES
-    "${OpenKAI_config_file}"
-    "${CMAKE_CURRENT_BINARY_DIR}/OpenKAIConfigVersion.cmake"
-    DESTINATION "${OpenKAI_cmake_install_dir}")
-endif()
+write_basic_package_version_file(
+  "${CMAKE_CURRENT_BINARY_DIR}/OpenKAIConfigVersion.cmake"
+  VERSION ${PROJECT_VERSION}
+  COMPATIBILITY SameMinorVersion)
+install(FILES
+  "${OpenKAI_config_file}"
+  "${CMAKE_CURRENT_BINARY_DIR}/OpenKAIConfigVersion.cmake"
+  DESTINATION "${OpenKAI_cmake_install_dir}")

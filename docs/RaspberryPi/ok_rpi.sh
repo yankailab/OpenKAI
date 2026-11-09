@@ -25,17 +25,8 @@ sudo nmcli c down "netplan-eth0" && sudo nmcli c up "netplan-eth0"
 
 start.sh--
 #!/bin/bash
-source /home/lab/dev/ros2_humble/install/local_setup.bash
-source /home/lab/dev/rosWS/install/setup.bash
 
-/home/lab/lv.sh
-#ros2 launch livox_ros_driver2 msg_MID360_launch.py &
-sleep 5
-/home/lab/fl.sh
-#ros2 launch fast_lio mapping.launch.py config_file:=mid360.yaml &
-sleep 5
 /home/lab/ok.sh
-#/home/lab/dev/OpenKAI/build/OpenKAI /home/lab/dev/OpenKAI/kiss/app/apCopter_fastLio.kiss &
 
 exit 0
 --

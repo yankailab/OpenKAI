@@ -269,13 +269,11 @@ def generate():
     audit = Counter()
     for name, record in records.items():
         for method in record['_methods']:
-            if method['name'] not in ('loadConfig', 'link') and not (name == 'ROS_fastLio' and method['name'] == 'init'):
+            if method['name'] not in ('loadConfig', 'link'):
                 continue
             body = method['body']
             local = declarations(body)
             aliases = {'m_pJ': []}
-            if name == 'ROS_fastLio' and method['name'] == 'init':
-                aliases['j'] = []
             values, iterators, vector_items = {}, {}, {}
             events = []
             # Statements create aliases in source order, including embedded JSON objects.
@@ -554,9 +552,6 @@ def adapters(records, files, constants, symbol):
         if parameter['path'] == ['vPCLframesIn']:
             parameter['dependency'] = True
             parameter['extraction'] = 'audited-adapter'
-    records['_ROS_fastLio']['_embedded'].append((['node'],'ROS_fastLio'))
-    records['_ROS_fastLio']['containers'].append({'path':['node'],'type':'object'})
-    param('_ROS_fastLio',['node'],'object','src/ROS/_ROS_fastLio.cpp:loadConfig')
     # Native RoboSense drivers validate startup patches against constructor defaults.
     # DIFOP-only device fields are intentionally not launch configuration.
     for model in ('E1R','Airy'):

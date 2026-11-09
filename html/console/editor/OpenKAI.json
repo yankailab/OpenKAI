@@ -3,7 +3,7 @@
   "title": "OpenKAI editor class catalog",
   "description": "Source-derived editor metadata; not a JSON Schema validator. See SCHEMA.md.",
   "generator": "tools/generate-schema.py",
-  "sourceDigest": "b3d690c5707038fddd403f3853db8b7c2dad2eecbcb60021b5bfdbd76e624c2a",
+  "sourceDigest": "eb9e256808bc15f3bbc4d9f3ce5f7cd2b556d99bd25c86b4003abae3628e4919",
   "categories": [
     "Actuator",
     "Actuator/Articulated",
@@ -26,7 +26,6 @@
     "Net",
     "Primitive",
     "Protocol",
-    "ROS",
     "SLAM",
     "Sensor/Distance",
     "Sensor/IMU",
@@ -15553,7 +15552,7 @@
     {
       "name": "Modules",
       "category": "Instance",
-      "source": "src/Instance/Modules.h:290",
+      "source": "src/Instance/Modules.h:286",
       "baseClasses": [],
       "parameters": [],
       "dependencies": [],
@@ -18815,311 +18814,6 @@
           "ifdef WITH_PROTOCOL"
         ]
       ],
-      "configurable": true
-    },
-    {
-      "name": "_ROS_fastLio",
-      "category": "ROS",
-      "source": "src/ROS/_ROS_fastLio.h:20",
-      "baseClasses": [
-        "_NavBase"
-      ],
-      "parameters": [
-        {
-          "path": [
-            "_PCframe"
-          ],
-          "type": "string",
-          "declaredIn": "_ROS_fastLio",
-          "source": "src/ROS/_ROS_fastLio.cpp:64",
-          "typeEvidence": "declaration",
-          "cppVariable": "n",
-          "cppType": "string",
-          "dependency": true
-        },
-        {
-          "path": [
-            "_TransformRigid"
-          ],
-          "type": "string",
-          "declaredIn": "_NavBase",
-          "source": "src/Navigation/_NavBase.cpp:36",
-          "typeEvidence": "declaration",
-          "cppVariable": "tfName",
-          "cppType": "string",
-          "dependency": true
-        },
-        {
-          "path": [
-            "bLog"
-          ],
-          "type": "boolean",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bLog",
-          "cppType": "bool",
-          "default": false
-        },
-        {
-          "path": [
-            "bON"
-          ],
-          "type": "boolean",
-          "source": "src/Instance/InstanceMgr.cpp:createAll",
-          "declaredIn": "BASE",
-          "extraction": "audited-adapter",
-          "default": true,
-          "description": "false disables this instance; true enables it."
-        },
-        {
-          "path": [
-            "class"
-          ],
-          "type": "string",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:57",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_class",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "name"
-          ],
-          "type": "string",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:56",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_name",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "node"
-          ],
-          "type": "object",
-          "source": "src/ROS/_ROS_fastLio.cpp:loadConfig",
-          "declaredIn": "_ROS_fastLio",
-          "extraction": "audited-adapter"
-        },
-        {
-          "path": [
-            "node",
-            "topicOdom"
-          ],
-          "type": "string",
-          "declaredIn": "ROS_fastLio",
-          "source": "src/ROS/ROS_fastLio.cpp:17",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_topicOdom",
-          "cppType": "string",
-          "default": "",
-          "embeddedClass": "ROS_fastLio"
-        },
-        {
-          "path": [
-            "node",
-            "topicPC2"
-          ],
-          "type": "string",
-          "declaredIn": "ROS_fastLio",
-          "source": "src/ROS/ROS_fastLio.cpp:16",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_topicPC2",
-          "cppType": "string",
-          "default": "",
-          "embeddedClass": "ROS_fastLio"
-        },
-        {
-          "path": [
-            "node",
-            "topicPath"
-          ],
-          "type": "string",
-          "declaredIn": "ROS_fastLio",
-          "source": "src/ROS/ROS_fastLio.cpp:18",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_topicPath",
-          "cppType": "string",
-          "default": "",
-          "embeddedClass": "ROS_fastLio"
-        },
-        {
-          "path": [
-            "tConfidenceTimeoutNs"
-          ],
-          "type": "integer",
-          "declaredIn": "_NavBase",
-          "source": "src/Navigation/_NavBase.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_tConfidenceTimeoutNs",
-          "cppType": "uint64_t",
-          "default": 0
-        },
-        {
-          "path": [
-            "thread",
-            "FPS"
-          ],
-          "type": "number",
-          "declaredIn": "_Thread",
-          "source": "src/Base/_Thread.cpp:60",
-          "typeEvidence": "declaration",
-          "cppVariable": "FPS",
-          "cppType": "float",
-          "default": 30,
-          "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "thread",
-            "bLog"
-          ],
-          "type": "boolean",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bLog",
-          "cppType": "bool",
-          "default": false,
-          "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "threadROS",
-            "FPS"
-          ],
-          "type": "number",
-          "declaredIn": "_Thread",
-          "source": "src/Base/_Thread.cpp:60",
-          "typeEvidence": "declaration",
-          "cppVariable": "FPS",
-          "cppType": "float",
-          "default": 30,
-          "embeddedClass": "_Thread"
-        },
-        {
-          "path": [
-            "threadROS",
-            "bLog"
-          ],
-          "type": "boolean",
-          "declaredIn": "BASE",
-          "source": "src/Base/BASE.cpp:58",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_bLog",
-          "cppType": "bool",
-          "default": false,
-          "embeddedClass": "_Thread"
-        }
-      ],
-      "dependencies": [
-        {
-          "path": [
-            "_PCframe"
-          ],
-          "targetClass": "_PCframe",
-          "targetKind": "module",
-          "multiple": false,
-          "declaredIn": "_ROS_fastLio",
-          "source": "src/ROS/_ROS_fastLio.cpp:65",
-          "containers": []
-        },
-        {
-          "path": [
-            "_TransformRigid"
-          ],
-          "targetClass": "_TransformRigid",
-          "targetKind": "module",
-          "multiple": false,
-          "declaredIn": "_NavBase",
-          "source": "src/Navigation/_NavBase.cpp:37",
-          "containers": []
-        }
-      ],
-      "containers": [
-        {
-          "path": [
-            "node"
-          ],
-          "type": "object"
-        },
-        {
-          "path": [
-            "thread"
-          ],
-          "type": "object"
-        },
-        {
-          "path": [
-            "threadROS"
-          ],
-          "type": "object"
-        }
-      ],
-      "diagnostics": [],
-      "creatable": true,
-      "instanceKind": "module",
-      "buildConditions": [
-        [
-          "ifdef WITH_ROS"
-        ]
-      ],
-      "configurable": true
-    },
-    {
-      "name": "ROS_fastLio",
-      "category": "ROS",
-      "source": "src/ROS/ROS_fastLio.h:28",
-      "baseClasses": [
-        "rclcpp::Node"
-      ],
-      "parameters": [
-        {
-          "path": [
-            "topicOdom"
-          ],
-          "type": "string",
-          "declaredIn": "ROS_fastLio",
-          "source": "src/ROS/ROS_fastLio.cpp:17",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_topicOdom",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "topicPC2"
-          ],
-          "type": "string",
-          "declaredIn": "ROS_fastLio",
-          "source": "src/ROS/ROS_fastLio.cpp:16",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_topicPC2",
-          "cppType": "string",
-          "default": ""
-        },
-        {
-          "path": [
-            "topicPath"
-          ],
-          "type": "string",
-          "declaredIn": "ROS_fastLio",
-          "source": "src/ROS/ROS_fastLio.cpp:18",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_topicPath",
-          "cppType": "string",
-          "default": ""
-        }
-      ],
-      "dependencies": [],
-      "containers": [],
-      "diagnostics": [],
-      "creatable": false,
-      "buildConditions": [],
       "configurable": true
     },
     {
@@ -40201,10 +39895,10 @@
     ]
   },
   "audit": {
-    "sourceFiles": 454,
-    "classCount": 217,
-    "classDeclarations": 217,
-    "creatableClassCount": 127,
+    "sourceFiles": 450,
+    "classCount": 215,
+    "classDeclarations": 215,
+    "creatableClassCount": 126,
     "factoryClassesWithoutDeclaration": [
       "_TestJSON",
       "_TestWebSocket"
@@ -40495,10 +40189,6 @@
       "src/Protocol/_USR_CANET.h",
       "src/Protocol/_Xbee.cpp",
       "src/Protocol/_Xbee.h",
-      "src/ROS/ROS_fastLio.cpp",
-      "src/ROS/ROS_fastLio.h",
-      "src/ROS/_ROS_fastLio.cpp",
-      "src/ROS/_ROS_fastLio.h",
       "src/SLAM/_GLIM.cpp",
       "src/SLAM/_GLIM.h",
       "src/SLAM/_SLAMbase.cpp",
@@ -40665,10 +40355,10 @@
       "src/Vision/_VideoFile.h",
       "src/main.cpp"
     ],
-    "configReads": 633,
-    "resolvedReads": 621,
-    "moduleLookups": 142,
-    "resolvedLookups": 137,
+    "configReads": 629,
+    "resolvedReads": 617,
+    "moduleLookups": 141,
+    "resolvedLookups": 136,
     "unresolvedReads": 12,
     "unresolvedLookups": 5,
     "diagnosticsCount": 17,

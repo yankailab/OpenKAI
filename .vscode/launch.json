@@ -305,31 +305,6 @@
             ]
         },
         {
-            "name": "(gdb) _ROS_fastLio.json",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/build/OpenKAI",
-            "args": [
-                "${workspaceFolder}/jsonCfg/_ROS_fastLio.json"
-            ],
-            "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
-            "environment": [
-                {
-                    "name": "DEBUGINFOD_URLS",
-                    "value": ""
-                }
-            ],
-            "MIMode": "gdb",
-            "setupCommands": [
-                {
-                    "description": "Enable pretty-printing for gdb",
-                    "text": "-enable-pretty-printing",
-                    "ignoreFailures": true
-                }
-            ]
-        },
-        {
             "name": "(gdb) _TOFsense.json",
             "type": "cppdbg",
             "request": "launch",
@@ -436,31 +411,6 @@
             "program": "${workspaceFolder}/build/OpenKAI",
             "args": [
                 "${workspaceFolder}/jsonCfg/_ZLAC8015.json"
-            ],
-            "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
-            "environment": [
-                {
-                    "name": "DEBUGINFOD_URLS",
-                    "value": ""
-                }
-            ],
-            "MIMode": "gdb",
-            "setupCommands": [
-                {
-                    "description": "Enable pretty-printing for gdb",
-                    "text": "-enable-pretty-printing",
-                    "ignoreFailures": true
-                }
-            ]
-        },
-        {
-            "name": "(gdb) apCopter_fastLio.json",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/build/OpenKAI",
-            "args": [
-                "${workspaceFolder}/jsonCfg/apCopter_fastLio.json"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

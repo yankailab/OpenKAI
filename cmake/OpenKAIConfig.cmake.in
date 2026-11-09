@@ -45,13 +45,6 @@ if(@USE_SPOR_SENSOR_SDK@)
   find_dependency(SporSensorSDK CONFIG)
 endif()
 
-if(@USE_ROS@)
-  find_dependency(rclcpp)
-  find_dependency(std_msgs)
-  find_dependency(sensor_msgs)
-  find_dependency(nav_msgs)
-endif()
-
 if(NOT TARGET OpenKAI::OpenKAI)
   include("${CMAKE_CURRENT_LIST_DIR}/OpenKAITargets.cmake")
   set_property(TARGET OpenKAI::OpenKAI APPEND PROPERTY

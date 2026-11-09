@@ -343,4 +343,3 @@ cmake --build build
 
 Alternatively, set `-DOpenKAI_DIR=/opt/OpenKAI/lib/cmake/OpenKAI`, replacing `lib`
 with the `CMAKE_INSTALL_LIBDIR` used to install OpenKAI (for example, `lib64`).
-With `USE_ROS=ON`, the package is installed to `share/OpenKAI/cmake` instead.

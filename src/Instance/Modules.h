@@ -183,10 +183,6 @@
 #include "../Solver/_IsingBase.h"
 #endif
 
-#ifdef WITH_ROS
-#include "../ROS/_ROS_fastLio.h"
-#endif
-
 #ifdef WITH_SENSOR
 #ifdef USE_LIBMODBUS
 #include "../Sensor/Distance/_LeddarVu.h"

@@ -192,10 +192,6 @@ namespace kai
 		ADD_MODULE(_IsingBase);
 #endif
 
-#ifdef WITH_ROS
-		ADD_MODULE(_ROS_fastLio);
-#endif
-
 #ifdef WITH_SENSOR
 		ADD_MODULE(_BenewakeTF);
 		ADD_MODULE(_TOFsense);
