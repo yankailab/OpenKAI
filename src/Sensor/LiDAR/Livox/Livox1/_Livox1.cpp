@@ -221,6 +221,8 @@ namespace kai
                 }
                 continue;
             }
+            // A timeout already paced the loop; receive() skips sleep when data arrives.
+            if (ready == 0) m_pT->skipSleep();
             for (size_t i = 0; i < m_sockets.size(); ++i)
             {
                 std::lock_guard<std::recursive_mutex> lock(m_mutex);
@@ -245,6 +247,7 @@ namespace kai
                 if (errno != EAGAIN && errno != EWOULDBLOCK) m_lastError = "Livox1 UDP receive: " + string(strerror(errno));
                 break;
             }
+            m_pT->skipSleep();
             if (source.sin_addr.s_addr != m_lvxIP) continue;
             if (length > ssize_t(sizeof(bytes))) { ++m_invalidPackets; continue; }
             if (channel == Broadcast || channel == Command)

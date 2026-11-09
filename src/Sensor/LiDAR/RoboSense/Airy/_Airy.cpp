@@ -198,6 +198,8 @@ namespace kai
                 continue;
             }
             const int ready = poll(sockets, 3, 10);
+            // A timeout already paced the loop; receive() skips sleep when data arrives.
+            if (ready == 0) m_pT->skipSleep();
             std::lock_guard<std::recursive_mutex> lock(m_mutex);
             // A web configuration update can replace the sockets during poll.
             if (generation != m_socketGeneration) continue;
@@ -241,6 +243,7 @@ namespace kai
                 if (errno != EAGAIN && errno != EWOULDBLOCK) m_lastError = "UDP receive: " + string(strerror(errno));
                 break;
             }
+            m_pT->skipSleep();
             char address[INET_ADDRSTRLEN]{};
             inet_ntop(AF_INET, &source.sin_addr, address, sizeof(address));
             const string filter = m_config.at("deviceIP");
