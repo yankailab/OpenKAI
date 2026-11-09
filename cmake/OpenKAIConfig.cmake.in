@@ -1,0 +1,63 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+
+# These conditions describe the installed library, not the consumer's options.
+find_dependency(Eigen3 5 CONFIG)
+
+if(@WITH_NET@ OR @WITH_UNIVERSE@ OR (@WITH_IO@ AND @USE_WSSERVER@))
+  find_dependency(Boost 1.70 CONFIG)
+endif()
+
+if(@WITH_SLAM@ AND @USE_GLIM@)
+  find_dependency(glim CONFIG)
+endif()
+
+if(@USE_IMGUI@)
+  if("@IMGUI_BACKEND_UPPER@" STREQUAL "GLFW" AND "@glfw3_FOUND@")
+    find_dependency(glfw3)
+  endif()
+  if("@IMGUI_RENDERER_UPPER@" STREQUAL "OPENGL")
+    find_dependency(OpenGL)
+    if("@GLEW_FOUND@")
+      find_dependency(GLEW)
+    endif()
+  endif()
+endif()
+
+if(@USE_OPENCV@)
+  find_dependency(OpenCV 5 CONFIG COMPONENTS @OpenKAI_OPENCV_COMPONENTS@)
+endif()
+
+if(@USE_OPENCL@)
+  find_dependency(OpenCL)
+endif()
+
+if("@USE_PCL@")
+  find_dependency(PCL COMPONENTS common io filters)
+endif()
+
+if(@USE_REALSENSE@)
+  find_dependency(realsense2 2.58.4 CONFIG)
+endif()
+
+if(@USE_SPOR_SENSOR_SDK@)
+  find_dependency(SporSensorSDK CONFIG)
+endif()
+
+if(@USE_ROS@)
+  find_dependency(rclcpp)
+  find_dependency(std_msgs)
+  find_dependency(sensor_msgs)
+  find_dependency(nav_msgs)
+endif()
+
+if(NOT TARGET OpenKAI::OpenKAI)
+  include("${CMAKE_CURRENT_LIST_DIR}/OpenKAITargets.cmake")
+  set_property(TARGET OpenKAI::OpenKAI APPEND PROPERTY
+    INTERFACE_INCLUDE_DIRECTORIES "@OpenKAI_dependency_include_dirs@")
+  set_property(TARGET OpenKAI::OpenKAI APPEND PROPERTY
+    INTERFACE_LINK_DIRECTORIES "@OpenKAI_dependency_library_dirs@")
+endif()
+
+check_required_components(OpenKAI)

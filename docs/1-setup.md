@@ -297,3 +297,50 @@ target_link_libraries(MySample PRIVATE OpenKAI::OpenKAI)
 Sample CMake files are discovered automatically. Executables are written to
 `build/samples/<name>/`, and sample sources can include headers as
 `<OpenKAI/Instance/InstanceMgr.h>` without installing the library first.
+
+### Use installed OpenKAI in another project
+
+To install the CMake package from an existing OpenKAI build directory, reconfigure,
+build, and install:
+
+```bash
+cmake ..
+make -j$(nproc)
+sudo make install
+```
+
+An external project's `CMakeLists.txt` can then use the installed library:
+
+```cmake
+cmake_minimum_required(VERSION 3.18)
+project(MyApp LANGUAGES CXX)
+
+find_package(OpenKAI CONFIG REQUIRED)
+
+add_executable(MyApp main.cpp)
+target_link_libraries(MyApp PRIVATE OpenKAI::OpenKAI)
+```
+
+The target supplies C++17, include directories, the installed build's feature
+definitions, and its link dependencies. Sources can include headers directly:
+
+```cpp
+#include <OpenKAI/Universe/_TransformRigid.h>
+```
+
+Enable any optional modules your application uses when building OpenKAI.
+Dependencies and optional external SDKs enabled in that build must remain
+installed and available; custom SDK paths may be retained in the installed
+package.
+
+For an OpenKAI installation outside CMake's default search paths, configure the
+external project with its installation prefix:
+
+```bash
+cmake -S . -B build -DCMAKE_PREFIX_PATH=/opt/OpenKAI
+cmake --build build
+```
+
+Alternatively, set `-DOpenKAI_DIR=/opt/OpenKAI/lib/cmake/OpenKAI`, replacing `lib`
+with the `CMAKE_INSTALL_LIBDIR` used to install OpenKAI (for example, `lib64`).
+With `USE_ROS=ON`, the package is installed to `share/OpenKAI/cmake` instead.

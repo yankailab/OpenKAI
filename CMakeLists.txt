@@ -948,6 +948,20 @@ else()
 endif()
 add_library(OpenKAI::OpenKAI ALIAS OpenKAI)
 
+# SDKs without CMake targets keep their configured locations. Some SDKs live
+# under the source tree, so restore their usage paths in the installed config
+# instead of exporting them as OpenKAI's own include/library directories.
+set(OpenKAI_dependency_include_dirs "")
+foreach(directory IN LISTS OpenKAI_include)
+  get_filename_component(directory "${directory}" ABSOLUTE BASE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+  list(APPEND OpenKAI_dependency_include_dirs "${directory}")
+endforeach()
+set(OpenKAI_dependency_library_dirs "")
+foreach(directory IN LISTS OpenKAI_libDir)
+  get_filename_component(directory "${directory}" ABSOLUTE BASE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+  list(APPEND OpenKAI_dependency_library_dirs "${directory}")
+endforeach()
+
 # Support the installed <OpenKAI/...> header layout before installation too.
 include(GNUInstallDirs)
 file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/include")
@@ -956,8 +970,8 @@ file(CREATE_LINK "${CMAKE_CURRENT_SOURCE_DIR}/src"
 target_include_directories(OpenKAI PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>"
   "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
-  ${OpenKAI_include})
-target_link_directories(OpenKAI PUBLIC ${OpenKAI_libDir})
+  "$<BUILD_INTERFACE:${OpenKAI_dependency_include_dirs}>")
+target_link_directories(OpenKAI PUBLIC "$<BUILD_INTERFACE:${OpenKAI_dependency_library_dirs}>")
 target_compile_features(OpenKAI PUBLIC cxx_std_17)
 # Public headers must use the same feature definitions as the library.
 get_directory_property(OpenKAI_compile_definitions COMPILE_DEFINITIONS)
@@ -1014,7 +1028,6 @@ if(USE_ROS)
   find_package(nav_msgs REQUIRED)
 
   ament_target_dependencies(OpenKAI rclcpp std_msgs sensor_msgs nav_msgs)
-  ament_package()
 endif()
 
 if(BUILD_SAMPLES)
@@ -1045,19 +1058,57 @@ if(WITH_UNIVERSE)
     install(DIRECTORY html/viewer/mavlink DESTINATION ${CMAKE_INSTALL_BINDIR}/html/viewer)
   endif()
 endif()
+# Preserve external SDK search paths for applications using the installed library.
 set_target_properties(OpenKAI PROPERTIES
-  VERSION ${PROJECT_VERSION})
+  VERSION ${PROJECT_VERSION}
+  INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 install(TARGETS OpenKAI
-  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+  EXPORT OpenKAITargets
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 if(BUILD_EXECUTABLE)
   install(TARGETS OpenKAI_executable
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 endif()
 
-install(DIRECTORY ${CMAKE_SOURCE_DIR}/src/
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/OpenKAI
   FILES_MATCHING
   PATTERN "*.h"
 )
+
+include(CMakePackageConfigHelpers)
+if(USE_ROS)
+  # Let ament own OpenKAIConfig.cmake and load our target through its extras.
+  set(OpenKAI_cmake_install_dir "share/${PROJECT_NAME}/cmake")
+  set(OpenKAI_config_file "${CMAKE_CURRENT_BINARY_DIR}/OpenKAIPackage.cmake")
+else()
+  set(OpenKAI_cmake_install_dir "${CMAKE_INSTALL_LIBDIR}/cmake/OpenKAI")
+  set(OpenKAI_config_file "${CMAKE_CURRENT_BINARY_DIR}/OpenKAIConfig.cmake")
+endif()
+
+configure_package_config_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/OpenKAIConfig.cmake.in"
+  "${OpenKAI_config_file}"
+  INSTALL_DESTINATION "${OpenKAI_cmake_install_dir}")
+
+install(EXPORT OpenKAITargets
+  FILE OpenKAITargets.cmake
+  NAMESPACE OpenKAI::
+  DESTINATION "${OpenKAI_cmake_install_dir}")
+
+if(USE_ROS)
+  ament_package(CONFIG_EXTRAS "${OpenKAI_config_file}")
+else()
+  write_basic_package_version_file(
+    "${CMAKE_CURRENT_BINARY_DIR}/OpenKAIConfigVersion.cmake"
+    VERSION ${PROJECT_VERSION}
+    COMPATIBILITY SameMinorVersion)
+  install(FILES
+    "${OpenKAI_config_file}"
+    "${CMAKE_CURRENT_BINARY_DIR}/OpenKAIConfigVersion.cmake"
+    DESTINATION "${OpenKAI_cmake_install_dir}")
+endif()
