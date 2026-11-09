@@ -15,6 +15,7 @@ namespace kai
 
 	_ADIO_EBYTE::~_ADIO_EBYTE()
 	{
+		stop();
 		close();
 	}
 
@@ -75,11 +76,18 @@ namespace kai
 		return m_pT->startThread(getUpdate, this);
 	}
 
+	void _ADIO_EBYTE::stop(void)
+	{
+		// Join even when the Modbus connection is unavailable.
+		if (m_pT) m_pT->join();
+	}
+
 	void _ADIO_EBYTE::update(void)
 	{
 		while (m_pT->bRun())
 		{
 			m_pT->autoFPS();
+			if (!m_pT->bRun()) break;
 
 			updateW();
 			updateR();

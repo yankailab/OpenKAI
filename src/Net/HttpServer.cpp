@@ -171,7 +171,7 @@ namespace kai
 					socket.set_option(tcp::no_delay(true), ignored);
 					std::make_shared<Session>(*this, std::move(socket))->run();
 				}
-				if (acceptor.is_open()) accept();
+				if (ec != net::error::operation_aborted && acceptor.is_open()) accept();
 			});
 		}
 	};
@@ -225,6 +225,7 @@ namespace kai
 			if (error) *error = e.what();
 			beast::error_code ignored;
 			m_impl->acceptor.close(ignored);
+			m_impl->boundPort = 0;
 			return false;
 		}
 	}

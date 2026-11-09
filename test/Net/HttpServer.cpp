@@ -90,8 +90,21 @@ int main()
         kai::HttpServer invalid;
         require(!invalid.start("127.0.0.1", 0, webRoot.string(), {}, &error, 32,
                                {{"/models/..", (dir / "models").string()}}), "invalid mount accepted");
+        boost::asio::io_context io;
+        boost::asio::ip::tcp::acceptor occupied(io, {boost::asio::ip::make_address("127.0.0.1"), 0});
+        const auto port = occupied.local_endpoint().port();
+        kai::HttpServer retry;
+        for (int attempt = 0; attempt < 3; ++attempt)
+        {
+            require(!retry.start("127.0.0.1", port, webRoot.string(), {}, &error), "occupied listener accepted");
+            require(retry.port() == 0, "failed initialization retained a bound port");
+        }
+        occupied.close();
+        require(retry.start("127.0.0.1", port, webRoot.string(), {}, &error), error.c_str());
+        require(retry.port() == port, "retry did not bind the requested port");
+        retry.stop();
         fs::remove_all(dir);
-        std::cout << "HTTP root, mounted assets, MIME, HEAD and traversal tests passed\n";
+        std::cout << "HTTP root, mounted assets, MIME, HEAD, traversal and bind retry tests passed\n";
     }
     catch (const std::exception &error)
     {

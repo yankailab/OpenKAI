@@ -17,7 +17,10 @@ namespace kai
 
 	_TCPserver::~_TCPserver()
 	{
-		close(m_socket);
+		if (m_socket >= 0)
+		{
+			close(m_socket);
+		}
 
 		for (auto itr = m_lClient.begin(); itr != m_lClient.end(); itr++)
 		{
@@ -103,7 +106,8 @@ namespace kai
 		}
 
 		close(m_socket);
-		return true;
+		m_socket = -1;
+		return false;
 	}
 
 	void _TCPserver::cleanupClient(void)
@@ -127,9 +131,11 @@ namespace kai
 
 	bool _TCPserver::setup(void)
 	{
+		IF__(m_socket >= 0, true);
+
 		// Create socket
-		m_socket = socket(AF_INET, SOCK_STREAM, 0);
-		IF_F(m_socket < 0);
+		const int fd = socket(AF_INET, SOCK_STREAM, 0);
+		IF_F(fd < 0);
 
 		// Prepare the sockaddr_in structure
 		m_serverAddr.sin_family = AF_INET;
@@ -137,18 +143,16 @@ namespace kai
 		m_serverAddr.sin_port = htons(m_listenPort);
 
 		int yes = 1;
-		setsockopt(m_socket, SOL_SOCKET, SO_REUSEADDR, (const char *)&yes, sizeof(yes));
-
-		// Bind
-		if (bind(m_socket, (struct sockaddr *)&m_serverAddr, sizeof(m_serverAddr)) < 0)
+		if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (const char *)&yes, sizeof(yes)) < 0 ||
+			bind(fd, (struct sockaddr *)&m_serverAddr, sizeof(m_serverAddr)) < 0 ||
+			listen(fd, m_nListen) < 0)
 		{
-			close(m_socket);
+			close(fd);
 			return false;
 		}
 
-		// Listen
-		listen(m_socket, m_nListen);
-
+		// Publish only a complete listener; update() retries failed setup attempts.
+		m_socket = fd;
 		return true;
 	}
 

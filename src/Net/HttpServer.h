@@ -32,6 +32,7 @@ namespace kai
 		HttpServer &operator=(const HttpServer &) = delete;
 
 		boost::asio::io_context &context();
+		// Failed initialization closes the listener and may be retried on this instance.
 		bool start(const std::string &host, uint16_t port, const std::string &root,
 				   Upgrade upgrade, std::string *error = nullptr, size_t maxConnections = 32,
 				   const Mounts &mounts = {});

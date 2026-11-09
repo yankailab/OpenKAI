@@ -27,6 +27,7 @@ namespace kai
 		bool bStopped() override { return !m_running; }
 		void console(void *console) override;
 	private:
+		void update() override;
 		void publish();
 		std::string hello() const;
 		PCLmap *m_pPCLmapin = nullptr;

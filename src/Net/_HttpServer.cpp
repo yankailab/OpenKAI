@@ -37,24 +37,53 @@ namespace kai
 
 	bool _HttpServer::start()
 	{
-		IF_F(m_http || !check());
+		IF_F(m_running || !check());
 		// HttpServer is single-use; create a fresh worker after each stop.
-		auto server = std::make_unique<HttpServer>();
-		std::string error;
-		IF_Le_F(!server->start(m_host, uint16_t(m_port), m_root, {}, &error, m_maxClients), error);
-		m_http = std::move(server);
-		LOG_I("HttpServer: http://" + m_host + ":" + i2str(m_port) + "/");
+		m_http = std::make_unique<HttpServer>();
+		m_running = true;
+		m_pT->run();
+		try { m_worker = std::thread([this] { update(); }); }
+		catch (const std::exception &e)
+		{
+			stop();
+			LOG_E(e.what());
+			return false;
+		}
 		return true;
+	}
+
+	void _HttpServer::update()
+	{
+		while (m_running)
+		{
+			std::string error;
+			if (m_http->start(m_host, uint16_t(m_port), m_root, {}, &error, m_maxClients))
+			{
+				LOG_I("HttpServer: http://" + m_host + ":" + i2str(m_port) + "/");
+				std::unique_lock<std::mutex> lock(m_waitMutex);
+				m_wakeup.wait(lock, [this] { return !m_running; });
+				break;
+			}
+			LOG_E("HTTP initialization failed; retrying: " + error);
+			std::unique_lock<std::mutex> lock(m_waitMutex);
+			m_wakeup.wait_for(lock, std::chrono::seconds(1), [this] { return !m_running; });
+		}
 	}
 
 	void _HttpServer::stop()
 	{
+		{
+			std::lock_guard<std::mutex> lock(m_waitMutex);
+			m_running = false;
+		}
+		m_wakeup.notify_all();
+		if (m_worker.joinable()) m_worker.join();
 		if (m_http) m_http->stop();
 		m_http.reset();
 		_ModuleBase::stop();
 	}
 
-	bool _HttpServer::bRun() { return bool(m_http); }
-	bool _HttpServer::bRunning() { return bool(m_http); }
-	bool _HttpServer::bStopped() { return !m_http; }
+	bool _HttpServer::bRun() { return m_running; }
+	bool _HttpServer::bRunning() { return m_running; }
+	bool _HttpServer::bStopped() { return !m_running; }
 }

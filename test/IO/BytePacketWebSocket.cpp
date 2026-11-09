@@ -97,7 +97,8 @@ namespace
 		assert(bind(portFd, reinterpret_cast<sockaddr *>(&addr), sizeof(addr)) == 0);
 		socklen_t addrLen = sizeof(addr);
 		assert(getsockname(portFd, reinterpret_cast<sockaddr *>(&addr), &addrLen) == 0);
-		close(portFd);
+		const bool retryStartup = mode == wsSocket_bin && !readAll;
+		if (!retryStartup) close(portFd);
 		JsonCfg cfg;
 		cfg.setJson({{"class", "_WebSocketServer"}, {"name", "duplex-ws"},
 					 {"host", "127.0.0.1"}, {"port", ntohs(addr.sin_port)}, {"wsMode", mode}, {"tOutMs", 1500},
@@ -114,6 +115,15 @@ namespace
 		assert(server.link(&manager));
 		server.attach(input, output);
 		assert(server.start());
+		if (retryStartup)
+		{
+			// An occupied port must leave the module running, then recover without
+			// another start call when the listener becomes available.
+			usleep(150000);
+			assert(server.bRun() && !server.bOpen());
+			assert(server.nClient() == 0);
+			close(portFd);
+		}
 		const int fd = connectClient(addr);
 		uint64_t deadline = getTns() + NSEC_SEC;
 		while (server.nClient() == 0 && getTns() < deadline)
@@ -214,6 +224,36 @@ namespace
 		server.stop();
 		assert(server.bStopped());
 		assert(!server.bOpen());
+		if (retryStartup)
+		{
+			// stop releases the listening port and keeps both workers restartable.
+			const int probe = socket(AF_INET, SOCK_STREAM, 0);
+			int reuse = 1;
+			assert(setsockopt(probe, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) == 0);
+			assert(bind(probe, reinterpret_cast<sockaddr *>(&addr), sizeof(addr)) == 0);
+			assert(listen(probe, 1) == 0);
+			assert(server.start());
+			usleep(150000);
+			assert(server.bRun() && !server.bOpen());
+			const uint64_t stopping = getTns();
+			server.stop();
+			assert(getTns() - stopping < NSEC_SEC);
+			assert(server.bStopped() && !server.bOpen());
+			close(probe);
+			assert(server.start());
+			const int restarted = connectClient(addr);
+			server.pause();
+			sendText(restarted, "stop-paused");
+			const int handshaking = socket(AF_INET, SOCK_STREAM, 0);
+			assert(connect(handshaking, reinterpret_cast<sockaddr *>(&addr), sizeof(addr)) == 0);
+			usleep(30000);
+			const uint64_t pausedStop = getTns();
+			server.stop();
+			assert(getTns() - pausedStop < NSEC_SEC);
+			assert(server.bStopped() && !server.bOpen() && server.nClient() == 0);
+			close(restarted);
+			close(handshaking);
+		}
 		std::cout << "WebSocket duplex mode " << mode << ", read all clients " << readAll << " passed\n";
 	}
 }
@@ -222,8 +262,7 @@ namespace kai
 {
 	void runBytePacketWebSocketTests(void)
 	{
-		// wsServer keeps process-global socket state and has no listener close API.
-		// Isolate each mode so its listening socket is released on child exit.
+		// Isolate network scenarios so the watchdog also bounds blocked I/O failures.
 		for (int mode = 0; mode < 4; ++mode)
 		for (bool readAll : {false, true})
 		{

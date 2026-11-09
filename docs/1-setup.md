@@ -223,13 +223,11 @@ git clone --depth 1 https://github.com/mavlink/c_library_v2.git
 ```
 
 
-## (Optional) wsServer
-```bash
-git clone --depth 1 https://github.com/Theldus/wsServer
-cd wsServer/
-make
-sudo make install
-```
+## (Optional) WebSocket IO
+Enable `WITH_IO` and `USE_WSSERVER` to build `_WebSocketServer` and `_WebSocket`.
+These modules use Boost.Asio/Beast headers (Boost 1.70 or newer); the external
+wsServer library is no longer required. The `USE_WSSERVER` option is retained
+for existing build configurations.
 
 
 ## (Optional) Livox

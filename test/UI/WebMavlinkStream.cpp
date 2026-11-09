@@ -172,7 +172,16 @@ namespace
 		{
 			assert(viewer.start());
 			beast::websocket::stream<net::ip::tcp::socket> client(io);
-			client.next_layer().connect({net::ip::make_address("127.0.0.1"), port});
+			const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(3);
+			for (;;)
+			{
+				boost::system::error_code ec;
+				client.next_layer().connect({net::ip::make_address("127.0.0.1"), port}, ec);
+				if (!ec) break;
+				client.next_layer().close();
+				assert(std::chrono::steady_clock::now() < deadline);
+				std::this_thread::sleep_for(std::chrono::milliseconds(10));
+			}
 			client.handshake("localhost", "/stream/mavlink");
 			beast::flat_buffer buffer;
 			client.read(buffer);

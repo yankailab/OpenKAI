@@ -2,7 +2,11 @@
 #define OpenKAI_src_Net__HttpServer_H_
 
 #include "../Base/_ModuleBase.h"
+#include <atomic>
+#include <condition_variable>
 #include <memory>
+#include <mutex>
+#include <thread>
 
 namespace kai
 {
@@ -23,11 +27,16 @@ namespace kai
 		bool bStopped() override;
 
 	private:
+		void update() override;
 		string m_host = "127.0.0.1";
 		string m_root = "html";
 		int m_port = 80;
 		int m_maxClients = 32;
 		std::unique_ptr<HttpServer> m_http;
+		std::thread m_worker;
+		std::atomic<bool> m_running{false};
+		std::mutex m_waitMutex;
+		std::condition_variable m_wakeup;
 	};
 }
 #endif

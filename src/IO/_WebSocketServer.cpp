@@ -5,14 +5,202 @@
  *      Author: yankai
  */
 
+#include <boost/asio/io_context.hpp>
+#include <boost/asio/ip/tcp.hpp>
+#include <boost/asio/post.hpp>
+#include <boost/asio/steady_timer.hpp>
+#include <boost/beast/core.hpp>
+#include <boost/beast/websocket.hpp>
 #include "_WebSocketServer.h"
-#include <shared_mutex>
+#include <future>
+#include <unordered_map>
 
 namespace kai
 {
-	static _WebSocketServer *g_pWSserver = nullptr;
-	static std::shared_mutex g_wsCallbackMutex;
-	static uintptr_t g_wsCallbackToken = 0;
+	namespace net = boost::asio;
+	namespace beast = boost::beast;
+	namespace websocket = beast::websocket;
+	using tcp = net::ip::tcp;
+
+	// All socket operations run on the read worker. The write worker waits for
+	// completion without blocking receives, and can stop during a stalled send.
+	struct _WebSocketServer::Backend
+	{
+		struct Session;
+		_WebSocketServer &owner;
+		net::io_context io{1};
+		tcp::acceptor listener{io};
+		net::steady_timer acceptRetry{io};
+		std::unordered_map<uint64_t, std::shared_ptr<Session>> sessions;
+		uint64_t nextClient = 0;
+
+		explicit Backend(_WebSocketServer &server) : owner(server) {}
+
+		struct Session : std::enable_shared_from_this<Session>
+		{
+			Backend &backend;
+			const uint64_t id;
+			websocket::stream<beast::tcp_stream, false> socket;
+			beast::flat_buffer input;
+			net::steady_timer writeTimeout;
+			vector<uint8_t> output;
+			std::shared_ptr<std::promise<bool>> pending;
+			bool closed = false;
+			bool waitingRead = false;
+
+			Session(Backend &server, uint64_t client, tcp::socket stream)
+				: backend(server), id(client), socket(std::move(stream)), writeTimeout(server.io) {}
+
+			void close(void)
+			{
+				if (closed) return;
+				closed = true;
+				beast::error_code ignored;
+				writeTimeout.cancel();
+				socket.next_layer().socket().close(ignored);
+				if (pending)
+				{
+					pending->set_value(false);
+					pending.reset();
+				}
+				backend.owner.cbClose(id);
+				backend.sessions.erase(id);
+			}
+
+			void accept(void)
+			{
+				socket.set_option(websocket::stream_base::timeout::suggested(beast::role_type::server));
+				socket.read_message_max(64 * 1024 * 1024);
+				socket.async_accept([self = shared_from_this()](beast::error_code error) {
+					if (error) return self->close();
+					beast::error_code endpointError;
+					const auto endpoint = self->socket.next_layer().socket().remote_endpoint(endpointError);
+					if (endpointError) return self->close();
+					self->backend.owner.cbOpen(self->id, endpoint.address().to_string(), std::to_string(endpoint.port()));
+					self->read();
+				});
+			}
+
+			void read(void)
+			{
+				socket.async_read(input, [self = shared_from_this()](beast::error_code error, size_t) {
+					if (error) return self->close();
+					self->deliver();
+				});
+			}
+
+			void deliver(void)
+			{
+				if (closed) return;
+				const auto bytes = input.data();
+				if (!backend.owner.cbMessage(id, static_cast<const unsigned char *>(bytes.data()),
+					bytes.size(), socket.got_text() ? 1 : 2))
+				{
+					// Keep one complete message per paused client without blocking the
+					// event loop that owns accepts, write completions and timeouts.
+					waitingRead = true;
+					return;
+				}
+				waitingRead = false;
+				input.consume(input.size());
+				read();
+			}
+
+			void send(vector<uint8_t> bytes, bool binary, std::shared_ptr<std::promise<bool>> result)
+			{
+				if (closed || pending)
+				{
+					result->set_value(false);
+					return;
+				}
+				output = std::move(bytes);
+				pending = result;
+				socket.binary(binary);
+				if (backend.owner.m_tOutMs > 0)
+				{
+					writeTimeout.expires_after(std::chrono::milliseconds(backend.owner.m_tOutMs));
+					writeTimeout.async_wait([self = shared_from_this(), result](beast::error_code error) {
+						if (!error && self->pending == result) self->close();
+					});
+				}
+				socket.async_write(net::buffer(output), [self = shared_from_this(), result](beast::error_code error, size_t) {
+					self->writeTimeout.cancel();
+					if (self->pending == result)
+					{
+						result->set_value(!error);
+						self->pending.reset();
+					}
+					if (error) self->close();
+				});
+			}
+		};
+
+		bool open(string &error)
+		{
+			try
+			{
+				tcp::resolver resolver(io);
+				const auto endpoints = resolver.resolve(owner.m_host, std::to_string(owner.m_port), tcp::resolver::passive);
+				beast::error_code failure;
+				for (const auto &entry : endpoints)
+				{
+					const auto endpoint = entry.endpoint();
+					listener.open(endpoint.protocol(), failure);
+					if (!failure) listener.set_option(tcp::acceptor::reuse_address(true), failure);
+					if (!failure) listener.bind(endpoint, failure);
+					if (!failure) listener.listen(net::socket_base::max_listen_connections, failure);
+					if (!failure)
+					{
+						accept();
+						return true;
+					}
+					beast::error_code ignored;
+					listener.close(ignored);
+				}
+				error = failure.message();
+			}
+			catch (const std::exception &exception)
+			{
+				error = exception.what();
+			}
+			return false;
+		}
+
+		void accept(void)
+		{
+			listener.async_accept([this](beast::error_code error, tcp::socket socket) {
+				if (!error && (owner.m_nClientMax < 0 || sessions.size() < static_cast<size_t>(owner.m_nClientMax)))
+				{
+					const uint64_t id = ++nextClient;
+					auto session = std::make_shared<Session>(*this, id, std::move(socket));
+					sessions.emplace(id, session);
+					session->accept();
+				}
+				if (!listener.is_open()) return;
+				if (error)
+				{
+					acceptRetry.expires_after(std::chrono::seconds(1));
+					acceptRetry.async_wait([this](beast::error_code retryError) {
+						if (!retryError && listener.is_open()) accept();
+					});
+				}
+				else accept();
+			});
+		}
+
+		void close(void)
+		{
+			beast::error_code ignored;
+			acceptRetry.cancel();
+			listener.close(ignored);
+			while (!sessions.empty())
+			{
+				auto session = sessions.begin()->second;
+				session->close();
+			}
+			io.stop();
+		}
+	};
 
 	_WebSocketServer::_WebSocketServer()
 	{
@@ -72,12 +260,7 @@ namespace kai
 			m_bStopping = false;
 			m_bReadPaused = false;
 		}
-		{
-			std::unique_lock<std::shared_mutex> lock(g_wsCallbackMutex);
-			m_callbackToken = ++g_wsCallbackToken;
-			g_pWSserver = this;
-		}
-		m_ioStatus = io_opened;
+		m_ioStatus = io_closed;
 		if (!_IObase::start())
 		{
 			stop();
@@ -101,8 +284,17 @@ namespace kai
 			std::lock_guard<std::mutex> lock(m_readMutex);
 			m_bReadPaused = false;
 		}
-		m_readReady.notify_all();
 		_IObase::resume();
+		std::lock_guard<std::mutex> lock(m_backendMutex);
+		if (m_backend)
+		{
+			net::post(m_backend->io, [backend = m_backend.get()] {
+				for (const auto &entry : backend->sessions)
+				{
+					if (entry.second->waitingRead) entry.second->deliver();
+				}
+			});
+		}
 	}
 
 	void _WebSocketServer::stop(void)
@@ -111,34 +303,8 @@ namespace kai
 			std::lock_guard<std::mutex> lock(m_readMutex);
 			m_bStopping = true;
 		}
-		m_readReady.notify_all();
-		if (m_pT)
-		{
-			m_pT->stop();
-		}
-		{
-			// wsServer owns detached client readers. Drain callbacks before teardown.
-			std::unique_lock<std::shared_mutex> lock(g_wsCallbackMutex);
-			if (g_pWSserver == this)
-			{
-				g_pWSserver = nullptr;
-			}
-		}
-		// wsServer has no listener shutdown API; _Thread destruction cancels accept.
-		DEL(m_pTr);
 		_IObase::stop();
 		m_ioStatus = io_closed;
-
-		vector<std::shared_ptr<wsClient>> vClient;
-		{
-			std::lock_guard<std::mutex> lock(m_clientMutex);
-			vClient.swap(m_vClient);
-		}
-		for (const auto &pClient : vClient)
-		{
-			pClient->m_pWS->setIOstatus(io_closed);
-			ws_close_client(pClient->m_wsConn);
-		}
 	}
 
 	void _WebSocketServer::updateW(void)
@@ -197,13 +363,36 @@ namespace kai
 		}
 	}
 
-	bool _WebSocketServer::sendPacket(ws_cli_conn_t client, const BYTE_PACKET &bp)
+	bool _WebSocketServer::sendClient(uint64_t client, const BYTE_PACKET &bp, bool binary)
 	{
-		const char *pB = reinterpret_cast<const char *>(bp.m_vB.data());
+		std::shared_ptr<Backend> backend;
+		{
+			std::lock_guard<std::mutex> lock(m_backendMutex);
+			backend = m_backend;
+		}
+		if (!backend) return false;
+		auto result = std::make_shared<std::promise<bool>>();
+		auto completed = result->get_future();
+		net::post(backend->io, [pBackend = backend.get(), client, bytes = bp.m_vB, binary, result]() mutable {
+			auto session = pBackend->sessions.find(client);
+			if (session == pBackend->sessions.end()) result->set_value(false);
+			else session->second->send(std::move(bytes), binary, result);
+		});
+		while (m_pT->bRun())
+		{
+			if (completed.wait_for(std::chrono::milliseconds(20)) == std::future_status::ready)
+			{
+				return completed.get();
+			}
+		}
+		return false;
+	}
+
+	bool _WebSocketServer::sendPacket(uint64_t client, const BYTE_PACKET &bp)
+	{
 		if (m_wsMode == wsSocket_bin || m_wsMode == wsSocket_txt)
 		{
-			const int type = m_wsMode == wsSocket_bin ? WS_FR_OP_BIN : WS_FR_OP_TXT;
-			return ws_sendframe(client, pB, bp.m_vB.size(), type) >= 0;
+			return sendClient(client, bp, m_wsMode == wsSocket_bin);
 		}
 		if (m_wsMode != wsSocket_bin_bcast && m_wsMode != wsSocket_txt_bcast)
 		{
@@ -215,9 +404,6 @@ namespace kai
 			std::lock_guard<std::mutex> lock(m_clientMutex);
 			vClient = m_vClient;
 		}
-		// The library broadcast holds its global client lock over every send.
-		// Individual sends leave receive callbacks independent of slow clients.
-		const int type = m_wsMode == wsSocket_bin_bcast ? WS_FR_OP_BIN : WS_FR_OP_TXT;
 		bool bSent = false;
 		for (const auto &pClient : vClient)
 		{
@@ -225,7 +411,7 @@ namespace kai
 			{
 				return false;
 			}
-			if (pClient->m_pWS->bOpen() && ws_sendframe(pClient->m_wsConn, pB, bp.m_vB.size(), type) >= 0)
+			if (pClient->m_pWS->bOpen() && sendClient(pClient->m_wsConn, bp, m_wsMode == wsSocket_bin_bcast))
 			{
 				bSent = true;
 			}
@@ -235,17 +421,32 @@ namespace kai
 
 	void _WebSocketServer::updateR(void)
 	{
-		ws_server ws{};
-		ws.host = m_host.c_str();
-		ws.port = m_port;
-		ws.thread_loop = 0;
-		ws.timeout_ms = m_tOutMs;
-		ws.evs.onopen = &sCbOpen;
-		ws.evs.onclose = &sCbClose;
-		ws.evs.onmessage = &sCbMessage;
-		ws.context = reinterpret_cast<void *>(m_callbackToken);
-
-		ws_socket(&ws);
+		while (m_pTr->bRun())
+		{
+			auto backend = std::make_shared<Backend>(*this);
+			string error;
+			if (!backend->open(error))
+			{
+				LOG_E("WebSocket listener: " + error);
+				m_pTr->sleepT(NSEC_SEC);
+				continue;
+			}
+			{
+				std::lock_guard<std::mutex> lock(m_backendMutex);
+				m_backend = backend;
+			}
+			m_ioStatus = io_opened;
+			while (m_pTr->bRun() && !backend->io.stopped())
+			{
+				backend->io.run_for(std::chrono::milliseconds(20));
+			}
+			backend->close();
+			{
+				std::lock_guard<std::mutex> lock(m_backendMutex);
+				m_backend.reset();
+			}
+			m_ioStatus = io_closed;
+		}
 	}
 
 	int _WebSocketServer::nClient(void)
@@ -264,38 +465,8 @@ namespace kai
 		return m_vClient[i]->m_pWS;
 	}
 
-	void _WebSocketServer::sCbOpen(ws_cli_conn_t client)
+	void _WebSocketServer::cbOpen(uint64_t client, const string &addr, const string &port)
 	{
-		std::shared_lock<std::shared_mutex> lock(g_wsCallbackMutex);
-		if (g_pWSserver && ws_get_server_context(client) == reinterpret_cast<void *>(g_pWSserver->m_callbackToken))
-		{
-			g_pWSserver->cbOpen(client);
-		}
-	}
-
-	void _WebSocketServer::sCbClose(ws_cli_conn_t client)
-	{
-		std::shared_lock<std::shared_mutex> lock(g_wsCallbackMutex);
-		if (g_pWSserver && ws_get_server_context(client) == reinterpret_cast<void *>(g_pWSserver->m_callbackToken))
-		{
-			g_pWSserver->cbClose(client);
-		}
-	}
-
-	void _WebSocketServer::sCbMessage(ws_cli_conn_t client,
-									  const unsigned char *msg, uint64_t size, int type)
-	{
-		std::shared_lock<std::shared_mutex> lock(g_wsCallbackMutex);
-		if (g_pWSserver && ws_get_server_context(client) == reinterpret_cast<void *>(g_pWSserver->m_callbackToken))
-		{
-			g_pWSserver->cbMessage(client, msg, size, type);
-		}
-	}
-
-	void _WebSocketServer::cbOpen(ws_cli_conn_t client)
-	{
-		const string addr = ws_getaddress(client);
-		const string port = ws_getport(client);
 		std::lock_guard<std::mutex> lock(m_clientMutex);
 		if (m_nClientMax >= 0 && m_vClient.size() >= static_cast<size_t>(m_nClientMax))
 		{
@@ -326,9 +497,8 @@ namespace kai
 		LOG_I("Connection opened, addr: " + addr + ", port: " + port);
 	}
 
-	void _WebSocketServer::cbClose(ws_cli_conn_t client)
+	void _WebSocketServer::cbClose(uint64_t client)
 	{
-		const string addr = ws_getaddress(client);
 		std::lock_guard<std::mutex> lock(m_clientMutex);
 		for (auto it = m_vClient.begin(); it != m_vClient.end(); ++it)
 		{
@@ -336,26 +506,23 @@ namespace kai
 			{
 				(*it)->m_pWS->setIOstatus(io_closed);
 				m_vClient.erase(it);
-				LOG_I("Connection closed, addr: " + addr);
+				LOG_I("Connection closed");
 				return;
 			}
 		}
 	}
 
-	void _WebSocketServer::cbMessage(ws_cli_conn_t client,
+	bool _WebSocketServer::cbMessage(uint64_t client,
 									 const unsigned char *msg, uint64_t size, int type)
 	{
-		// Client callbacks run concurrently. Keep timestamp creation and enqueue
-		// ordered so readers using the packet timestamp cursor cannot skip input.
+		// Coordinate delivery with pause/stop. The IO worker preserves message
+		// ordering and creates timestamps when messages enter the packet streams.
 		std::unique_lock<std::mutex> readLock(m_readMutex);
-		while (m_bReadPaused && !m_bStopping)
-		{
-			m_readReady.wait(readLock);
-		}
 		if (m_bStopping)
 		{
-			return;
+			return true;
 		}
+		if (m_bReadPaused) return false;
 
 		std::shared_ptr<wsClient> pClient;
 		bool bDefaultClient = false;
@@ -364,7 +531,7 @@ namespace kai
 			pClient = findWSclient(client);
 			if (!pClient)
 			{
-				return;
+				return true;
 			}
 			bDefaultClient = pClient == m_vClient.front();
 		}
@@ -383,10 +550,11 @@ namespace kai
 		}
 		readLock.unlock();
 
-		LOG_I("Received message: " + string(reinterpret_cast<const char *>(msg), size) + ", size: " + i2str(size) + ", type: " + i2str(type) + ", from: " + string(ws_getaddress(client)));
+		LOG_I("Received message: " + string(reinterpret_cast<const char *>(msg), size) + ", size: " + i2str(size) + ", type: " + i2str(type));
+		return true;
 	}
 
-	std::shared_ptr<wsClient> _WebSocketServer::findWSclient(ws_cli_conn_t wsCli)
+	std::shared_ptr<wsClient> _WebSocketServer::findWSclient(uint64_t wsCli)
 	{
 		for (const auto &pClient : m_vClient)
 		{

@@ -353,30 +353,44 @@ namespace kai
 		m_http = std::make_unique<HttpServer>();
 		m_stream = std::make_unique<webglim::Stream>(m_http->context(), hello(), m_maxClients);
 		m_tStamp = UINT64_MAX;
-		std::string error;
-		IF_Le_F(!m_http->start(m_host, uint16_t(m_port), m_root, m_stream->upgradeHandler(), &error,
-			32, webviewer::commonAssets(m_root)), error);
+		m_paused = false;
 		m_running = true;
 		m_pT->run();
 		try
 		{
-			m_worker = std::thread([this] {
-				while (m_running)
-				{
-					const auto deadline = std::chrono::steady_clock::now() + std::chrono::microseconds(int64_t(1000000 / m_pT->getTargetFPS()));
-					if (!m_paused)
-					{
-						try { publish(); }
-						catch (const std::exception &e) { LOG_E(string("GLIM stream: ") + e.what()); }
-					}
-					std::unique_lock<std::mutex> lock(m_waitMutex);
-					m_wakeup.wait_until(lock, deadline, [this] { return !m_running; });
-				}
-			});
+			m_worker = std::thread([this] { update(); });
 		}
 		catch (const std::exception &e) { stop(); LOG_E(e.what()); return false; }
-		LOG_I("WebGLIM: http://" + m_host + ":" + i2str(m_port) + "/");
 		return true;
+	}
+	void _WebGLIM::update()
+	{
+		bool listening = false;
+		while (m_running)
+		{
+			if (!listening)
+			{
+				std::string error;
+				listening = m_http->start(m_host, uint16_t(m_port), m_root, m_stream->upgradeHandler(), &error,
+					32, webviewer::commonAssets(m_root));
+				if (!listening)
+				{
+					LOG_E("HTTP initialization failed; retrying: " + error);
+					std::unique_lock<std::mutex> lock(m_waitMutex);
+					m_wakeup.wait_for(lock, std::chrono::seconds(1), [this] { return !m_running; });
+					continue;
+				}
+				LOG_I("WebGLIM: http://" + m_host + ":" + i2str(m_port) + "/");
+			}
+			const auto deadline = std::chrono::steady_clock::now() + std::chrono::microseconds(int64_t(1000000 / m_pT->getTargetFPS()));
+			if (!m_paused)
+			{
+				try { publish(); }
+				catch (const std::exception &e) { LOG_E(string("GLIM stream: ") + e.what()); }
+			}
+			std::unique_lock<std::mutex> lock(m_waitMutex);
+			m_wakeup.wait_until(lock, deadline, [this] { return !m_running; });
+		}
 	}
 	void _WebGLIM::publish()
 	{
@@ -393,7 +407,10 @@ namespace kai
 
 	void _WebGLIM::stop()
 	{
-		m_running = false;
+		{
+			std::lock_guard<std::mutex> lock(m_waitMutex);
+			m_running = false;
+		}
 		m_wakeup.notify_all();
 		if (m_worker.joinable()) m_worker.join();
 		if (m_http) m_http->stop();

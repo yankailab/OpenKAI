@@ -1,9 +1,11 @@
 #ifdef OPENKAI_E1R_TEST
 #include "../../src/Sensor/LiDAR/RoboSense/E1R/_E1R.h"
 #include <cassert>
+#include <chrono>
 #include <cmath>
 #include <iostream>
 #include <limits>
+#include <thread>
 
 namespace kai
 {
@@ -20,6 +22,13 @@ namespace kai
         static json schema(_E1R &driver) { return driver.controlSchema(); }
         static json status(_E1R &driver) { return driver.statusValues(); }
         static size_t pending(_E1R &driver) { return driver.m_framePoints.size(); }
+        static json transport(_E1R &driver)
+        {
+            std::lock_guard<std::recursive_mutex> lock(driver.m_mutex);
+            return {{"closed", driver.m_msopSocket < 0 && driver.m_difopSocket < 0},
+                {"ready", driver.m_msopSocket >= 0 && driver.m_difopSocket >= 0},
+                {"error", driver.m_lastError}, {"invalidPackets", driver.m_invalidPackets}};
+        }
     };
 }
 
@@ -35,6 +44,91 @@ namespace
         ~DriverWithTransform() { stop(); }
         _TransformRigid m_transform;
     };
+
+    class UdpEndpoint
+    {
+    public:
+        explicit UdpEndpoint(uint16_t port = 0)
+        {
+            m_fd = ::socket(AF_INET, SOCK_DGRAM, 0);
+            assert(m_fd >= 0);
+            m_address.sin_family = AF_INET;
+            m_address.sin_port = htons(port);
+            m_address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+            assert(::bind(m_fd, reinterpret_cast<sockaddr *>(&m_address), sizeof(m_address)) == 0);
+            socklen_t size = sizeof(m_address);
+            assert(::getsockname(m_fd, reinterpret_cast<sockaddr *>(&m_address), &size) == 0);
+        }
+        ~UdpEndpoint() { close(); }
+        UdpEndpoint(const UdpEndpoint &) = delete;
+        UdpEndpoint &operator=(const UdpEndpoint &) = delete;
+        uint16_t port() const { return ntohs(m_address.sin_port); }
+        void close() { if (m_fd >= 0) ::close(m_fd); m_fd = -1; }
+        void send(uint16_t port)
+        {
+            sockaddr_in destination = m_address;
+            destination.sin_port = htons(port);
+            const uint8_t invalidPacket = 0;
+            assert(::sendto(m_fd, &invalidPacket, sizeof(invalidPacket), 0,
+                reinterpret_cast<sockaddr *>(&destination), sizeof(destination)) == sizeof(invalidPacket));
+        }
+    private:
+        int m_fd = -1;
+        sockaddr_in m_address{};
+    };
+
+    template <class Predicate> void await(Predicate predicate)
+    {
+        const auto end = std::chrono::steady_clock::now() + std::chrono::seconds(3);
+        while (!predicate() && std::chrono::steady_clock::now() < end)
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        assert(predicate());
+    }
+
+    void testSocketRetries()
+    {
+        // Block the second socket so a failed attempt must release the first bind.
+        UdpEndpoint msop, difop;
+        const uint16_t msopPort = msop.port(), difopPort = difop.port();
+        JsonCfg config;
+        config.setJson({{"name", "e1r-retry-test"}, {"class", "_E1R"},
+            {"deviceIP", "127.0.0.1"}, {"bindIP", "127.0.0.1"},
+            {"msopPort", msopPort}, {"difopPort", difopPort}});
+        PCLframe cloud;
+        DriverWithTransform driver;
+        driver.setConfig(&config, config.getJson());
+        assert(driver.loadConfig());
+        Access::output(driver, cloud);
+        msop.close();
+        assert(driver.start());
+        await([&] { return !Access::transport(driver).at("error").get<string>().empty(); });
+        assert(Access::transport(driver).at("closed") == true);
+        {
+            UdpEndpoint releasedMSOP(msopPort);
+        }
+        difop.close();
+        await([&] { return Access::transport(driver).at("ready") == true; });
+        assert(Access::transport(driver).at("error") == "");
+        UdpEndpoint sender;
+        sender.send(msopPort);
+        await([&] { return Access::transport(driver).at("invalidPackets") == 1; });
+        driver.stop();
+        assert(Access::transport(driver).at("closed") == true);
+
+        {
+            UdpEndpoint blockedDIFOP(difopPort);
+            assert(driver.start());
+            await([&] { return !Access::transport(driver).at("error").get<string>().empty(); });
+            const auto stopping = std::chrono::steady_clock::now();
+            driver.stop();
+            assert(std::chrono::steady_clock::now() - stopping < std::chrono::milliseconds(500));
+            assert(Access::transport(driver).at("closed") == true);
+        }
+        assert(driver.start());
+        await([&] { return Access::transport(driver).at("ready") == true; });
+        driver.stop();
+        UdpEndpoint releasedMSOP(msopPort), releasedDIFOP(difopPort);
+    }
 
     e1r::Msop packet(uint16_t sequence, uint64_t timestampUs, size_t count = 1)
     {
@@ -264,6 +358,7 @@ namespace
 
 int main()
 {
+    testSocketRetries();
     testFrames();
     testSinglePacketFrames();
     testTimeoutAndPartialPrefix();

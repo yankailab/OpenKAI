@@ -36,6 +36,7 @@ namespace kai
 		void updateAllGeometries() override;
 
 	private:
+		void update() override;
 		struct Stream
 		{
 			webselectableoctgrid::Type type = webselectableoctgrid::Type::Points;

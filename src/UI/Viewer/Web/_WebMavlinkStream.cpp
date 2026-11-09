@@ -78,32 +78,11 @@ namespace kai
 		m_http.reset(new HttpServer);
 		m_transport.reset(new WebSocketStream(m_http->context(), webmavlink::hello(m_scene, m_staleAfterMs).dump(),
 			m_maxClients, WebSocketStream::Mode::TextPush));
-		auto mounts = webviewer::commonAssets(m_root);
-		if (!m_modelsRoot.empty() && std::filesystem::is_directory(m_modelsRoot))
-			mounts.emplace_back("/models", m_modelsRoot);
-		else
-			LOG_I("MAVLink map/model directory unavailable: " + m_modelsRoot);
-		std::string error;
-		IF_Le_F(!m_http->start(m_host, uint16_t(m_port), m_root,
-			WebSocketStream::routes({{webmavlink::Endpoint, m_transport.get()}}), &error, 32, mounts), error);
 		m_running = true;
 		m_pT->run();
 		try
 		{
-			m_worker = std::thread([this] {
-				while (m_running)
-				{
-					const auto deadline = std::chrono::steady_clock::now() +
-						std::chrono::microseconds(1000000 / m_pT->getTargetFPS());
-					if (!m_paused && m_transport->nClient())
-					{
-						try { publish(); }
-						catch (const std::exception &e) { LOG_E(string("MAVLink viewer: ") + e.what()); }
-					}
-					std::unique_lock<std::mutex> lock(m_waitMutex);
-					m_wakeup.wait_until(lock, deadline, [this] { return !m_running; });
-				}
-			});
+			m_worker = std::thread([this] { update(); });
 		}
 		catch (const std::exception &e)
 		{
@@ -111,8 +90,44 @@ namespace kai
 			LOG_E(e.what());
 			return false;
 		}
-		LOG_I("WebMavlinkStream: http://" + m_host + ":" + i2str(m_port) + "/");
 		return true;
+	}
+
+	void _WebMavlinkStream::update()
+	{
+		auto mounts = webviewer::commonAssets(m_root);
+		std::error_code ec;
+		if (!m_modelsRoot.empty() && std::filesystem::is_directory(m_modelsRoot, ec))
+			mounts.emplace_back("/models", m_modelsRoot);
+		else
+			LOG_I("MAVLink map/model directory unavailable: " + m_modelsRoot);
+		bool listening = false;
+		while (m_running)
+		{
+			if (!listening)
+			{
+				std::string error;
+				listening = m_http->start(m_host, uint16_t(m_port), m_root,
+					WebSocketStream::routes({{webmavlink::Endpoint, m_transport.get()}}), &error, 32, mounts);
+				if (!listening)
+				{
+					LOG_E("HTTP initialization failed; retrying: " + error);
+					std::unique_lock<std::mutex> lock(m_waitMutex);
+					m_wakeup.wait_for(lock, std::chrono::seconds(1), [this] { return !m_running; });
+					continue;
+				}
+				LOG_I("WebMavlinkStream: http://" + m_host + ":" + i2str(m_port) + "/");
+			}
+			const auto deadline = std::chrono::steady_clock::now() +
+				std::chrono::microseconds(1000000 / m_pT->getTargetFPS());
+			if (!m_paused && m_transport->nClient())
+			{
+				try { publish(); }
+				catch (const std::exception &e) { LOG_E(string("MAVLink viewer: ") + e.what()); }
+			}
+			std::unique_lock<std::mutex> lock(m_waitMutex);
+			m_wakeup.wait_until(lock, deadline, [this] { return !m_running; });
+		}
 	}
 
 	void _WebMavlinkStream::publish()
@@ -128,7 +143,10 @@ namespace kai
 
 	void _WebMavlinkStream::stop()
 	{
-		m_running = false;
+		{
+			std::lock_guard<std::mutex> lock(m_waitMutex);
+			m_running = false;
+		}
 		m_wakeup.notify_all();
 		if (m_worker.joinable()) m_worker.join();
 		m_http->stop();

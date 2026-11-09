@@ -10,12 +10,15 @@ namespace kai
 
 	_Modbus::~_Modbus()
 	{
-		pthread_mutex_destroy(&m_mutex);
+		stop();
 		close();
 
-		IF_(m_pMb == nullptr);
-		modbus_free(m_pMb);
-		m_pMb = nullptr;
+		if (m_pMb)
+		{
+			modbus_free(m_pMb);
+			m_pMb = nullptr;
+		}
+		pthread_mutex_destroy(&m_mutex);
 	}
 
 	bool _Modbus::loadConfig(void)
@@ -122,6 +125,12 @@ namespace kai
 	{
 		NULL_F(m_pT);
 		return m_pT->startThread(getUpdate, this);
+	}
+
+	void _Modbus::stop(void)
+	{
+		// Keep the context and mutex alive until the reconnect worker exits.
+		if (m_pT) m_pT->join();
 	}
 
 	bool _Modbus::check(void)

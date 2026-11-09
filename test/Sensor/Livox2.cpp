@@ -54,6 +54,7 @@ namespace kai
             bool socketsClosed = true;
             for (int fd : driver.m_sockets) socketsClosed &= fd < 0;
             return {{"state", driver.m_lvxState}, {"closed", socketsClosed},
+                {"error", driver.m_lastError},
                 {"pointPackets", driver.m_pointPackets}, {"imuSamples", driver.m_imuSamples},
                 {"invalidPackets", driver.m_invalidPackets}, {"outOfOrderPackets", driver.m_outOfOrderPackets},
                 {"commandRetries", driver.m_commandRetries}, {"commandErrors", driver.m_commandErrors},
@@ -653,15 +654,36 @@ namespace
 
         // Fail after several sockets have opened; every earlier socket must be closed.
         UdpEndpoint occupied("127.0.0.1", fixture.pointPort);
-        assert(!driver.start());
+        assert(driver.start());
+        await([&] { return !Access::transport(driver).at("error").get<string>().empty(); });
+        assert(driver.bRun());
         assert(Access::transport(driver).at("closed") == true);
+        assert(query.empty());
         {
             UdpEndpoint releasedCommand("127.0.0.1", fixture.commandPort);
             UdpEndpoint releasedState("127.0.0.1", fixture.statePort);
         }
+        // Leave the port occupied through another attempt, then recover without start().
+        std::this_thread::sleep_for(std::chrono::milliseconds(1100));
+        assert(Access::transport(driver).at("closed") == true);
+        assert(Access::transport(driver).at("commandErrors") == 0);
         occupied.close();
-        assert(driver.start());
         LIVOX2_CMD request;
+        assert(hostCommand(query.receive().bytes, request));
+        assert(request.cmd_id == LVX2_CMD_DISCOVER);
+        assert(Access::transport(driver).at("error") == "");
+        driver.stop();
+
+        // Stopping during retry interrupts the delay and leaves the driver restartable.
+        UdpEndpoint blockedAgain("127.0.0.1", fixture.pointPort);
+        assert(driver.start());
+        await([&] { return !Access::transport(driver).at("error").get<string>().empty(); });
+        const auto stopping = std::chrono::steady_clock::now();
+        driver.stop();
+        assert(std::chrono::steady_clock::now() - stopping < std::chrono::milliseconds(500));
+        assert(Access::transport(driver).at("closed") == true);
+        blockedAgain.close();
+        assert(driver.start());
         assert(hostCommand(query.receive().bytes, request));
         assert(request.cmd_id == LVX2_CMD_DISCOVER);
         driver.stop();

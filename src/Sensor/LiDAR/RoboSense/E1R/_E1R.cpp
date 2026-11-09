@@ -129,7 +129,6 @@ namespace kai
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
         if (!check()) return false;
         if (m_started) return true;
-        if (!openSockets(m_config, m_lastError)) { LOG_E(m_lastError); return false; }
         resetFrame();
         m_lastMSOP = m_lastDIFOP = 0;
         m_selectedIP.clear();
@@ -162,11 +161,29 @@ namespace kai
             if (!m_pT->bRun()) break;
             pollfd sockets[2]{};
             uint64_t generation;
+            bool socketsReady;
             {
                 std::lock_guard<std::recursive_mutex> lock(m_mutex);
+                if (m_msopSocket < 0)
+                {
+                    string error;
+                    if (openSockets(m_config, error)) m_lastError.clear();
+                    else
+                    {
+                        if (error != m_lastError) LOG_E(error);
+                        m_lastError = error;
+                    }
+                }
+                socketsReady = m_msopSocket >= 0;
                 sockets[0] = {m_msopSocket, POLLIN, 0};
                 sockets[1] = {m_difopSocket, POLLIN, 0};
                 generation = m_socketGeneration;
+            }
+            if (!socketsReady)
+            {
+                // Retry unavailable interfaces/ports without delaying stop().
+                m_pT->sleepT(NSEC_SEC);
+                continue;
             }
             const int ready = poll(sockets, 2, 20);
             std::lock_guard<std::recursive_mutex> lock(m_mutex);

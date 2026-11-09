@@ -55,6 +55,7 @@ namespace kai
             bool closed = true;
             for (int fd : driver.m_sockets) closed &= fd < 0;
             return {{"closed", closed}, {"connected", driver.m_state == _Livox1::State::Connected},
+                {"error", driver.m_lastError},
                 {"initializing", driver.m_state == _Livox1::State::Initializing},
                 {"discovering", driver.m_state == _Livox1::State::Discovering},
                 {"failed", driver.m_configFailed}, {"pending", driver.m_pending.size()},
@@ -140,6 +141,14 @@ namespace
             assert(driver.loadConfig()); Access::outputs(driver, cloud, imu);
         }
     };
+
+    template <class Predicate> void await(Predicate predicate)
+    {
+        const auto end = std::chrono::steady_clock::now() + std::chrono::seconds(2);
+        while (!predicate() && std::chrono::steady_clock::now() < end)
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        assert(predicate());
+    }
 
     vector<uint8_t> reply(const vector<uint8_t> &request, const vector<uint8_t> &payload = {0})
     {
@@ -656,21 +665,43 @@ namespace
         UdpEndpoint sensor("127.0.0.2"); DriverFixture fixture(sensor.port());
         auto &driver = fixture.driver;
         UdpEndpoint occupied("127.0.0.1", fixture.pointPort);
-        assert(!driver.start());
+        assert(driver.start());
+        await([&] { return !Access::transport(driver).at("error").get<string>().empty(); });
+        assert(driver.bRun());
         assert(Access::transport(driver).at("closed") == true);
         { UdpEndpoint releasedCommand("127.0.0.1", fixture.commandPort); }
+        // Repeated failures remain recoverable and do not send protocol traffic.
+        std::this_thread::sleep_for(std::chrono::milliseconds(1100));
+        assert(Access::transport(driver).at("closed") == true);
+        assert(Access::transport(driver).at("commandErrors") == 0);
         occupied.close();
-        assert(driver.start());
+        await([&] { return !Access::transport(driver).at("closed").get<bool>(); });
+        assert(Access::transport(driver).at("error") == "");
         sensor.send(broadcast(), fixture.broadcastPort);
         const auto handshake = sensor.receive();
         assert(handshake.bytes[9] == 0 && handshake.bytes[10] == 1);
         driver.stop();
         assert(Access::transport(driver).at("closed") == true);
         assert(driver.start()); // starting the worker again does not reuse pending requests
+        await([&] { return !Access::transport(driver).at("closed").get<bool>(); });
         sensor.send(broadcast(), fixture.broadcastPort);
         const auto restarted = sensor.receive();
         assert(restarted.bytes[9] == 0 && restarted.bytes[10] == 1);
         assert(livox1::u16(restarted.bytes.data() + 5) != livox1::u16(handshake.bytes.data() + 5));
+        driver.stop();
+
+        UdpEndpoint blockedAgain("127.0.0.1", fixture.pointPort);
+        assert(driver.start());
+        await([&] { return !Access::transport(driver).at("error").get<string>().empty(); });
+        const auto stopping = std::chrono::steady_clock::now();
+        driver.stop();
+        assert(std::chrono::steady_clock::now() - stopping < std::chrono::milliseconds(500));
+        assert(Access::transport(driver).at("closed") == true);
+        blockedAgain.close();
+        assert(driver.start());
+        await([&] { return !Access::transport(driver).at("closed").get<bool>(); });
+        sensor.send(broadcast(), fixture.broadcastPort);
+        assert(sensor.receive().bytes[10] == 1);
         driver.stop();
     }
 }

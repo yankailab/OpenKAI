@@ -6,6 +6,7 @@
 #include "../../src/IO/_UDP.h"
 #include "../../src/IO/_SerialPort.h"
 #undef private
+#include "../../src/IO/_TCPserver.h"
 
 #include <atomic>
 #include <cassert>
@@ -50,6 +51,18 @@ namespace
 		}
 
 		using Transport::getThread;
+
+		bool open(void) override
+		{
+			const bool opened = Transport::open();
+			++m_nOpens;
+			return opened;
+		}
+
+		size_t openAttempts(void) const
+		{
+			return m_nOpens.load();
+		}
 
 		void readPackets(void) override
 		{
@@ -100,6 +113,7 @@ namespace
 		}
 
 	private:
+		std::atomic<size_t> m_nOpens{0};
 		std::atomic<size_t> m_nReads{0};
 		std::atomic<size_t> m_nWrites{0};
 	};
@@ -107,6 +121,12 @@ namespace
 	class TCPTransportHarness : public DuplexTransportHarness<_TCPclient>
 	{
 	public:
+		void configurePeer(uint16_t port)
+		{
+			m_strAddr = "127.0.0.1";
+			m_port = port;
+		}
+
 		void attach(int fd, BytePacketStream *pIn, BytePacketStream *pOut)
 		{
 			m_socket = fd;
@@ -124,6 +144,8 @@ namespace
 	class UDPTransportHarness : public DuplexTransportHarness<_UDP>
 	{
 	public:
+		void configurePort(uint16_t port) { m_portLocal = port; }
+
 		void attach(int fd, BytePacketStream *pIn, BytePacketStream *pOut)
 		{
 			m_socket = fd;
@@ -152,6 +174,13 @@ namespace
 		{
 			return m_iWrite > 0 && m_iWrite < m_bpWrite.m_vB.size();
 		}
+	};
+
+	class TCPServerHarness : public _TCPserver
+	{
+	public:
+		void port(uint16_t value) { m_listenPort = value; }
+		int descriptor(void) const { return m_socket; }
 	};
 
 	template <class Transport>
@@ -419,6 +448,127 @@ namespace
 		}
 	}
 
+	template <class Transport>
+	void waitOpenAttempt(Transport &transport)
+	{
+		const uint64_t deadline = getTns() + 2 * NSEC_SEC;
+		while (transport.openAttempts() == 0 && getTns() < deadline)
+		{
+			::usleep(1000);
+		}
+		assert(transport.openAttempts() > 0);
+		assert(!transport.bOpen());
+		assert(transport.bRun());
+	}
+
+	template <class Transport>
+	void waitOpen(Transport &transport)
+	{
+		const uint64_t deadline = getTns() + 3 * NSEC_SEC;
+		while (!transport.bOpen() && getTns() < deadline)
+		{
+			::usleep(1000);
+		}
+		assert(transport.bOpen());
+		assert(transport.openAttempts() >= 2);
+	}
+
+	void testUDPStartupRetry(void)
+	{
+		sockaddr_in local;
+		int occupied = boundDatagram(local);
+		JsonCfg cfg;
+		BytePacketStream out;
+		UDPTransportHarness transport;
+		configureWorkers(transport, cfg, "_UDP");
+		transport.attach(-1, nullptr, &out);
+		transport.setIOstatus(io_closed);
+		transport.configurePort(ntohs(local.sin_port));
+		assert(transport.start());
+		waitOpenAttempt(transport);
+		::close(occupied);
+		waitOpen(transport);
+
+		sockaddr_in peer;
+		const int peerFd = boundDatagram(peer);
+		const vector<uint8_t> bytes = payload(512);
+		assert(::sendto(peerFd, bytes.data(), bytes.size(), 0,
+			reinterpret_cast<sockaddr *>(&local), sizeof(local)) == static_cast<ssize_t>(bytes.size()));
+		waitStreamBytes(out, bytes);
+		stopWorkers(transport);
+		::close(peerFd);
+	}
+
+	void testTCPStartupRetry(void)
+	{
+		const int listener = ::socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
+		assert(listener >= 0);
+		sockaddr_in address{};
+		address.sin_family = AF_INET;
+		address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+		assert(::bind(listener, reinterpret_cast<sockaddr *>(&address), sizeof(address)) == 0);
+		socklen_t size = sizeof(address);
+		assert(::getsockname(listener, reinterpret_cast<sockaddr *>(&address), &size) == 0);
+
+		JsonCfg cfg;
+		BytePacketStream out;
+		TCPTransportHarness transport;
+		configureWorkers(transport, cfg, "_TCPclient");
+		transport.attach(-1, nullptr, &out);
+		transport.setIOstatus(io_closed);
+		transport.configurePeer(ntohs(address.sin_port));
+		assert(transport.start());
+		waitOpenAttempt(transport); // Bound but not listening: the first connect is refused.
+		assert(::listen(listener, 1) == 0);
+		waitOpen(transport);
+		const int peerFd = ::accept(listener, nullptr, nullptr);
+		assert(peerFd >= 0);
+		const vector<uint8_t> bytes = payload(512);
+		assert(::send(peerFd, bytes.data(), bytes.size(), MSG_NOSIGNAL) == static_cast<ssize_t>(bytes.size()));
+		waitStreamBytes(out, bytes);
+		stopWorkers(transport);
+		::close(peerFd);
+		::close(listener);
+	}
+
+	void testTCPServerSetupRetry(void)
+	{
+		const int occupied = ::socket(AF_INET, SOCK_STREAM, 0);
+		assert(occupied >= 0);
+		sockaddr_in address{};
+		address.sin_family = AF_INET;
+		address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+		assert(::bind(occupied, reinterpret_cast<sockaddr *>(&address), sizeof(address)) == 0);
+		socklen_t size = sizeof(address);
+		assert(::getsockname(occupied, reinterpret_cast<sockaddr *>(&address), &size) == 0);
+		int unrelated = -1;
+		{
+			TCPServerHarness server;
+			server.port(ntohs(address.sin_port));
+			for (int i = 0; i < 3; ++i)
+			{
+				assert(!server.setup());
+				assert(server.descriptor() == -1);
+			}
+			// Reusing a failed attempt's descriptor must not let destruction close it.
+			unrelated = ::open("/dev/null", O_RDONLY);
+			assert(unrelated >= 0);
+		}
+		assert(::fcntl(unrelated, F_GETFD) >= 0);
+		::close(unrelated);
+		::close(occupied);
+
+		TCPServerHarness recovered;
+		recovered.port(ntohs(address.sin_port));
+		assert(recovered.setup());
+		const int fd = recovered.descriptor();
+		assert(fd >= 0);
+		assert(recovered.setup() && recovered.descriptor() == fd);
+		int accepting = 0;
+		size = sizeof(accepting);
+		assert(::getsockopt(fd, SOL_SOCKET, SO_ACCEPTCONN, &accepting, &size) == 0 && accepting);
+	}
+
 	void testThreadedSerial(void)
 	{
 		for (int mode = 0; mode < 3; ++mode)
@@ -580,6 +730,9 @@ namespace kai
 		testThreadConfigurationAndStartup();
 		testThreadedTCP();
 		testThreadedUDP();
+		testUDPStartupRetry();
+		testTCPStartupRetry();
+		testTCPServerSetupRetry();
 		testThreadedSerial();
 	}
 }

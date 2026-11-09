@@ -14,7 +14,8 @@ ctest --test-dir build/instance-tests --output-on-failure
 
 ## Typed stream and byte transport regression tests
 
-Build OpenKAI with `WITH_IO=ON` and `WITH_PROTOCOL=ON`, then run:
+Build OpenKAI with `WITH_IO=ON`, `WITH_PROTOCOL=ON`, `BUILD_EXECUTABLE=ON`, and
+`CMAKE_EXPORT_COMPILE_COMMANDS=ON`, then run:
 
 ```bash
 python3 test/run_byte_packet_tests.py build --streams-only
@@ -25,6 +26,29 @@ filtering, wraparound, clearing, snapshot ownership, and concurrent byte packet
 access. Use `--byte-only` for the wider suite, including duplex transports,
 JSON/binary parsers, and CAN codecs. WebSocket checks run when
 `USE_WSSERVER=ON`. Both modes exclude MAVLink tests.
+
+## Socket initialization retry tests
+
+With `WITH_SENSOR=ON`, the LiDAR suites exercise occupied UDP ports, automatic
+recovery after release, partial socket cleanup, and stop/restart during retries:
+
+```bash
+python3 test/run_livox1_tests.py build
+python3 test/run_livox2_tests.py build
+python3 test/run_airy_tests.py build
+python3 test/run_e1r_tests.py build
+```
+
+For HTTP servers and web viewers, also enable `WITH_NET`, `WITH_UI`,
+`WITH_UNIVERSE`, and `USE_MAVLINK`, then run:
+
+```bash
+python3 test/run_http_startup_tests.py build
+```
+
+These suites need loopback sockets but no sensor hardware. Like the transport
+suite, they require the executable target and compilation database. Startup
+success means the worker is running; network readiness can follow after retries.
 
 ## Eigen vector regression tests
 

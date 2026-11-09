@@ -17,25 +17,33 @@ import tempfile
 
 
 def link_command(build):
-    link_file = build / "CMakeFiles/OpenKAI.dir/link.txt"
-    if link_file.exists():
-        return shlex.split(link_file.read_text())
-
-    # Ninja keeps the command in its build graph instead of link.txt.
-    commands = subprocess.run(
-        ["ninja", "-C", str(build), "-t", "commands", "OpenKAI"],
-        check=True, capture_output=True, text=True,
-    ).stdout.splitlines()
-    for command in commands:
-        args = shlex.split(command)
-        if "-c" in args or not any(arg.endswith("/src/main.cpp.o") for arg in args):
+    # Current builds separate the executable from libOpenKAI; retain support for
+    # older builds where OpenKAI itself was the executable target.
+    for target in ("OpenKAI_executable", "OpenKAI"):
+        link_file = build / f"CMakeFiles/{target}.dir/link.txt"
+        if link_file.exists():
+            commands = [link_file.read_text()]
+        elif (build / "build.ninja").exists():
+            # Ninja keeps the command in its build graph instead of link.txt.
+            result = subprocess.run(
+                ["ninja", "-C", str(build), "-t", "commands", target],
+                capture_output=True, text=True,
+            )
+            if result.returncode:
+                continue
+            commands = result.stdout.splitlines()
+        else:
             continue
-        if args[:2] == [":", "&&"]:
-            args = args[2:]
-        if "&&" in args:
-            args = args[:args.index("&&")]
-        return args
-    raise RuntimeError("OpenKAI link command was not found; build the application first")
+        for command in commands:
+            args = shlex.split(command)
+            if "-c" in args or not any(arg.endswith("/src/main.cpp.o") for arg in args):
+                continue
+            if args[:2] == [":", "&&"]:
+                args = args[2:]
+            if "&&" in args:
+                args = args[:args.index("&&")]
+            return args
+    raise RuntimeError("OpenKAI executable link command was not found; build with BUILD_EXECUTABLE=ON first")
 
 
 def main():

@@ -148,7 +148,6 @@ namespace kai
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
         if (m_started) return true;
         if (!check()) return false;
-        if (!openSockets(m_lastError)) { LOG_E(m_lastError); return false; }
         m_lvxState = lvxState_deviceQuery;
         m_lvxCmdPort = 0;
         m_lastRx = m_lastDiscovery = m_lastQuery = m_lastIMUrx = 0;
@@ -189,7 +188,19 @@ namespace kai
             if (!m_pT->bRun()) break;
             pollfd sockets[SocketCount]{};
             {
-                std::lock_guard<std::recursive_mutex> lock(m_mutex);
+                std::unique_lock<std::recursive_mutex> lock(m_mutex);
+                if (m_sockets[Command] < 0)
+                {
+                    const string previousError = m_lastError;
+                    if (!openSockets(m_lastError))
+                    {
+                        if (m_lastError != previousError) LOG_E(m_lastError);
+                        // Retry without holding state locked; stop() wakes this wait.
+                        lock.unlock();
+                        m_pT->sleepT(NSEC_SEC);
+                        continue;
+                    }
+                }
                 service(getTns());
                 for (size_t i = 0; i < m_sockets.size(); ++i) sockets[i] = {m_sockets[i], POLLIN, 0};
             }

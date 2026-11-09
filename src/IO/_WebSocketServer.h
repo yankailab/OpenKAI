@@ -9,10 +9,8 @@
 #define OpenKAI_src_IO__WebSocketServer_H_
 
 #include "_WebSocket.h"
-#include <condition_variable>
 #include <memory>
 #include <mutex>
-#include <wsserver/ws.h>
 
 namespace kai
 {
@@ -21,7 +19,7 @@ namespace kai
 		_WebSocket *m_pWS = nullptr;
 		// Accepted connections own transient configuration, outside the launch document.
 		std::shared_ptr<JsonCfg> m_pJcfg;
-		ws_cli_conn_t m_wsConn;
+		uint64_t m_wsConn = 0;
 		uint64_t m_tLastBpStreamIn = 0;
 
 		~wsClient()
@@ -57,17 +55,15 @@ namespace kai
 		int nClient(void);
 		_WebSocket* getClient(int i);
 
-		static void sCbOpen(ws_cli_conn_t client);
-		static void sCbClose(ws_cli_conn_t client);
-		static void sCbMessage(ws_cli_conn_t client, const unsigned char *msg, uint64_t size, int type);
-
 	private:
-		bool sendPacket(ws_cli_conn_t client, const BYTE_PACKET &bp);
-		void cbOpen(ws_cli_conn_t client);
-		void cbClose(ws_cli_conn_t client);
-		void cbMessage(ws_cli_conn_t client, const unsigned char *msg, uint64_t size, int type);
+		struct Backend;
+		bool sendPacket(uint64_t client, const BYTE_PACKET &bp);
+		bool sendClient(uint64_t client, const BYTE_PACKET &bp, bool binary);
+		void cbOpen(uint64_t client, const string &addr, const string &port);
+		void cbClose(uint64_t client);
+		bool cbMessage(uint64_t client, const unsigned char *msg, uint64_t size, int type);
 
-		std::shared_ptr<wsClient> findWSclient(ws_cli_conn_t wsCli);
+		std::shared_ptr<wsClient> findWSclient(uint64_t wsCli);
 		void updateW(void) override;
 		void updateR(void) override;
 
@@ -84,10 +80,10 @@ namespace kai
 		uint32_t m_tOutMs = 1000;
 
 		std::mutex m_readMutex;
-		std::condition_variable m_readReady;
 		bool m_bReadPaused = false;
 		bool m_bStopping = true;
-		uintptr_t m_callbackToken = 0;
+		std::mutex m_backendMutex;
+		std::shared_ptr<Backend> m_backend;
 	};
 
 }

@@ -44,8 +44,8 @@ namespace kai
 		uint16_t m_listenPort = 8888;
 		int m_nListen = N_LISTEN;
 
-		int m_socket = 0;
-		struct sockaddr_in m_serverAddr;
+		int m_socket = -1;
+		struct sockaddr_in m_serverAddr{};
 		list<_TCPclient *> m_lClient;
 		unsigned int m_nSocket = N_SOCKET;
 	};

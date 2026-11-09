@@ -24,6 +24,7 @@ namespace kai
 		bool saveConfig(bool bExport) override;
 		virtual bool link(InstanceMgr *pM) override;
 		virtual bool start(void);
+		void stop(void) override;
 		virtual bool check(void);
 		virtual void close(void);
 		virtual void console(void *pConsole);

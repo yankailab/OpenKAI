@@ -155,6 +155,10 @@ namespace kai
 		while (m_pT->bRun())
 		{
 			m_pT->autoFPS();
+			if (!m_pT->bRun())
+			{
+				break;
+			}
 
 			// One worker owns reconnect attempts, including receive-only transports.
 			if (!bOpen() && !open())
@@ -179,6 +183,10 @@ namespace kai
 		while (m_pTr->bRun())
 		{
 			m_pTr->autoFPS();
+			if (!m_pTr->bRun())
+			{
+				break;
+			}
 
 			if (bOpen() && m_pBpStreamOut)
 			{

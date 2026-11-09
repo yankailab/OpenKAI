@@ -24,7 +24,7 @@ option(USE_REALSENSE "Use Intel RealSense" OFF)
 option(USE_ROS "Use ROS" OFF)
 option(USE_SCEPTER_SDK "Use Scepter SDK" OFF)
 option(USE_SPOR_SENSOR_SDK "Use Spor laser line scanner SDK" OFF)
-option(USE_WSSERVER "Use wsServer" OFF)
+option(USE_WSSERVER "Build WebSocket IO modules" OFF)
 option(USE_XDYNAMICS "Use XDynamics SDK" OFF)
 option(USE_XARM "Use xArm" OFF)
 
@@ -202,11 +202,13 @@ if(WITH_ALL_MODULES)
   set(WITH_VISION ON CACHE BOOL "" FORCE)
 endif()
 
-# HTTP is shared by standalone servers and the web viewers.
-if(WITH_NET OR WITH_UNIVERSE)
+# Boost networking is shared by WebSocket IO, HTTP servers and web viewers.
+if(WITH_NET OR WITH_UNIVERSE OR (WITH_IO AND USE_WSSERVER))
   find_package(Boost 1.70 CONFIG REQUIRED)
   add_definitions(-DBOOST_ERROR_CODE_HEADER_ONLY)
   list(APPEND OpenKAI_include ${Boost_INCLUDE_DIRS})
+endif()
+if(WITH_NET OR WITH_UNIVERSE)
   list(APPEND OpenKAI_cpp src/Net/HttpServer.cpp)
 endif()
 
@@ -408,7 +410,6 @@ if(WITH_IO)
 		src/IO/_WebSocket.cpp
 		src/IO/_WebSocketServer.cpp
     )
-    set(OpenKAI_lib ${OpenKAI_lib} ws)
   endif()
 endif()
 
@@ -792,7 +793,7 @@ endif()
 if(USE_LIBMODBUS)
   find_path(MODBUS_INCLUDE_DIR NAMES modbus.h PATH_SUFFIXES modbus REQUIRED)
   find_library(MODBUS_LIBRARY NAMES modbus REQUIRED)
-  add_definitions(-DUSE_MODBUS)
+  add_definitions(-DUSE_LIBMODBUS)
   list(APPEND OpenKAI_include ${MODBUS_INCLUDE_DIR})
   list(APPEND OpenKAI_lib ${MODBUS_LIBRARY})
   # Actuator and I/O drivers also need the wrapper without WITH_PROTOCOL.

@@ -117,32 +117,22 @@ namespace kai
 	bool _WebSelectableOctGrid::start()
 	{
 		IF_F(m_running || !m_pT);
-		std::vector<std::pair<std::string, WebSocketStream *>> routes;
+		// Recreate the stopped context only after releasing its transport references.
+		for (auto &stream : m_streams) stream.transport.reset();
+		m_http = std::make_unique<HttpServer>();
 		for (auto &stream : m_streams)
 		{
 			stream.m_geometry.clear();
 			stream.m_bPublished = false;
 			stream.transport.reset(new WebSocketStream(m_http->context(), hello(stream.type), m_maxClients));
-			routes.emplace_back(string("/stream/") + webselectableoctgrid::name(stream.type), stream.transport.get());
 		}
-		std::string error;
-		IF_Le_F(!m_http->start(m_host, uint16_t(m_port), m_root, WebSocketStream::routes(routes), &error,
-			32, webviewer::commonAssets(m_root)), error);
+		m_paused = false;
 		m_running = true;
 		m_pT->run();
 		try
 		{
 			// An owned/joined worker avoids _Thread's asynchronous cancellation during teardown.
-			m_worker = std::thread([this]
-								   {
-				while (m_running)
-				{
-					auto deadline = std::chrono::steady_clock::now() +
-						std::chrono::microseconds(int64_t(1000000 / m_pT->getTargetFPS()));
-					if (!m_paused) updateAllGeometries();
-					std::unique_lock<std::mutex> lock(m_waitMutex);
-					m_wakeup.wait_until(lock, deadline, [this] { return !m_running; });
-				} });
+			m_worker = std::thread([this] { update(); });
 		}
 		catch (const std::exception &e)
 		{
@@ -150,12 +140,43 @@ namespace kai
 			LOG_E(e.what());
 			return false;
 		}
-		LOG_I("WebSelectableOctGrid: http://" + m_host + ":" + i2str(m_port) + "/");
 		return true;
+	}
+	void _WebSelectableOctGrid::update()
+	{
+		std::vector<std::pair<std::string, WebSocketStream *>> routes;
+		for (auto &stream : m_streams)
+			routes.emplace_back(string("/stream/") + webselectableoctgrid::name(stream.type), stream.transport.get());
+		bool listening = false;
+		while (m_running)
+		{
+			if (!listening)
+			{
+				std::string error;
+				listening = m_http->start(m_host, uint16_t(m_port), m_root, WebSocketStream::routes(routes), &error,
+					32, webviewer::commonAssets(m_root));
+				if (!listening)
+				{
+					LOG_E("HTTP initialization failed; retrying: " + error);
+					std::unique_lock<std::mutex> lock(m_waitMutex);
+					m_wakeup.wait_for(lock, std::chrono::seconds(1), [this] { return !m_running; });
+					continue;
+				}
+				LOG_I("WebSelectableOctGrid: http://" + m_host + ":" + i2str(m_port) + "/");
+			}
+			const auto deadline = std::chrono::steady_clock::now() +
+				std::chrono::microseconds(int64_t(1000000 / m_pT->getTargetFPS()));
+			if (!m_paused) updateAllGeometries();
+			std::unique_lock<std::mutex> lock(m_waitMutex);
+			m_wakeup.wait_until(lock, deadline, [this] { return !m_running; });
+		}
 	}
 	void _WebSelectableOctGrid::stop()
 	{
-		m_running = false;
+		{
+			std::lock_guard<std::mutex> lock(m_waitMutex);
+			m_running = false;
+		}
 		m_wakeup.notify_all();
 		if (m_worker.joinable())
 			m_worker.join();

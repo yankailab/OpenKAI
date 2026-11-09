@@ -16,6 +16,7 @@ namespace kai
 		virtual bool loadConfig(void) override;
 		bool saveConfig(bool bExport) override;
 		virtual bool start(void);
+		void stop(void) override;
 		virtual bool check(void);
 		bool open(void);
 		bool bOpen(void);

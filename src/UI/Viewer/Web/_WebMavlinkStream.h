@@ -34,6 +34,7 @@ namespace kai
 		void console(void *pConsole) override;
 
 	private:
+		void update() override;
 		void publish();
 		MavlinkStream *m_stream = nullptr;
 		std::string m_streamName;
