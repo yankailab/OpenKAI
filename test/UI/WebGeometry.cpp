@@ -126,10 +126,10 @@ namespace
 
 	void cellIDWireTest()
 	{
-		OCTGRID_CELLS grid;
+		SELECTABLE_OCTGRID_CELLS grid;
 		grid.m_header = {{1, -2, 3}, {8, 16, 32}, 40, 123456789};
 		const UUID128 id(0x89abcdef01234567, 0x280123456789abcd);
-		OCTGRID_CELL cell;
+		SELECTABLE_OCTGRID_CELL cell;
 		cell.setID(id);
 		cell.m_vC[0] = 11; cell.m_vC[1] = 22; cell.m_vC[2] = 33; cell.m_vC[3] = 44;
 		grid.m_vCell.push_back(cell);
@@ -147,7 +147,7 @@ namespace
 		const size_t payload = header + wire::GridHeaderBytes;
 		assert(std::memcmp(frame.data() + payload, expectedID, sizeof(expectedID)) == 0);
 		assert(std::memcmp(frame.data() + payload + 16, cell.m_vC, 4) == 0);
-		OCTGRID_CELL decoded;
+		SELECTABLE_OCTGRID_CELL decoded;
 		std::memcpy(&decoded, frame.data() + payload, sizeof(decoded));
 		const UUID128 decodedID = decoded.id();
 		assert(decodedID.m_uint64[0] == id.m_uint64[0] && decodedID.m_uint64[1] == id.m_uint64[1]);

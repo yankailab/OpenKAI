@@ -65,11 +65,11 @@ function handleCmd(jCmd) {
   if (['getConfig', 'setConfig', 'saveConfig'].includes(jCmd.cmd)) {
     window.dispatchEvent(new CustomEvent('transformcommand', { detail: jCmd }));
   }
-  if (jCmd.cmd === 'setGridConfig') {
+  if (['getGridConfig', 'setGridConfig', 'saveConfig'].includes(jCmd.cmd)) {
     window.dispatchEvent(new CustomEvent('gridconfig', { detail: jCmd }));
   }
-  if (jCmd.cmd === 'cellSelect') {
-    window.dispatchEvent(new CustomEvent('cellselect', { detail: jCmd }));
+  if (['getCellSelection', 'setCellSelection', 'saveConfig'].includes(jCmd.cmd)) {
+    window.dispatchEvent(new CustomEvent('cellselection', { detail: jCmd }));
   }
   if (jCmd.cmd === 'ackTest') {
     // ackTest(jCmd);

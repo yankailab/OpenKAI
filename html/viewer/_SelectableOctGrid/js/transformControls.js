@@ -15,7 +15,8 @@ export class TransformControls {
       this.clearPending(); this.loaded = false; this.socket = socket;
       if (socket) this.send('getConfig');
       else $('#transform-status').textContent = pending?.cmd === 'saveConfig' ?
-        'Disconnected. Transform applied; saving was not confirmed.' : 'Command connection disconnected.';
+        'Disconnected. Saving was not confirmed.' : pending?.cmd === 'setConfig' ?
+          'Disconnected. Apply was not confirmed; Load to check the transform.' : 'Command connection disconnected.';
       this.refresh();
     };
     this.onReply = event => this.reply(event.detail);
@@ -28,6 +29,7 @@ export class TransformControls {
     };
     $('#transform-module').onchange = () => this.send('getConfig');
     $('#transform-load').onclick = () => this.send('getConfig');
+    $('#transform-save').onclick = () => this.send('saveConfig');
     $('#transform-config').oninput = event => event.target.setCustomValidity('');
     $('#transform-config').onsubmit = event => {
       event.preventDefault();
@@ -49,6 +51,7 @@ export class TransformControls {
     $('#transform-module').disabled = !!this.pending;
     $('#transform-load').disabled = !connected || !!this.pending;
     $('#transform-fields').disabled = !connected || !this.loaded || !!this.pending;
+    $('#transform-apply').disabled = !connected || !this.loaded || !!this.pending;
     $('#transform-save').disabled = !connected || !this.loaded || !!this.pending;
   }
 
@@ -64,17 +67,19 @@ export class TransformControls {
     const requestId = `transform-${this.clientId}-${++this.sequence}`;
     if (!window.wsSendCmd({ cmd, module, requestId, ...(config ? { config } : {}) })) {
       $('#transform-status').textContent = cmd === 'saveConfig' ?
-        'Transform applied; save request failed.' : 'Transform request failed. Check the command connection.';
+        'Save request failed.' : 'Transform request failed. Check the command connection.';
       this.refresh();
       return;
     }
     this.pending = { cmd, module, requestId };
     $('#transform-status').textContent = cmd === 'getConfig' ? 'Loading transform…' :
-      cmd === 'setConfig' ? 'Applying transform…' : 'Transform applied; saving to JSON…';
+      cmd === 'setConfig' ? 'Applying transform…' : 'Saving running transform to JSON…';
     this.timeout = setTimeout(() => {
-      this.clearPending(); this.loaded = false; this.refresh();
+      this.clearPending();
+      if (cmd !== 'saveConfig') this.loaded = false;
+      this.refresh();
       $('#transform-status').textContent = cmd === 'saveConfig' ?
-        'Transform applied; saving was not confirmed. Load to check the backend.' :
+        'Saving was not confirmed. Retry Save to persist the running transform.' :
         `No reply from ${module}. Check the instance name and connection, then Load.`;
     }, 15000);
     this.refresh();
@@ -84,7 +89,12 @@ export class TransformControls {
     if (!this.pending || ['cmd', 'module', 'requestId'].some(key => reply[key] !== this.pending[key])) return;
     this.clearPending();
     if (reply.bSuccess !== true) {
-      $('#transform-status').textContent = `${reply.cmd === 'saveConfig' ? 'Transform applied; save failed' : 'Transform command failed'}: ${reply.error || 'See the command console.'}`;
+      $('#transform-status').textContent = `${reply.cmd === 'saveConfig' ? 'Saving transform failed' : 'Transform command failed'}: ${reply.error || 'See the command console.'}`;
+      this.refresh();
+      return;
+    }
+    if (reply.cmd === 'saveConfig') {
+      $('#transform-status').textContent = `Saved ${reply.module} to JSON.`;
       this.refresh();
       return;
     }
@@ -100,9 +110,7 @@ export class TransformControls {
     this.translation.forEach((input, axis) => { input.value = config.vT[axis]; });
     this.rotation.forEach((input, axis) => { input.value = config.vAngle[axis] / radiansPerDegree; });
     this.loaded = true;
-    if (reply.cmd === 'setConfig') this.send('saveConfig');
-    else $('#transform-status').textContent = reply.cmd === 'saveConfig' ?
-      `Saved ${reply.module} to JSON.` : `Loaded ${reply.module}.`;
+    $('#transform-status').textContent = reply.cmd === 'setConfig' ? `Applied ${reply.module}.` : `Loaded ${reply.module}.`;
     this.refresh();
   }
 

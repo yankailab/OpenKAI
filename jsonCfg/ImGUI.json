@@ -51,6 +51,7 @@
 			1
 		],
 		"nMaxCells": 8333,
+		"nPminBuild": 1,
 		"vPCLframesIn": [
 			"pcFilePoints"
 		]

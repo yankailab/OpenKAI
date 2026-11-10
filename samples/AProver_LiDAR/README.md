@@ -25,11 +25,17 @@ backend process running through all three steps.
    Then click **Save config**. Saved settings update the
    `scepter` section of the original launch JSON.
 2. Open **http://ROVER:8080/** for the selectable grid viewer and click **Start**.
-   Set the grid origin/size if needed. Pick the proximity volumes in front of
-   the rover, then click **Send** in the cell picker. This
-   saves `octGrid.vPorigin`, `octGrid.vRootCellSize` and
-   `octGrid.vSelectedCells` in the same JSON and applies the selection immediately.
-   **Load** retrieves the running selections. Both viewers consume `scPC`, the
+   Click the grid config **Load** button to retrieve the current origin, root
+   size, expiration durations, publication limit, maximum depth, and point-count
+   threshold. Edit them as needed and click **Apply** to update the running grid,
+   then **Save** to persist its settings. Durations use nanoseconds, matching the JSON keys
+   in **Grid levels config**; **Grid levels show range** only filters the view.
+   Pick the proximity volumes in front of the rover, then click **Apply** in the
+   cell picker to update the running selection. Click **Save** to persist the
+   grid settings and `octGrid.vSelectedCells` in the same JSON. **Clear** edits
+   the local selection; Apply the empty selection to clear it on the backend.
+   **Load** restores the running selections. The Transform panel also separates
+   **Load**, **Apply**, and **Save**. Both viewers consume `scPC`, the
    Scepter point-cloud stream used for collision detection.
 3. Open **http://ROVER:8081/AProver/aprover.html** to operate the rover. **Load**
    retrieves the saved geofence; otherwise tap at least three map points around

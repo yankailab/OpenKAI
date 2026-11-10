@@ -9,6 +9,14 @@ input[type=range] { padding: 0; width: 112px; accent-color: #64dcb5; }
 .grid-config .grid-vector { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-bottom: 10px; }
 .grid-config .grid-vector label { display: block; }
 .grid-vector input { display: block; width: 100%; padding: 6px 3px; margin-top: 4px; }
+.grid-config .grid-level-config { margin-top: 14px; }
+.grid-level-config label { display: block; margin-bottom: 8px; }
+.grid-level-config input { display: block; width: 100%; padding: 6px; margin-top: 4px; font-variant-numeric: tabular-nums; }
+.grid-config-source { display: block; margin-bottom: 12px; }
+.grid-config-source[hidden] { display: none; }
+.grid-config-source select { display: block; width: 100%; min-width: 0; margin-top: 4px; padding: 6px; border: 1px solid #354659; border-radius: 5px; font: inherit; background: #090f17; color: #e2edf6; }
+.grid-config-actions { margin-top: 4px; gap: 6px; }
+.config-hint { margin: 8px 0 0; font-size: 11px; line-height: 1.4; color: #aabac8; }
 #grid-config-status { display: block; margin-top: 8px; font-size: 12px; color: #aabac8; }
 .transform-config { margin-top: 12px; }
 .transform-config label { font-size: 12px; }

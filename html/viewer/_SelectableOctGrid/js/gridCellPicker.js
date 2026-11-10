@@ -9,6 +9,7 @@ export class GridCellPicker {
     this.sources = new Map();
     this.names = new Map();
     this.onChange = () => {};
+    this.editable = true;
     this.raycaster = new THREE.Raycaster();
     this.pointer = null;
     this.pointers = new Set();
@@ -39,6 +40,8 @@ export class GridCellPicker {
     this.names = new Map(objects.filter(o => o.selectableGrid === true).map(o => [o.id, o.name]));
     const modules = new Set(this.names.values());
     for (const source of this.sources.values()) {
+      // A new stream may come from another host with a different boot clock.
+      source.headerTimestamp = 0n;
       if (!modules.has(source.module)) {
         source.visible = source.overlay.visible = false;
         source.occupied = null;
@@ -62,14 +65,18 @@ export class GridCellPicker {
       overlay.material.depthTest = false;
       overlay.material.depthWrite = false;
       overlay.material.transparent = true;
-      source = { module, selected: new Map(), overlay, header: null };
+      source = { module, selected: new Map(), overlay, header: null, headerTimestamp: 0n };
       this.sources.set(module, source);
       this.viewer.scene.add(overlay);
     }
     const header = { origin: [...grid.origin], size: [...grid.size], maxLevel: grid.maxLevel };
-    const changed = source.header && !sameGridHeader(source.header, header);
-    if (changed) source.selected = remapSelection(source.header, header, source.selected);
-    source.header = header;
+    const timestamp = BigInt(grid.timestamp[0]) | (BigInt(grid.timestamp[1]) << 32n);
+    const changed = timestamp >= source.headerTimestamp && source.header && !sameGridHeader(source.header, header);
+    if (timestamp >= source.headerTimestamp) {
+      if (changed) source.selected = remapSelection(source.header, header, source.selected);
+      source.header = header;
+      source.headerTimestamp = timestamp;
+    }
     source.occupied = object.boxes;
     source.visible = object.visible;
     source.overlay.visible = object.visible && source.selected.size > 0;
@@ -89,6 +96,7 @@ export class GridCellPicker {
     source.overlay.update(selectionGrid(source.header, source.selected), rootBounds(source.header), 1);
   }
   pickAt(clientX, clientY) {
+    if (!this.editable) return false;
     const { viewer } = this, rect = viewer.renderer.domElement.getBoundingClientRect();
     if (!rect.width || !rect.height || clientX < rect.left || clientX > rect.right || clientY < rect.top || clientY > rect.bottom) return false;
     viewer.camera.updateMatrixWorld();
@@ -111,6 +119,7 @@ export class GridCellPicker {
       // Test retained selections too, so expired cells can still be deselected.
       for (const mesh of [source.overlay, source.occupied]) {
         if (!mesh?.visible || !mesh.grid || !mesh.geometry.instanceCount || mesh.material.uniforms.opacity.value <= 0) continue;
+        if (mesh === source.occupied && !sameGridHeader(mesh.grid, source.header)) continue;
         const centers = mesh.geometry.getAttribute('cellCenter').array;
         const sizes = mesh.geometry.getAttribute('cellSize').array;
         for (let i = 0; i < mesh.geometry.instanceCount; ++i) {
@@ -140,6 +149,7 @@ export class GridCellPicker {
     return best;
   }
   toggle(source, id) {
+    if (!this.editable) return;
     const key = cellIDKey(id);
     if (source.selected.has(key)) source.selected.delete(key);
     else source.selected.set(key, id.slice());
@@ -168,9 +178,10 @@ export class GridCellPicker {
   }
   commands() {
     const modules = new Set(this.gridModules());
-    return [...this.sources.values()].filter(source => source.selected.size && modules.has(source.module)).map(source => ({
-      cmd: 'octGridCellSelect', module: source.module,
+    return [...this.sources.values()].filter(source => modules.has(source.module)).map(source => ({
+      cmd: 'setCellSelection', module: source.module,
       vPorigin: source.header.origin.map(String), vRootCellSize: source.header.size.map(String),
+      nMaxLevel: source.header.maxLevel,
       cellIDs: [...source.selected.keys()]
     }));
   }
@@ -179,22 +190,25 @@ export class GridCellPicker {
     return [...this.sources.values()].filter(source => source.header && modules.has(source.module))
       .map(source => source.module);
   }
-  loadCommands() {
-    return this.gridModules().map(module => ({ cmd: 'loadCellSelect', module }));
-  }
-  mergeSelection(command) {
+  replaceSelection(command) {
     const source = this.sources.get(command.module);
     if (!source?.header || ![...this.names.values()].includes(command.module)) throw new Error('Unknown grid source');
+    if (typeof command.tStamp !== 'string' || !/^\d+$/.test(command.tStamp) ||
+        BigInt(command.tStamp) > 18446744073709551615n) throw new Error('Invalid selection timestamp');
+    const timestamp = BigInt(command.tStamp);
     let { header, ids } = decodeSelection(command);
-    const sameRoot = header.origin.every((x, i) => x === source.header.origin[i]) &&
-      header.size.every((x, i) => x === source.header.size[i]);
-    if (!sameRoot || [...ids.values()].some(id => (id[15] & 63) > source.header.maxLevel))
+    // Replies and geometry use independent sockets but the same monotonic
+    // clock. Only project a reply onto a root that is demonstrably newer.
+    if (timestamp >= source.headerTimestamp) {
+      source.header = header;
+      source.headerTimestamp = timestamp;
+    } else if (!sameGridHeader(header, source.header)) {
       ids = remapSelection(header, source.header, ids);
-    let added = 0;
-    for (const [key, id] of ids) if (!source.selected.has(key)) { source.selected.set(key, id); ++added; }
-    if (added) this.refresh(source);
+    }
+    source.selected = ids;
+    this.refresh(source);
     this.onChange();
-    return added;
+    return ids.size;
   }
   dispose() {
     for (const [type, handler] of Object.entries(this.handlers)) this.viewer.renderer.domElement.removeEventListener(type, handler, true);

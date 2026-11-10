@@ -5,8 +5,9 @@ Run with the camera connected and other camera apps stopped:
   python3 test/UI/SelectableGridLive.py build/OpenKAI --ip 192.168.16.101
 
 Uses only camera, grid, viewer and command modules from AProver_LiDAR on temporary
-localhost ports. No autopilot or rover modules run. Sending a selection writes
-only a temporary launch JSON. Requires Chrome/Chromium; no Python dependencies.
+localhost ports. No autopilot or rover modules run. Applying a selection changes
+runtime only; Save writes a temporary launch JSON. Requires Chrome/Chromium;
+no Python dependencies.
 """
 
 import argparse
@@ -44,7 +45,9 @@ class GridBrowser(LIVE.Browser):
             gridFrames: window.__gridLiveFrames,
             cloud: window.__scepterLiveCloud,
             selectionReply: window.__gridLiveReplies?.findLast(
-              reply => reply.cmd === 'octGridCellSelect'),
+              reply => reply.cmd === 'setCellSelection'),
+            saveReply: window.__gridLiveReplies?.findLast(
+              reply => reply.cmd === 'saveConfig' && reply.module === 'octGrid'),
             commandLog: document.querySelector('#cmdState')?.value,
           };
         })()""")
@@ -171,17 +174,23 @@ def main():
                 state = browser.pick_cell()
                 selected = state["selections"]
                 assert len(selected) == 1 and selected[0]["module"] == "octGrid", selected
-                browser.evaluate("document.querySelector('#picker-send').click()")
-                state = browser.wait("Send acknowledgement", lambda state:
+                before_apply = launch.read_bytes()
+                browser.evaluate("document.querySelector('#picker-apply').click()")
+                state = browser.wait("Apply acknowledgement", lambda state:
                                      state.get("selectionReply") is not None)
                 assert state["selectionReply"].get("bSuccess") is True, state
+                assert launch.read_bytes() == before_apply, "Apply must not write the launch JSON"
+                browser.evaluate("document.querySelector('#picker-save').click()")
+                state = browser.wait("Save acknowledgement", lambda state:
+                                     state.get("saveReply") is not None)
+                assert state["saveReply"].get("bSuccess") is True, state
                 saved = json.loads(launch.read_text())
                 assert saved["octGrid"]["vSelectedCells"] == selected[0]["cellIDs"], saved["octGrid"]
                 browser.evaluate("document.querySelector('#picker-clear').click()")
                 browser.wait("clear browser selection", lambda state: state["picked"] == 0)
                 browser.evaluate("document.querySelector('#picker-load').click()")
-                state = browser.wait("Load saved selection", lambda state:
-                                     state["picked"] == 1 and state["pickerStatus"].startswith("Added 1 cell"))
+                state = browser.wait("Load backend selection", lambda state:
+                                     state["picked"] == 1 and state["pickerStatus"].startswith("Loaded selection"))
                 assert state["selections"] == selected, state
                 baseline = state["cloud"]["frames"]
                 state = browser.wait("streaming after selection", lambda state:

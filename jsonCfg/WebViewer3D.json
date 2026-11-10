@@ -62,6 +62,7 @@
     "thread": {
       "FPS": 5
     },
+    "vPorigin": [0, 0, 0],
     "vRootCellSize": [
       5,
       5,
@@ -69,6 +70,7 @@
     ],
     "nMaxLevel": 5,
     "nMaxCells": 18333,
+    "nPminBuild": 1,
     "dTexpireCell": 0,
     "dTexpirePCL": 0,
     "vPCLframesIn": [

@@ -93,14 +93,68 @@ test('grid level filtering, picking and loading use the depth byte at the end of
   assert.deepEqual(boxes.getCell(0).id, encodedPath([5]));
   boxes.setLevelRange(0, 40);
   picker.configure([{ id: 1, name: 'grid', selectableGrid: true }]);
-  picker.updateObject({ id: 1, boxes, visible: true }, grid);
+  picker.updateObject({ id: 1, boxes, visible: true }, { ...grid, timestamp: [10, 0] });
   const hit = picker.pickRay(new THREE.Ray(new THREE.Vector3(1, -1, 10), new THREE.Vector3(0, 0, -1)));
   assert.equal(hit.depth, 2);
   assert.deepEqual(hit.id, encodedPath([5, 2]));
-  picker.updateObject({ id: 1, boxes, visible: true }, { ...grid, maxLevel: 1 });
-  picker.mergeSelection({ module: 'grid', vPorigin: ['0', '0', '0'], vRootCellSize: ['8', '8', '8'],
-    nMaxLevel: 40, cellIDs: [cellIDKey(encodedPath([5, 2]))] });
+  picker.updateObject({ id: 1, boxes, visible: true }, { ...grid, maxLevel: 1, timestamp: [20, 0] });
+  picker.replaceSelection({ module: 'grid', vPorigin: ['0', '0', '0'], vRootCellSize: ['8', '8', '8'],
+    nMaxLevel: 40, tStamp: '15', cellIDs: [cellIDKey(encodedPath([5, 2]))] });
   assert.deepEqual([...picker.sourceFor(1).selected.values()], [encodedPath([5])]);
+  assert.equal(picker.commands()[0].cmd, 'setCellSelection');
+  assert.equal(picker.commands()[0].nMaxLevel, 1);
+  picker.replaceSelection({ module: 'grid', vPorigin: ['0', '0', '0'], vRootCellSize: ['8', '8', '8'],
+    nMaxLevel: 1, tStamp: '30', cellIDs: [] });
+  assert.equal(picker.count, 0, 'Load replaces local selections, including with an empty selection');
+  assert.deepEqual(picker.commands()[0].cellIDs, [], 'Apply sends empty lists to clear backend selections');
+});
+
+test('selection replies retain their exact cells when geometry arrives later or has moved ahead', t => {
+  const picker = new GridCellPicker({
+    renderer: { domElement: { addEventListener() {}, removeEventListener() {} } },
+    scene: new THREE.Scene(),
+  });
+  t.after(() => picker.dispose());
+  picker.configure([{ id: 1, name: 'grid', selectableGrid: true }]);
+  const object = { id: 1, visible: true };
+  const oldHeader = { origin: [0, 0, 0], size: [8, 8, 8], maxLevel: 1 };
+  const newHeader = { origin: [1, 1, 1], size: [8, 8, 8], maxLevel: 3 };
+  const selected = encodedPath([5, 2, 7]), selectedIDs = ids(selected);
+  const loaded = { module: 'grid', vPorigin: newHeader.origin.map(String),
+    vRootCellSize: newHeader.size.map(String), nMaxLevel: 3, cellIDs: [cellIDKey(selected)] };
+  const snapshot = (header, timestamp) => ({ ...selectionGrid(header, ids()), timestamp: [timestamp, 0] });
+  picker.updateObject(object, snapshot(oldHeader, 100));
+  for (const tStamp of [undefined, 200, '-1', '1.2', '18446744073709551616']) {
+    assert.throws(() => picker.replaceSelection({ ...loaded, tStamp }), /Invalid selection timestamp/);
+    assert.equal(picker.sourceFor(1).headerTimestamp, 100n);
+    assert.equal(picker.count, 0);
+  }
+  assert.throws(() => picker.replaceSelection({ ...loaded, tStamp: '200', cellIDs: ['invalid'] }), /Invalid selected cell ID/);
+  assert.equal(picker.sourceFor(1).headerTimestamp, 100n, 'invalid IDs must not advance the header clock');
+  picker.replaceSelection({ ...loaded, tStamp: '200' });
+  picker.updateObject(object, snapshot(oldHeader, 150));
+  assert.deepEqual(picker.commands()[0], { ...loaded, cmd: 'setCellSelection' },
+    'Apply must never send the temporary projection onto an older streamed root');
+  picker.updateObject(object, snapshot(newHeader, 250));
+  assert.deepEqual([...picker.sourceFor(1).selected.values()], [selected],
+    'the arriving root restores exact authoritative cells, without a coarse round trip');
+  const ahead = { origin: [2, 2, 2], size: [8, 8, 8], maxLevel: 4 };
+  picker.updateObject(object, snapshot(ahead, 400));
+  picker.replaceSelection({ ...loaded, tStamp: '350' });
+  picker.updateObject(object, snapshot(newHeader, 375));
+  assert.deepEqual([...picker.sourceFor(1).selected.keys()], [...remapSelection(newHeader, ahead, selectedIDs).keys()],
+    'a newer stream projects directly from the reply, not through the previous display');
+  assert.deepEqual(picker.commands()[0].vPorigin, ['2', '2', '2']);
+  assert.equal(picker.sourceFor(1).headerTimestamp, 400n);
+  picker.updateObject(object, snapshot({ ...ahead, origin: [100, 100, 100] }, 500));
+  assert.equal(picker.count, 0);
+  picker.updateObject(object, snapshot(newHeader, 600));
+  assert.equal(picker.count, 0, 'later root changes cannot resurrect previously clipped cells');
+  picker.configure([{ id: 1, name: 'grid', selectableGrid: true }]);
+  picker.updateObject(object, snapshot(oldHeader, 1));
+  assert.equal(picker.sourceFor(1).headerTimestamp, 1n, 'a new connection may use a lower boot clock');
+  assert.equal(picker.commands()[0].nMaxLevel, 1);
+  assert.deepEqual(picker.commands()[0].cellIDs, []);
 });
 
 test('version 7 frames decode the new IDs and all viewers reject earlier protocols', () => {

@@ -2,7 +2,7 @@
 
 `_WebSelectableOctGrid` derives from `_GeometryViewerBase` and reads points and lines from
 the same copying `PCLframe` and `LineFrame` DataObjects as `_ImGUIselectableOctGrid`, plus compact
-`_SelectableOctGrid::get(OCTGRID_CELLS*)` snapshots. The C++ process
+`_SelectableOctGrid::get(SELECTABLE_OCTGRID_CELLS*)` snapshots. The C++ process
 serves the browser application and three independent binary WebSockets on one port. A separate
 WebSocket connects JSON application commands to `_JSONcmd`. Viewer-specific
 assets, including a pinned three.js release, are in `html/viewer/_SelectableOctGrid/`;
@@ -112,34 +112,83 @@ All content is displayed as text, including malformed replies.
 ### Grid config
 
 The **Grid config** form below **Point scale** sets the root center and full
-root cell size in metres. Origin X/Y/Z default to 0/0/0; size X/Y/Z default to
-5/5/5. These are input values only: incoming stream headers never overwrite them.
+root cell size in metres. The following **Grid levels config** section edits the
+same five parameters stored in the `_SelectableOctGrid` launch configuration:
 
-**Update** is enabled after a grid header arrives and the command socket connects.
-It uses `wsSendCmd()` once per known grid module, with decimal-string coordinates:
+| Parameter | Meaning and accepted range |
+| --- | --- |
+| `dTexpireCell` | Cell expiration in nanoseconds, 0–18446744073709551615; 0 disables expiration. |
+| `dTexpirePCL` | Maximum input point age in nanoseconds, with the same range and zero behavior. |
+| `nMaxCells` | Maximum published cells, 0–2147483647. The viewer's separate `nC` cap still applies. |
+| `nMaxLevel` | Maximum octree depth, 0–40; 0 means the root only. |
+| `nPminBuild` | Exclusive point-count threshold, 0–2147483647; 1 requires at least two points. |
+
+The form loads the current settings when the grid and command socket connect.
+When multiple grids are present, choose a source to configure. Incoming stream
+headers never overwrite edits. **Load**, to the left of **Apply** and **Save**, reloads the
+selected source's current runtime values without changing occupancy or saving:
+
+```json
+{"cmd":"getGridConfig","module":"octGrid","requestId":"grid-client-1"}
+```
+
+**Apply** validates and changes every running field together, without modifying
+the bound JSON or launch file. It sends one complete request to the selected module:
 
 ```json
 {
   "cmd": "setGridConfig",
   "module": "octGrid",
+  "requestId": "grid-client-2",
   "vPorigin": ["0", "0", "0"],
-  "vRootCellSize": ["5", "5", "5"]
+  "vRootCellSize": ["5", "5", "5"],
+  "dTexpireCell": "1500000000",
+  "dTexpirePCL": "500000000",
+  "nMaxCells": "18333",
+  "nMaxLevel": "5",
+  "nPminBuild": "100"
 }
 ```
 
-`_SelectableOctGrid::jsonCmd()` validates all six values before applying them. Coordinates
-must be finite float32 values and sizes must be positive. A changed root clears
-old occupancy, publishes the new header with an empty snapshot, and rebuilds from
-point sources on subsequent updates. Root changes are synchronized with the grid
-worker. An unchanged root preserves existing cells.
+All values use decimal strings in commands and replies, including the five
+integer parameters, so uint64 expiration durations survive browser round trips
+exactly. Saved JSON uses numeric values. Only this complete request format is
+accepted; the old root-only update is rejected. Coordinates must be finite
+float32 values and sizes must be positive. All fields are validated before any
+changes. Root or maximum-depth changes clear old occupancy, publish an empty
+snapshot with the new header, and rebuild from point sources on subsequent
+updates. Changes are synchronized with the grid worker.
 
 Backend selections are remapped to preserve their world-space volume, using the
 same clipping and bounded boundary refinement as the browser picker. The browser
-remaps its own selections when the new stream header arrives. The backend replies
-with `{"cmd":"setGridConfig","module":"octGrid","bSuccess":true}` after applying
-the change; invalid requests return `bSuccess: false` and leave the grid unchanged.
-The form displays the result. Update changes runtime configuration; the picker's
-**Send** saves the current root and selections into the original launch JSON file.
+remaps its own selections when the new stream header arrives. Successful Load
+and Apply replies contain the same `cmd`, `module`, and `requestId`,
+`bSuccess: true`, and all seven current settings in the flat format above.
+The browser accepts only the reply matching its pending request. Invalid
+requests return `bSuccess: false` with an `error` and leave settings unchanged.
+**Save** separately persists the selected grid's current running settings and
+selections to its original launch file:
+
+```json
+{"cmd":"saveConfig","module":"octGrid","requestId":"grid-client-3"}
+```
+
+Its reply contains `cmd`, `module`, `requestId`, and `bSuccess`; failures also
+include `error`. Save does not apply form fields, change runtime state, or replace
+draft edits. Apply edits before saving. The launch file must be writable; a save
+failure leaves the applied state running. Both grid panels save the whole grid
+module so persisted selections always match their root and depth.
+
+### Transform
+
+The **Transform** panel uses the existing `_TransformRigid` commands:
+**Load** calls `getConfig`, **Apply** calls `setConfig` with the complete `vT`
+and `vAngle` arrays, and **Save** calls `saveConfig`. Translation is shown in
+metres and angles in degrees; the command sends angles in radians. Apply only
+changes the running pose. Save persists its current translation and quaternion
+in the original launch JSON without applying or replacing draft form values.
+Replies are matched by `cmd`, `module`, and `requestId`, and failures are shown
+in the panel. The target instance must appear in the command module's `vBASE`.
 
 ### Grid drawing mode
 
@@ -157,17 +206,18 @@ overlap and rendering cost. Opaque boxes use depth writes. The stream remains
 
 ### Grid level range
 
-The **Grid levels** Min and Max sliders below Point scale select an inclusive
+The **Grid levels show range** Min and Max sliders select an inclusive
 range from 0 to 40. The default is 0–40. Changes apply immediately to occupied
 cells in every grid and persist through stream updates and reconnects. Moving
 one endpoint past the other moves the other endpoint to keep a valid interval.
 Cells outside the interval are omitted from drawing and picking. Selected red
 boxes remain visible and can still be deselected, regardless of their level.
+These display controls do not change the backend's `nMaxLevel` or saved settings.
 
 ### Grid cell picker
 
 The **Grid cell picker** panel below the camera controls shows the picked-cell
-count and **Load** / **Clear** / **Send** buttons. Left-click a cell's volume to toggle its
+count and **Load** / **Clear** / **Apply** / **Save** buttons. Left-click a cell's volume to toggle its
 selection. If the ray crosses several cells, the deepest ID wins; equal-depth
 hits use the nearest cell. Camera drags and multi-touch gestures do not select.
 Selected cells appear as red wire boxes over the scene. Hidden grid objects are
@@ -176,7 +226,8 @@ not pickable.
 Selections are independent of streamed occupancy. They remain visible and can
 be deselected after a cell expires or a source disappears, including across
 stream reconnects during the lifetime of the page. **Fit scene** includes visible
-retained selections. **Clear** removes all selections; **Send** keeps them.
+retained selections. **Clear** removes local selections; it takes **Apply** to
+clear the running backend selection and **Save** to persist that empty state.
 
 When a source's root center, root size, or maximum depth changes, selections are
 remapped by their old world-space volume, allowing a selection to split into
@@ -188,17 +239,19 @@ expand the covered volume, but does not erase an in-bounds selection. Remapping
 has a 100,000-node work budget to keep very deep boundary cases responsive;
 remaining boundary cells cover the volume at a coarser depth.
 
-**Send** is enabled when there are selections and the independent command socket
-is connected. It calls the existing `wsSendCmd()` once per selected grid source,
+**Apply** is enabled when grid sources and the independent command socket are
+connected, including when the local selection is empty. It calls `wsSendCmd()` once per grid source,
 so grids with different root headers never share an ambiguous ID list. The JSON
 command received by `_SelectableOctGrid::jsonCmd()` through `_JSONcmd` is:
 
 ```json
 {
-  "cmd": "octGridCellSelect",
+  "cmd": "setCellSelection",
   "module": "octGrid",
+  "requestId": "picker-client-1",
   "vPorigin": ["0", "0", "0"],
   "vRootCellSize": ["2", "2", "2"],
+  "nMaxLevel": 40,
   "cellIDs": ["00000000000000000000000000000000"]
 }
 ```
@@ -209,12 +262,13 @@ of a single big-endian integer. The example selects the root cell. Header
 coordinates and full root extents are arrays of ordinary ASCII decimal strings
 in metres, using locale-independent formatting. There are no color fields.
 `wsSendCmd()` adds the normal `EOJ` terminator. A successful send means the command
-was submitted to the socket. The backend replies with
-`{"cmd":"octGridCellSelect","bSuccess":true}` after replacing `m_vSelectedCells`.
+was submitted to the socket. The backend replies with the same `cmd`, `module`,
+and `requestId`, `bSuccess: true`, and the current selection after replacing
+`m_vSelectedCells`. Apply leaves the bound JSON and launch file untouched.
 It decodes the decimal header strings back to float32 and requires the root
-origin and size to match the current grid; a missing, malformed or different
-header clears the backend selection and returns `bSuccess: false`. Invalid ID
-lists also return false, leaving the previous selection intact. IDs must be
+origin, size and numeric `nMaxLevel` to match the current grid; a missing, malformed or different
+header returns `bSuccess: false`, leaving the previous selection intact. Invalid
+ID lists also return false without changing the selection. IDs must be
 canonical and within the grid's maximum level, but need not remain occupied.
 An empty ID array with a matching header clears the backend selection.
 
@@ -223,15 +277,18 @@ arrived, even if the grid has no occupied or selected cells. It calls `wsSendCmd
 once per known grid module:
 
 ```json
-{"cmd":"loadCellSelect","module":"octGrid"}
+{"cmd":"getCellSelection","module":"octGrid","requestId":"picker-client-2"}
 ```
 
 The backend snapshots its current root and `m_vSelectedCells` and replies:
 
 ```json
 {
-  "cmd": "cellSelect",
+  "cmd": "getCellSelection",
   "module": "octGrid",
+  "requestId": "picker-client-2",
+  "bSuccess": true,
+  "tStamp": "123456789000",
   "nMaxLevel": 40,
   "vPorigin": ["0", "0", "0"],
   "vRootCellSize": ["2", "2", "2"],
@@ -239,19 +296,25 @@ The backend snapshots its current root and `m_vSelectedCells` and replies:
 }
 ```
 
-`wsCmdHandler.js::handleCmd()` routes this reply to the picker. Valid IDs are
-added to that module's existing selection, ignoring duplicates. `nMaxLevel` is
-required and must be an integer from 0 to 40. An empty reply
-keeps existing selections. If the returned root differs from the current stream
-header, the same volume-remapping rules above apply before merging; IDs deeper
-than the current maximum level are also remapped. Invalid replies leave the
+`wsCmdHandler.js::handleCmd()` routes this reply to the picker. Only a matching
+pending request is accepted. Valid IDs replace that module's local selection,
+ignoring duplicates; an empty reply clears it. `nMaxLevel` is required and must
+be an integer from 0 to 40. The reply's `tStamp` is the snapshot's monotonic
+nanosecond time as a decimal string. Older stream frames cannot overwrite that
+selection's root header. If the current stream is newer than the reply and has
+a different header, the same volume-remapping rules above apply once. Invalid replies leave the
 selection unchanged. Loaded cells retain red outlines even when unoccupied or
 outside the displayed level range.
 
+The latest selection commands are `getCellSelection` and `setCellSelection`.
+Removed command names are rejected; there are no aliases or protocol fallbacks.
+
 ### Saving selected cells
 
-`_SelectableOctGrid::saveConfig(true)` writes the root and selected IDs into its
-module object in the launch JSON file, preserving the remaining configuration:
+The picker's **Save** sends `saveConfig` once per connected grid source and waits
+for correlated acknowledgements. It saves only the running selections; local
+picks and Clear remain unapplied until **Apply**. `_SelectableOctGrid::saveConfig(true)`
+writes the current grid settings and selected IDs into its module in the launch JSON:
 
 ```json
 {
@@ -279,8 +342,8 @@ of all three axes); the root remains `00000000000000000000000000000000`.
 Saved selections must already use this layout; there is no format detection
 or conversion. The repository's sample selections use this format.
 
-The `octGridCellSelect` handler calls `saveConfig(true)` after validating and updating
-the selection, and reports file write failures to the browser. The launch JSON
+Only the `saveConfig` command writes the JSON; applying settings or selections
+does not change its bound configuration. File write failures are reported to the browser. The launch JSON
 file must be writable. After reopening the page, **Load** retrieves the backend's
 current selection without rereading a file or changing its root or occupancy.
 
@@ -390,6 +453,9 @@ shared wire/solid geometry and one GPU instance per cell.
 | `html/common/js/geometryConnection.js` | Geometry connection, protocol greeting, automatic reconnect and stream acknowledgements |
 | `html/common/js/wsCmdBase.js` | Independent JSON command socket, sending and console status |
 | `html/viewer/_SelectableOctGrid/js/wsCmdHandler.js` | Reply buffering and page-specific JSON command handlers |
+| `html/viewer/_SelectableOctGrid/js/gridConfigControls.js` | Grid source selection, exact config values, separate Load/Apply/Save requests |
+| `html/viewer/_SelectableOctGrid/js/gridPickerControls.js` | Selection Load/Clear/Apply/Save, correlated acknowledgements and failure handling |
+| `html/viewer/_SelectableOctGrid/js/transformControls.js` | Transform form, degree/radian conversion and separate Load/Apply/Save requests |
 | `html/viewer/_SelectableOctGrid/js/protocol.js` | Frame validation and typed-array views |
 | `html/viewer/_SelectableOctGrid/js/viewer3D.js` | Three.js scene, GPU buffers, camera and rendering |
 | `html/viewer/_SelectableOctGrid/js/gridCellPicker.js` | Click picking, persistent red selections and command payloads |
@@ -545,7 +611,7 @@ removal behavior. Picker commands send 16-byte IDs as hexadecimal strings.
 
 ## Occupied cell interface
 
-`_SelectableOctGrid::get(OCTGRID_CELLS*, tExpire, nMaxCells)` copies one coherent header
+`_SelectableOctGrid::get(SELECTABLE_OCTGRID_CELLS*, tExpire, nMaxCells)` copies one coherent header
 and its occupied cell records. It includes occupied ancestors, as the previous
 wireframe did, in root-first traversal order. `nMaxCells` in the grid config sets
 the publication cap (default 8333). The old `nMaxLines` setting is rejected. The viewers have independent `nCbuf` and per-object `nC` caps.

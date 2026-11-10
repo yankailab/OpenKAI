@@ -67,7 +67,7 @@ namespace kai
 		Vector4f m_matCol = {1, 1, 1, 1};
 
 		std::shared_ptr<const IMGUI_VIEWER_GEOMETRY> m_geometry;
-		OCTGRID_HEADER m_gridHeader;
+		SELECTABLE_OCTGRID_HEADER m_gridHeader;
 		vector<IMGUI_VIEWER_BOX> m_vBox;
 
 		const vector<IMGUI_VIEWER_POINT> &points(void) const;
@@ -155,7 +155,7 @@ namespace kai
 		vector<GeometryCache> m_vGeometryCache;
 		vector<IMGUI_VIEWER_OBJ> m_vBuildGO;
 		vector<IMGUI_VIEWER_OBJ> m_vDrawGO;
-		OCTGRID_CELLS m_cells;
+		SELECTABLE_OCTGRID_CELLS m_cells;
 		int m_nCbuf = 100000;
 
 		ImGUIbackend *m_pBackend = nullptr;

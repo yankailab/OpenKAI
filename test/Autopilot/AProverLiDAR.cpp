@@ -511,7 +511,8 @@ void testSampleConfigPersistence(const string &path)
         auto *grid = static_cast<_SelectableOctGrid *>(instances.findModule("octGrid"));
         auto *scepter = static_cast<_Scepter *>(instances.findModule("scepter"));
         const json before = *instances.findJsonCfg("apRover")->getJson();
-        json selection = {{"cmd", "octGridCellSelect"}, {"cellIDs", {rootID}}};
+        json selection = {{"cmd", "setCellSelection"}, {"cellIDs", {rootID}},
+                          {"nMaxLevel", before["octGrid"]["nMaxLevel"]}};
         for (const char *key : {"vPorigin", "vRootCellSize"})
         {
             selection[key] = json::array();
@@ -519,12 +520,18 @@ void testSampleConfigPersistence(const string &path)
                 selection[key].push_back(coordinate.dump());
         }
         grid->jsonCmd(selection, nullptr); // Same native handler used by the grid viewer.
+        assert(grid->getSelectedCells().size() == 1);
+        assert(*instances.findJsonCfg("apRover")->getJson() == before); // Apply leaves launch JSON untouched.
         auto controls = scepter->getCamCtrl();
         controls.m_confidenceFilter.threshold = 17;
         assert(scepter->setCamCtrl(controls)); // Applies cached controls while the device is closed.
         assert(scepter->saveConfig(true));
 
         JsonCfg saved;
+        assert(saved.readFromFile(path));
+        // Saving another module must not accidentally persist an applied grid edit.
+        assert((*saved.getJson())["octGrid"] == before["octGrid"]);
+        grid->jsonCmd({{"cmd", "saveConfig"}}, nullptr);
         assert(saved.readFromFile(path));
         const json &after = *saved.getJson();
         assert(after["octGrid"]["vSelectedCells"] == json::array({rootID}));

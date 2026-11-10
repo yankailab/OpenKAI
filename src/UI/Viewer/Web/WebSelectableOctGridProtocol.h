@@ -21,7 +21,7 @@ namespace kai::webselectableoctgrid
 		throw std::invalid_argument("Invalid geometry stream type");
 	}
 	constexpr size_t HeaderBytes = 32, ObjectBytes = 40, GridHeaderBytes = 40;
-	constexpr size_t CellBytes = sizeof(OCTGRID_CELL), MaxFrameBytes = 256 * 1024 * 1024;
+	constexpr size_t CellBytes = sizeof(SELECTABLE_OCTGRID_CELL), MaxFrameBytes = 256 * 1024 * 1024;
 	inline size_t vertexBytes(size_t count) { return (count * 15 + 3) & ~size_t(3); }
 
 	inline void u32(std::vector<uint8_t> &b, size_t at, uint32_t v)
@@ -77,7 +77,7 @@ namespace kai::webselectableoctgrid
 	inline void lines(std::vector<uint8_t> &b, uint32_t id,
 		const float bounds[6], const std::vector<float> &positions, const std::vector<uint8_t> &colors)
 	{ vertices(b, Type::Lines, id, 1, bounds, positions, colors); }
-	inline void cells(std::vector<uint8_t> &b, uint32_t id, float opacity, const float bounds[6], const OCTGRID_CELLS &grid)
+	inline void cells(std::vector<uint8_t> &b, uint32_t id, float opacity, const float bounds[6], const SELECTABLE_OCTGRID_CELLS &grid)
 	{
 		objectHeader(b, Type::Cells, id, grid.m_vCell.size(), 1, opacity, bounds, GridHeaderBytes + grid.m_vCell.size() * CellBytes);
 		const size_t at = b.size(); b.resize(at + GridHeaderBytes, 0);

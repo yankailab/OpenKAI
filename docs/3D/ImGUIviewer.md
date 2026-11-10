@@ -1,6 +1,6 @@
 # Dear ImGui selectable octree grid viewer
 
-`_ImGUIselectableOctGrid` is a lightweight viewer module for OpenKAI 3D geometry streams. It derives from `_GeometryViewerBase`, copies geometry from `PCLframe` and `LineFrame` DataObjects and `_SelectableOctGrid::get(OCTGRID_CELLS*)` cell snapshots, and renders through Dear ImGui without using Open3D viewer APIs.
+`_ImGUIselectableOctGrid` is a lightweight viewer module for OpenKAI 3D geometry streams. It derives from `_GeometryViewerBase`, copies geometry from `PCLframe` and `LineFrame` DataObjects and `_SelectableOctGrid::get(SELECTABLE_OCTGRID_CELLS*)` cell snapshots, and renders through Dear ImGui without using Open3D viewer APIs.
 
 The viewer lives in `src/UI/Viewer/ImGUI/`: `_ImGUIselectableOctGrid.*` implements
 the module, `ImGUIbackend.*` handles the window/input backend, and
