@@ -1,5 +1,18 @@
 # Testing and debugging
 
+## `_FTservo` regression tests
+
+Build with `USE_FTSERVO=ON`, `BUILD_EXECUTABLE=ON`, and
+`CMAKE_EXPORT_COMPILE_COMMANDS=ON`, then run:
+
+```bash
+python3 test/run_ftservo_tests.py build-ftservo
+```
+
+Exercises the external FTServo_Linux protocol over a pseudo-terminal, including
+motion, feedback, errors, and shutdown without hardware. See [`_FTservo`](FTservo.md)
+for the dependency checkout and hardware test configuration.
+
 ## DataObject initialization regression test
 
 Loads the detection stream from `jsonCfg/Detectors.json` without starting the

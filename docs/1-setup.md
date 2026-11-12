@@ -93,6 +93,12 @@ sudo cmake --install build
 ```
 
 
+## (Optional) Feetech servos
+
+Use the external [FTServo_Linux](https://github.com/ftservo/FTServo_Linux)
+checkout with `USE_FTSERVO=ON`. OpenKAI builds its sources directly; see the
+[`_FTservo` setup and test guide](FTservo.md) for checkout paths and configuration.
+
 ## (Optional) RealSense
 ```bash
 sudo apt-get install libusb-1.0-0-dev libusb-dev libudev-dev

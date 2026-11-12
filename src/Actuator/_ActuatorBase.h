@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_Actuator__ActuatorBase_H_
 #define OpenKAI_src_Actuator__ActuatorBase_H_
 
-#include "../Base/_ModuleBase.h"
+#include "../Universe/_TransformRigid.h"
 #include "../UI/_Console.h"
 #include "../Utility/BitFlag.h"
 
@@ -169,6 +169,7 @@ namespace kai
 		BIT_FLAG m_bfSet;
 
 		_ActuatorBase *m_pParent = nullptr;
+		_TransformRigid *m_pTf = nullptr;
 	};
 
 }

@@ -154,6 +154,10 @@ namespace kai
 		jKv(j, "_ActuatorBase", n);
 		m_pParent = (_ActuatorBase *)(pM->findModule(n));
 
+		n = "";
+		jKv(*m_pJ, "_TransformRigid", n);
+		m_pTf = dynamic_cast<_TransformRigid *>(static_cast<_ModuleBase *>(pM->findModule(n)));
+
 		return true;
 	}
 

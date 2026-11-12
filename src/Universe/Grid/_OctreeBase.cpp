@@ -30,11 +30,6 @@ namespace kai
 	{
 		IF_F(!this->_ModuleBase::link(pM));
 
-		string tfName;
-		jKv(*m_pJ, "_TransformRigid", tfName);
-		m_pTf = dynamic_cast<_TransformRigid *>(static_cast<_ModuleBase *>(pM->findModule(tfName)));
-		IF_Le_F(!tfName.empty() && !m_pTf, "_TransformRigid not found: " + tfName);
-
 		return true;
 	}
 

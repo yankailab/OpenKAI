@@ -1,0 +1,37 @@
+{
+	"APP": {
+		"class": "InstanceMgr",
+		"appName": "OpenKAI",
+		"bLog": false,
+		"bStdErr": true
+	},
+	"console": {
+		"class": "_Console",
+		"bON": true,
+		"thread": { "FPS": 10 },
+		"vBASE": [ "FTservo" ]
+	},
+	"FTservo": {
+		"class": "_FTservo",
+		"bON": true,
+		"thread": { "FPS": 50 },
+		"bLog": true,
+		"port": "/dev/ttyUSB0",
+		"baud": 115200,
+		"ID": 1,
+		"mode": 0,
+		"bfSetPower": false,
+		"bfSetMode": true,
+		"bfMove": false,
+		"pOrigin": 2048,
+		"pTarget": 2048,
+		"pErr": 10,
+		"pRange": [ 0, 4095 ],
+		"sTarget": 500,
+		"sRange": [ -1000, 1000 ],
+		"aTarget": 50,
+		"aRange": [ 0, 255 ],
+		"tIntReadStatus": 100000000,
+		"tIntSendCMD": 20000000
+	}
+}

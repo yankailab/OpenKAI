@@ -57,8 +57,8 @@
 #include "../Actuator/Motor/_ZDmotor.h"
 #endif
 #include "../Actuator/Motor/_DDSM.h"
-#ifdef USE_FEETECH
-#include "../Actuator/_Feetech.h"
+#ifdef USE_FTSERVO
+#include "../Actuator/_FTservo.h"
 #endif
 #ifdef USE_XARM
 #include "../Actuator/Articulated/_xArm.h"

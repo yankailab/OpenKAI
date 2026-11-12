@@ -1,7 +1,7 @@
 #ifndef OpenKAI_src_Universe_Grid__OctreeBase_H_
 #define OpenKAI_src_Universe_Grid__OctreeBase_H_
 
-#include "../_TransformRigid.h"
+#include "../../Base/_ModuleBase.h"
 
 #define N_OCT 8
 
@@ -116,7 +116,6 @@ namespace kai
 		}
 
 	protected:
-		_TransformRigid *m_pTf = nullptr;
 	};
 
 }

@@ -7,7 +7,7 @@ option(BUILD_SAMPLES "Build all sample programs" OFF)
 
 option(USE_CUDA "Use NVIDIA CUDA" OFF)
 option(USE_DYNAMIXEL "Use Dynamixel" OFF)
-option(USE_FEETECH "Use Feetech" OFF)
+option(USE_FTSERVO "Use the external FTServo_Linux servo library" OFF)
 option(USE_IMGUI "Use Dear ImGui 3D viewer" OFF)
 option(USE_GLIM "Use GLIM SLAM" OFF)
 option(USE_GLOG "Use glog" ON)
@@ -211,6 +211,10 @@ if(WITH_NET OR WITH_UNIVERSE)
 endif()
 
 # Optional modules
+if(USE_FTSERVO)
+  set(WITH_ACTUATOR ON)
+endif()
+
 if(WITH_UNIVERSE)
   add_definitions(-DWITH_UNIVERSE)
   list(APPEND OpenKAI_cpp
@@ -273,15 +277,27 @@ if(WITH_ACTUATOR)
 		src/Actuator/Motor/_ZDmotor.cpp
     )
   endif()
-  if(USE_FEETECH)
-    add_definitions(-DUSE_FEETECH)
-    list(APPEND OpenKAI_cpp
-		src/Actuator/_Feetech.cpp
-    )
-    file(GLOB_RECURSE Dependencies_Feetech src/Dependencies/Feetech/*.cpp src/Dependencies/Feetech/*.c)
-    list(APPEND OpenKAI_cpp
-		${Dependencies_Feetech}
-    )
+  if(USE_FTSERVO)
+    if(NOT CMAKE_SYSTEM_NAME STREQUAL "Linux")
+      message(FATAL_ERROR "USE_FTSERVO requires Linux (FTServo_Linux serial transport)")
+    endif()
+    set(FTSERVO_ROOT "FTServo_Linux" CACHE PATH
+      "Path to the FTServo_Linux source checkout")
+    get_filename_component(FTSERVO_ROOT "${FTSERVO_ROOT}" ABSOLUTE
+      BASE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+    foreach(source SCServo.h SMS_STS.h SCSerial.h SCS.h INST.h SMS_STS.cpp SCSerial.cpp SCS.cpp)
+      if(NOT EXISTS "${FTSERVO_ROOT}/src/${source}")
+        message(FATAL_ERROR
+          "FTServo_Linux source missing: ${FTSERVO_ROOT}/src/${source}. "
+          "Set FTSERVO_ROOT to a checkout of https://github.com/ftservo/FTServo_Linux")
+      endif()
+    endforeach()
+    # Compile the upstream sources as part of OpenKAI; no separate SDK build.
+    file(GLOB FTServo_sources CONFIGURE_DEPENDS
+      "${FTSERVO_ROOT}/src/*.cpp" "${FTSERVO_ROOT}/src/*.h")
+    add_definitions(-DUSE_FTSERVO)
+    list(APPEND OpenKAI_include "${FTSERVO_ROOT}/src")
+    list(APPEND OpenKAI_cpp src/Actuator/_FTservo.cpp ${FTServo_sources})
   endif()
   if(USE_XARM)
     list(APPEND OpenKAI_cpp

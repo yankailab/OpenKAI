@@ -68,8 +68,8 @@ namespace kai
 		ADD_MODULE(_ZDmotor);
 #endif
 		ADD_MODULE(_DDSM);
-#ifdef USE_FEETECH
-		ADD_MODULE(_Feetech);
+#ifdef USE_FTSERVO
+		ADD_MODULE(_FTservo);
 #endif
 #ifdef USE_XARM
 		ADD_MODULE(_xArm);
