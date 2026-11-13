@@ -285,13 +285,6 @@ if(WITH_ACTUATOR)
       "Path to the FTServo_Linux source checkout")
     get_filename_component(FTSERVO_ROOT "${FTSERVO_ROOT}" ABSOLUTE
       BASE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
-    foreach(source SCServo.h SMS_STS.h SCSerial.h SCS.h INST.h SMS_STS.cpp SCSerial.cpp SCS.cpp)
-      if(NOT EXISTS "${FTSERVO_ROOT}/src/${source}")
-        message(FATAL_ERROR
-          "FTServo_Linux source missing: ${FTSERVO_ROOT}/src/${source}. "
-          "Set FTSERVO_ROOT to a checkout of https://github.com/ftservo/FTServo_Linux")
-      endif()
-    endforeach()
     # Compile the upstream sources as part of OpenKAI; no separate SDK build.
     file(GLOB FTServo_sources CONFIGURE_DEPENDS
       "${FTSERVO_ROOT}/src/*.cpp" "${FTSERVO_ROOT}/src/*.h")
