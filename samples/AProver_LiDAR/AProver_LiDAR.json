@@ -194,6 +194,8 @@
         "bLog": false,
         "bON": true,
         "class": "_OctreeGridPCL",
+        "nWfilMed": 1,
+        "nWfilAvr": 1,
         "dTexpireCell": 1500000000,
         "dTexpirePCL": 500000000,
         "nMaxLevel": 5,

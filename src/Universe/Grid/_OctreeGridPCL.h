@@ -3,6 +3,8 @@
 
 #include <mutex>
 #include "../../DataObject/PCLframe.h"
+#include "../../Filter/Median.h"
+#include "../../Filter/Average.h"
 #include "_OctreeGridBase.h"
 
 namespace kai
@@ -10,12 +12,18 @@ namespace kai
 	struct OCTGRID_CELL_PCL
 	{
 		int m_nP = 0;
+		int m_nPfiltered = 0;
+		Median<int> m_filMed;
+		Average<int64_t> m_filAvr; // Sum counts without overflowing int.
 		Vector4f m_vC = {1, 1, 1, 1}; // default color
 		uint64_t m_tStamp = 0;		  // last updated time stamp
 
 		void clear(void)
 		{
 			m_nP = 0;
+			m_nPfiltered = 0;
+			m_filMed.reset();
+			m_filAvr.reset();
 			m_vC.setConstant(1);
 			m_tStamp = 0;
 		}
@@ -50,6 +58,8 @@ namespace kai
 		virtual void updateGrid(void);
 		virtual void updatePoint(void);
 		virtual void deleteExpiredCells(void);
+		// Reset histories when applying new windows, seeding them from current counts.
+		virtual void updatePointFilters(bool bReset = false);
 		void resetPointInputs(void);
 
 		// Caller holds m_gridMutex. Used by the editor's coherent Apply/Save operations.
@@ -70,6 +80,8 @@ namespace kai
 		// data
 		OCTGRID_CELL<OCTGRID_CELL_PCL> *m_pCell = nullptr; // root cell
 		uint64_t m_dTexpireCell = 0;					  // remove cell if no point is coming by this duration
+		int m_nWfilMed = 1; // median window in grid updates, 1 passes input through
+		int m_nWfilAvr = 1; // average window in grid updates, 1 passes input through
 
 		struct PointInput
 		{

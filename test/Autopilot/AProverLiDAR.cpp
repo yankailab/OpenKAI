@@ -22,6 +22,13 @@ public:
         point.m_vP = {0, 0, 0};
         for (unsigned i = 0; i < count; ++i)
             addCellPoint(point, stamp);
+        updatePointFilters();
+    }
+
+    void tick()
+    {
+        std::lock_guard<std::mutex> lock(m_gridMutex);
+        updateGrid();
     }
 
     void clear()
@@ -143,6 +150,15 @@ void testSelectedOccupancy()
     f.grid.add(2);
     assert(!f.grid.bSelectedOccupied(2)); // Strictly over the configured threshold.
     f.grid.add(1);
+    assert(f.grid.bSelectedOccupied(2)); // Default windows pass counts through immediately.
+
+    (*f.cfg.getJson())["grid"]["nWfilMed"] = 3;
+    (*f.cfg.getJson())["grid"]["nWfilAvr"] = 2;
+    assert(f.grid.loadConfig());
+    f.grid.add(2);
+    f.grid.add(1);
+    assert(!f.grid.bSelectedOccupied(2)); // The average still holds the earlier count.
+    f.grid.tick();
     assert(f.grid.bSelectedOccupied(2)); // Independent of the viewer's zero cell cap.
     f.grid.clear();
     f.grid.add(3, getTns() - 2 * NSEC_SEC);

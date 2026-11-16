@@ -57,7 +57,13 @@
               <label>dTexpirePCL (ns) <input id="grid-dTexpirePCL" type="text" inputmode="numeric" pattern="[0-9]+" value="0" required title="Point cloud expiry in nanoseconds; 0 disables expiry"></label>
               <label>nMaxCells <input id="grid-nMaxCells" type="text" inputmode="numeric" pattern="[0-9]+" value="8333" required title="Maximum published cells (0–2147483647)"></label>
               <label>nMaxLevel <input id="grid-nMaxLevel" type="text" inputmode="numeric" pattern="[0-9]+" value="4" required title="Maximum octree depth (0–40)"></label>
-              <label>nPminBuild <input id="grid-nPminBuild" type="text" inputmode="numeric" pattern="[0-9]+" value="1" required title="Publish cells with more than this many points (0–2147483647)"></label>
+              <label>nPminBuild <input id="grid-nPminBuild" type="text" inputmode="numeric" pattern="[0-9]+" value="1" required title="Publish cells with a filtered point count above this threshold (0–2147483647)"></label>
+            </fieldset>
+            <fieldset class="grid-level-config">
+              <legend>Occupancy smoothing</legend>
+              <label>nWfilMed <input id="grid-nWfilMed" type="text" inputmode="numeric" pattern="[0-9]+" value="1" required title="Median window in grid updates (1–2147483647); 1 passes the count through"></label>
+              <label>nWfilAvr <input id="grid-nWfilAvr" type="text" inputmode="numeric" pattern="[0-9]+" value="1" required title="Average window in grid updates (1–2147483647); 1 passes the count through"></label>
+              <p class="config-hint">Median, then average. Windows count grid updates; 1 disables that filter.</p>
             </fieldset>
           </fieldset>
           <div class="tools grid-config-actions">

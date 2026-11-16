@@ -30,6 +30,8 @@
 	},
 	"octGridPCL": {
 		"class": "_OctreeGridPCL",
+		"nWfilMed": 1,
+		"nWfilAvr": 1,
 		"bON": true,
 		"bLog": true,
 		"thread": {

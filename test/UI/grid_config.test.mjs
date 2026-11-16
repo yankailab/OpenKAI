@@ -9,6 +9,7 @@ const config = {
   vPorigin: ['1.25', '-2', '3'], vRootCellSize: ['8', '16', '32'],
   dTexpireCell: '18446744073709551615', dTexpirePCL: '9007199254740993',
   nMaxCells: '8333', nMaxLevel: '4', nPminBuild: '1',
+  nWfilMed: '3', nWfilAvr: '2',
 };
 
 function setup(t, modules = ['grid'], create = () => new GridConfigControls()) {
@@ -61,29 +62,36 @@ test('Load reads every field, Apply updates runtime and Save preserves unapplied
   assert.equal(element('grid-size-z').value, '32');
   assert.equal(element('grid-dTexpireCell').value, '18446744073709551615');
   assert.equal(element('grid-dTexpirePCL').value, '9007199254740993');
+  assert.equal(element('grid-nWfilMed').value, '3');
+  assert.equal(element('grid-nWfilAvr').value, '2');
   assert.equal(element('grid-config-apply').disabled, false);
   element('grid-origin-y').value = '-7.5';
   element('grid-nMaxLevel').value = '40';
+  element('grid-nWfilMed').value = '5';
+  element('grid-nWfilAvr').value = '7';
   submit();
   const { cmd, module, requestId, ...submitted } = sent[1];
   assert.equal(cmd, 'setGridConfig');
   assert.equal(module, 'grid');
   assert.notEqual(requestId, sent[0].requestId);
-  assert.deepEqual(submitted, { ...config, vPorigin: ['1.25', '-7.5', '3'], nMaxLevel: '40' });
+  assert.deepEqual(submitted, { ...config, vPorigin: ['1.25', '-7.5', '3'], nMaxLevel: '40', nWfilMed: '5', nWfilAvr: '7' });
   assert.equal(element('grid-config-load').disabled, true);
   reply(submitted);
   assert.equal(element('grid-config-status').textContent, 'Applied grid.');
   assert.equal(sent.length, 2, 'Apply must not send saveConfig');
   element('grid-nMaxCells').value = '999';
+  element('grid-nWfilMed').value = '1';
   element('grid-config-save').onclick();
   assert.deepEqual(Object.keys(sent[2]).sort(), ['cmd', 'module', 'requestId']);
   assert.equal(sent[2].cmd, 'saveConfig');
   controls.reply({ ...sent[2], bSuccess: true });
   assert.equal(element('grid-config-status').textContent, 'Saved grid to JSON.');
   assert.equal(element('grid-nMaxCells').value, '999', 'Save must preserve unsent edits');
+  assert.equal(element('grid-nWfilMed').value, '1', 'Save must preserve unsent filter edits');
   element('grid-config-load').onclick();
   reply({ nMaxCells: '10' });
   assert.equal(element('grid-nMaxCells').value, '10');
+  assert.equal(element('grid-nWfilMed').value, '3');
 });
 
 test('unrelated broadcasts, stale replies and other sources cannot overwrite the form', t => {
@@ -115,6 +123,7 @@ test('integer validation keeps uint64 precision and enforces all scalar bounds',
   for (const [key, invalid] of [
     ['dTexpireCell', '18446744073709551616'], ['dTexpirePCL', '-1'], ['dTexpirePCL', '1e9'],
     ['nMaxCells', '2147483648'], ['nMaxLevel', '41'], ['nPminBuild', '2147483648'], ['nPminBuild', '1.5'],
+    ...['nWfilMed', 'nWfilAvr'].flatMap(key => ['0', '-1', '2147483648', '1.5', '1e2', '', '+1', ' 1'].map(value => [key, value])),
   ]) {
     const input = element(`grid-${key}`), before = input.value;
     input.value = invalid;
@@ -124,9 +133,13 @@ test('integer validation keeps uint64 precision and enforces all scalar bounds',
     input.value = before;
   }
   for (const key of ['dTexpireCell', 'dTexpirePCL', 'nMaxCells', 'nMaxLevel', 'nPminBuild']) element(`grid-${key}`).value = '0';
+  element('grid-nWfilMed').value = '1';
+  element('grid-nWfilAvr').value = '2147483647';
   submit();
   assert.equal(sent.length, 2);
   for (const key of ['dTexpireCell', 'dTexpirePCL', 'nMaxCells', 'nMaxLevel', 'nPminBuild']) assert.equal(sent[1][key], '0');
+  assert.equal(sent[1].nWfilMed, '1');
+  assert.equal(sent[1].nWfilAvr, '2147483647');
 });
 
 test('invalid float coordinates and nonpositive sizes are blocked before sending', t => {
@@ -157,6 +170,15 @@ test('old or incomplete replies cannot partially load config', t => {
   element('grid-config-load').onclick();
   reply({ nMaxLevel: 4 });
   assert.equal(controls.loaded, false, 'numeric scalar fields from older protocols are rejected');
+  for (const fields of [
+    { nWfilMed: undefined, nWfilAvr: undefined },
+    ...['nWfilMed', 'nWfilAvr'].flatMap(key => [undefined, '0', '-1', '2147483648', '1.5', 1].map(value => ({ [key]: value }))),
+  ]) {
+    element('grid-config-load').onclick();
+    reply(fields);
+    assert.equal(controls.loaded, false, `invalid filter reply ${JSON.stringify(fields)}`);
+    assert.equal(element('grid-config-apply').disabled, true);
+  }
   element('grid-config-load').onclick();
   reply();
   assert.equal(controls.loaded, true);

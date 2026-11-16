@@ -140,8 +140,8 @@ namespace kai
 		{
 			const auto *cell = getCell(id);
 			const auto *pPcl = cell ? cell->getT() : nullptr;
-			if (pPcl && pPcl->m_nP > 0 && pPcl->m_tStamp > 0 &&
-				!bExpired(pPcl->m_tStamp, expire) && pPcl->m_nP > threshold)
+			if (pPcl && pPcl->m_nPfiltered > 0 && pPcl->m_tStamp > 0 &&
+				!bExpired(pPcl->m_tStamp, expire) && pPcl->m_nPfiltered > threshold)
 				return true;
 		}
 		return false;
@@ -154,6 +154,10 @@ namespace kai
 
 		jKv(j, "dTexpireCell", m_dTexpireCell);
 		jKv(j, "dTexpirePCL", m_dTexpirePCL);
+		jKv(j, "nWfilMed", m_nWfilMed);
+		jKv(j, "nWfilAvr", m_nWfilAvr);
+		m_nWfilMed = std::max(1, m_nWfilMed);
+		m_nWfilAvr = std::max(1, m_nWfilAvr);
 		jKv(j, "vPCLframesIn", m_vPCLframesIn);
 
 		m_vSelectedCells.clear();
@@ -200,6 +204,8 @@ namespace kai
 		json &j = *m_pJ;
 		j["dTexpireCell"] = m_dTexpireCell;
 		j["dTexpirePCL"] = m_dTexpirePCL;
+		j["nWfilMed"] = m_nWfilMed;
+		j["nWfilAvr"] = m_nWfilAvr;
 		j["vPCLframesIn"] = m_vPCLframesIn;
 		j["vSelectedCells"] = selectedCellIDsJSON();
 		j.erase("nP");
@@ -254,6 +260,27 @@ namespace kai
 
 		updatePoint();
 		deleteExpiredCells();
+		updatePointFilters();
+	}
+
+	void _OctreeGridPCL::updatePointFilters(bool bReset)
+	{
+		auto updateFilters = [this, bReset](auto &&self, OCTGRID_CELL<OCTGRID_CELL_PCL> *cell) -> void
+		{
+			NULL_(cell);
+			if (auto *pPcl = cell->getT())
+			{
+				if (bReset)
+				{
+					pPcl->m_filMed.init(m_nWfilMed);
+					pPcl->m_filAvr.init(m_nWfilAvr);
+				}
+				pPcl->m_nPfiltered = static_cast<int>(pPcl->m_filAvr.update(pPcl->m_filMed.update(pPcl->m_nP)));
+			}
+			for (int i = 0; i < N_OCT; ++i)
+				self(self, cell->getChild(i));
+		};
+		updateFilters(updateFilters, m_pCell);
 	}
 
 	void _OctreeGridPCL::resetPointInputs(void)
@@ -307,7 +334,13 @@ namespace kai
 	{
 		return visitCells(m_pCell, gP.m_vP, nMaxLevTo, bAdd, [&](OCTGRID_CELL<OCTGRID_CELL_PCL> *cell)
 		{
-			OCTGRID_CELL_PCL *pPcl = bAdd ? cell->addT() : cell->getT();
+			OCTGRID_CELL_PCL *pPcl = cell->getT();
+			if (!pPcl && bAdd)
+			{
+				pPcl = cell->addT();
+				pPcl->m_filMed.init(m_nWfilMed);
+				pPcl->m_filAvr.init(m_nWfilAvr);
+			}
 			NULL_F(pPcl);
 			updatePCLcell(pPcl, gP, tNow);
 			return true;

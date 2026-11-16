@@ -5,7 +5,10 @@ const integerLimits = {
   nMaxCells: 2147483647n,
   nMaxLevel: 40n,
   nPminBuild: 2147483647n,
+  nWfilMed: 2147483647n,
+  nWfilAvr: 2147483647n,
 };
+const integerMinimums = { nWfilMed: 1n, nWfilAvr: 1n };
 const decimal = /^-?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/;
 
 function vectorError(value, positive) {
@@ -15,9 +18,10 @@ function vectorError(value, positive) {
     positive && number <= 0 ? 'Cell size must be greater than zero.' : '';
 }
 
-function integerError(value, limit) {
-  return typeof value !== 'string' || !/^\d+$/.test(value) || BigInt(value) > limit ?
-    `Enter a whole number from 0 to ${limit}.` : '';
+function integerError(value, key) {
+  const minimum = integerMinimums[key] ?? 0n, limit = integerLimits[key];
+  return typeof value !== 'string' || !/^\d+$/.test(value) || BigInt(value) < minimum || BigInt(value) > limit ?
+    `Enter a whole number from ${minimum} to ${limit}.` : '';
 }
 
 export class GridConfigControls {
@@ -63,7 +67,7 @@ export class GridConfigControls {
       for (const [key, input] of Object.entries(this.integers)) {
         // Never round expiry durations through Number/valueAsNumber.
         config[key] = input.value;
-        input.setCustomValidity(integerError(input.value, integerLimits[key]));
+        input.setCustomValidity(integerError(input.value, key));
       }
       if (!event.currentTarget.reportValidity()) return;
       this.send('setGridConfig', config);
@@ -142,7 +146,7 @@ export class GridConfigControls {
     }
     const validVectors = Object.keys(this.vectors).every(key => Array.isArray(reply[key]) && reply[key].length === 3 &&
       reply[key].every(value => !vectorError(value, key === 'vRootCellSize')));
-    if (!validVectors || Object.entries(integerLimits).some(([key, limit]) => integerError(reply[key], limit))) {
+    if (!validVectors || Object.keys(integerLimits).some(key => integerError(reply[key], key))) {
       this.loaded = false;
       $('#grid-config-status').textContent = 'Invalid grid config reply. Load to retry.';
       this.refresh();

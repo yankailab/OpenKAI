@@ -124,9 +124,10 @@ All content is displayed as text, including malformed replies.
 ### Grid config
 
 The **Grid config** form below **Point scale** sets the root center and full
-root cell size in metres. The following **Grid levels config** section edits the
-following five parameters. `dTexpireCell`, `dTexpirePCL` and `nMaxLevel` belong to
-the linked `_OctreeGridPCL`; `nMaxCells` and `nPminBuild` belong to the editor:
+root cell size in metres. **Grid levels config** and **Occupancy smoothing** edit
+the following parameters. `dTexpireCell`, `dTexpirePCL`, `nMaxLevel`, `nWfilMed`
+and `nWfilAvr` belong to the linked `_OctreeGridPCL`; `nMaxCells` and `nPminBuild`
+belong to the editor:
 
 | Parameter | Meaning and accepted range |
 | --- | --- |
@@ -134,7 +135,9 @@ the linked `_OctreeGridPCL`; `nMaxCells` and `nPminBuild` belong to the editor:
 | `dTexpirePCL` | Maximum input point age in nanoseconds, with the same range and zero behavior. |
 | `nMaxCells` | Maximum published cells, 0–2147483647. The viewer's separate `nC` cap still applies. |
 | `nMaxLevel` | Maximum octree depth, 0–40; 0 means the root only. |
-| `nPminBuild` | Exclusive point-count threshold, 0–2147483647; 1 requires at least two points. |
+| `nPminBuild` | Exclusive filtered point-count threshold, 0–2147483647; 1 requires a filtered count of at least two. |
+| `nWfilMed` | Median window in backend grid updates, 1–2147483647; default 1 passes the count through. |
+| `nWfilAvr` | Average window after the median, in backend grid updates, 1–2147483647; default 1 passes the count through. |
 
 The form loads the current settings when the grid and command socket connect.
 When multiple grids are present, choose a source to configure. Incoming stream
@@ -159,24 +162,30 @@ the bound JSON or launch file. It sends one complete request to the selected mod
   "dTexpirePCL": "500000000",
   "nMaxCells": "18333",
   "nMaxLevel": "5",
-  "nPminBuild": "100"
+  "nPminBuild": "100",
+  "nWfilMed": "3",
+  "nWfilAvr": "2"
 }
 ```
 
-All values use decimal strings in commands and replies, including the five
+All values use decimal strings in commands and replies, including the seven
 integer parameters, so uint64 expiration durations survive browser round trips
 exactly. Saved JSON uses numeric values. Only this complete request format is
-accepted; the old root-only update is rejected. Coordinates must be finite
+accepted; requests or replies missing either filter window are rejected. Coordinates must be finite
 float32 values and sizes must be positive. All fields are validated before any
 changes. Root or maximum-depth changes clear old occupancy, publish an empty
 snapshot with the new header, and rebuild from point sources on subsequent
-updates. Changes are synchronized with the grid worker.
+updates. Changing either filter window resets both histories for retained cells
+and seeds the new filters with their current raw point counts, preserving points,
+colors and selections. This also makes switching to 1/1 take effect immediately.
+Applying unchanged windows or loading settings does not advance the filters.
+Changes are synchronized with the grid worker.
 
 Backend selections are remapped to preserve their world-space volume, using the
 same clipping and bounded boundary refinement as the browser picker. The browser
 remaps its own selections when the new stream header arrives. Successful Load
 and Apply replies contain the same `cmd`, `module`, and `requestId`,
-`bSuccess: true`, and all seven current settings in the flat format above.
+`bSuccess: true`, and all nine current settings in the flat format above.
 The browser accepts only the reply matching its pending request. Invalid
 requests return `bSuccess: false` with an `error` and leave settings unchanged.
 **Save** separately persists the selected grid's current running settings and

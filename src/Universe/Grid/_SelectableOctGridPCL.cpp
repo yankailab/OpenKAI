@@ -133,7 +133,7 @@ namespace kai
 			if (!pCell || out.size() >= limit)
 				return;
 			const auto *pT = pCell->getT();
-			if (pT && pT->m_nP > nPmin && pT->m_tStamp > 0)
+			if (pT && pT->m_nPfiltered > nPmin && pT->m_tStamp > 0)
 			{
 				SELECTABLE_OCTGRID_CELL cell;
 				cell.setID(pCell->m_ID);
@@ -266,7 +266,8 @@ namespace kai
 		json j = gridRootJSON();
 		j.update({{"dTexpireCell", std::to_string(m_pOGpcl->m_dTexpireCell)}, {"dTexpirePCL", std::to_string(m_pOGpcl->m_dTexpirePCL)},
 				  {"nMaxCells", std::to_string(m_nMaxCells)}, {"nMaxLevel", std::to_string(m_pOGpcl->m_nMaxLevel)},
-				  {"nPminBuild", std::to_string(m_nPminBuild)}});
+				  {"nPminBuild", std::to_string(m_nPminBuild)}, {"nWfilMed", std::to_string(m_pOGpcl->m_nWfilMed)},
+				  {"nWfilAvr", std::to_string(m_pOGpcl->m_nWfilAvr)}});
 		return j;
 	}
 
@@ -315,19 +316,24 @@ namespace kai
 		Vector3f origin = Vector3f::Zero(), size = Vector3f::Zero();
 		uint64_t expireCell = 0, expirePCL = 0;
 		int maxCells = 0, maxLevel = 0, minPoints = 0;
+		int windowMedian = 0, windowAverage = 0;
 		const bool valid = readSelectionVector(jK(j, "vPorigin"), origin) &&
 			readSelectionVector(jK(j, "vRootCellSize"), size) && size.x() > 0 && size.y() > 0 && size.z() > 0 &&
 			readConfigInteger(jK(j, "dTexpireCell"), expireCell) && readConfigInteger(jK(j, "dTexpirePCL"), expirePCL) &&
 			readConfigInteger(jK(j, "nMaxCells"), maxCells) && readConfigInteger(jK(j, "nMaxLevel"), maxLevel) &&
-			maxLevel <= OCTGRID_MAX_LEVEL && readConfigInteger(jK(j, "nPminBuild"), minPoints);
+			maxLevel <= OCTGRID_MAX_LEVEL && readConfigInteger(jK(j, "nPminBuild"), minPoints) &&
+			readConfigInteger(jK(j, "nWfilMed"), windowMedian) && windowMedian >= 1 &&
+			readConfigInteger(jK(j, "nWfilAvr"), windowAverage) && windowAverage >= 1;
 		if (!valid)
 		{
 			error = "Provide all grid configuration fields as decimal strings: finite origin, positive root size, "
-				"uint64 expiry durations, nonnegative int32 counts and nMaxLevel from 0 to 40";
+				"uint64 expiry durations, nonnegative int32 counts, nMaxLevel from 0 to 40, "
+				"and nWfilMed/nWfilAvr from 1 to 2147483647";
 			return false;
 		}
 
 		const bool geometryChanged = origin != m_pOGpcl->m_vPorigin || size != m_pOGpcl->m_vRootCellSize || maxLevel != m_pOGpcl->m_nMaxLevel;
+		const bool filtersChanged = windowMedian != m_pOGpcl->m_nWfilMed || windowAverage != m_pOGpcl->m_nWfilAvr;
 		if (geometryChanged)
 		{
 			std::lock_guard<std::mutex> lock(m_cellsMutex);
@@ -345,12 +351,15 @@ namespace kai
 		}
 		m_pOGpcl->m_dTexpireCell = expireCell;
 		m_pOGpcl->m_dTexpirePCL = expirePCL;
+		m_pOGpcl->m_nWfilMed = windowMedian;
+		m_pOGpcl->m_nWfilAvr = windowAverage;
 		m_nMaxCells = maxCells;
 		m_nPminBuild = minPoints;
 		// Re-publish count/limit/expiry changes immediately, even without new input.
 		if (!geometryChanged)
 		{
 			m_pOGpcl->deleteExpiredCells();
+			if (filtersChanged) m_pOGpcl->updatePointFilters(true);
 			updateDrawAssets();
 		}
 		return true;

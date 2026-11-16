@@ -23,7 +23,7 @@ SPEC = importlib.util.spec_from_file_location(
     "scepter_live", ROOT / "test/Sensor/ScepterLive.py")
 LIVE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(LIVE)
-SCALARS = ("dTexpireCell", "dTexpirePCL", "nMaxCells", "nMaxLevel", "nPminBuild")
+SCALARS = ("dTexpireCell", "dTexpirePCL", "nMaxCells", "nMaxLevel", "nPminBuild", "nWfilMed", "nWfilAvr")
 INPUT_IDS = {
     "vPorigin": [f"grid-origin-{axis}" for axis in "xyz"],
     "vRootCellSize": [f"grid-size-{axis}" for axis in "xyz"],
@@ -163,6 +163,7 @@ def verify_saved(launch, expected):
     config = json.loads(launch.read_text())
     backend, editor = config["octGridPCL"], config["octGrid"]
     assert "vSelectedCells" not in editor and "nMaxLevel" not in editor
+    assert "nWfilMed" not in editor and "nWfilAvr" not in editor
     assert "nMaxCells" not in backend and "nPminBuild" not in backend
     saved = dict(backend, **editor)
     for key in INPUT_IDS:
@@ -203,7 +204,7 @@ def main():
               ("APP", "octGridPCL", "octGrid", "scepterTransform", "viewer", "jsonCmd", "wsServer", "wsServer_rx", "wsServer_tx")}
     initial = dict(vPorigin=[1, 2, 3], vRootCellSize=[10, 10, 12],
                    dTexpireCell=1500000000, dTexpirePCL=500000000,
-                   nMaxCells=1000, nMaxLevel=5, nPminBuild=10)
+                   nMaxCells=1000, nMaxLevel=5, nPminBuild=10, nWfilMed=3, nWfilAvr=2)
     root_selection = ["0" * 32]
     config["octGridPCL"].update({key: value for key, value in initial.items()
                                 if key not in ("nMaxCells", "nPminBuild")},
@@ -221,7 +222,7 @@ def main():
     config["jsonCmd"]["vBASE"] = ["octGrid", "scepterTransform", "viewer"]
     updated = dict(vPorigin=[-1.25, 2.5, 4], vRootCellSize=[4, 6, 8],
                    dTexpireCell=18446744073709551615, dTexpirePCL=9007199254740993,
-                   nMaxCells=321, nMaxLevel=3, nPminBuild=7)
+                   nMaxCells=321, nMaxLevel=3, nPminBuild=7, nWfilMed=5, nWfilAvr=7)
     with tempfile.TemporaryDirectory(prefix="openkai-grid-config-") as temp:
         launch = Path(temp) / "SelectableGrid.json"
         launch.write_text(json.dumps(config, indent=2))
@@ -262,21 +263,23 @@ def main():
                                      size=updated["vRootCellSize"], maxLevel=updated["nMaxLevel"]))
                 # Save persists applied backend state without consuming a newer draft.
                 frames = state["frames"]
-                browser.fill({"nMaxCells": "999"})
+                browser.fill({"nMaxCells": "999", "nWfilMed": "1", "nWfilAvr": "1"})
                 browser.wait("stream leaves draft config unchanged", lambda state:
                              state["frames"] >= frames + 3 and state["inputs"]["nMaxCells"] == "999")
                 state = browser.action("grid-config-save", "saveConfig")
                 assert state["inputs"]["nMaxCells"] == "999", state
+                assert state["inputs"]["nWfilMed"] == "1" and state["inputs"]["nWfilAvr"] == "1", state
                 verify_saved(launch, updated)
                 browser.load(updated)
-                before_invalid = len(browser.state()["sent"])
-                browser.fill({"dTexpireCell": "-1"})
-                browser.click("grid-config-apply")
-                assert browser.evaluate("document.querySelector('#grid-config').checkValidity()") is False
-                assert len(browser.state()["sent"]) == before_invalid, browser.state()
-                browser.load(updated)
+                for invalid in ({"dTexpireCell": "-1"}, {"nWfilMed": "0"}, {"nWfilAvr": "2147483648"}):
+                    before_invalid = len(browser.state()["sent"])
+                    browser.fill(invalid)
+                    browser.click("grid-config-apply")
+                    assert browser.evaluate("document.querySelector('#grid-config').checkValidity()") is False
+                    assert len(browser.state()["sent"]) == before_invalid, browser.state()
+                    browser.load(updated)
                 # Bypass form validation to verify backend validation is atomic too.
-                invalid = dict(command, requestId="grid-config-invalid", nMaxLevel="-1")
+                invalid = dict(command, requestId="grid-config-invalid", nWfilAvr="0")
                 browser.evaluate(f"window.wsSendCmd({json.dumps(invalid)})")
                 state = browser.wait("backend rejects invalid complete config", lambda state:
                                      any(reply.get("requestId") == invalid["requestId"]

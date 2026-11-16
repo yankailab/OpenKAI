@@ -67,14 +67,21 @@ The **Grid config** form below Point scale loads the connected grid's root origi
 and size. **Grid levels config** adds `dTexpireCell`, `dTexpirePCL`, `nMaxCells`,
 `nMaxLevel`, and `nPminBuild`, using the same names and units as the launch JSON.
 Expiration durations are nanoseconds; zero disables expiration. `nPminBuild` is
-an exclusive point-count threshold: `1` publishes cells with at least two points.
+an exclusive filtered point-count threshold: `1` requires a smoothed count of at
+least two. **Occupancy smoothing** controls the backend's median and average
+windows with `nWfilMed` and `nWfilAvr` (1–2147483647); both count backend grid updates and default to 1, which
+passes the point count through without smoothing. Set larger windows to enable
+smoothing.
 Choose the source when more than one grid is connected. **Load** reloads its
 current runtime settings through `getGridConfig`; stream frames leave edits alone.
-**Apply** sends all seven settings together through `setGridConfig` and changes
+**Apply** sends all nine settings together through `setGridConfig` and changes
 only the running grid. **Save** sends `saveConfig` to persist its current settings
 and selections in the original launch JSON. Apply edits before saving; Save leaves
 unapplied form values untouched. Root or depth changes rebuild occupancy and
-remap running selections within the new root. Only the complete command format is accepted.
+remap running selections within the new root. Changing either window restarts
+both filters from each retained cell's current count without clearing points or
+selections. Unchanged windows and Load preserve filter history. Only the complete
+command format, including both filter windows, is accepted in requests and replies.
 The **Grid levels show range** sliders filter drawing and picking locally; they
 do not change the configured `nMaxLevel` or saved JSON.
 

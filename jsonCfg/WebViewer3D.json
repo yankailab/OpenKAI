@@ -55,6 +55,8 @@
   },
   "octGridPCL": {
     "class": "_OctreeGridPCL",
+    "nWfilMed": 1,
+    "nWfilAvr": 1,
     "thread": {
       "FPS": 5
     },

@@ -98,6 +98,8 @@ For example, a file, grid, and viewer can share one cloud without referring to t
     "bON": true,
     "vPCLframesIn": ["filePoints"],
     "vSelectedCells": [],
+    "nWfilMed": 1,
+    "nWfilAvr": 1,
     "dTexpireCell": 0
   },
   "octGrid": {
@@ -113,6 +115,23 @@ For example, a file, grid, and viewer can share one cloud without referring to t
   }
 }
 ```
+
+`_OctreeGridPCL` smooths each retained cell's cumulative point count through a
+median filter followed by an average filter. Configure `nWfilMed` and `nWfilAvr`
+in the backend's launch JSON; both default to 1 and values below 1 are clamped to
+1. A window of 1 passes the input through, so smoothing is disabled by default.
+Larger windows enable smoothing for each stage. The web viewer's **Occupancy
+smoothing** controls load and apply both windows through `_SelectableOctGridPCL`;
+Save persists the applied values in the linked backend's configuration. Applying
+changed windows restarts both histories from each retained cell's current count.
+Windows count backend grid updates, including updates with
+no new input, rather than elapsed milliseconds or point frames. The median
+passes through its input until its window is full and uses the upper middle
+sample for even windows; the average uses the samples
+available so far and truncates to an integer count. Selection occupancy and
+`nPminBuild` use this filtered count. Raw counts still accumulate for point/color
+bookkeeping, and cell expiration immediately discards the cell and its filter
+history. Clearing a payload or rebuilding the grid also resets filter history.
 
 Both web and ImGUI geometry viewers retain `vGeometry`. Each entry names `PCLframeIn`, `LineFrameIn`, or both, with an optional display `name`. Existing `nP`, `nL`, visibility, and material settings remain viewer limits and styling. The old `_GeometryBase` entry and `bFrame` setting are removed. `vSelectableOctGrid` remains unchanged. `_WebGLIM` reads the stream named by `PCLmapIn`; its source `_GLIM` writes that same stream through `PCLmapOut`.
 

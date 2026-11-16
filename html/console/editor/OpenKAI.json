@@ -3,7 +3,7 @@
   "title": "OpenKAI editor class catalog",
   "description": "Source-derived editor metadata; not a JSON Schema validator. See SCHEMA.md.",
   "generator": "tools/generate-schema.py",
-  "sourceDigest": "dc75a661097c505fee800479b2116ce8a94260426d269badbb70dff252cf27da",
+  "sourceDigest": "0650a673ab7d698cd913edb0c5d5a4c954e7dacfceccb211edcd20342b02842e",
   "categories": [
     "Actuator",
     "Actuator/Articulated",
@@ -29322,7 +29322,7 @@
     {
       "name": "_OctreeGridPCL",
       "category": "Universe/Grid",
-      "source": "src/Universe/Grid/_OctreeGridPCL.h:24",
+      "source": "src/Universe/Grid/_OctreeGridPCL.h:32",
       "baseClasses": [
         "_OctreeGridBase"
       ],
@@ -29400,6 +29400,30 @@
         },
         {
           "path": [
+            "nWfilAvr"
+          ],
+          "type": "integer",
+          "declaredIn": "_OctreeGridPCL",
+          "source": "src/Universe/Grid/_OctreeGridPCL.cpp:158",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_nWfilAvr",
+          "cppType": "int",
+          "default": 1
+        },
+        {
+          "path": [
+            "nWfilMed"
+          ],
+          "type": "integer",
+          "declaredIn": "_OctreeGridPCL",
+          "source": "src/Universe/Grid/_OctreeGridPCL.cpp:157",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_nWfilMed",
+          "cppType": "int",
+          "default": 1
+        },
+        {
+          "path": [
             "name"
           ],
           "type": "string",
@@ -29444,7 +29468,7 @@
           ],
           "type": "array",
           "declaredIn": "_OctreeGridPCL",
-          "source": "src/Universe/Grid/_OctreeGridPCL.cpp:157",
+          "source": "src/Universe/Grid/_OctreeGridPCL.cpp:161",
           "typeEvidence": "declaration",
           "cppVariable": "m_vPCLframesIn",
           "cppType": "vector<string>",
@@ -29520,7 +29544,7 @@
       ],
       "diagnostics": [
         {
-          "source": "src/Universe/Grid/_OctreeGridPCL.cpp:219",
+          "source": "src/Universe/Grid/_OctreeGridPCL.cpp:225",
           "kind": "unresolved-module-reference",
           "expression": "name",
           "resolution": "Covered by the vPCLframesIn DataObject adapter; names are loaded before link."
@@ -40492,8 +40516,8 @@
       "src/Vision/_VideoFile.h",
       "src/main.cpp"
     ],
-    "configReads": 628,
-    "resolvedReads": 616,
+    "configReads": 630,
+    "resolvedReads": 618,
     "moduleLookups": 142,
     "resolvedLookups": 137,
     "unresolvedReads": 12,
@@ -40624,7 +40648,7 @@
         "className": "_WebMavlinkStream"
       },
       {
-        "source": "src/Universe/Grid/_OctreeGridPCL.cpp:219",
+        "source": "src/Universe/Grid/_OctreeGridPCL.cpp:225",
         "kind": "unresolved-module-reference",
         "expression": "name",
         "resolution": "Covered by the vPCLframesIn DataObject adapter; names are loaded before link.",

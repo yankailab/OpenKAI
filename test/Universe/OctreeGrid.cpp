@@ -237,6 +237,144 @@ void testCountsColorsAndPaths()
     assert(f.backend.getCell(UUID128(0))->getT()->m_nP == 17);
 }
 
+void testSingleSampleFilters()
+{
+    Median<int> median;
+    Average<int64_t> average;
+    assert(median.init(3) && average.init(3));
+    for (int value : {2, 8, 5})
+    {
+        median.update(value);
+        average.update(value);
+    }
+    assert(median.get() == 5 && average.get() == 5);
+
+    for (int window : {1, 0, -1})
+    {
+        assert(median.init(window) && average.init(window));
+        for (int value : {9, 1, -7, INT32_MAX})
+        {
+            assert(median.update(value) == value && median.get() == value);
+            assert(average.update(value) == value && average.get() == value);
+        }
+        median.reset();
+        average.reset();
+        assert(median.get() == 0 && average.get() == 0);
+        assert(median.update(4) == 4 && average.update(4) == 4);
+    }
+
+    // Re-enabling smoothing starts with fresh histories, including window 2.
+    assert(median.init(2) && average.init(2));
+    assert(median.update(8) == 8 && average.update(8) == 8);
+    assert(median.update(2) == 8 && average.update(2) == 5);
+    assert(median.update(4) == 4 && average.update(4) == 3);
+}
+
+void testPointFilterBypass()
+{
+    const GEOMETRY_POINT point = {{1, 1, 1}, {1, 0, 0}, 0};
+    const json windows[] = {json::object(), {{"nWfilMed", 1}, {"nWfilAvr", 3}},
+                           {{"nWfilMed", 3}, {"nWfilAvr", 1}}};
+    const int expected[][3] = {{2, 8, 20}, {2, 5, 10}, {2, 8, 8}};
+    for (size_t mode = 0; mode < std::size(windows); ++mode)
+    {
+        json settings = windows[mode];
+        settings["nMaxLevel"] = 0;
+        settings["vSelectedCells"] = {idHex(UUID128(0))};
+        Fixture f(settings);
+        const int added[] = {2, 6, 12};
+        for (size_t i = 0; i < std::size(added); ++i)
+        {
+            f.publish(vector<GEOMETRY_POINT>(added[i], point));
+            assert(f.backend.getCell(UUID128(0))->getT()->m_nPfiltered == expected[mode][i]);
+            assert(f.backend.bSelectedOccupied(7) == (expected[mode][i] > 7));
+        }
+        assert(f.backend.saveConfig(false));
+        const json &saved = f.config.getJson()->at("grid");
+        assert(saved.at("nWfilMed") == windows[mode].value("nWfilMed", 1));
+        assert(saved.at("nWfilAvr") == windows[mode].value("nWfilAvr", 1));
+    }
+}
+
+void testPointFilterWindowsAndOccupancy()
+{
+    const UUID128 leafID = idForPath({7, 7});
+    const GEOMETRY_POINT point = {{1.5f, 1.5f, 1.5f}, {1, 0, 0}, 0};
+    Fixture f({{"vRootCellSize", {4, 4, 4}}, {"nMaxLevel", 2}, {"nPminBuild", 21},
+               {"nWfilMed", 5}, {"nWfilAvr", 3}, {"vSelectedCells", {idHex(leafID)}}}, true);
+    const int counts[] = {2, 8, 20, 26, 32, 38};
+    const int filtered[] = {2, 5, 10, 18, 22, 24};
+    int previous = 0;
+    for (size_t i = 0; i < std::size(counts); ++i)
+    {
+        f.publish(vector<GEOMETRY_POINT>(counts[i] - previous, point));
+        previous = counts[i];
+        for (int level = 0; level <= 2; ++level)
+        {
+            const auto *cell = f.backend.getCell(point.m_vP, level);
+            assert(cell && cell->getT()->m_nP == counts[i]);
+            assert(cell->getT()->m_nPfiltered == filtered[i]);
+        }
+        assert(f.backend.bSelectedOccupied(21) == (filtered[i] > 21));
+        assert(!f.backend.bSelectedOccupied(filtered[i])); // Exclusive threshold.
+        SELECTABLE_OCTGRID_CELLS snapshot;
+        assert(f.grid.get(&snapshot) == (filtered[i] > 21 ? 3 : 0));
+        f.grid.tick(); // Publishing alone must not advance the time window.
+        assert(f.backend.getCell(leafID)->getT()->m_nPfiltered == filtered[i]);
+    }
+    f.tick(); // Unchanged input still advances filters once per backend update.
+    assert(f.backend.getCell(leafID)->getT()->m_nPfiltered == 26);
+    assert(f.backend.getCell(leafID)->getT()->m_nP == 38);
+    for (int i = 0; i < 5; ++i) f.tick();
+    assert(f.backend.getCell(leafID)->getT()->m_nPfiltered == 38);
+
+    assert(f.backend.saveConfig(true));
+    const json saved = storedConfig(f);
+    assert(saved.at("nWfilMed") == 5 && saved.at("nWfilAvr") == 3);
+    assert(f.backend.loadConfig()); // Reload recreates cells with fresh filter histories.
+    f.publish({point, point});
+    assert(f.backend.getCell(leafID)->getT()->m_nPfiltered == 2);
+    f.publish(vector<GEOMETRY_POINT>(6, point));
+    f.publish(vector<GEOMETRY_POINT>(12, point));
+    assert(f.backend.getCell(leafID)->getT()->m_nPfiltered == 10);
+
+    Fixture minimum({{"nWfilMed", -1}, {"nWfilAvr", 0}});
+    assert(minimum.backend.saveConfig(false));
+    const json &effective = minimum.config.getJson()->at("grid");
+    assert(effective.at("nWfilMed") == 1 && effective.at("nWfilAvr") == 1);
+}
+
+void testPointFilterLargeCountsAndExpiry()
+{
+    const UUID128 leafID = idForPath({7, 7});
+    const GEOMETRY_POINT point = {{1.5f, 1.5f, 1.5f}, {1, 0, 0}, 0};
+    Fixture f({{"vRootCellSize", {4, 4, 4}}, {"nMaxLevel", 2}, {"nPminBuild", 0},
+               {"nWfilMed", 3}, {"nWfilAvr", 2},
+               {"dTexpireCell", NSEC_SEC}, {"vSelectedCells", {idHex(leafID)}}});
+    f.publish({point});
+    auto *payload = f.backend.getCell(leafID)->getT();
+    payload->m_nP = INT32_MAX;
+    for (int i = 0; i < 4; ++i) f.tick();
+    assert(payload->m_nPfiltered == INT32_MAX); // The average sum exceeds int32.
+
+    // A structural parent without a payload must not hide descendant filters.
+    auto *root = f.backend.getCell(UUID128(0));
+    delete root->m_pT;
+    root->m_pT = nullptr;
+    payload->clear();
+    assert(payload->m_nPfiltered == 0 && payload->m_filMed.get() == 0 && payload->m_filAvr.get() == 0);
+    payload->m_nP = 1;
+    payload->m_tStamp = getTns();
+    f.tick();
+    assert(payload->m_nPfiltered == 1 && f.backend.bSelectedOccupied(0));
+
+    f.backend.ageCells(getTns() - 2 * NSEC_SEC);
+    f.tick();
+    assert(!f.backend.getCell(leafID) && !f.backend.bSelectedOccupied(0));
+    f.publish({point});
+    assert(f.backend.getCell(leafID)->getT()->m_nPfiltered == 1);
+}
+
 void testCellIDLayoutAndGeometry()
 {
     assert(sameID(idForPath({5}), UUID128(0, 0x01a0000000000000)));
@@ -402,6 +540,7 @@ void testGridConfigLoadAndPersistence()
     const json boundBefore = *f.config.getJson();
     json settings = gridConfig(f.grid);
     assert(settings.at("dTexpireCell") == "0" && settings.at("nMaxLevel") == "2");
+    assert(settings.at("nWfilMed") == "1" && settings.at("nWfilAvr") == "1");
     assert(f.grid.get(&after) == 3 && before.m_header.m_tStamp == after.m_header.m_tStamp);
     assert(f.backend.getCell(UUID128(0))->getT()->m_nP == 1 && f.backend.bSelectedOccupied(0));
     assert(storedConfig(f) == storedBefore); // Load never writes or rebuilds occupancy.
@@ -414,6 +553,8 @@ void testGridConfigLoadAndPersistence()
     settings["nMaxCells"] = "2147483647";
     settings["nMaxLevel"] = "4";
     settings["nPminBuild"] = "2147483647";
+    settings["nWfilMed"] = "2147483647";
+    settings["nWfilAvr"] = "2147483647";
     const json reply = setGridConfig(f.grid, settings);
     assert(reply.at("bSuccess") == true && !reply.contains("bApplied"));
     const json current = gridConfig(f.grid);
@@ -421,12 +562,15 @@ void testGridConfigLoadAndPersistence()
     assert(current.at("dTexpirePCL") == settings.at("dTexpirePCL"));
     assert(current.at("nMaxCells") == settings.at("nMaxCells"));
     assert(current.at("nPminBuild") == settings.at("nPminBuild"));
+    assert(current.at("nWfilMed") == settings.at("nWfilMed"));
+    assert(current.at("nWfilAvr") == settings.at("nWfilAvr"));
     assert(f.grid.get(&after) == 0 && after.m_header.m_nMaxLevel == 4);
     assert(after.m_header.m_vPorigin == (std::array<float, 3>{.125f, -.5f, 1.25f}));
     assert(after.m_header.m_vRootCellSize == (std::array<float, 3>{8, 10, 12}));
     assert(storedConfig(f) == storedBefore && *f.config.getJson() == boundBefore);
     // Save ignores incoming drafts and persists only the current applied state.
     const json saveReply = gridCommand(f.grid, {{"cmd", "saveConfig"}, {"nMaxLevel", "30"},
+        {"nWfilMed", "1"}, {"nWfilAvr", "1"},
         {"vPorigin", {"100", "100", "100"}}, {"cellIDs", json::array()}});
     assert(saveReply.at("bSuccess") == true && saveReply.size() == 4);
     assert(gridConfig(f.grid) == current);
@@ -434,6 +578,7 @@ void testGridConfigLoadAndPersistence()
     assert(saved.at("dTexpireCell").is_number_unsigned() && saved.at("dTexpireCell").get<uint64_t>() == UINT64_MAX);
     assert(saved.at("dTexpirePCL").get<uint64_t>() == 9007199254740993ULL);
     assert(saved.at("nMaxCells") == INT32_MAX && saved.at("nPminBuild") == INT32_MAX);
+    assert(saved.at("nWfilMed") == INT32_MAX && saved.at("nWfilAvr") == INT32_MAX);
     assert(saved.at("nMaxLevel") == 4 && saved.at("vPorigin") == json({.125f, -.5f, 1.25f}));
     Fixture restored(saved); // High cell cap must not allocate billions of cells at startup.
     assert(gridConfig(restored.grid) == current);
@@ -449,7 +594,7 @@ void testInvalidGridConfigIsAtomic()
     SELECTABLE_OCTGRID_CELLS before, after;
     assert(f.grid.get(&before) == 3);
     vector<json> invalid;
-    for (const char *key : {"vPorigin", "vRootCellSize", "dTexpireCell", "dTexpirePCL", "nMaxCells", "nMaxLevel", "nPminBuild"})
+    for (const char *key : {"vPorigin", "vRootCellSize", "dTexpireCell", "dTexpirePCL", "nMaxCells", "nMaxLevel", "nPminBuild", "nWfilMed", "nWfilAvr"})
     {
         json candidate = original;
         candidate.erase(key);
@@ -473,6 +618,18 @@ void testInvalidGridConfigIsAtomic()
         invalid.push_back(candidate);
     }
     invalid.push_back({{"vPorigin", {"1", "2", "3"}}, {"vRootCellSize", {"8", "8", "8"}}});
+    json oldConfig = original;
+    oldConfig.erase("nWfilMed");
+    oldConfig.erase("nWfilAvr");
+    invalid.push_back(oldConfig);
+    for (const char *key : {"nWfilMed", "nWfilAvr"})
+        for (const json &value : json::array({"0", "-1", "2147483648", "1.5", "1e2", "", 1, false, nullptr}))
+        {
+            json candidate = original;
+            candidate["nWfilMed"] = "5"; // Invalid average must not apply the valid median window.
+            candidate[key] = value;
+            invalid.push_back(candidate);
+        }
     for (const auto &candidate : invalid)
     {
         const json reply = setGridConfig(f.grid, candidate);
@@ -482,6 +639,62 @@ void testInvalidGridConfigIsAtomic()
         assert(f.grid.get(&after) == 3 && after.m_header.m_tStamp == before.m_header.m_tStamp);
         assert(f.backend.getCell(UUID128(0))->getT()->m_nP == 1 && f.backend.bSelectedOccupied(0));
     }
+}
+
+void testGridConfigUpdatesLiveFilters()
+{
+    const GEOMETRY_POINT point = {{1.5f, 1.5f, 1.5f}, {1, 0, 0}, 0};
+    const UUID128 leafID = idForPath({7, 7});
+    Fixture f({{"vRootCellSize", {4, 4, 4}}, {"nMaxLevel", 2}, {"nPminBuild", 5},
+               {"vSelectedCells", {idHex(leafID)}}}, true);
+    f.publish({point, point});
+    auto *leaf = f.backend.getCell(leafID);
+    const auto stamp = leaf->getT()->m_tStamp;
+    const json bound = *f.config.getJson(), saved = storedConfig(f);
+    json settings = gridConfig(f.grid);
+    settings["nWfilMed"] = "3";
+    settings["nWfilAvr"] = "3";
+    assert(setGridConfig(f.grid, settings).at("bSuccess") == true);
+    assert(f.backend.getCell(leafID) == leaf && leaf->getT()->m_tStamp == stamp);
+    assert(leaf->getT()->m_nP == 2 && leaf->getT()->m_nPfiltered == 2);
+    assert(sameID(f.backend.getSelectedCells().front(), leafID));
+    f.publish(vector<GEOMETRY_POINT>(6, point)); // 2 -> 8 yields average 5.
+    for (int level = 0; level <= 2; ++level)
+        assert(f.backend.getCell(point.m_vP, level)->getT()->m_nPfiltered == 5);
+    SELECTABLE_OCTGRID_CELLS snapshot;
+    assert(f.grid.get(&snapshot) == 0 && !f.backend.bSelectedOccupied(5));
+    assert(setGridConfig(f.grid, settings).at("bSuccess") == true);
+    assert(gridConfig(f.grid) == settings && leaf->getT()->m_nPfiltered == 5); // Unchanged Apply/Load do not sample.
+
+    settings["nWfilAvr"] = "1"; // Reset existing histories and seed from raw count 8.
+    assert(setGridConfig(f.grid, settings).at("bSuccess") == true);
+    assert(f.grid.get(&snapshot) == 3 && f.backend.bSelectedOccupied(5));
+    assert(leaf->getT()->m_nP == 8 && leaf->getT()->m_nPfiltered == 8);
+    f.publish(vector<GEOMETRY_POINT>(6, point)); // Median warmup passes 14 through.
+    f.publish(vector<GEOMETRY_POINT>(6, point)); // Full median [8,14,20] produces 14.
+    assert(leaf->getT()->m_nP == 20 && leaf->getT()->m_nPfiltered == 14);
+    settings["nWfilMed"] = "1";
+    settings["nWfilAvr"] = "3";
+    assert(setGridConfig(f.grid, settings).at("bSuccess") == true);
+    assert(leaf->getT()->m_nPfiltered == 20);
+    f.publish(vector<GEOMETRY_POINT>(6, point));
+    assert(leaf->getT()->m_nPfiltered == 23);
+    settings["nWfilAvr"] = "1";
+    assert(setGridConfig(f.grid, settings).at("bSuccess") == true);
+    assert(leaf->getT()->m_nPfiltered == 26 && f.backend.getCell(leafID) == leaf);
+    assert(*f.config.getJson() == bound && storedConfig(f) == saved);
+
+    // Newly allocated cells inherit applied windows, not the launch JSON values.
+    settings["nWfilAvr"] = "3";
+    assert(setGridConfig(f.grid, settings).at("bSuccess") == true);
+    GEOMETRY_POINT other = point;
+    other.m_vP = {-1.5f, -1.5f, -1.5f};
+    f.publish({other, other});
+    f.publish(vector<GEOMETRY_POINT>(6, other));
+    assert(f.backend.getCell(other.m_vP)->getT()->m_nPfiltered == 5);
+    assert(gridCommand(f.grid, {{"cmd", "saveConfig"}}).at("bSuccess") == true);
+    Fixture restored(storedConfig(f));
+    assert(gridConfig(restored.grid) == settings);
 }
 
 void testGridConfigRebuildsAndRemapsSelection()
@@ -765,6 +978,10 @@ int main()
 {
     testOctreeGridBase();
     testCountsColorsAndPaths();
+    testSingleSampleFilters();
+    testPointFilterBypass();
+    testPointFilterWindowsAndOccupancy();
+    testPointFilterLargeCountsAndExpiry();
     testCellIDLayoutAndGeometry();
     testDeepGeneratedIDsAndSelection();
     testInvalidCellIDs();
@@ -772,6 +989,7 @@ int main()
     testPayloadClearPreservesCellIdentity();
     testGridConfigLoadAndPersistence();
     testInvalidGridConfigIsAtomic();
+    testGridConfigUpdatesLiveFilters();
     testGridConfigRebuildsAndRemapsSelection();
     testGridConfigRuntimeLimitsAndSaveFailure();
     testCellSelectionApplyLoadAndSave();
