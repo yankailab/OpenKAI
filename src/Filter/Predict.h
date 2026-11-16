@@ -17,7 +17,7 @@ namespace kai
 	class Predict : public FilterBase<T>
 	{
 	public:
-		Predict<T>()
+		Predict()
 		{
 			FilterBase<T>::m_nW = 2;
 		}
@@ -25,7 +25,7 @@ namespace kai
 		{
 		}
 
-		bool init(float kT)
+		bool init(T kT = 1)
 		{
 			m_kT = kT;
 			FilterBase<T>::reset();
@@ -34,26 +34,26 @@ namespace kai
 
 		using FilterBase<T>::update;
 
-		T update(T v, float dT)
+		T update(T v, T dT)
 		{
 			FilterBase<T>::add(v);
 
-			if (FilterBase<T>::m_qV.size() < static_cast<size_t>(FilterBase<T>::m_nW))
+			if (FilterBase<T>::m_vV.size() < static_cast<size_t>(FilterBase<T>::m_nW))
 			{
 				FilterBase<T>::m_v = v;
 				return FilterBase<T>::m_v;
 			}
 
-			size_t s = FilterBase<T>::m_qV.size();
-			T p = FilterBase<T>::m_qV.at(s - 2);
-			T q = FilterBase<T>::m_qV.at(s - 1);
+			size_t s = FilterBase<T>::m_vV.size();
+			T p = FilterBase<T>::m_vV.at(s - 2);
+			T q = FilterBase<T>::m_vV.at(s - 1);
 
-			FilterBase<T>::m_v = q + (q - p) * (T)dT * m_kT;
+			FilterBase<T>::m_v = q + (q - p) * dT * m_kT;
 			return FilterBase<T>::m_v;
 		}
 
 	protected:
-		float m_kT = 1.0;
+		T m_kT = 1;
 	};
 
 }

@@ -17,11 +17,11 @@ namespace kai
 	class Median : public FilterBase<T>
 	{
 	public:
-		Median<T>()
+		Median()
 		{
 			FilterBase<T>::m_nW = 3;
 		}
-		virtual ~Median<T>()
+		virtual ~Median()
 		{
 		}
 
@@ -40,15 +40,15 @@ namespace kai
 		{
 			FilterBase<T>::add(v);
 
-			if (FilterBase<T>::m_qV.size() < static_cast<size_t>(FilterBase<T>::m_nW))
+			if (FilterBase<T>::m_vV.size() < static_cast<size_t>(FilterBase<T>::m_nW))
 			{
 				FilterBase<T>::m_v = v;
 				return FilterBase<T>::m_v;
 			}
 
-			m_qSort = FilterBase<T>::m_qV;
-			std::sort(m_qSort.begin(), m_qSort.end());
-			FilterBase<T>::m_v = m_qSort.at(m_iMid);
+			m_vSort = FilterBase<T>::m_vV;
+			std::sort(m_vSort.begin(), m_vSort.end());
+			FilterBase<T>::m_v = m_vSort.at(m_iMid);
 
 			return FilterBase<T>::m_v;
 		}
@@ -56,12 +56,12 @@ namespace kai
 		void reset(void)
 		{
 			FilterBase<T>::reset();
-			m_qSort.clear();
+			m_vSort.clear();
 		}
 
 	private:
 		int m_iMid = 1;
-		std::deque<T> m_qSort;
+		std::vector<T> m_vSort;
 	};
 
 }

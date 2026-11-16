@@ -17,7 +17,7 @@ namespace kai
 	class Average : public FilterBase<T>
 	{
 	public:
-		Average<T>()
+		Average()
 		{
 			FilterBase<T>::m_nW = 2;
 		}
@@ -38,12 +38,12 @@ namespace kai
 		T update(T v)
 		{
 			FilterBase<T>::add(v);
-			T tot = 0.0;
-			int n = FilterBase<T>::m_qV.size();
-			for (int i = 0; i < n; i++)
-				tot += FilterBase<T>::m_qV.at(i);
 
-			FilterBase<T>::m_v = tot / (T)n;
+			T tot = 0.0;
+			for (const auto &value : FilterBase<T>::m_vV)
+				tot += value;
+
+			FilterBase<T>::m_v = tot / (T)FilterBase<T>::m_vV.size();
 			return FilterBase<T>::m_v;
 		}
 	};
