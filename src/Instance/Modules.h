@@ -16,8 +16,8 @@
 #include "../Universe/_TransformRigid.h"
 
 #ifdef WITH_UNIVERSE
-#include "../Universe/Grid/_OctreeBase.h"
-#include "../Universe/Grid/_OctreeGrid.h"
+#include "../Universe/Grid/_OctreeGridBase.h"
+#include "../Universe/Grid/_OctreeGridPCL.h"
 #include "../Universe/Grid/_SelectableOctGrid.h"
 #include "../Universe/Geometry/PointCloud/_PCLfile.h"
 #include "../Universe/Geometry/PointCloud/Pipeline/_PCmerge.h"

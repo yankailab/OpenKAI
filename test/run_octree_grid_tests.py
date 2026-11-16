@@ -15,11 +15,11 @@ def main():
     repo = pathlib.Path(__file__).resolve().parents[1]
     build = pathlib.Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else repo / "build"
     entries = json.loads((build / "compile_commands.json").read_text())
-    entry = next(item for item in entries if item["file"].endswith("/src/Universe/Grid/_OctreeGrid.cpp"))
+    entry = next(item for item in entries if item["file"].endswith("/src/Universe/Grid/_OctreeGridPCL.cpp"))
     with tempfile.TemporaryDirectory(prefix="openkai-octree-grid-tests-") as temp:
         objects = []
-        sources = ["test/Universe/OctreeGrid.cpp", "src/Universe/Grid/_OctreeGrid.cpp",
-                   "src/Universe/Grid/_SelectableOctGrid.cpp"]
+        sources = ["test/Universe/OctreeGrid.cpp", "test/Universe/OctreeGridBase.cpp", "src/Universe/Grid/_OctreeGridPCL.cpp",
+                   "src/Universe/Grid/_SelectableOctGrid.cpp", "src/Universe/Grid/_OctreeGridBase.cpp"]
         for index, source in enumerate(sources):
             obj = str(pathlib.Path(temp) / f"test-{index}.o")
             args = shlex.split(entry["command"])

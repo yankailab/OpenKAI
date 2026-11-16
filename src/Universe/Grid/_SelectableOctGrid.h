@@ -1,7 +1,7 @@
 #ifndef OpenKAI_src_Universe_Grid__SelectableOctGrid_H_
 #define OpenKAI_src_Universe_Grid__SelectableOctGrid_H_
 
-#include "_OctreeGrid.h"
+#include "_OctreeGridPCL.h"
 #include <array>
 #include <cstddef>
 #include <vector>
@@ -49,35 +49,12 @@ namespace kai
 	inline bool octgridCellBox(const SELECTABLE_OCTGRID_HEADER &header, const UUID128 &id,
 							   std::array<float, 3> &center, std::array<float, 3> &size)
 	{
-		unsigned depth = (id.m_uint64[1] >> 56) & 63;
-		IF_F(header.m_nMaxLevel > OCTGRID_MAX_LEVEL || depth > header.m_nMaxLevel || id.m_uint64[1] >> 62);
-		uint64_t high = id.m_uint64[1] & (UINT64_MAX >> 8), low = id.m_uint64[0];
-		std::array<double, 3> c = {header.m_vPorigin[0], header.m_vPorigin[1], header.m_vPorigin[2]};
-		std::array<double, 3> s = {header.m_vRootCellSize[0], header.m_vRootCellSize[1], header.m_vRootCellSize[2]};
-		for (unsigned level = 0; level < depth; ++level)
-		{
-			const unsigned child = (high >> 53) & 7;
-			for (unsigned axis = 0; axis < 3; ++axis)
-			{
-				c[axis] += s[axis] * ((child & (4 >> axis)) ? 0.25 : -0.25);
-				s[axis] *= 0.5;
-			}
-			high = (high << 3) | (low >> 61);
-			low <<= 3;
-		}
-		// Consumed path bits may remain in the high reserved/depth byte.
-		IF_F((high & (UINT64_MAX >> 8)) || low);
-		for (unsigned axis = 0; axis < 3; ++axis)
-		{
-			center[axis] = float(c[axis]);
-			size[axis] = float(s[axis]);
-		}
-		return true;
+		return octgridCellBox(header.m_vPorigin, header.m_vRootCellSize, header.m_nMaxLevel, id, center, size);
 	}
 
 
 	// Adds viewer snapshots, persistent selection and browser commands to the grid.
-	class _SelectableOctGrid : public _OctreeGrid
+	class _SelectableOctGrid : public _OctreeGridPCL
 	{
 	public:
 		_SelectableOctGrid();

@@ -1,45 +1,31 @@
-#ifndef OpenKAI_src_Universe_Grid__OctreeGrid_H_
-#define OpenKAI_src_Universe_Grid__OctreeGrid_H_
+#ifndef OpenKAI_src_Universe_Grid__OctreeGridPCL_H_
+#define OpenKAI_src_Universe_Grid__OctreeGridPCL_H_
 
 #include <mutex>
-#include "../../Primitive/UUID128.h"
 #include "../../DataObject/PCLframe.h"
-#include "_OctreeBase.h"
+#include "_OctreeGridBase.h"
 
 namespace kai
 {
-	constexpr int OCTGRID_MAX_LEVEL = 40;
-
-	struct OCTGRID_PCL_CELL
+	struct OCTGRID_CELL_PCL
 	{
-		/*
-		cell ID format:
-		128 bit width from MSB to LSB
-		[127:126] 2 reserved bits, zero
-		[125:120] 6-bit cell depth (0 = root, 40 = deepest)
-		[119:0] forty 3-bit child indices, from level 0 at bits 119:117
-		        to level 39 at bits 2:0; unused path segments are zero
-		*/
-		UUID128 m_ID = 0;
-
 		int m_nP = 0;
 		Vector4f m_vC = {1, 1, 1, 1}; // default color
 		uint64_t m_tStamp = 0;		  // last updated time stamp
 
 		void clear(void)
 		{
-			m_ID = {0, 0};
 			m_nP = 0;
 			m_vC.setConstant(1);
 			m_tStamp = 0;
 		}
 	};
 
-	class _OctreeGrid : public _OctreeBase
+	class _OctreeGridPCL : public _OctreeGridBase
 	{
 	public:
-		_OctreeGrid();
-		virtual ~_OctreeGrid();
+		_OctreeGridPCL();
+		virtual ~_OctreeGridPCL();
 
 		virtual bool loadConfig(void) override;
 		bool saveConfig(bool bExport) override;
@@ -47,10 +33,11 @@ namespace kai
 		virtual bool start(void);
 		virtual bool check(void);
 
-		// grid
-		virtual OCTGRID_PCL_CELL *addCellPoint(const GEOMETRY_POINT &gP, const uint64_t &tNow, int nMaxLevTo = -1, bool bAdd = true);
-		virtual OCTGRID_PCL_CELL *getCell(const Vector3f &vP, int nMaxLevTo = -1);
-		virtual OCTGRID_PCL_CELL *getCell(const UUID128 &id);
+		// Return the spatial cell; point data is accessed through getT().
+		using _OctreeGridBase::getCell;
+		virtual OCTGRID_CELL<OCTGRID_CELL_PCL> *addCellPoint(const GEOMETRY_POINT &gP, const uint64_t &tNow, int nMaxLevTo = -1, bool bAdd = true);
+		virtual OCTGRID_CELL<OCTGRID_CELL_PCL> *getCell(const Vector3f &vP, int nMaxLevTo = -1);
+		virtual OCTGRID_CELL<OCTGRID_CELL_PCL> *getCell(const UUID128 &id);
 
 	protected:
 		// The update loop holds m_gridMutex across calculations and derived work.
@@ -63,17 +50,13 @@ namespace kai
 		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
-			((_OctreeGrid *)This)->update();
+			((_OctreeGridPCL *)This)->update();
 			return NULL;
 		}
 
 	protected:
-		Vector3f m_vPorigin = Vector3f::Zero();	 // cubic center of the root cell in local coordinate
-		Vector3f m_vRootCellSize = {10, 10, 10}; // root level cell size in meters
-		int m_nMaxLevel = 4;
-
 		// data
-		OCTREE_CELL<OCTGRID_PCL_CELL> *m_pCell = nullptr; // root cell
+		OCTGRID_CELL<OCTGRID_CELL_PCL> *m_pCell = nullptr; // root cell
 		uint64_t m_dTexpireCell = 0;					  // remove cell if no point is coming by this duration
 
 		struct PointInput

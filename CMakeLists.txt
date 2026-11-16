@@ -222,8 +222,8 @@ if(WITH_UNIVERSE)
 	src/UI/Viewer/Web/_WebSelectableOctGrid.cpp
 	src/UI/Viewer/SelectableOctGridSources.cpp
 	src/UI/Viewer/Web/_WebGeometry.cpp
-  src/Universe/Grid/_OctreeBase.cpp
-	src/Universe/Grid/_OctreeGrid.cpp
+  src/Universe/Grid/_OctreeGridBase.cpp
+	src/Universe/Grid/_OctreeGridPCL.cpp
 	src/Universe/Grid/_SelectableOctGrid.cpp
 	src/Universe/Geometry/PointCloud/_PCLfile.cpp
 	src/Universe/Geometry/PointCloud/Pipeline/_PCmerge.cpp

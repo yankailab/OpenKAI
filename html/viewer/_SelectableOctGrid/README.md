@@ -40,8 +40,10 @@ Viewer geometry entries use `PCLframeIn` and/or `LineFrameIn` stream names; they
 never resolve producer modules. Each publication replaces the corresponding
 geometry, and an empty publication clears it. Encoded point/line snapshots are
 reused until their source changes or records expire.
-It inherits `_OctreeGrid` calculations and adds cell snapshots, selection persistence,
-and interaction commands. `_OctreeGrid` itself only calculates occupancy.
+It inherits `_OctreeGridPCL` calculations and adds cell snapshots, selection persistence,
+and interaction commands. `_OctreeGridPCL` stores point counts, colors and timestamps
+in `OCTGRID_CELL_PCL` payloads. Its `_OctreeGridBase` parent defines grid geometry,
+typed `OCTGRID_CELL<T>` nodes, cell IDs and lookup. The version 7 stream is unchanged.
 The cells handshake identifies interactive sources with `selectableGrid: true`;
 the picker and Grid config controls target those sources.
 

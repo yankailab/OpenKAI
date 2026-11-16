@@ -55,7 +55,7 @@ class StreamReferenceSchemaTest(unittest.TestCase):
         self.assertEqual(tree[("_TransformRigidChildren",)]["targetClass"], "_TransformRigid")
         self.assertTrue(tree[("_TransformRigidChildren",)]["multiple"])
         for name in ("_Livox1", "_Livox2", "_Airy", "_E1R", "_PCLfile", "_PCmerge", "_PCrecv", "_PCsend",
-                     "_PCcrop", "_PCremove", "_PCdownSample", "_PCregistCol", "_OctreeBase",
+                     "_PCcrop", "_PCremove", "_PCdownSample", "_PCregistCol",
                      "_GeometryViewerBase", "_NavBase", "_AutopilotBase", "_LCalign"):
             with self.subTest(class_name=name):
                 self.assertEqual(self.classes[name]["baseClasses"], ["_ModuleBase"])
@@ -64,6 +64,23 @@ class StreamReferenceSchemaTest(unittest.TestCase):
                     self.assertNotIn((key,), self.parameters(name))
         for key in ("vT", "vR"):
             self.assertIn((key,), self.parameters("_TransformRigid"))
+
+    def test_octree_grid_inheritance_and_payload_configuration(self):
+        for name, base in (("_OctreeGridBase", "_ModuleBase"),
+                           ("_OctreeGridPCL", "_OctreeGridBase"),
+                           ("_SelectableOctGrid", "_OctreeGridPCL")):
+            self.assertEqual(self.classes[name]["baseClasses"], [base])
+            self.assertTrue(self.classes[name]["creatable"])
+            parameters = self.parameters(name)
+            for key in ("vPorigin", "vRootCellSize", "nMaxLevel"):
+                self.assertEqual(parameters[(key,)]["declaredIn"], "_OctreeGridBase")
+            self.assertNotIn(("_TransformRigid",), self.dependencies(name))
+        base_parameters = self.parameters("_OctreeGridBase")
+        self.assertEqual(base_parameters[("nMaxLevel",)]["default"], 4)
+        self.assertEqual(base_parameters[("vRootCellSize",)]["default"], [10, 10, 10])
+        for key in ("vPCLframesIn", "dTexpireCell", "dTexpirePCL"):
+            self.assertNotIn((key,), base_parameters)
+            self.assertEqual(self.parameters("_OctreeGridPCL")[(key,)]["declaredIn"], "_OctreeGridPCL")
 
     def test_all_declared_factory_classes_are_creatable(self):
         registered = set()
@@ -344,7 +361,7 @@ class StreamReferenceSchemaTest(unittest.TestCase):
         self.assertFalse(dependencies[('PCLframeOut',)].get('required', False))
 
     def test_directional_list_and_viewer_adapters(self):
-        for name in ("_OctreeGrid", "_SelectableOctGrid", "_PCmerge"):
+        for name in ("_OctreeGridPCL", "_SelectableOctGrid", "_PCmerge"):
             dependencies = {tuple(d["path"]): d for d in self.classes[name]["dependencies"]}
             with self.subTest(class_name=name):
                 self.assertEqual(dependencies[("vPCLframesIn",)]["targetClass"], "PCLframe")

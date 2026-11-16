@@ -236,7 +236,7 @@ def run(browser, editor):
         }
         const grid = new OpenKAIModel(OPENKAI_SCHEMA);
         grid.addNode('PCLframe', 'points');
-        grid.addNode('_OctreeGrid', 'grid');
+        grid.addNode('_OctreeGridPCL', 'grid');
         grid.addNode('_SelectableOctGrid', 'selectable');
         grid.connect('/grid', ['vPCLframesIn'], '/points');
         grid.connect('/selectable', ['vPCLframesIn'], '/points');

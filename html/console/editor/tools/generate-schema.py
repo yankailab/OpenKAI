@@ -547,8 +547,8 @@ def adapters(records, files, constants, symbol):
             for field in fields:
                 param(name,[key,'*',field],'number' if field=='matPointSize' else 'integer',helper,**({'default':2} if field=='matPointSize' else {}))
     # Grid input names are read in loadConfig and resolved from a member in link.
-    dep('_OctreeGrid',['vPCLframesIn'],'PCLframe','src/Universe/Grid/_OctreeGrid.cpp:link',multiple=True,target_kind='dataObject')
-    for parameter in records['_OctreeGrid']['parameters']:
+    dep('_OctreeGridPCL',['vPCLframesIn'],'PCLframe','src/Universe/Grid/_OctreeGridPCL.cpp:link',multiple=True,target_kind='dataObject')
+    for parameter in records['_OctreeGridPCL']['parameters']:
         if parameter['path'] == ['vPCLframesIn']:
             parameter['dependency'] = True
             parameter['extraction'] = 'audited-adapter'
@@ -690,7 +690,7 @@ def adapters(records, files, constants, symbol):
         for diagnostic in record['diagnostics']:
             if name=='SelectableOctGridSources':
                 diagnostic['resolution']='Covered by the viewer adapters in this generator.'
-            elif name=='_OctreeGrid' and diagnostic.get('expression')=='name' and diagnostic.get('kind')=='unresolved-module-reference':
+            elif name=='_OctreeGridPCL' and diagnostic.get('expression')=='name' and diagnostic.get('kind')=='unresolved-module-reference':
                 diagnostic['resolution']='Covered by the vPCLframesIn DataObject adapter; names are loaded before link.'
             elif name=='_WebGeometry' and diagnostic.get('expression')=='*pConfig':
                 diagnostic['resolution']='Reads bON from the referenced module, not this instance.'

@@ -14,10 +14,11 @@ The viewer and its `WebSelectableOctGridProtocol.h` header live in
 and the native viewer `_ImGUIselectableOctGrid` in `src/UI/Viewer/ImGUI/`.
 
 Configure displayed grids with `"class": "_SelectableOctGrid"`. This module
-inherits the `_OctreeGrid` calculation API and the `_ModuleBase` lifecycle, and
+inherits the `_OctreeGridPCL` calculation API and the `_ModuleBase` lifecycle, and
 owns viewer snapshots, selection state, saved selections and interaction commands.
-`_OctreeGrid` only ingests points, calculates occupancy, looks up cells and expires
-old cells; it does not publish viewer snapshots or handle grid commands.
+`_OctreeGridPCL` inherits grid geometry and cell lookup from `_OctreeGridBase`,
+then adds point ingestion, occupancy, color averaging and expiry. It does not
+publish viewer snapshots or handle grid commands.
 Existing module instance names such as `octGrid` and command names stay the same.
 
 ## Build and run
@@ -398,7 +399,7 @@ The removed `vReferenceFrame`, viewer `vGeometryBase`, `geometry`, and
 `_TransformBase` entry aliases are rejected. Per-source caps use `nP`, `nL`,
 and `nC`, with no `nPbuf`/`nLbuf`/`nCbuf` entry aliases.
 
-A calculation-only `_OctreeGrid` does not publish viewer snapshots; use
+A calculation-only `_OctreeGridPCL` does not publish viewer snapshots; use
 `_SelectableOctGrid`. The grid's `vPCLframesIn` input list names
 the point-cloud DataObjects it consumes.
 
@@ -615,11 +616,31 @@ removal behavior. Picker commands send 16-byte IDs as hexadecimal strings.
 and its occupied cell records. It includes occupied ancestors, as the previous
 wireframe did, in root-first traversal order. `nMaxCells` in the grid config sets
 the publication cap (default 8333). The old `nMaxLines` setting is rejected. The viewers have independent `nCbuf` and per-object `nC` caps.
-`_OctreeBase` inherits from `_ModuleBase`; its grid subclasses can link a
-`_TransformRigid` module through the optional `_TransformRigid` configuration key.
-`_OctreeGrid` consumes
+`_OctreeGridBase` inherits from `_ModuleBase` and owns `vPorigin`, `vRootCellSize`
+and `nMaxLevel`, including their validation and load/save behavior. Input point
+positions must already be in the grid's local coordinate system.
+`_OctreeGridPCL` consumes
 point-cloud DataObjects through its `vPCLframesIn` input list; `_SelectableOctGrid` publishes
 only cell IDs, colors, and the root header. Viewers construct the boxes.
+
+`OCTGRID_CELL<T>` implements the payload-independent `OCTGRID_CELL_BASE`
+interface and retains its typed parent/child hierarchy and optional payload.
+The common interface holds the UUID; child IDs are assigned when nodes are
+created. Base-class lookup accepts and returns `OCTGRID_CELL_BASE*`, including
+cells without payloads. `_OctreeGridPCL::getCell(...)` and `addCellPoint(...)` return
+`OCTGRID_CELL<OCTGRID_CELL_PCL>*`; callers read point count, color and timestamp
+through `getT()`. Check that payload before testing occupancy. Clearing payloads
+preserves cell identity; expiry can prune empty descendants while retaining the root.
+
+Other grid modules can derive from `_OctreeGridBase`, own an `OCTGRID_CELL<T>`
+root, and reuse `getCell(root, id)`, `getCell(root, position, depth)` and the
+protected `visitCells(...)` traversal without depending on point-cloud data.
+Both lookup overloads and traversal are implemented in `_OctreeGridBase.cpp`;
+new payload types require no explicit template instantiations. Visitors accept
+`OCTGRID_CELL_BASE*`; typed callers cast using the root's payload type. An empty
+visitor traverses without changing payloads. The typed grid owns its nodes;
+the common interface cannot be used to delete them.
+The viewer's version 7 wire format and 20-byte cell records are unchanged.
 
 Cells average point RGB, initializing cell alpha to 1, then publish their retained
 RGBA color clamped and rounded to RGBA8.

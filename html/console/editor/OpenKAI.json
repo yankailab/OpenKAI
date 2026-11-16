@@ -3,7 +3,7 @@
   "title": "OpenKAI editor class catalog",
   "description": "Source-derived editor metadata; not a JSON Schema validator. See SCHEMA.md.",
   "generator": "tools/generate-schema.py",
-  "sourceDigest": "1f521e2f93c992815efa09dd125970d07c4130196caf5b35a578417e462c1c6f",
+  "sourceDigest": "d73469d64aec09fc7d289733f4437cc9243d33e8921c62ae66425e49959c13d5",
   "categories": [
     "Actuator",
     "Actuator/Articulated",
@@ -79,6 +79,18 @@
           "type": "string",
           "declaredIn": "_ActuatorBase",
           "source": "src/Actuator/_ActuatorBase.cpp:154",
+          "typeEvidence": "declaration",
+          "cppVariable": "n",
+          "cppType": "string",
+          "dependency": true
+        },
+        {
+          "path": [
+            "_TransformRigid"
+          ],
+          "type": "string",
+          "declaredIn": "_ActuatorBase",
+          "source": "src/Actuator/_ActuatorBase.cpp:158",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -537,6 +549,17 @@
           "declaredIn": "_ActuatorBase",
           "source": "src/Actuator/_ActuatorBase.cpp:155",
           "containers": []
+        },
+        {
+          "path": [
+            "_TransformRigid"
+          ],
+          "targetClass": "_TransformRigid",
+          "targetKind": "module",
+          "multiple": false,
+          "declaredIn": "_ActuatorBase",
+          "source": "src/Actuator/_ActuatorBase.cpp:159",
+          "containers": []
         }
       ],
       "containers": [
@@ -553,9 +576,9 @@
       "configurable": true
     },
     {
-      "name": "_Feetech",
+      "name": "_FTservo",
       "category": "Actuator",
-      "source": "src/Actuator/_Feetech.h:17",
+      "source": "src/Actuator/_FTservo.h:11",
       "baseClasses": [
         "_ActuatorBase"
       ],
@@ -570,7 +593,7 @@
           "typeEvidence": "declaration",
           "cppVariable": "m_ID",
           "cppType": "int",
-          "default": 0
+          "default": 1
         },
         {
           "path": [
@@ -579,6 +602,18 @@
           "type": "string",
           "declaredIn": "_ActuatorBase",
           "source": "src/Actuator/_ActuatorBase.cpp:154",
+          "typeEvidence": "declaration",
+          "cppVariable": "n",
+          "cppType": "string",
+          "dependency": true
+        },
+        {
+          "path": [
+            "_TransformRigid"
+          ],
+          "type": "string",
+          "declaredIn": "_ActuatorBase",
+          "source": "src/Actuator/_ActuatorBase.cpp:158",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -702,8 +737,8 @@
             "baud"
           ],
           "type": "integer",
-          "declaredIn": "_Feetech",
-          "source": "src/Actuator/_Feetech.cpp:25",
+          "declaredIn": "_FTservo",
+          "source": "src/Actuator/_FTservo.cpp:88",
           "typeEvidence": "declaration",
           "cppVariable": "m_baud",
           "cppType": "int",
@@ -840,18 +875,6 @@
         },
         {
           "path": [
-            "iID"
-          ],
-          "type": "integer",
-          "declaredIn": "_Feetech",
-          "source": "src/Actuator/_Feetech.cpp:26",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_ID",
-          "cppType": "uint8_t",
-          "default": 1
-        },
-        {
-          "path": [
             "mode"
           ],
           "type": "integer",
@@ -936,12 +959,11 @@
             "port"
           ],
           "type": "string",
-          "declaredIn": "_Feetech",
-          "source": "src/Actuator/_Feetech.cpp:24",
+          "declaredIn": "_FTservo",
+          "source": "src/Actuator/_FTservo.cpp:87",
           "typeEvidence": "declaration",
           "cppVariable": "m_port",
-          "cppType": "string",
-          "default": ""
+          "cppType": "string"
         },
         {
           "path": [
@@ -1016,8 +1038,8 @@
             "tIntReadStatus"
           ],
           "type": "integer",
-          "declaredIn": "_Feetech",
-          "source": "src/Actuator/_Feetech.cpp:27",
+          "declaredIn": "_ActuatorBase",
+          "source": "src/Actuator/_ActuatorBase.cpp:67",
           "typeEvidence": "declaration",
           "cppVariable": "m_ieReadStatus.m_tInterval",
           "cppType": "uint64_t"
@@ -1073,6 +1095,17 @@
           "declaredIn": "_ActuatorBase",
           "source": "src/Actuator/_ActuatorBase.cpp:155",
           "containers": []
+        },
+        {
+          "path": [
+            "_TransformRigid"
+          ],
+          "targetClass": "_TransformRigid",
+          "targetKind": "module",
+          "multiple": false,
+          "declaredIn": "_ActuatorBase",
+          "source": "src/Actuator/_ActuatorBase.cpp:159",
+          "containers": []
         }
       ],
       "containers": [
@@ -1089,7 +1122,7 @@
       "buildConditions": [
         [
           "ifdef WITH_ACTUATOR",
-          "ifdef USE_FEETECH"
+          "ifdef USE_FTSERVO"
         ]
       ],
       "configurable": true
@@ -1133,6 +1166,18 @@
           "type": "string",
           "declaredIn": "_HYMCU_RS485",
           "source": "src/Actuator/_HYMCU_RS485.cpp:92",
+          "typeEvidence": "declaration",
+          "cppVariable": "n",
+          "cppType": "string",
+          "dependency": true
+        },
+        {
+          "path": [
+            "_TransformRigid"
+          ],
+          "type": "string",
+          "declaredIn": "_ActuatorBase",
+          "source": "src/Actuator/_ActuatorBase.cpp:158",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -1841,6 +1886,17 @@
           "source": "src/Actuator/_HYMCU_RS485.cpp:93",
           "required": true,
           "containers": []
+        },
+        {
+          "path": [
+            "_TransformRigid"
+          ],
+          "targetClass": "_TransformRigid",
+          "targetKind": "module",
+          "multiple": false,
+          "declaredIn": "_ActuatorBase",
+          "source": "src/Actuator/_ActuatorBase.cpp:159",
+          "containers": []
         }
       ],
       "containers": [
@@ -1907,6 +1963,18 @@
           "type": "string",
           "declaredIn": "_IAI",
           "source": "src/Actuator/_IAI.cpp:39",
+          "typeEvidence": "declaration",
+          "cppVariable": "n",
+          "cppType": "string",
+          "dependency": true
+        },
+        {
+          "path": [
+            "_TransformRigid"
+          ],
+          "type": "string",
+          "declaredIn": "_ActuatorBase",
+          "source": "src/Actuator/_ActuatorBase.cpp:158",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -2377,6 +2445,17 @@
           "source": "src/Actuator/_IAI.cpp:40",
           "required": true,
           "containers": []
+        },
+        {
+          "path": [
+            "_TransformRigid"
+          ],
+          "targetClass": "_TransformRigid",
+          "targetKind": "module",
+          "multiple": false,
+          "declaredIn": "_ActuatorBase",
+          "source": "src/Actuator/_ActuatorBase.cpp:159",
+          "containers": []
         }
       ],
       "containers": [
@@ -2437,6 +2516,18 @@
           "type": "string",
           "declaredIn": "_OrientalMotor",
           "source": "src/Actuator/_OrientalMotor.cpp:45",
+          "typeEvidence": "declaration",
+          "cppVariable": "n",
+          "cppType": "string",
+          "dependency": true
+        },
+        {
+          "path": [
+            "_TransformRigid"
+          ],
+          "type": "string",
+          "declaredIn": "_ActuatorBase",
+          "source": "src/Actuator/_ActuatorBase.cpp:158",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -2919,6 +3010,17 @@
           "source": "src/Actuator/_OrientalMotor.cpp:46",
           "required": true,
           "containers": []
+        },
+        {
+          "path": [
+            "_TransformRigid"
+          ],
+          "targetClass": "_TransformRigid",
+          "targetKind": "module",
+          "multiple": false,
+          "declaredIn": "_ActuatorBase",
+          "source": "src/Actuator/_ActuatorBase.cpp:159",
+          "containers": []
         }
       ],
       "containers": [
@@ -2939,6 +3041,21 @@
         ]
       ],
       "configurable": true
+    },
+    {
+      "name": "Serial",
+      "category": "Actuator",
+      "source": "src/Actuator/_FTservo.h:40",
+      "baseClasses": [
+        "SMS_STS"
+      ],
+      "parameters": [],
+      "dependencies": [],
+      "containers": [],
+      "diagnostics": [],
+      "creatable": false,
+      "buildConditions": [],
+      "configurable": false
     },
     {
       "name": "_xArm",
@@ -2967,6 +3084,18 @@
           "type": "string",
           "declaredIn": "_ActuatorBase",
           "source": "src/Actuator/_ActuatorBase.cpp:154",
+          "typeEvidence": "declaration",
+          "cppVariable": "n",
+          "cppType": "string",
+          "dependency": true
+        },
+        {
+          "path": [
+            "_TransformRigid"
+          ],
+          "type": "string",
+          "declaredIn": "_ActuatorBase",
+          "source": "src/Actuator/_ActuatorBase.cpp:158",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -3449,6 +3578,17 @@
           "declaredIn": "_ActuatorBase",
           "source": "src/Actuator/_ActuatorBase.cpp:155",
           "containers": []
+        },
+        {
+          "path": [
+            "_TransformRigid"
+          ],
+          "targetClass": "_TransformRigid",
+          "targetKind": "module",
+          "multiple": false,
+          "declaredIn": "_ActuatorBase",
+          "source": "src/Actuator/_ActuatorBase.cpp:159",
+          "containers": []
         }
       ],
       "containers": [
@@ -3509,6 +3649,18 @@
           "type": "string",
           "declaredIn": "_ActuatorBase",
           "source": "src/Actuator/_ActuatorBase.cpp:154",
+          "typeEvidence": "declaration",
+          "cppVariable": "n",
+          "cppType": "string",
+          "dependency": true
+        },
+        {
+          "path": [
+            "_TransformRigid"
+          ],
+          "type": "string",
+          "declaredIn": "_ActuatorBase",
+          "source": "src/Actuator/_ActuatorBase.cpp:158",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -4007,6 +4159,17 @@
           "declaredIn": "_ActuatorBase",
           "source": "src/Actuator/_ActuatorBase.cpp:155",
           "containers": []
+        },
+        {
+          "path": [
+            "_TransformRigid"
+          ],
+          "targetClass": "_TransformRigid",
+          "targetKind": "module",
+          "multiple": false,
+          "declaredIn": "_ActuatorBase",
+          "source": "src/Actuator/_ActuatorBase.cpp:159",
+          "containers": []
         }
       ],
       "containers": [
@@ -4072,6 +4235,18 @@
           "type": "string",
           "declaredIn": "_ZDmotor",
           "source": "src/Actuator/Motor/_ZDmotor.cpp:46",
+          "typeEvidence": "declaration",
+          "cppVariable": "n",
+          "cppType": "string",
+          "dependency": true
+        },
+        {
+          "path": [
+            "_TransformRigid"
+          ],
+          "type": "string",
+          "declaredIn": "_ActuatorBase",
+          "source": "src/Actuator/_ActuatorBase.cpp:158",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -4554,6 +4729,17 @@
           "source": "src/Actuator/Motor/_ZDmotor.cpp:47",
           "required": true,
           "containers": []
+        },
+        {
+          "path": [
+            "_TransformRigid"
+          ],
+          "targetClass": "_TransformRigid",
+          "targetKind": "module",
+          "multiple": false,
+          "declaredIn": "_ActuatorBase",
+          "source": "src/Actuator/_ActuatorBase.cpp:159",
+          "containers": []
         }
       ],
       "containers": [
@@ -4614,6 +4800,18 @@
           "type": "string",
           "declaredIn": "_ZLAC8015",
           "source": "src/Actuator/Motor/_ZLAC8015.cpp:49",
+          "typeEvidence": "declaration",
+          "cppVariable": "n",
+          "cppType": "string",
+          "dependency": true
+        },
+        {
+          "path": [
+            "_TransformRigid"
+          ],
+          "type": "string",
+          "declaredIn": "_ActuatorBase",
+          "source": "src/Actuator/_ActuatorBase.cpp:158",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -5096,6 +5294,17 @@
           "source": "src/Actuator/Motor/_ZLAC8015.cpp:50",
           "required": true,
           "containers": []
+        },
+        {
+          "path": [
+            "_TransformRigid"
+          ],
+          "targetClass": "_TransformRigid",
+          "targetKind": "module",
+          "multiple": false,
+          "declaredIn": "_ActuatorBase",
+          "source": "src/Actuator/_ActuatorBase.cpp:159",
+          "containers": []
         }
       ],
       "containers": [
@@ -5156,6 +5365,18 @@
           "type": "string",
           "declaredIn": "_ZLAC8015D",
           "source": "src/Actuator/Motor/_ZLAC8015D.cpp:46",
+          "typeEvidence": "declaration",
+          "cppVariable": "n",
+          "cppType": "string",
+          "dependency": true
+        },
+        {
+          "path": [
+            "_TransformRigid"
+          ],
+          "type": "string",
+          "declaredIn": "_ActuatorBase",
+          "source": "src/Actuator/_ActuatorBase.cpp:158",
           "typeEvidence": "declaration",
           "cppVariable": "n",
           "cppType": "string",
@@ -5637,6 +5858,17 @@
           "declaredIn": "_ZLAC8015D",
           "source": "src/Actuator/Motor/_ZLAC8015D.cpp:47",
           "required": true,
+          "containers": []
+        },
+        {
+          "path": [
+            "_TransformRigid"
+          ],
+          "targetClass": "_TransformRigid",
+          "targetKind": "module",
+          "multiple": false,
+          "declaredIn": "_ActuatorBase",
+          "source": "src/Actuator/_ActuatorBase.cpp:159",
           "containers": []
         }
       ],
@@ -13583,7 +13815,7 @@
     {
       "name": "FilterBase",
       "category": "Filter",
-      "source": "src/Filter/FilterBase.h:16",
+      "source": "src/Filter/FilterBase.h:17",
       "baseClasses": [],
       "parameters": [],
       "dependencies": [],
@@ -28945,25 +29177,13 @@
       "configurable": true
     },
     {
-      "name": "_OctreeBase",
+      "name": "_OctreeGridBase",
       "category": "Universe/Grid",
-      "source": "src/Universe/Grid/_OctreeBase.h:95",
+      "source": "src/Universe/Grid/_OctreeGridBase.h:122",
       "baseClasses": [
         "_ModuleBase"
       ],
       "parameters": [
-        {
-          "path": [
-            "_TransformRigid"
-          ],
-          "type": "string",
-          "declaredIn": "_OctreeBase",
-          "source": "src/Universe/Grid/_OctreeBase.cpp:34",
-          "typeEvidence": "declaration",
-          "cppVariable": "tfName",
-          "cppType": "string",
-          "dependency": true
-        },
         {
           "path": [
             "bLog"
@@ -28998,6 +29218,18 @@
           "cppVariable": "m_class",
           "cppType": "string",
           "default": ""
+        },
+        {
+          "path": [
+            "nMaxLevel"
+          ],
+          "type": "integer",
+          "declaredIn": "_OctreeGridBase",
+          "source": "src/Universe/Grid/_OctreeGridBase.cpp:84",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_nMaxLevel",
+          "cppType": "int",
+          "default": 4
         },
         {
           "path": [
@@ -29038,21 +29270,37 @@
           "cppType": "bool",
           "default": false,
           "embeddedClass": "_Thread"
-        }
-      ],
-      "dependencies": [
+        },
         {
           "path": [
-            "_TransformRigid"
+            "vPorigin"
           ],
-          "targetClass": "_TransformRigid",
-          "targetKind": "module",
-          "multiple": false,
-          "declaredIn": "_OctreeBase",
-          "source": "src/Universe/Grid/_OctreeBase.cpp:35",
-          "containers": []
+          "type": "array",
+          "declaredIn": "_OctreeGridBase",
+          "source": "src/Universe/Grid/_OctreeGridBase.cpp:82",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_vPorigin",
+          "cppType": "Vector3f",
+          "defaultExpression": "Vector3f::Zero()"
+        },
+        {
+          "path": [
+            "vRootCellSize"
+          ],
+          "type": "array",
+          "declaredIn": "_OctreeGridBase",
+          "source": "src/Universe/Grid/_OctreeGridBase.cpp:83",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_vRootCellSize",
+          "cppType": "Vector3f",
+          "default": [
+            10,
+            10,
+            10
+          ]
         }
       ],
+      "dependencies": [],
       "containers": [
         {
           "path": [
@@ -29072,25 +29320,13 @@
       "configurable": true
     },
     {
-      "name": "_OctreeGrid",
+      "name": "_OctreeGridPCL",
       "category": "Universe/Grid",
-      "source": "src/Universe/Grid/_OctreeGrid.h:38",
+      "source": "src/Universe/Grid/_OctreeGridPCL.h:24",
       "baseClasses": [
-        "_OctreeBase"
+        "_OctreeGridBase"
       ],
       "parameters": [
-        {
-          "path": [
-            "_TransformRigid"
-          ],
-          "type": "string",
-          "declaredIn": "_OctreeBase",
-          "source": "src/Universe/Grid/_OctreeBase.cpp:34",
-          "typeEvidence": "declaration",
-          "cppVariable": "tfName",
-          "cppType": "string",
-          "dependency": true
-        },
         {
           "path": [
             "bLog"
@@ -29131,8 +29367,8 @@
             "dTexpireCell"
           ],
           "type": "integer",
-          "declaredIn": "_OctreeGrid",
-          "source": "src/Universe/Grid/_OctreeGrid.cpp:135",
+          "declaredIn": "_OctreeGridPCL",
+          "source": "src/Universe/Grid/_OctreeGridPCL.cpp:87",
           "typeEvidence": "declaration",
           "cppVariable": "m_dTexpireCell",
           "cppType": "uint64_t",
@@ -29143,8 +29379,8 @@
             "dTexpirePCL"
           ],
           "type": "integer",
-          "declaredIn": "_OctreeGrid",
-          "source": "src/Universe/Grid/_OctreeGrid.cpp:136",
+          "declaredIn": "_OctreeGridPCL",
+          "source": "src/Universe/Grid/_OctreeGridPCL.cpp:88",
           "typeEvidence": "declaration",
           "cppVariable": "m_dTexpirePCL",
           "cppType": "uint64_t",
@@ -29155,8 +29391,8 @@
             "nMaxLevel"
           ],
           "type": "integer",
-          "declaredIn": "_OctreeGrid",
-          "source": "src/Universe/Grid/_OctreeGrid.cpp:134",
+          "declaredIn": "_OctreeGridBase",
+          "source": "src/Universe/Grid/_OctreeGridBase.cpp:84",
           "typeEvidence": "declaration",
           "cppVariable": "m_nMaxLevel",
           "cppType": "int",
@@ -29207,8 +29443,8 @@
             "vPCLframesIn"
           ],
           "type": "array",
-          "declaredIn": "_OctreeGrid",
-          "source": "src/Universe/Grid/_OctreeGrid.cpp:137",
+          "declaredIn": "_OctreeGridPCL",
+          "source": "src/Universe/Grid/_OctreeGridPCL.cpp:89",
           "typeEvidence": "declaration",
           "cppVariable": "m_vPCLframesIn",
           "cppType": "vector<string>",
@@ -29220,8 +29456,8 @@
             "vPorigin"
           ],
           "type": "array",
-          "declaredIn": "_OctreeGrid",
-          "source": "src/Universe/Grid/_OctreeGrid.cpp:132",
+          "declaredIn": "_OctreeGridBase",
+          "source": "src/Universe/Grid/_OctreeGridBase.cpp:82",
           "typeEvidence": "declaration",
           "cppVariable": "m_vPorigin",
           "cppType": "Vector3f",
@@ -29232,8 +29468,8 @@
             "vRootCellSize"
           ],
           "type": "array",
-          "declaredIn": "_OctreeGrid",
-          "source": "src/Universe/Grid/_OctreeGrid.cpp:133",
+          "declaredIn": "_OctreeGridBase",
+          "source": "src/Universe/Grid/_OctreeGridBase.cpp:83",
           "typeEvidence": "declaration",
           "cppVariable": "m_vRootCellSize",
           "cppType": "Vector3f",
@@ -29247,24 +29483,13 @@
       "dependencies": [
         {
           "path": [
-            "_TransformRigid"
-          ],
-          "targetClass": "_TransformRigid",
-          "targetKind": "module",
-          "multiple": false,
-          "declaredIn": "_OctreeBase",
-          "source": "src/Universe/Grid/_OctreeBase.cpp:35",
-          "containers": []
-        },
-        {
-          "path": [
             "vPCLframesIn"
           ],
           "targetClass": "PCLframe",
           "targetKind": "dataObject",
           "multiple": true,
-          "source": "src/Universe/Grid/_OctreeGrid.cpp:link",
-          "declaredIn": "_OctreeGrid",
+          "source": "src/Universe/Grid/_OctreeGridPCL.cpp:link",
+          "declaredIn": "_OctreeGridPCL",
           "extraction": "audited-adapter",
           "containers": []
         }
@@ -29279,7 +29504,7 @@
       ],
       "diagnostics": [
         {
-          "source": "src/Universe/Grid/_OctreeGrid.cpp:186",
+          "source": "src/Universe/Grid/_OctreeGridPCL.cpp:127",
           "kind": "unresolved-module-reference",
           "expression": "name",
           "resolution": "Covered by the vPCLframesIn DataObject adapter; names are loaded before link."
@@ -29297,23 +29522,11 @@
     {
       "name": "_SelectableOctGrid",
       "category": "Universe/Grid",
-      "source": "src/Universe/Grid/_SelectableOctGrid.h:80",
+      "source": "src/Universe/Grid/_SelectableOctGrid.h:57",
       "baseClasses": [
-        "_OctreeGrid"
+        "_OctreeGridPCL"
       ],
       "parameters": [
-        {
-          "path": [
-            "_TransformRigid"
-          ],
-          "type": "string",
-          "declaredIn": "_OctreeBase",
-          "source": "src/Universe/Grid/_OctreeBase.cpp:34",
-          "typeEvidence": "declaration",
-          "cppVariable": "tfName",
-          "cppType": "string",
-          "dependency": true
-        },
         {
           "path": [
             "bLog"
@@ -29354,8 +29567,8 @@
             "dTexpireCell"
           ],
           "type": "integer",
-          "declaredIn": "_OctreeGrid",
-          "source": "src/Universe/Grid/_OctreeGrid.cpp:135",
+          "declaredIn": "_OctreeGridPCL",
+          "source": "src/Universe/Grid/_OctreeGridPCL.cpp:87",
           "typeEvidence": "declaration",
           "cppVariable": "m_dTexpireCell",
           "cppType": "uint64_t",
@@ -29366,8 +29579,8 @@
             "dTexpirePCL"
           ],
           "type": "integer",
-          "declaredIn": "_OctreeGrid",
-          "source": "src/Universe/Grid/_OctreeGrid.cpp:136",
+          "declaredIn": "_OctreeGridPCL",
+          "source": "src/Universe/Grid/_OctreeGridPCL.cpp:88",
           "typeEvidence": "declaration",
           "cppVariable": "m_dTexpirePCL",
           "cppType": "uint64_t",
@@ -29379,7 +29592,7 @@
           ],
           "type": "integer",
           "declaredIn": "_SelectableOctGrid",
-          "source": "src/Universe/Grid/_SelectableOctGrid.cpp:216",
+          "source": "src/Universe/Grid/_SelectableOctGrid.cpp:207",
           "typeEvidence": "declaration",
           "cppVariable": "m_nMaxCells",
           "cppType": "int",
@@ -29390,8 +29603,8 @@
             "nMaxLevel"
           ],
           "type": "integer",
-          "declaredIn": "_OctreeGrid",
-          "source": "src/Universe/Grid/_OctreeGrid.cpp:134",
+          "declaredIn": "_OctreeGridBase",
+          "source": "src/Universe/Grid/_OctreeGridBase.cpp:84",
           "typeEvidence": "declaration",
           "cppVariable": "m_nMaxLevel",
           "cppType": "int",
@@ -29403,7 +29616,7 @@
           ],
           "type": "integer",
           "declaredIn": "_SelectableOctGrid",
-          "source": "src/Universe/Grid/_SelectableOctGrid.cpp:221",
+          "source": "src/Universe/Grid/_SelectableOctGrid.cpp:212",
           "typeEvidence": "declaration",
           "cppVariable": "m_nPminBuild",
           "cppType": "int",
@@ -29455,7 +29668,7 @@
           ],
           "type": "array",
           "declaredIn": "_SelectableOctGrid",
-          "source": "src/Universe/Grid/_SelectableOctGrid.cpp:217",
+          "source": "src/Universe/Grid/_SelectableOctGrid.cpp:208",
           "typeEvidence": "declaration",
           "cppVariable": "m_vColCellOcc",
           "cppType": "Vector4f",
@@ -29471,8 +29684,8 @@
             "vPCLframesIn"
           ],
           "type": "array",
-          "declaredIn": "_OctreeGrid",
-          "source": "src/Universe/Grid/_OctreeGrid.cpp:137",
+          "declaredIn": "_OctreeGridPCL",
+          "source": "src/Universe/Grid/_OctreeGridPCL.cpp:89",
           "typeEvidence": "declaration",
           "cppVariable": "m_vPCLframesIn",
           "cppType": "vector<string>",
@@ -29484,8 +29697,8 @@
             "vPorigin"
           ],
           "type": "array",
-          "declaredIn": "_OctreeGrid",
-          "source": "src/Universe/Grid/_OctreeGrid.cpp:132",
+          "declaredIn": "_OctreeGridBase",
+          "source": "src/Universe/Grid/_OctreeGridBase.cpp:82",
           "typeEvidence": "declaration",
           "cppVariable": "m_vPorigin",
           "cppType": "Vector3f",
@@ -29496,8 +29709,8 @@
             "vRootCellSize"
           ],
           "type": "array",
-          "declaredIn": "_OctreeGrid",
-          "source": "src/Universe/Grid/_OctreeGrid.cpp:133",
+          "declaredIn": "_OctreeGridBase",
+          "source": "src/Universe/Grid/_OctreeGridBase.cpp:83",
           "typeEvidence": "declaration",
           "cppVariable": "m_vRootCellSize",
           "cppType": "Vector3f",
@@ -29521,24 +29734,13 @@
       "dependencies": [
         {
           "path": [
-            "_TransformRigid"
-          ],
-          "targetClass": "_TransformRigid",
-          "targetKind": "module",
-          "multiple": false,
-          "declaredIn": "_OctreeBase",
-          "source": "src/Universe/Grid/_OctreeBase.cpp:35",
-          "containers": []
-        },
-        {
-          "path": [
             "vPCLframesIn"
           ],
           "targetClass": "PCLframe",
           "targetKind": "dataObject",
           "multiple": true,
-          "source": "src/Universe/Grid/_OctreeGrid.cpp:link",
-          "declaredIn": "_OctreeGrid",
+          "source": "src/Universe/Grid/_OctreeGridPCL.cpp:link",
+          "declaredIn": "_OctreeGridPCL",
           "extraction": "audited-adapter",
           "containers": []
         }
@@ -39896,8 +40098,8 @@
   },
   "audit": {
     "sourceFiles": 450,
-    "classCount": 215,
-    "classDeclarations": 215,
+    "classCount": 216,
+    "classDeclarations": 216,
     "creatableClassCount": 126,
     "factoryClassesWithoutDeclaration": [
       "_TestJSON",
@@ -39916,8 +40118,8 @@
       "src/Actuator/Motor/_ZLAC8015D.h",
       "src/Actuator/_ActuatorBase.cpp",
       "src/Actuator/_ActuatorBase.h",
-      "src/Actuator/_Feetech.cpp",
-      "src/Actuator/_Feetech.h",
+      "src/Actuator/_FTservo.cpp",
+      "src/Actuator/_FTservo.h",
       "src/Actuator/_HYMCU_RS485.cpp",
       "src/Actuator/_HYMCU_RS485.h",
       "src/Actuator/_IAI.cpp",
@@ -40282,10 +40484,10 @@
       "src/Universe/Geometry/PointCloud/_PCLfile.h",
       "src/Universe/Geometry/_GeometryViewerBase.cpp",
       "src/Universe/Geometry/_GeometryViewerBase.h",
-      "src/Universe/Grid/_OctreeBase.cpp",
-      "src/Universe/Grid/_OctreeBase.h",
-      "src/Universe/Grid/_OctreeGrid.cpp",
-      "src/Universe/Grid/_OctreeGrid.h",
+      "src/Universe/Grid/_OctreeGridBase.cpp",
+      "src/Universe/Grid/_OctreeGridBase.h",
+      "src/Universe/Grid/_OctreeGridPCL.cpp",
+      "src/Universe/Grid/_OctreeGridPCL.h",
       "src/Universe/Grid/_SelectableOctGrid.cpp",
       "src/Universe/Grid/_SelectableOctGrid.h",
       "src/Universe/_TransformRigid.cpp",
@@ -40355,8 +40557,8 @@
       "src/Vision/_VideoFile.h",
       "src/main.cpp"
     ],
-    "configReads": 629,
-    "resolvedReads": 617,
+    "configReads": 627,
+    "resolvedReads": 615,
     "moduleLookups": 141,
     "resolvedLookups": 136,
     "unresolvedReads": 12,
@@ -40487,11 +40689,11 @@
         "className": "_WebMavlinkStream"
       },
       {
-        "source": "src/Universe/Grid/_OctreeGrid.cpp:186",
+        "source": "src/Universe/Grid/_OctreeGridPCL.cpp:127",
         "kind": "unresolved-module-reference",
         "expression": "name",
         "resolution": "Covered by the vPCLframesIn DataObject adapter; names are loaded before link.",
-        "className": "_OctreeGrid"
+        "className": "_OctreeGridPCL"
       }
     ],
     "limitations": [

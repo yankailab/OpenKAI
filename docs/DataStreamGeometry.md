@@ -1,6 +1,6 @@
 # DataObject ownership and interfaces
 
-Images, depth, points, lines, maps, detections, tracked boxes, and IMU samples are owned by independent DataObjects. `*Frame` classes replace complete payloads with `set(...)` and copy them with `get(...)`. `*Stream` classes append timestamped elements with `add(...)` and copy retained histories with `get(...)`. Detection and tracking outputs use `BBoxStream`; IMU channels use `IMUstream`. Consumers resolve a DataObject name through `InstanceMgr::findDataObject` instead of calling a producer module. `OCTREE_CELL` and selectable-grid cell interfaces remain grid-owned.
+Images, depth, points, lines, maps, detections, tracked boxes, and IMU samples are owned by independent DataObjects. `*Frame` classes replace complete payloads with `set(...)` and copy them with `get(...)`. `*Stream` classes append timestamped elements with `add(...)` and copy retained histories with `get(...)`. Detection and tracking outputs use `BBoxStream`; IMU channels use `IMUstream`. Consumers resolve a DataObject name through `InstanceMgr::findDataObject` instead of calling a producer module. `OCTGRID_CELL` and selectable-grid cell interfaces remain grid-owned.
 
 `BBoxStream`, `BytePacketStream`, `CANframeStream`, and `UGLIDcellStream` inherit
 `DataObjStream<T>` with `BBOX_OBJ`, `BYTE_PACKET`, `CAN_FRAME`, and `UGLID_CELL_T`
@@ -61,7 +61,7 @@ DataObject link keys end in `In` for inputs and `Out` for outputs. The suffix de
 | `_PCregistCol` | `PCLframeIn` | `PCLframeOut` |
 | `_LCalign` | `PCLframeIn`, `RGBframeIn` | `PCLframeOut` |
 | `_PCregistICP`, `_PCregistGlobal` | `PCLframeSrcIn`, `PCLframeTgtIn` | Existing registration result |
-| `_OctreeGrid`, `_SelectableOctGrid` | `vPCLframesIn` array | Existing cell interface |
+| `_OctreeGridPCL`, `_SelectableOctGrid` | `vPCLframesIn` array | Existing cell interface |
 | `_BenewakeTF`, `_TOFsense` | `BytePacketStreamIn` | `PCLframeOut` |
 | `_LeddarVu` | Modbus device | `PCLframeOut` |
 | `_Livox1`, `_Livox2` | Owned UDP sockets; `lvxIP` and host ports | `PCLframeOut`; optional `IMUstreamOut` |

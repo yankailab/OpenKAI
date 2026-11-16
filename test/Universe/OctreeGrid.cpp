@@ -9,6 +9,8 @@
 
 using namespace kai;
 
+void testOctreeGridBase();
+
 namespace
 {
 UUID128 idForPath(const vector<unsigned> &path)
@@ -52,7 +54,7 @@ public:
 
     void ageCells(uint64_t stamp)
     {
-        auto age = [stamp](auto &&self, OCTREE_CELL<OCTGRID_PCL_CELL> *cell) -> void
+        auto age = [stamp](auto &&self, OCTGRID_CELL<OCTGRID_CELL_PCL> *cell) -> void
         {
             if (!cell) return;
             if (auto *value = cell->getT()) value->m_tStamp = stamp;
@@ -176,18 +178,18 @@ void testCountsColorsAndPaths()
     }
     f.publish(points);
     const auto *root = f.grid.getCell(UUID128(0));
-    assert(root && root->m_nP == 16);
-    assert((root->m_vC - Vector4f(.5f, 0, .5f, 1)).norm() < 1e-6f);
+    assert(root && root->getT()->m_nP == 16);
+    assert((root->getT()->m_vC - Vector4f(.5f, 0, .5f, 1)).norm() < 1e-6f);
     SELECTABLE_OCTGRID_CELLS snapshot;
     assert(f.grid.get(&snapshot) == 17); // Root, eight parents, eight leaves.
     for (unsigned octant = 0; octant < 8; ++octant)
     {
         const auto &position = points[octant * 2].m_vP;
         const auto *leaf = f.grid.getCell(position);
-        assert(leaf && leaf->m_nP == 2 && f.grid.getCell(leaf->m_ID) == leaf);
+        assert(leaf && leaf->getT()->m_nP == 2 && f.grid.getCell(leaf->m_ID) == leaf);
         assert(leaf->m_ID.m_uint64[0] == 0);
         assert(leaf->m_ID.m_uint64[1] == (uint64_t(2) << 56 | uint64_t(octant) << 53 | uint64_t(octant) << 50));
-        assert((leaf->m_vC - Vector4f(.5f, 0, .5f, 1)).norm() < 1e-6f);
+        assert((leaf->getT()->m_vC - Vector4f(.5f, 0, .5f, 1)).norm() < 1e-6f);
         std::array<float, 3> center, size;
         assert(octgridCellBox(snapshot.m_header, leaf->m_ID, center, size));
         for (unsigned axis = 0; axis < 3; ++axis)
@@ -195,13 +197,13 @@ void testCountsColorsAndPaths()
     }
 
     f.grid.tick();
-    assert(f.grid.getCell(UUID128(0))->m_nP == 16); // No recount of an unchanged frame.
+    assert(f.grid.getCell(UUID128(0))->getT()->m_nP == 16); // No recount of an unchanged frame.
     f.publish({{points.front().m_vP, {0, 1, 0}, 0}});
     const auto *leaf = f.grid.getCell(points.front().m_vP);
-    assert(leaf && leaf->m_nP == 3);
-    assert((leaf->m_vC - Vector4f(1.f / 3, 1.f / 3, 1.f / 3, 1)).norm() < 1e-6f);
+    assert(leaf && leaf->getT()->m_nP == 3);
+    assert((leaf->getT()->m_vC - Vector4f(1.f / 3, 1.f / 3, 1.f / 3, 1)).norm() < 1e-6f);
     assert(!f.grid.addCellPoint({{2.01f, 0, 0}, {1, 1, 1}, getTns()}, getTns()));
-    assert(f.grid.getCell(UUID128(0))->m_nP == 17);
+    assert(f.grid.getCell(UUID128(0))->getT()->m_nP == 17);
 }
 
 void testCellIDLayoutAndGeometry()
@@ -337,7 +339,25 @@ void testStaleAndInvalidPoints()
     f.grid.ageCells(getTns() - NSEC_SEC);
     f.grid.tick();
     assert(f.grid.get(&snapshot) == 0);
-    assert(!f.grid.getCell(UUID128(0))); // Expiry remains active with no new input.
+    assert(!f.grid.getCell(UUID128(0))->getT()); // Expiry remains active with no new input.
+}
+
+void testPayloadClearPreservesCellIdentity()
+{
+    const UUID128 leafID = idForPath({7, 7});
+    Fixture f({{"vRootCellSize", {4, 4, 4}}, {"nMaxLevel", 2}, {"nPminBuild", 0},
+               {"vSelectedCells", {idHex(leafID)}}});
+    f.publish({{{1.5f, 1.5f, 1.5f}, {1, 0, 0}, 0}});
+    auto *cell = f.grid.getCell(leafID);
+    assert(cell && f.grid.bSelectedOccupied(0));
+    cell->getT()->clear();
+    assert(sameID(cell->m_ID, leafID) && f.grid.getCell(leafID) == cell);
+    assert(!f.grid.bSelectedOccupied(-1));
+    cell->getT()->m_tStamp = getTns();
+    assert(!f.grid.bSelectedOccupied(-1)); // A timestamp alone is not occupancy.
+    f.publish({{{1.5f, 1.5f, 1.5f}, {0, 1, 0}, 0}});
+    assert(f.grid.getCell(leafID) == cell && cell->getT()->m_nP == 1);
+    assert(f.grid.bSelectedOccupied(0));
 }
 
 void testGridConfigLoadAndPersistence()
@@ -352,7 +372,7 @@ void testGridConfigLoadAndPersistence()
     json settings = gridConfig(f.grid);
     assert(settings.at("dTexpireCell") == "0" && settings.at("nMaxLevel") == "2");
     assert(f.grid.get(&after) == 3 && before.m_header.m_tStamp == after.m_header.m_tStamp);
-    assert(f.grid.getCell(UUID128(0))->m_nP == 1 && f.grid.bSelectedOccupied(0));
+    assert(f.grid.getCell(UUID128(0))->getT()->m_nP == 1 && f.grid.bSelectedOccupied(0));
     assert(storedConfig(f) == storedBefore); // Load never writes or rebuilds occupancy.
     assert(*f.config.getJson() == boundBefore);
 
@@ -429,7 +449,7 @@ void testInvalidGridConfigIsAtomic()
         assert(gridConfig(f.grid) == original && storedConfig(f) == saved);
         assert(*f.config.getJson() == bound);
         assert(f.grid.get(&after) == 3 && after.m_header.m_tStamp == before.m_header.m_tStamp);
-        assert(f.grid.getCell(UUID128(0))->m_nP == 1 && f.grid.bSelectedOccupied(0));
+        assert(f.grid.getCell(UUID128(0))->getT()->m_nP == 1 && f.grid.bSelectedOccupied(0));
     }
 }
 
@@ -444,7 +464,7 @@ void testGridConfigRebuildsAndRemapsSelection()
     assert(setGridConfig(f.grid, settings).at("bSuccess") == true);
     SELECTABLE_OCTGRID_CELLS snapshot;
     assert(f.grid.get(&snapshot) == 0 && snapshot.m_header.m_nMaxLevel == 1);
-    assert(!f.grid.getCell(UUID128(0)) && !f.grid.bSelectedOccupied(0));
+    assert(!f.grid.getCell(UUID128(0))->getT() && !f.grid.bSelectedOccupied(0));
     assert(f.grid.getSelectedCells().size() == 1 && sameID(f.grid.getSelectedCells().front(), parent));
     assert(storedConfig(f).at("vSelectedCells") == json::array({idHex(leaf)}));
     assert((*f.config.getJson())["grid"]["nMaxLevel"] == 2);
@@ -453,9 +473,9 @@ void testGridConfigRebuildsAndRemapsSelection()
     Fixture restored(storedConfig(f));
     assert(sameID(restored.grid.getSelectedCells().front(), parent));
     f.grid.tick(); // A geometry edit replays the current frame exactly once.
-    assert(f.grid.get(&snapshot) == 2 && f.grid.getCell(UUID128(0))->m_nP == 1 && f.grid.bSelectedOccupied(0));
+    assert(f.grid.get(&snapshot) == 2 && f.grid.getCell(UUID128(0))->getT()->m_nP == 1 && f.grid.bSelectedOccupied(0));
     f.grid.tick();
-    assert(f.grid.getCell(UUID128(0))->m_nP == 1);
+    assert(f.grid.getCell(UUID128(0))->getT()->m_nP == 1);
 
     GridReplyTransport transport;
     f.grid.jsonCmd({{"cmd", "setCellSelection"}, {"vPorigin", {"0", "0", "0"}},
@@ -502,7 +522,7 @@ void testGridConfigRuntimeLimitsAndSaveFailure()
     assert(setGridConfig(f.grid, settings).at("bSuccess") == true && f.grid.get(&snapshot) == 0);
     settings["nMaxCells"] = "10";
     assert(setGridConfig(f.grid, settings).at("bSuccess") == true && f.grid.get(&snapshot) == 3);
-    assert(f.grid.getCell(UUID128(0))->m_nP == 3); // Publication updates never recount points.
+    assert(f.grid.getCell(UUID128(0))->getT()->m_nP == 3); // Publication updates never recount points.
     f.grid.ageCells(getTns() - NSEC_SEC);
     settings["dTexpireCell"] = "1";
     assert(setGridConfig(f.grid, settings).at("bSuccess") == true && f.grid.get(&snapshot) == 0);
@@ -613,8 +633,8 @@ void testDenseSampleCloud()
     SELECTABLE_OCTGRID_CELLS snapshot;
     assert(f.grid.get(&snapshot) == 213);
     const auto *root = f.grid.getCell(UUID128(0));
-    assert(root && root->m_nP == 640 * 480);
-    assert((root->m_vC - Vector4f(.25f, .5f, .75f, 1)).norm() < 1e-6f);
+    assert(root && root->getT()->m_nP == 640 * 480);
+    assert((root->getT()->m_vC - Vector4f(.25f, .5f, .75f, 1)).norm() < 1e-6f);
     assert(snapshot.m_header.m_nMaxLevel == 5);
     assert(snapshot.m_header.m_vRootCellSize == (std::array<float, 3>{5, 5, 5}));
     std::cout << "Dense sample cloud: " << snapshot.m_vCell.size()
@@ -624,11 +644,13 @@ void testDenseSampleCloud()
 
 int main()
 {
+    testOctreeGridBase();
     testCountsColorsAndPaths();
     testCellIDLayoutAndGeometry();
     testDeepGeneratedIDsAndSelection();
     testInvalidCellIDs();
     testStaleAndInvalidPoints();
+    testPayloadClearPreservesCellIdentity();
     testGridConfigLoadAndPersistence();
     testInvalidGridConfigIsAtomic();
     testGridConfigRebuildsAndRemapsSelection();

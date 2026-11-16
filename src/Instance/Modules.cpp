@@ -28,8 +28,8 @@ namespace kai
 		// modules
 
 #ifdef WITH_UNIVERSE
-		ADD_MODULE(_OctreeBase);
-		ADD_MODULE(_OctreeGrid);
+		ADD_MODULE(_OctreeGridBase);
+		ADD_MODULE(_OctreeGridPCL);
 		ADD_MODULE(_SelectableOctGrid);
 		ADD_MODULE(_PCLfile);
 		ADD_MODULE(_PCmerge);

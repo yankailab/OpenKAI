@@ -73,14 +73,6 @@ namespace kai
 			return result;
 		}
 
-		static unsigned cellChild(const UUID128 &id, unsigned level)
-		{
-			const unsigned bit = 117 - level * 3;
-			const unsigned word = bit / 64, shift = bit % 64;
-			return ((id.m_uint64[word] >> shift) |
-					(word == 0 && shift > 61 ? id.m_uint64[1] << (64 - shift) : 0)) & 7;
-		}
-
 		// Match the viewer's volume-preserving selection remap. Disjoint/nested
 		// octree regions are deduplicated before testing their union for coverage.
 		static vector<UUID128> remapSelectedCells(const SELECTABLE_OCTGRID_HEADER &oldHeader, const SELECTABLE_OCTGRID_HEADER &newHeader,
@@ -102,7 +94,7 @@ namespace kai
 				const unsigned depth = id.m_uint64[1] >> 56, previousDepth = previous.m_uint64[1] >> 56;
 				bool covered = havePrevious && previousDepth <= depth;
 				for (unsigned level = 0; covered && level < previousDepth; ++level)
-					covered = cellChild(previous, level) == cellChild(id, level);
+					covered = octgridCellChild(previous, level) == octgridCellChild(id, level);
 				if (covered) continue;
 				previous = id;
 				havePrevious = true;
@@ -115,7 +107,7 @@ namespace kai
 				for (unsigned level = 0; level < depth; ++level)
 					for (unsigned axis = 0; axis < 3; ++axis)
 					{
-						center[axis] += size[axis] * ((cellChild(id, level) & (4 >> axis)) ? .25 : -.25);
+						center[axis] += size[axis] * ((octgridCellChild(id, level) & (4 >> axis)) ? .25 : -.25);
 						size[axis] *= .5;
 					}
 				Region region;
@@ -156,9 +148,8 @@ namespace kai
 				}
 				for (unsigned child = 0; child < N_OCT; ++child)
 				{
-					UUID128 childID = id;
-					childID.m_uint64[1] = (childID.m_uint64[1] & (UINT64_MAX >> 8)) | (uint64_t(depth + 1) << 56);
-					childID |= UUID128(child) << (117 - depth * 3);
+					UUID128 childID;
+					if (!octgridChildID(id, child, childID)) continue;
 					std::array<double, 3> childCenter, childSize;
 					for (unsigned axis = 0; axis < 3; ++axis)
 					{
@@ -173,7 +164,7 @@ namespace kai
 			return selected;
 		}
 
-		static void addCellsRecursive(OCTREE_CELL<OCTGRID_PCL_CELL> *pCell,
+		static void addCellsRecursive(OCTGRID_CELL<OCTGRID_CELL_PCL> *pCell,
 									  int nPmin,
 									  vector<SELECTABLE_OCTGRID_CELL> &out,
 									  size_t limit,
@@ -185,7 +176,7 @@ namespace kai
 			if (pT && pT->m_nP > nPmin && pT->m_tStamp > 0)
 			{
 				SELECTABLE_OCTGRID_CELL cell;
-				cell.setID(pT->m_ID);
+				cell.setID(pCell->m_ID);
 				Vector4f color = pColor ? *pColor : pT->m_vC;
 				if (!pColor)
 					color.w() = 0.5f; // Preserve the temporary viewer alpha override.
@@ -209,7 +200,7 @@ namespace kai
 
 	bool _SelectableOctGrid::loadConfig(void)
 	{
-		IF_F(!this->_OctreeGrid::loadConfig());
+		IF_F(!this->_OctreeGridPCL::loadConfig());
 		const json &j = *m_pJ;
 
 		IF_Le_F(j.contains("nMaxLines"), "Use nMaxCells for grid publication limits");
@@ -266,7 +257,7 @@ namespace kai
 
 	void _SelectableOctGrid::updateGrid(void)
 	{
-		this->_OctreeGrid::updateGrid();
+		this->_OctreeGridPCL::updateGrid();
 		updateDrawAssets();
 	}
 
@@ -278,7 +269,7 @@ namespace kai
 
 	bool _SelectableOctGrid::saveConfigLocked(bool bExport)
 	{
-		IF_F(!_OctreeGrid::saveConfig(false));
+		IF_F(!_OctreeGridPCL::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["vSelectedCells"] = selectedCellIDsJSON();
@@ -345,7 +336,9 @@ namespace kai
 		for (const auto &id : m_vSelectedCells)
 		{
 			const auto *cell = getCell(id);
-			if (cell && !bExpired(cell->m_tStamp, expire) && cell->m_nP > threshold)
+			const auto *pPcl = cell ? cell->getT() : nullptr;
+			if (pPcl && pPcl->m_nP > 0 && pPcl->m_tStamp > 0 &&
+				!bExpired(pPcl->m_tStamp, expire) && pPcl->m_nP > threshold)
 				return true;
 		}
 		return false;
