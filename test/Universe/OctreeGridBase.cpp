@@ -16,7 +16,7 @@ public:
 
     OCTGRID_CELL<double> *addCell(const Vector3f &position, int depth = -1)
     {
-        return static_cast<OCTGRID_CELL<double> *>(visitCells(&root, position, depth, true, {}));
+        return visitCells(&root, position, depth, true, [](OCTGRID_CELL<double> *) { return true; });
     }
 };
 
@@ -52,9 +52,8 @@ void testOctreeGridBase()
     const double sample = 2.5;
     unsigned visits = 0;
     auto *visited = grid.visitCells(&grid.root, Vector3f(4, 4, 4), 2, true,
-        [&](OCTGRID_CELL_BASE *base)
+        [&](OCTGRID_CELL<double> *cell)
         {
-            auto *cell = static_cast<OCTGRID_CELL<double> *>(base);
             *cell->addT() += sample;
             ++visits;
             return true;
@@ -64,10 +63,10 @@ void testOctreeGridBase()
     assert(*grid.root.getT() == sample && *grid.root.getChild(7)->getT() == sample);
     visits = 0;
     assert(!grid.visitCells(&grid.root, Vector3f(-4, -4, -4), 3, true,
-        [&](OCTGRID_CELL_BASE *cell) { ++visits; return cell->getLevel() < 1; }));
+        [&](OCTGRID_CELL<double> *cell) { ++visits; return cell->getLevel() < 1; }));
     assert(visits == 2 && grid.root.getChild(0) && !grid.root.getChild(0)->getChild(0));
     assert(!grid.visitCells(&grid.root, Vector3f(6, 0, 0), 3, true,
-        [&](OCTGRID_CELL_BASE *) { ++visits; return true; }));
+        [&](OCTGRID_CELL<double> *) { ++visits; return true; }));
     assert(visits == 2); // An invalid point must never invoke the visitor.
     grid.root.release();
 
@@ -87,13 +86,13 @@ void testOctreeGridBase()
     assert(!restored.root.addChild(N_OCT));
     for (unsigned depth = 0; depth <= 40; ++depth)
     {
-        auto *cell = static_cast<OCTGRID_CELL<double> *>(restored.getCell(&restored.root, pathID(vector<unsigned>(depth, 7))));
+        auto *cell = restored.getCell(&restored.root, pathID(vector<unsigned>(depth, 7)));
         assert(cell && cell->getLevel() == int(depth) && !cell->getT());
         assert(restored.getCell(&restored.root, corner, depth) == cell);
     }
     *leaf->addT() = 12.5;
     const UUID128 leafID = leaf->m_ID;
-    assert(*static_cast<OCTGRID_CELL<double> *>(restored.getCell(&restored.root, leafID))->getT() == 12.5);
+    assert(*restored.getCell(&restored.root, leafID)->getT() == 12.5);
     leaf->release();
     assert(leaf->getLevel() == 40 && leaf->m_pParent && !leaf->getT());
     assert(restored.getCell(&restored.root, leafID) == leaf);
@@ -123,7 +122,7 @@ void testOctreeGridBase()
         assert(octgridCellChild(textCell->m_ID, depth) == child);
     }
     *textCell->addT() = "label";
-    assert(*static_cast<OCTGRID_CELL<string> *>(restored.getCell(&textRoot, pathID(path)))->getT() == "label");
+    assert(*restored.getCell(&textRoot, pathID(path))->getT() == "label");
     textRoot.release();
     assert(!restored.getCell(&textRoot, pathID(path)));
     assert(restored.getCell(&textRoot, UUID128(0)) == &textRoot);

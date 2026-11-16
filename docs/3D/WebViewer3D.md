@@ -623,11 +623,10 @@ positions must already be in the grid's local coordinate system.
 point-cloud DataObjects through its `vPCLframesIn` input list; `_SelectableOctGrid` publishes
 only cell IDs, colors, and the root header. Viewers construct the boxes.
 
-`OCTGRID_CELL<T>` implements the payload-independent `OCTGRID_CELL_BASE`
-interface and retains its typed parent/child hierarchy and optional payload.
-The common interface holds the UUID; child IDs are assigned when nodes are
-created. Base-class lookup accepts and returns `OCTGRID_CELL_BASE*`, including
-cells without payloads. `_OctreeGridPCL::getCell(...)` and `addCellPoint(...)` return
+`OCTGRID_CELL<T>` directly owns its UUID, `getLevel()`, typed parent/child
+hierarchy and optional payload. Child IDs are assigned when nodes are created.
+Base-class lookup accepts and returns `OCTGRID_CELL<T>*`, including cells without
+payloads. `_OctreeGridPCL::getCell(...)` and `addCellPoint(...)` return
 `OCTGRID_CELL<OCTGRID_CELL_PCL>*`; callers read point count, color and timestamp
 through `getT()`. Check that payload before testing occupancy. Clearing payloads
 preserves cell identity; expiry can prune empty descendants while retaining the root.
@@ -635,11 +634,13 @@ preserves cell identity; expiry can prune empty descendants while retaining the 
 Other grid modules can derive from `_OctreeGridBase`, own an `OCTGRID_CELL<T>`
 root, and reuse `getCell(root, id)`, `getCell(root, position, depth)` and the
 protected `visitCells(...)` traversal without depending on point-cloud data.
-Both lookup overloads and traversal are implemented in `_OctreeGridBase.cpp`;
-new payload types require no explicit template instantiations. Visitors accept
-`OCTGRID_CELL_BASE*`; typed callers cast using the root's payload type. An empty
-visitor traverses without changing payloads. The typed grid owns its nodes;
-the common interface cannot be used to delete them.
+Both lookup overloads and traversal have template definitions in
+`_OctreeGridBase.h`.
+New payload types require no explicit template instantiations. Visitors accept
+`OCTGRID_CELL<T>*` directly and return `true` to continue or `false` to stop.
+A visitor that simply returns `true` traverses without changing payloads.
+The typed grid owns its nodes. Non-template grid configuration, lifecycle and
+ID utilities remain in `_OctreeGridBase.cpp`.
 The viewer's version 7 wire format and 20-byte cell records are unchanged.
 
 Cells average point RGB, initializing cell alpha to 1, then publish their retained

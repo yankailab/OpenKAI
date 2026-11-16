@@ -1,5 +1,4 @@
 #include "_OctreeGridBase.h"
-#include <cmath>
 
 namespace kai
 {
@@ -62,11 +61,6 @@ namespace kai
 		return true;
 	}
 
-	int OCTGRID_CELL_BASE::getLevel(void) const
-	{
-		return int((m_ID.m_uint64[1] >> 56) & 63);
-	}
-
 	_OctreeGridBase::_OctreeGridBase()
 	{
 	}
@@ -119,60 +113,6 @@ namespace kai
 	bool _OctreeGridBase::check(void)
 	{
 		return this->_ModuleBase::check();
-	}
-
-	OCTGRID_CELL_BASE *_OctreeGridBase::getCell(OCTGRID_CELL_BASE *pRoot, const UUID128 &id) const
-	{
-		IF_N(!octgridValidCellID(id, m_nMaxLevel));
-		OCTGRID_CELL_BASE *pCell = pRoot;
-		const unsigned depth = (id.m_uint64[1] >> 56) & 63;
-		for (unsigned level = 0; pCell && level < depth; ++level)
-			pCell = pCell->getChild(octgridCellChild(id, level));
-		IF_N(!pCell || pCell->m_ID.m_uint64[0] != id.m_uint64[0] ||
-			pCell->m_ID.m_uint64[1] != id.m_uint64[1]);
-		return pCell;
-	}
-
-	OCTGRID_CELL_BASE *_OctreeGridBase::getCell(OCTGRID_CELL_BASE *pRoot, const Vector3f &position, int maxLevel) const
-	{
-		return visitCells(pRoot, position, maxLevel, false, {});
-	}
-
-	OCTGRID_CELL_BASE *_OctreeGridBase::visitCells(OCTGRID_CELL_BASE *pRoot, const Vector3f &position,
-													  int maxLevel, bool add, const std::function<bool(OCTGRID_CELL_BASE *)> &visit) const
-	{
-		NULL_N(pRoot);
-		const float *point = position.data();
-		const float *origin = m_vPorigin.data(), *rootSize = m_vRootCellSize.data();
-		float center[3], size[3];
-		for (unsigned axis = 0; axis < 3; ++axis)
-		{
-			IF_N(!std::isfinite(point[axis]) ||
-				std::fabs(point[axis] - origin[axis]) > rootSize[axis] * 0.5f);
-			center[axis] = origin[axis];
-			size[axis] = rootSize[axis];
-		}
-
-		if (maxLevel < 0 || maxLevel > m_nMaxLevel)
-			maxLevel = m_nMaxLevel;
-
-		OCTGRID_CELL_BASE *cell = pRoot;
-		for (int level = 0; level <= maxLevel; ++level)
-		{
-			IF_N(visit && !visit(cell));
-			IF__(level == maxLevel, cell);
-			const uint8_t child = (point[0] >= center[0] ? 4 : 0) |
-				(point[1] >= center[1] ? 2 : 0) | (point[2] >= center[2] ? 1 : 0);
-			cell = add ? cell->addChild(child) : cell->getChild(child);
-			NULL_N(cell);
-			for (unsigned axis = 0; axis < 3; ++axis)
-			{
-				center[axis] += size[axis] * ((child & (4 >> axis)) ? 0.25f : -0.25f);
-				size[axis] *= 0.5f;
-			}
-		}
-
-		return nullptr;
 	}
 
 	void _OctreeGridBase::update(void)

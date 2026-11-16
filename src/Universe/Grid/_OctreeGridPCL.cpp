@@ -212,29 +212,23 @@ namespace kai
 
 	OCTGRID_CELL<OCTGRID_CELL_PCL> *_OctreeGridPCL::addCellPoint(const GEOMETRY_POINT &gP, const uint64_t &tNow, int nMaxLevTo, bool bAdd)
 	{
-		auto visit = [&](OCTGRID_CELL_BASE *pCell)
+		return visitCells(m_pCell, gP.m_vP, nMaxLevTo, bAdd, [&](OCTGRID_CELL<OCTGRID_CELL_PCL> *cell)
 		{
-			// Every descendant is created by the typed root's addChild().
-			auto *cell = static_cast<OCTGRID_CELL<OCTGRID_CELL_PCL> *>(pCell);
 			OCTGRID_CELL_PCL *pPcl = bAdd ? cell->addT() : cell->getT();
 			NULL_F(pPcl);
 			updatePCLcell(pPcl, gP, tNow);
 			return true;
-		};
-		
-		// Reference the stack visitor to avoid allocating a callback for every point.
-		return static_cast<OCTGRID_CELL<OCTGRID_CELL_PCL> *>(
-			visitCells(m_pCell, gP.m_vP, nMaxLevTo, bAdd, std::ref(visit)));
+		});
 	}
 
 	OCTGRID_CELL<OCTGRID_CELL_PCL> *_OctreeGridPCL::getCell(const Vector3f &vP, int nMaxLevTo)
 	{
-		return static_cast<OCTGRID_CELL<OCTGRID_CELL_PCL> *>(_OctreeGridBase::getCell(m_pCell, vP, nMaxLevTo));
+		return _OctreeGridBase::getCell(m_pCell, vP, nMaxLevTo);
 	}
 
 	OCTGRID_CELL<OCTGRID_CELL_PCL> *_OctreeGridPCL::getCell(const UUID128 &id)
 	{
-		return static_cast<OCTGRID_CELL<OCTGRID_CELL_PCL> *>(_OctreeGridBase::getCell(m_pCell, id));
+		return _OctreeGridBase::getCell(m_pCell, id);
 	}
 
 	void _OctreeGridPCL::deleteExpiredCells(void)
