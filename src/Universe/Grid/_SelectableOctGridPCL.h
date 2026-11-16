@@ -1,5 +1,5 @@
-#ifndef OpenKAI_src_Universe_Grid__SelectableOctGrid_H_
-#define OpenKAI_src_Universe_Grid__SelectableOctGrid_H_
+#ifndef OpenKAI_src_Universe_Grid__SelectableOctGridPCL_H_
+#define OpenKAI_src_Universe_Grid__SelectableOctGridPCL_H_
 
 #include "_OctreeGridPCL.h"
 #include <array>
@@ -52,49 +52,49 @@ namespace kai
 		return octgridCellBox(header.m_vPorigin, header.m_vRootCellSize, header.m_nMaxLevel, id, center, size);
 	}
 
-
-	// Adds viewer snapshots, persistent selection and browser commands to the grid.
-	class _SelectableOctGrid : public _OctreeGridPCL
+	// Optional editor and viewer snapshots for a separately running point-cloud grid.
+	class _SelectableOctGridPCL : public _ModuleBase
 	{
 	public:
-		_SelectableOctGrid();
-		virtual ~_SelectableOctGrid();
+		_SelectableOctGridPCL();
+		virtual ~_SelectableOctGridPCL();
 
 		bool loadConfig(void) override;
+		bool link(InstanceMgr *pM) override;
 		bool start(void) override;
+		void stop(void) override;
+		bool check(void) override;
 		void jsonCmd(const json &j, void *pJSONbase) override;
 
-		// Persist a coherent grid configuration and selection.
+		// Persist editor settings and the linked grid's configuration/selection.
 		bool saveConfig(bool bExport) override;
-		virtual const vector<UUID128> &getSelectedCells(void);
-		// Checks live counts while holding both the grid and selection locks.
-		virtual bool bSelectedOccupied(float threshold);
 
-		// Cell snapshots are the grid's only stream output.
+		// Cell snapshots are the editor's only stream output.
 		virtual int get(SELECTABLE_OCTGRID_CELLS *pOut, uint64_t tExpire = 0, size_t nMaxCells = SIZE_MAX);
 
 	protected:
-		void updateGrid(void) override;
-		// Called with m_gridMutex held, or with grid updates stopped.
+		// Called with the linked grid's m_gridMutex held.
 		virtual void updateDrawAssets(void);
 
 	private:
-		// Called with m_gridMutex held; selection snapshots also take m_cellsMutex.
+		// Called with the linked grid's m_gridMutex held.
 		bool saveConfigLocked(bool bExport);
 		bool applyGridConfig(const json &j, string &error);
 		bool applyCellSelection(const json &j, string &error);
 		json gridRootJSON(void) const;
 		json gridConfigJSON(void) const;
 		json cellSelectionJSON(void);
-		json selectedCellIDsJSON(void);
+		SELECTABLE_OCTGRID_HEADER gridHeader(void) const;
 		void update(void) override;
 		static void *getUpdate(void *This)
 		{
-			((_SelectableOctGrid *)This)->update();
+			((_SelectableOctGridPCL *)This)->update();
 			return NULL;
 		}
 
 	protected:
+		_OctreeGridPCL *m_pOGpcl = nullptr; // backend must outlive this editor's worker
+
 		// Compact published snapshot; viewers construct the geometry.
 		int m_nMaxCells = 8333;
 		SELECTABLE_OCTGRID_CELLS m_cells;
@@ -105,9 +105,8 @@ namespace kai
 		Vector4f m_vColCellOcc = {1, 1, 1, 1};
 		bool m_bColCellOcc = false;
 
-		// Acquire m_gridMutex first when both locks are needed.
+		// Acquire the linked grid's m_gridMutex first when both locks are needed.
 		std::mutex m_cellsMutex;
-		vector<UUID128> m_vSelectedCells;
 	};
 
 }

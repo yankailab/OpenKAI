@@ -4,7 +4,7 @@
 #include <mutex>
 #include <OpenKAI/Protocol/_JSONbase.h>
 #include <OpenKAI/Navigation/_GeoFence.h>
-#include <OpenKAI/Universe/Grid/_SelectableOctGrid.h>
+#include <OpenKAI/Universe/Grid/_OctreeGridPCL.h>
 #include <OpenKAI/Autopilot/FC/ArduPilot/_APmav_move.h>
 #include <OpenKAI/Autopilot/FC/ArduPilot/_APmav_rover.h>
 
@@ -75,7 +75,7 @@ namespace kai
 		AP_LIDAR_MODE m_dMode = apLiDAR_modeStandby;
 		int m_apModeMove = AP_ROVER_MANUAL;
 		_GeoFence *m_pGfence = nullptr;
-		_SelectableOctGrid *m_pOctGrid = nullptr;
+		_OctreeGridPCL *m_pOctGrid = nullptr;
 		float m_octGridOccu = 1;
 		float m_speedGo = 0.2;
 		float m_steerTurn = 0.2;

@@ -18,7 +18,7 @@
 #ifdef WITH_UNIVERSE
 #include "../Universe/Grid/_OctreeGridBase.h"
 #include "../Universe/Grid/_OctreeGridPCL.h"
-#include "../Universe/Grid/_SelectableOctGrid.h"
+#include "../Universe/Grid/_SelectableOctGridPCL.h"
 #include "../Universe/Geometry/PointCloud/_PCLfile.h"
 #include "../Universe/Geometry/PointCloud/Pipeline/_PCmerge.h"
 #include "../Universe/Geometry/PointCloud/Pipeline/_PCsend.h"

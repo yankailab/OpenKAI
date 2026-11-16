@@ -1,4 +1,4 @@
-# OpenKAI _SelectableOctGrid viewer
+# OpenKAI _SelectableOctGridPCL viewer
 
 Open `index.html`, enter the C++ backend's IP and stream port, then click **Start**.
 Streaming uses port `8080` by default; the independent command connection uses
@@ -24,26 +24,29 @@ Keep application commands out of the stream transport. Add UI controls that call
 The command server and stream wiring are included in `jsonCfg/WebViewer3D.json`;
 the grid instance must appear in the command module's `vBASE` list.
 
-Use `"class": "_SelectableOctGrid"` for grids displayed by this viewer.
-Octree grids derive from `_ModuleBase`, retain an optional `_TransformRigid` link,
-and publish cell snapshots only.
+Use `"class": "_SelectableOctGridPCL"` for grids displayed by this viewer.
+This optional editor derives directly from `_ModuleBase`, links a backend through
+`"_OctreeGridPCL": "octGridPCL"`, and publishes cell snapshots only.
 Configure separate viewer lists:
 
 ```json
 "vGeometry": [{ "PCLframeIn": "points", "nP": 200000, "nL": 0 }],
-"vSelectableOctGrid": [{ "_SelectableOctGrid": "octGrid", "nC": 100000 }]
+"vSelectableOctGrid": [{ "_SelectableOctGridPCL": "octGrid", "nC": 100000 }]
 ```
 
 Generic reference-frame entries and old viewer name lists are no longer accepted.
-A grid's `vPCLframesIn` list names the independent point-cloud streams it consumes.
+The backend grid's `vPCLframesIn` list names the independent point-cloud streams it consumes.
 Viewer geometry entries use `PCLframeIn` and/or `LineFrameIn` stream names; they
 never resolve producer modules. Each publication replaces the corresponding
 geometry, and an empty publication clears it. Encoded point/line snapshots are
 reused until their source changes or records expire.
-It inherits `_OctreeGridPCL` calculations and adds cell snapshots, selection persistence,
-and interaction commands. `_OctreeGridPCL` stores point counts, colors and timestamps
+The editor provides cell snapshots and interaction commands. `_OctreeGridPCL` owns
+`vSelectedCells`, `getSelectedCells()` and `bSelectedOccupied()`, and stores point counts, colors and timestamps
 in `OCTGRID_CELL_PCL` payloads. Its `_OctreeGridBase` parent defines grid geometry,
 typed `OCTGRID_CELL<T>` nodes, cell IDs and lookup. The version 7 stream is unchanged.
+Save writes selected cells to the linked backend JSON instance. After configuring,
+set the editor and unused viewer/command service instances to `bON: false` and restart;
+keep the backend and point inputs enabled to continue occupancy checks without drawing overhead.
 The cells handshake identifies interactive sources with `selectableGrid: true`;
 the picker and Grid config controls target those sources.
 

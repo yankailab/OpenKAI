@@ -2,7 +2,7 @@
 
 `_WebSelectableOctGrid` derives from `_GeometryViewerBase` and reads points and lines from
 the same copying `PCLframe` and `LineFrame` DataObjects as `_ImGUIselectableOctGrid`, plus compact
-`_SelectableOctGrid::get(SELECTABLE_OCTGRID_CELLS*)` snapshots. The C++ process
+`_SelectableOctGridPCL::get(SELECTABLE_OCTGRID_CELLS*)` snapshots. The C++ process
 serves the browser application and three independent binary WebSockets on one port. A separate
 WebSocket connects JSON application commands to `_JSONcmd`. Viewer-specific
 assets, including a pinned three.js release, are in `html/viewer/_SelectableOctGrid/`;
@@ -10,16 +10,27 @@ shared styles, scripts and the logo are in `html/common/`.
 There is no browser-side installation, npm build, CDN, or separate web server.
 
 The viewer and its `WebSelectableOctGridProtocol.h` header live in
-`src/UI/Viewer/Web/`. Its name matches the `_SelectableOctGrid` backend module
-and the native viewer `_ImGUIselectableOctGrid` in `src/UI/Viewer/ImGUI/`.
+`src/UI/Viewer/Web/`. The native viewer is `_ImGUIselectableOctGrid` in
+`src/UI/Viewer/ImGUI/`.
 
-Configure displayed grids with `"class": "_SelectableOctGrid"`. This module
-inherits the `_OctreeGridPCL` calculation API and the `_ModuleBase` lifecycle, and
-owns viewer snapshots, selection state, saved selections and interaction commands.
-`_OctreeGridPCL` inherits grid geometry and cell lookup from `_OctreeGridBase`,
-then adds point ingestion, occupancy, color averaging and expiry. It does not
-publish viewer snapshots or handle grid commands.
-Existing module instance names such as `octGrid` and command names stay the same.
+`_SelectableOctGridPCL` is an optional editor derived directly from `_ModuleBase`.
+Its `_OctreeGridPCL` configuration key links a separately running grid instance.
+The editor owns viewer snapshots, drawing settings and interaction commands.
+`_OctreeGridPCL` inherits geometry and cell lookup from `_OctreeGridBase` and owns
+point ingestion, occupancy, color averaging, expiry and `vSelectedCells`.
+Applications call `getSelectedCells()` and `bSelectedOccupied()` on that backend.
+The selection getter returns a copy protected by the grid mutex.
+
+Launch with the editor, viewer and command transport enabled (`bON: true`) to
+configure selections. After **Apply** and **Save**, set those optional instances
+to `bON: false` in the launch JSON and restart. Keep `_OctreeGridPCL` and its
+point-cloud inputs enabled. Counting and selected-cell occupancy then run without
+allocating editor snapshots or starting viewer threads and servers. For the sample,
+keep `octGridPCL` enabled and disable `octGrid`, `viewer`, `jsonCmd` and `wsServer`
+when their interfaces are no longer needed; also disable other unused viewers or
+HTTP servers. Retain any command services needed by the rest of your application.
+`bON` is a launch-time switch; saving selections does not toggle it automatically.
+The binary protocol remains version 7 with no older-version support.
 
 ## Build and run
 
@@ -114,7 +125,8 @@ All content is displayed as text, including malformed replies.
 
 The **Grid config** form below **Point scale** sets the root center and full
 root cell size in metres. The following **Grid levels config** section edits the
-same five parameters stored in the `_SelectableOctGrid` launch configuration:
+following five parameters. `dTexpireCell`, `dTexpirePCL` and `nMaxLevel` belong to
+the linked `_OctreeGridPCL`; `nMaxCells` and `nPminBuild` belong to the editor:
 
 | Parameter | Meaning and accepted range |
 | --- | --- |
@@ -243,7 +255,7 @@ remaining boundary cells cover the volume at a coarser depth.
 **Apply** is enabled when grid sources and the independent command socket are
 connected, including when the local selection is empty. It calls `wsSendCmd()` once per grid source,
 so grids with different root headers never share an ambiguous ID list. The JSON
-command received by `_SelectableOctGrid::jsonCmd()` through `_JSONcmd` is:
+command received by `_SelectableOctGridPCL::jsonCmd()` through `_JSONcmd` is:
 
 ```json
 {
@@ -265,7 +277,7 @@ in metres, using locale-independent formatting. There are no color fields.
 `wsSendCmd()` adds the normal `EOJ` terminator. A successful send means the command
 was submitted to the socket. The backend replies with the same `cmd`, `module`,
 and `requestId`, `bSuccess: true`, and the current selection after replacing
-`m_vSelectedCells`. Apply leaves the bound JSON and launch file untouched.
+`_OctreeGridPCL::m_vSelectedCells`. Apply leaves the bound JSON and launch file untouched.
 It decodes the decimal header strings back to float32 and requires the root
 origin, size and numeric `nMaxLevel` to match the current grid; a missing, malformed or different
 header returns `bSuccess: false`, leaving the previous selection intact. Invalid
@@ -314,24 +326,35 @@ Removed command names are rejected; there are no aliases or protocol fallbacks.
 
 The picker's **Save** sends `saveConfig` once per connected grid source and waits
 for correlated acknowledgements. It saves only the running selections; local
-picks and Clear remain unapplied until **Apply**. `_SelectableOctGrid::saveConfig(true)`
-writes the current grid settings and selected IDs into its module in the launch JSON:
+picks and Clear remain unapplied until **Apply**. `_SelectableOctGridPCL::saveConfig(true)`
+writes grid settings and selected IDs into the linked `_OctreeGridPCL` instance,
+and drawing settings into the editor instance:
 
 ```json
 {
-  "octGrid": {
-    "class": "_SelectableOctGrid",
+  "octGridPCL": {
+    "class": "_OctreeGridPCL",
+    "bON": true,
     "vPorigin": [0, 0, 0],
     "vRootCellSize": [2, 2, 2],
+    "nMaxLevel": 4,
+    "vPCLframesIn": ["points"],
     "vSelectedCells": ["00000000000000000000000000000000"]
+  },
+  "octGrid": {
+    "class": "_SelectableOctGridPCL",
+    "bON": true,
+    "_OctreeGridPCL": "octGridPCL",
+    "nMaxCells": 8333,
+    "nPminBuild": 1
   }
 }
 ```
 
 The module uses numeric coordinate arrays and the same exact hexadecimal ID byte
 order as picker commands. `saveConfig(true)` updates `vPorigin`, `vRootCellSize` and
-`vSelectedCells` directly in the bound module object, preserving its other fields
-and every other module in the original launch JSON file. `loadConfig()` reads
+`vSelectedCells` directly in the bound backend object, preserving its other fields
+and unrelated modules in the original launch JSON file. `_OctreeGridPCL::loadConfig()` reads
 those values on the next launch.
 
 Saved IDs use the version 7 cell layout described below.
@@ -355,7 +378,7 @@ array starts with an empty selection. File write failures return false.
 ### Viewer sources
 
 Configure two separate source arrays. `vGeometry` entries retain independent
-`PCLframe*` and/or `LineFrame*` data streams; `vSelectableOctGrid` entries retain `_SelectableOctGrid*`
+`PCLframe*` and/or `LineFrame*` data streams; `vSelectableOctGrid` entries retain `_SelectableOctGridPCL*`
 for cell snapshots. Both viewers use the same source parser and settings:
 
 ```json
@@ -376,7 +399,7 @@ for cell snapshots. Both viewers use the same source parser and settings:
       { "LineFrameIn": "lines", "nP": 0, "nL": 100000, "matCol": [0.3, 0.8, 1] }
     ],
     "vSelectableOctGrid": [
-      { "_SelectableOctGrid": "octGrid", "nC": 100000, "matCol": [1, 1, 1, 0.5] }
+      { "_SelectableOctGridPCL": "octGrid", "nC": 100000, "matCol": [1, 1, 1, 0.5] }
     ]
   }
 }
@@ -399,8 +422,8 @@ The removed `vReferenceFrame`, viewer `vGeometryBase`, `geometry`, and
 `_TransformBase` entry aliases are rejected. Per-source caps use `nP`, `nL`,
 and `nC`, with no `nPbuf`/`nLbuf`/`nCbuf` entry aliases.
 
-A calculation-only `_OctreeGridPCL` does not publish viewer snapshots; use
-`_SelectableOctGrid`. The grid's `vPCLframesIn` input list names
+An `_OctreeGridPCL` does not publish viewer snapshots; link an optional
+`_SelectableOctGridPCL` editor to it. The backend's `vPCLframesIn` input list names
 the point-cloud DataObjects it consumes.
 
 | Setting | Default | Meaning |
@@ -491,7 +514,7 @@ status is shown separately when their connection states differ.
 Each connection receives a JSON `hello` with `version: 7`, its `stream` name
 (`points`, `lines`, or `cells`), all object names and camera settings. Any type's
 hello can initialize the page; later greetings do not reset the scene or camera.
-Each object also has a `selectableGrid` boolean, true for `_SelectableOctGrid`
+Each object also has a `selectableGrid` boolean, true for `_SelectableOctGridPCL`
 sources. The browser enables picking and routes grid commands only to those sources.
 The client sends `start` to subscribe. One complete snapshot of that type is then
 sent; the browser sends `next` on that same socket after uploading and rendering
@@ -521,7 +544,7 @@ For a cells-only viewer, set `nPbuf` and `nLbuf` to zero and include the grid so
 "nPbuf": 0,
 "nLbuf": 0,
 "nCbuf": 100000,
-"vSelectableOctGrid": [{ "_SelectableOctGrid": "octGrid", "nC": 100000 }]
+"vSelectableOctGrid": [{ "_SelectableOctGridPCL": "octGrid", "nC": 100000 }]
 ```
 
 The point/line endpoints then send empty snapshots. The grid can still consume
@@ -612,15 +635,15 @@ removal behavior. Picker commands send 16-byte IDs as hexadecimal strings.
 
 ## Occupied cell interface
 
-`_SelectableOctGrid::get(SELECTABLE_OCTGRID_CELLS*, tExpire, nMaxCells)` copies one coherent header
+`_SelectableOctGridPCL::get(SELECTABLE_OCTGRID_CELLS*, tExpire, nMaxCells)` copies one coherent header
 and its occupied cell records. It includes occupied ancestors, as the previous
-wireframe did, in root-first traversal order. `nMaxCells` in the grid config sets
+wireframe did, in root-first traversal order. `nMaxCells` in the editor config sets
 the publication cap (default 8333). The old `nMaxLines` setting is rejected. The viewers have independent `nCbuf` and per-object `nC` caps.
 `_OctreeGridBase` inherits from `_ModuleBase` and owns `vPorigin`, `vRootCellSize`
 and `nMaxLevel`, including their validation and load/save behavior. Input point
 positions must already be in the grid's local coordinate system.
 `_OctreeGridPCL` consumes
-point-cloud DataObjects through its `vPCLframesIn` input list; `_SelectableOctGrid` publishes
+point-cloud DataObjects through its `vPCLframesIn` input list; `_SelectableOctGridPCL` publishes
 only cell IDs, colors, and the root header. Viewers construct the boxes.
 
 `OCTGRID_CELL<T>` directly owns its UUID, `getLevel()`, typed parent/child

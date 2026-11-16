@@ -45,8 +45,9 @@ namespace
 		InstanceMgr instances;
 		for (const char *name : {"pcFilePoints", "scPC"})
 			assert(instances.addDataObject(name, &cfg, &config[name]));
+		assert(instances.addModule("octGridPCL", &cfg, &config["octGridPCL"]));
 		assert(instances.addModule("octGrid", &cfg, &config["octGrid"]));
-		assert(instances.initAll());
+		assert(instances.initAll() && instances.linkAll());
 
 		const json original = config["viewer"];
 		SelectableOctGridSources sources;

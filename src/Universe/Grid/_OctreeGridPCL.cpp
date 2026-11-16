@@ -72,11 +72,79 @@ namespace kai
 
 	_OctreeGridPCL::~_OctreeGridPCL()
 	{
+		if (m_pT) m_pT->join();
 		if (m_pCell)
 		{
 			m_pCell->release();
 			delete m_pCell;
 		}
+	}
+
+	bool _OctreeGridPCL::readSelectionID(const json &j, UUID128 &id)
+	{
+		IF_F(!j.is_string());
+		const auto &s = j.get_ref<const string &>();
+		IF_F(s.size() != 32);
+		auto hex = [](char c) -> int
+		{
+			if (c >= '0' && c <= '9')
+				return c - '0';
+			if (c >= 'a' && c <= 'f')
+				return c - 'a' + 10;
+			if (c >= 'A' && c <= 'F')
+				return c - 'A' + 10;
+			return -1;
+		};
+		id = UUID128(0);
+		for (size_t i = 0; i < 16; ++i)
+		{
+			const int high = hex(s[i * 2]), low = hex(s[i * 2 + 1]);
+			IF_F(high < 0 || low < 0);
+			id.m_uint64[i / 8] |= uint64_t(high * 16 + low) << (8 * (i % 8));
+		}
+		return true;
+	}
+
+	string _OctreeGridPCL::writeSelectionID(const UUID128 &id)
+	{
+		static const char hex[] = "0123456789abcdef";
+		string result(32, '0');
+		for (size_t i = 0; i < 16; ++i)
+		{
+			const uint8_t byte = uint8_t(id.m_uint64[i / 8] >> (8 * (i % 8)));
+			result[i * 2] = hex[byte >> 4];
+			result[i * 2 + 1] = hex[byte & 15];
+		}
+		return result;
+	}
+
+	json _OctreeGridPCL::selectedCellIDsJSON(void) const
+	{
+		json ids = json::array();
+		for (const auto &id : m_vSelectedCells) ids.push_back(writeSelectionID(id));
+		return ids;
+	}
+
+	vector<UUID128> _OctreeGridPCL::getSelectedCells(void)
+	{
+		std::lock_guard<std::mutex> gridLock(m_gridMutex);
+		return m_vSelectedCells;
+	}
+
+	bool _OctreeGridPCL::bSelectedOccupied(float threshold)
+	{
+		std::lock_guard<std::mutex> gridLock(m_gridMutex);
+		const uint64_t now = getTns();
+		const uint64_t expire = m_dTexpireCell > 0 && now > m_dTexpireCell ? now - m_dTexpireCell : 0;
+		for (const auto &id : m_vSelectedCells)
+		{
+			const auto *cell = getCell(id);
+			const auto *pPcl = cell ? cell->getT() : nullptr;
+			if (pPcl && pPcl->m_nP > 0 && pPcl->m_tStamp > 0 &&
+				!bExpired(pPcl->m_tStamp, expire) && pPcl->m_nP > threshold)
+				return true;
+		}
+		return false;
 	}
 
 	bool _OctreeGridPCL::loadConfig(void)
@@ -87,6 +155,23 @@ namespace kai
 		jKv(j, "dTexpireCell", m_dTexpireCell);
 		jKv(j, "dTexpirePCL", m_dTexpirePCL);
 		jKv(j, "vPCLframesIn", m_vPCLframesIn);
+
+		m_vSelectedCells.clear();
+		const json *ids = jK(j, "vSelectedCells");
+		if (ids)
+		{
+			IF_Le_F(!ids->is_array(), "Invalid vSelectedCells");
+			vector<UUID128> selected;
+			selected.reserve(ids->size());
+			for (const auto &value : *ids)
+			{
+				UUID128 id;
+				IF_Le_F(!readSelectionID(value, id) || !octgridValidCellID(id, m_nMaxLevel),
+						"Invalid selected cell ID in config");
+				selected.push_back(id);
+			}
+			m_vSelectedCells.swap(selected);
+		}
 
 		resetPointInputs();
 
@@ -104,12 +189,19 @@ namespace kai
 
 	bool _OctreeGridPCL::saveConfig(bool bExport)
 	{
+		std::lock_guard<std::mutex> gridLock(m_gridMutex);
+		return saveConfigLocked(bExport);
+	}
+
+	bool _OctreeGridPCL::saveConfigLocked(bool bExport)
+	{
 		IF_F(!_OctreeGridBase::saveConfig(false));
 
 		json &j = *m_pJ;
 		j["dTexpireCell"] = m_dTexpireCell;
 		j["dTexpirePCL"] = m_dTexpirePCL;
 		j["vPCLframesIn"] = m_vPCLframesIn;
+		j["vSelectedCells"] = selectedCellIDsJSON();
 		j.erase("nP");
 		j.erase("vGeometryBase");
 
@@ -149,6 +241,7 @@ namespace kai
 		while (m_pT->bRun())
 		{
 			m_pT->autoFPS();
+			if (!m_pT->bRun()) break;
 
 			std::lock_guard<std::mutex> gridLock(m_gridMutex);
 			updateGrid();

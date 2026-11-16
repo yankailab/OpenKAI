@@ -1,4 +1,4 @@
-#include "../../src/Universe/Grid/_SelectableOctGrid.h"
+#include "../../src/Universe/Grid/_SelectableOctGridPCL.h"
 #include "../../src/Protocol/_JSONbase.h"
 #include <cassert>
 #include <cmath>
@@ -46,7 +46,7 @@ string idHex(const UUID128 &id)
     return result;
 }
 
-class GridHarness : public _SelectableOctGrid
+class BackendHarness : public _OctreeGridPCL
 {
 public:
     void attach(PCLframe &frame) { m_vPointInputs.push_back({&frame, 0}); }
@@ -64,17 +64,31 @@ public:
     }
 };
 
+class GridHarness : public _SelectableOctGridPCL
+{
+public:
+    void attach(_OctreeGridPCL &grid) { m_pOGpcl = &grid; }
+    void tick() { updateDrawAssets(); }
+};
+
 struct Fixture
 {
     JsonCfg config;
+    BackendHarness backend;
     GridHarness grid;
     PCLframe input;
     string configPath;
 
     explicit Fixture(json settings, bool persist = false)
     {
-        settings["class"] = "_SelectableOctGrid";
-        config.setJson({{"grid", std::move(settings)}});
+        json editor = {{"class", "_SelectableOctGridPCL"}, {"_OctreeGridPCL", "grid"}};
+        for (const char *key : {"nMaxCells", "nPminBuild", "vColCellOcc"})
+        {
+            if (settings.contains(key)) editor[key] = settings[key];
+            settings.erase(key);
+        }
+        settings["class"] = "_OctreeGridPCL";
+        config.setJson({{"grid", std::move(settings)}, {"editor", std::move(editor)}});
         if (persist)
         {
             char path[] = "/tmp/openkai-grid-config-XXXXXX";
@@ -84,10 +98,15 @@ struct Fixture
             configPath = path;
             assert(config.saveToFile(configPath) && config.readFromFile(configPath));
         }
-        grid.setName("grid");
-        grid.setConfig(&config, &(*config.getJson())["grid"]);
+        backend.setName("grid");
+        backend.setConfig(&config, &(*config.getJson())["grid"]);
+        assert(backend.loadConfig());
+        backend.attach(input);
+        grid.setName("editor");
+        grid.setConfig(&config, &(*config.getJson())["editor"]);
         assert(grid.loadConfig());
-        grid.attach(input);
+        grid.attach(backend);
+        grid.tick();
     }
 
     ~Fixture()
@@ -100,6 +119,12 @@ struct Fixture
         const auto stamp = getTns();
         for (auto &point : points) point.m_tStamp = stamp;
         input.set(points, stamp);
+        tick();
+    }
+
+    void tick()
+    {
+        backend.tick();
         grid.tick();
     }
 };
@@ -118,12 +143,12 @@ public:
 json gridCommand(GridHarness &grid, json command)
 {
     GridReplyTransport transport;
-    command["module"] = "grid";
+    command["module"] = "editor";
     command["requestId"] = "grid-test";
     grid.jsonCmd(command, &transport);
     assert(transport.replies.size() == 1);
     const json reply = transport.replies.front();
-    assert(reply.at("cmd") == command.at("cmd") && reply.at("module") == "grid");
+    assert(reply.at("cmd") == command.at("cmd") && reply.at("module") == "editor");
     assert(reply.at("requestId") == "grid-test");
     return reply;
 }
@@ -161,7 +186,13 @@ json storedConfig(const Fixture &f)
 {
     JsonCfg saved;
     assert(saved.readFromFile(f.configPath));
-    return saved.getJson()->at("grid");
+    const json &backend = saved.getJson()->at("grid"), &editor = saved.getJson()->at("editor");
+    assert(!editor.contains("vSelectedCells") && !editor.contains("nMaxLevel"));
+    assert(!backend.contains("nMaxCells") && !backend.contains("nPminBuild"));
+    json settings = backend;
+    for (const char *key : {"nMaxCells", "nPminBuild", "vColCellOcc"})
+        if (editor.contains(key)) settings[key] = editor[key];
+    return settings;
 }
 
 void testCountsColorsAndPaths()
@@ -177,7 +208,7 @@ void testCountsColorsAndPaths()
         points.push_back({position, {0, 0, 1}, 0});
     }
     f.publish(points);
-    const auto *root = f.grid.getCell(UUID128(0));
+    const auto *root = f.backend.getCell(UUID128(0));
     assert(root && root->getT()->m_nP == 16);
     assert((root->getT()->m_vC - Vector4f(.5f, 0, .5f, 1)).norm() < 1e-6f);
     SELECTABLE_OCTGRID_CELLS snapshot;
@@ -185,8 +216,8 @@ void testCountsColorsAndPaths()
     for (unsigned octant = 0; octant < 8; ++octant)
     {
         const auto &position = points[octant * 2].m_vP;
-        const auto *leaf = f.grid.getCell(position);
-        assert(leaf && leaf->getT()->m_nP == 2 && f.grid.getCell(leaf->m_ID) == leaf);
+        const auto *leaf = f.backend.getCell(position);
+        assert(leaf && leaf->getT()->m_nP == 2 && f.backend.getCell(leaf->m_ID) == leaf);
         assert(leaf->m_ID.m_uint64[0] == 0);
         assert(leaf->m_ID.m_uint64[1] == (uint64_t(2) << 56 | uint64_t(octant) << 53 | uint64_t(octant) << 50));
         assert((leaf->getT()->m_vC - Vector4f(.5f, 0, .5f, 1)).norm() < 1e-6f);
@@ -196,14 +227,14 @@ void testCountsColorsAndPaths()
             assert(center[axis] == position[axis] && size[axis] == 1);
     }
 
-    f.grid.tick();
-    assert(f.grid.getCell(UUID128(0))->getT()->m_nP == 16); // No recount of an unchanged frame.
+    f.tick();
+    assert(f.backend.getCell(UUID128(0))->getT()->m_nP == 16); // No recount of an unchanged frame.
     f.publish({{points.front().m_vP, {0, 1, 0}, 0}});
-    const auto *leaf = f.grid.getCell(points.front().m_vP);
+    const auto *leaf = f.backend.getCell(points.front().m_vP);
     assert(leaf && leaf->getT()->m_nP == 3);
     assert((leaf->getT()->m_vC - Vector4f(1.f / 3, 1.f / 3, 1.f / 3, 1)).norm() < 1e-6f);
-    assert(!f.grid.addCellPoint({{2.01f, 0, 0}, {1, 1, 1}, getTns()}, getTns()));
-    assert(f.grid.getCell(UUID128(0))->getT()->m_nP == 17);
+    assert(!f.backend.addCellPoint({{2.01f, 0, 0}, {1, 1, 1}, getTns()}, getTns()));
+    assert(f.backend.getCell(UUID128(0))->getT()->m_nP == 17);
 }
 
 void testCellIDLayoutAndGeometry()
@@ -253,9 +284,9 @@ void testDeepGeneratedIDsAndSelection()
     const string selectedHex = "ffffffffffffffffffffffffffffff28";
     Fixture f({{"vRootCellSize", {2, 2, 2}}, {"nMaxLevel", 40}, {"nPminBuild", 0},
                {"vSelectedCells", {selectedHex}}});
-    assert(f.grid.getSelectedCells().size() == 1);
-    assert(sameID(f.grid.getSelectedCells().front(), selectedID));
-    assert(!f.grid.bSelectedOccupied(0));
+    assert(f.backend.getSelectedCells().size() == 1);
+    assert(sameID(f.backend.getSelectedCells().front(), selectedID));
+    assert(!f.backend.bSelectedOccupied(0));
     // The positive root corner chooses child 7 at every depth, including where
     // float cell centers round to the input point near the deepest levels.
     const Vector3f position(1, 1, 1);
@@ -265,17 +296,17 @@ void testDeepGeneratedIDsAndSelection()
     for (unsigned depth = 0; depth <= 40; ++depth)
     {
         const UUID128 id = idForPath(vector<unsigned>(depth, 7));
-        const auto *cell = f.grid.getCell(position, depth);
+        const auto *cell = f.backend.getCell(position, depth);
         assert(cell && sameID(cell->m_ID, id));
-        assert(f.grid.getCell(id) == cell);
+        assert(f.backend.getCell(id) == cell);
         assert(sameID(snapshot.m_vCell[depth].id(), id));
     }
-    assert(f.grid.bSelectedOccupied(0));
-    assert(!f.grid.bSelectedOccupied(1));
+    assert(f.backend.bSelectedOccupied(0));
+    assert(!f.backend.bSelectedOccupied(1));
     assert(f.grid.saveConfig(false));
     assert((*f.config.getJson())["grid"]["vSelectedCells"] == json::array({selectedHex}));
-    assert(f.grid.loadConfig());
-    assert(sameID(f.grid.getSelectedCells().front(), selectedID));
+    assert(f.backend.loadConfig());
+    assert(sameID(f.backend.getSelectedCells().front(), selectedID));
 }
 
 void testInvalidCellIDs()
@@ -299,15 +330,15 @@ void testInvalidCellIDs()
     {
         std::array<float, 3> center, size;
         assert(!octgridCellBox(snapshot.m_header, id, center, size));
-        assert(!f.grid.getCell(id));
-        const UUID128 selected = f.grid.getSelectedCells().front();
+        assert(!f.backend.getCell(id));
+        const UUID128 selected = f.backend.getSelectedCells().front();
         f.grid.jsonCmd({{"cmd", "setCellSelection"}, {"vPorigin", {"0", "0", "0"}},
                         {"vRootCellSize", {"2", "2", "2"}}, {"nMaxLevel", 40}, {"cellIDs", {idHex(id)}}}, nullptr);
-        assert(f.grid.getSelectedCells().size() == 1 && sameID(f.grid.getSelectedCells().front(), selected));
+        assert(f.backend.getSelectedCells().size() == 1 && sameID(f.backend.getSelectedCells().front(), selected));
         (*f.config.getJson())["grid"]["vSelectedCells"] = json::array({idHex(id)});
-        assert(!f.grid.loadConfig());
+        assert(!f.backend.loadConfig());
         (*f.config.getJson())["grid"]["vSelectedCells"] = json::array({idHex(selected)});
-        assert(f.grid.loadConfig());
+        assert(f.backend.loadConfig());
         f.publish({{{1, 1, 1}, {1, 1, 1}, 0}});
     }
     auto limitedHeader = snapshot.m_header;
@@ -331,15 +362,15 @@ void testStaleAndInvalidPoints()
                  {{0, inf, 1}, {1, 0, 0}, now},
                  {{0, 0, -inf}, {1, 0, 0}, now},
                  {{6, 0, 1}, {1, 0, 0}, now}}, now);
-    f.grid.tick();
+    f.tick();
     SELECTABLE_OCTGRID_CELLS snapshot;
     assert(f.grid.get(&snapshot) == 0);
     f.publish({{{0, 0, 1}, {.25f, .5f, .75f}, 0}});
     assert(f.grid.get(&snapshot) == 3);
-    f.grid.ageCells(getTns() - NSEC_SEC);
-    f.grid.tick();
+    f.backend.ageCells(getTns() - NSEC_SEC);
+    f.tick();
     assert(f.grid.get(&snapshot) == 0);
-    assert(!f.grid.getCell(UUID128(0))->getT()); // Expiry remains active with no new input.
+    assert(!f.backend.getCell(UUID128(0))->getT()); // Expiry remains active with no new input.
 }
 
 void testPayloadClearPreservesCellIdentity()
@@ -348,16 +379,16 @@ void testPayloadClearPreservesCellIdentity()
     Fixture f({{"vRootCellSize", {4, 4, 4}}, {"nMaxLevel", 2}, {"nPminBuild", 0},
                {"vSelectedCells", {idHex(leafID)}}});
     f.publish({{{1.5f, 1.5f, 1.5f}, {1, 0, 0}, 0}});
-    auto *cell = f.grid.getCell(leafID);
-    assert(cell && f.grid.bSelectedOccupied(0));
+    auto *cell = f.backend.getCell(leafID);
+    assert(cell && f.backend.bSelectedOccupied(0));
     cell->getT()->clear();
-    assert(sameID(cell->m_ID, leafID) && f.grid.getCell(leafID) == cell);
-    assert(!f.grid.bSelectedOccupied(-1));
+    assert(sameID(cell->m_ID, leafID) && f.backend.getCell(leafID) == cell);
+    assert(!f.backend.bSelectedOccupied(-1));
     cell->getT()->m_tStamp = getTns();
-    assert(!f.grid.bSelectedOccupied(-1)); // A timestamp alone is not occupancy.
+    assert(!f.backend.bSelectedOccupied(-1)); // A timestamp alone is not occupancy.
     f.publish({{{1.5f, 1.5f, 1.5f}, {0, 1, 0}, 0}});
-    assert(f.grid.getCell(leafID) == cell && cell->getT()->m_nP == 1);
-    assert(f.grid.bSelectedOccupied(0));
+    assert(f.backend.getCell(leafID) == cell && cell->getT()->m_nP == 1);
+    assert(f.backend.bSelectedOccupied(0));
 }
 
 void testGridConfigLoadAndPersistence()
@@ -372,7 +403,7 @@ void testGridConfigLoadAndPersistence()
     json settings = gridConfig(f.grid);
     assert(settings.at("dTexpireCell") == "0" && settings.at("nMaxLevel") == "2");
     assert(f.grid.get(&after) == 3 && before.m_header.m_tStamp == after.m_header.m_tStamp);
-    assert(f.grid.getCell(UUID128(0))->getT()->m_nP == 1 && f.grid.bSelectedOccupied(0));
+    assert(f.backend.getCell(UUID128(0))->getT()->m_nP == 1 && f.backend.bSelectedOccupied(0));
     assert(storedConfig(f) == storedBefore); // Load never writes or rebuilds occupancy.
     assert(*f.config.getJson() == boundBefore);
 
@@ -406,7 +437,7 @@ void testGridConfigLoadAndPersistence()
     assert(saved.at("nMaxLevel") == 4 && saved.at("vPorigin") == json({.125f, -.5f, 1.25f}));
     Fixture restored(saved); // High cell cap must not allocate billions of cells at startup.
     assert(gridConfig(restored.grid) == current);
-    assert(restored.grid.getSelectedCells().size() == f.grid.getSelectedCells().size());
+    assert(restored.backend.getSelectedCells().size() == f.backend.getSelectedCells().size());
 }
 
 void testInvalidGridConfigIsAtomic()
@@ -449,7 +480,7 @@ void testInvalidGridConfigIsAtomic()
         assert(gridConfig(f.grid) == original && storedConfig(f) == saved);
         assert(*f.config.getJson() == bound);
         assert(f.grid.get(&after) == 3 && after.m_header.m_tStamp == before.m_header.m_tStamp);
-        assert(f.grid.getCell(UUID128(0))->getT()->m_nP == 1 && f.grid.bSelectedOccupied(0));
+        assert(f.backend.getCell(UUID128(0))->getT()->m_nP == 1 && f.backend.bSelectedOccupied(0));
     }
 }
 
@@ -464,44 +495,44 @@ void testGridConfigRebuildsAndRemapsSelection()
     assert(setGridConfig(f.grid, settings).at("bSuccess") == true);
     SELECTABLE_OCTGRID_CELLS snapshot;
     assert(f.grid.get(&snapshot) == 0 && snapshot.m_header.m_nMaxLevel == 1);
-    assert(!f.grid.getCell(UUID128(0))->getT() && !f.grid.bSelectedOccupied(0));
-    assert(f.grid.getSelectedCells().size() == 1 && sameID(f.grid.getSelectedCells().front(), parent));
+    assert(!f.backend.getCell(UUID128(0))->getT() && !f.backend.bSelectedOccupied(0));
+    assert(f.backend.getSelectedCells().size() == 1 && sameID(f.backend.getSelectedCells().front(), parent));
     assert(storedConfig(f).at("vSelectedCells") == json::array({idHex(leaf)}));
     assert((*f.config.getJson())["grid"]["nMaxLevel"] == 2);
     assert(gridCommand(f.grid, {{"cmd", "saveConfig"}}).at("bSuccess") == true);
     assert(storedConfig(f).at("vSelectedCells") == json::array({idHex(parent)}));
     Fixture restored(storedConfig(f));
-    assert(sameID(restored.grid.getSelectedCells().front(), parent));
-    f.grid.tick(); // A geometry edit replays the current frame exactly once.
-    assert(f.grid.get(&snapshot) == 2 && f.grid.getCell(UUID128(0))->getT()->m_nP == 1 && f.grid.bSelectedOccupied(0));
-    f.grid.tick();
-    assert(f.grid.getCell(UUID128(0))->getT()->m_nP == 1);
+    assert(sameID(restored.backend.getSelectedCells().front(), parent));
+    f.tick(); // A geometry edit replays the current frame exactly once.
+    assert(f.grid.get(&snapshot) == 2 && f.backend.getCell(UUID128(0))->getT()->m_nP == 1 && f.backend.bSelectedOccupied(0));
+    f.tick();
+    assert(f.backend.getCell(UUID128(0))->getT()->m_nP == 1);
 
     GridReplyTransport transport;
     f.grid.jsonCmd({{"cmd", "setCellSelection"}, {"vPorigin", {"0", "0", "0"}},
                     {"vRootCellSize", {"4", "4", "4"}}, {"nMaxLevel", 2}, {"cellIDs", {idHex(leaf)}}}, &transport);
     assert(transport.replies.back().at("bSuccess") == false);
-    assert(sameID(f.grid.getSelectedCells().front(), parent)); // Stale depth cannot enter persisted selection.
+    assert(sameID(f.backend.getSelectedCells().front(), parent)); // Stale depth cannot enter persisted selection.
 
     settings["nMaxLevel"] = "3";
     assert(setGridConfig(f.grid, settings).at("bSuccess") == true);
     assert(f.grid.get(&snapshot) == 0 && snapshot.m_header.m_nMaxLevel == 3);
-    f.grid.tick();
-    assert(f.grid.get(&snapshot) == 4 && sameID(f.grid.getSelectedCells().front(), parent));
+    f.tick();
+    assert(f.grid.get(&snapshot) == 4 && sameID(f.backend.getSelectedCells().front(), parent));
     settings["vPorigin"] = {"1", "1", "1"};
     settings["vRootCellSize"] = {"2", "2", "2"};
     assert(setGridConfig(f.grid, settings).at("bSuccess") == true);
-    assert(f.grid.getSelectedCells().size() == 1 && sameID(f.grid.getSelectedCells().front(), UUID128(0)));
+    assert(f.backend.getSelectedCells().size() == 1 && sameID(f.backend.getSelectedCells().front(), UUID128(0)));
     assert(storedConfig(f).at("vSelectedCells") == json::array({idHex(parent)}));
     assert(gridCommand(f.grid, {{"cmd", "saveConfig"}}).at("bSuccess") == true);
     assert(storedConfig(f).at("vSelectedCells") == json::array({idHex(UUID128(0))}));
     f.grid.jsonCmd({{"cmd", "setCellSelection"}, {"vPorigin", {"0", "0", "0"}},
                     {"vRootCellSize", {"4", "4", "4"}}, {"nMaxLevel", 3}, {"cellIDs", json::array()}}, &transport);
     assert(transport.replies.back().at("bSuccess") == false);
-    assert(f.grid.getSelectedCells().size() == 1 && sameID(f.grid.getSelectedCells().front(), UUID128(0)));
+    assert(f.backend.getSelectedCells().size() == 1 && sameID(f.backend.getSelectedCells().front(), UUID128(0)));
     settings["nMaxLevel"] = "0";
     assert(setGridConfig(f.grid, settings).at("bSuccess") == true);
-    f.grid.tick();
+    f.tick();
     assert(f.grid.get(&snapshot) == 1 && snapshot.m_header.m_nMaxLevel == 0);
 }
 
@@ -522,8 +553,8 @@ void testGridConfigRuntimeLimitsAndSaveFailure()
     assert(setGridConfig(f.grid, settings).at("bSuccess") == true && f.grid.get(&snapshot) == 0);
     settings["nMaxCells"] = "10";
     assert(setGridConfig(f.grid, settings).at("bSuccess") == true && f.grid.get(&snapshot) == 3);
-    assert(f.grid.getCell(UUID128(0))->getT()->m_nP == 3); // Publication updates never recount points.
-    f.grid.ageCells(getTns() - NSEC_SEC);
+    assert(f.backend.getCell(UUID128(0))->getT()->m_nP == 3); // Publication updates never recount points.
+    f.backend.ageCells(getTns() - NSEC_SEC);
     settings["dTexpireCell"] = "1";
     assert(setGridConfig(f.grid, settings).at("bSuccess") == true && f.grid.get(&snapshot) == 0);
 
@@ -561,7 +592,7 @@ void testCellSelectionApplyLoadAndSave()
     const json appliedReply = setCellSelection(f.grid, selection);
     assert(appliedReply.at("bSuccess") == true);
     assert(std::stoull(appliedReply.at("tStamp").get<string>()) >= selectionStamp);
-    assert(cellSelection(f.grid) == selection && f.grid.bSelectedOccupied(0));
+    assert(cellSelection(f.grid) == selection && f.backend.bSelectedOccupied(0));
     assert(storedConfig(f) == diskBefore && *f.config.getJson() == boundBefore);
     assert(f.grid.get(&after) == 3 && after.m_header.m_tStamp == before.m_header.m_tStamp);
 
@@ -601,7 +632,7 @@ void testCellSelectionApplyLoadAndSave()
     const json savedBound = *f.config.getJson();
     selection["cellIDs"] = json::array();
     assert(setCellSelection(f.grid, selection).at("bSuccess") == true);
-    assert(f.grid.getSelectedCells().empty() && !f.grid.bSelectedOccupied(0));
+    assert(f.backend.getSelectedCells().empty() && !f.backend.bSelectedOccupied(0));
     assert(cellSelection(f.grid).at("cellIDs").empty());
     assert(storedConfig(f).at("vSelectedCells") == json::array({appliedID}) && *f.config.getJson() == savedBound);
     assert(gridCommand(f.grid, {{"cmd", "saveConfig"}}).at("bSuccess") == true);
@@ -612,6 +643,94 @@ void testCellSelectionApplyLoadAndSave()
     assert(!transport.replies.back().contains("requestId") && transport.replies.back().at("bSuccess") == true);
     f.grid.jsonCmd({{"cmd", "getGridConfig"}, {"requestId", 987654321}}, &transport);
     assert(transport.replies.back().at("requestId") == 987654321);
+}
+
+void testRuntimeWithoutEditor()
+{
+    Fixture f({{"vRootCellSize", {4, 4, 4}}, {"nMaxLevel", 2}}, true);
+    json selection = cellSelection(f.grid);
+    const UUID128 selected = idForPath({7, 7});
+    selection["cellIDs"] = {idHex(selected)};
+    assert(setCellSelection(f.grid, selection).at("bSuccess") == true);
+    assert(gridCommand(f.grid, {{"cmd", "saveConfig"}}).at("bSuccess") == true);
+
+    // Restart the saved launch file with all editor/viewer instances disabled.
+    JsonCfg launch;
+    assert(launch.readFromFile(f.configPath));
+    json &config = *launch.getJson();
+    config["editor"]["bON"] = false;
+    config["viewer"] = {{"class", "_WebSelectableOctGrid"}, {"bON", false}};
+    config["commands"] = {{"class", "_JSONcmd"}, {"bON", false}};
+    config["points"] = {{"type", "dataObject"}, {"class", "PCLframe"}};
+    config["grid"]["bON"] = true;
+    config["grid"]["vPCLframesIn"] = {"points"};
+    config["grid"]["thread"]["FPS"] = 100;
+    assert(launch.saveToFile());
+
+    InstanceMgr instances;
+    assert(instances.loadJsonFiles(f.configPath) && instances.createAll());
+    assert(!instances.findModule("editor") && !instances.findModule("viewer") && !instances.findModule("commands"));
+    assert(instances.initAll() && instances.linkAll());
+    auto *backend = static_cast<_OctreeGridPCL *>(instances.findModule("grid"));
+    auto *points = static_cast<PCLframe *>(instances.findDataObject("points"));
+    assert(backend && points && backend->getSelectedCells().size() == 1);
+    assert(sameID(backend->getSelectedCells().front(), selected));
+    assert(!backend->bSelectedOccupied(0));
+    // Returned selections are snapshots, not mutable aliases into the runtime grid.
+    auto copy = backend->getSelectedCells();
+    copy.clear();
+    assert(backend->getSelectedCells().size() == 1);
+    const auto stamp = getTns();
+    points->set({{{1.5f, 1.5f, 1.5f}, {1, 0, 0}, stamp}}, stamp);
+    assert(instances.startAll());
+    const auto deadline = getTns() + 2 * NSEC_SEC;
+    while (!backend->bSelectedOccupied(0) && getTns() < deadline) usleep(1000);
+    assert(backend->bSelectedOccupied(0) && !backend->bSelectedOccupied(1));
+    assert(backend->saveConfig(true));
+    assert(launch.readFromFile(f.configPath));
+    assert(launch.getJson()->at("grid").at("vSelectedCells") == json::array({idHex(selected)}));
+    assert(!launch.getJson()->at("editor").contains("vSelectedCells"));
+    instances.stopAll();
+    instances.cleanAll();
+}
+
+void testStoppingEditorLeavesBackendRunning()
+{
+    Fixture f({{"nMaxLevel", 1}, {"nPminBuild", 0}, {"vSelectedCells", {idHex(UUID128(0))}}});
+    auto publish = [&]()
+    {
+        const auto stamp = getTns();
+        f.input.set({{{1, 1, 1}, {1, 0, 0}, stamp}}, stamp);
+    };
+    assert(f.backend.start() && f.grid.start());
+    publish();
+    SELECTABLE_OCTGRID_CELLS snapshot;
+    auto deadline = getTns() + 2 * NSEC_SEC;
+    while (f.grid.get(&snapshot) == 0 && getTns() < deadline) usleep(1000);
+    assert(f.grid.get(&snapshot) == 2 && f.backend.bSelectedOccupied(0));
+    f.grid.stop(); // Join the editor worker before its linked backend can be released.
+    f.grid.get(&snapshot);
+    const auto lastDraw = snapshot.m_header.m_tStamp;
+    publish();
+    deadline = getTns() + 2 * NSEC_SEC;
+    while (!f.backend.bSelectedOccupied(1) && getTns() < deadline) usleep(1000);
+    assert(f.backend.bSelectedOccupied(1));
+    f.grid.get(&snapshot);
+    assert(snapshot.m_header.m_tStamp == lastDraw);
+}
+
+void testEditorLinkValidation()
+{
+    JsonCfg config;
+    config.setJson({{"editor", {{"class", "_SelectableOctGridPCL"}, {"_OctreeGridPCL", "missing"}}}});
+    _SelectableOctGridPCL editor;
+    editor.setName("editor");
+    editor.setConfig(&config, &(*config.getJson())["editor"]);
+    InstanceMgr instances;
+    assert(editor.loadConfig() && !editor.link(&instances) && !editor.start());
+    GridReplyTransport transport;
+    editor.jsonCmd({{"cmd", "getCellSelection"}}, &transport);
+    assert(transport.replies.size() == 1 && transport.replies.back().at("bSuccess") == false);
 }
 
 void testDenseSampleCloud()
@@ -632,7 +751,7 @@ void testDenseSampleCloud()
     const double elapsedMs = double(getTns() - start) / NSEC_MSEC;
     SELECTABLE_OCTGRID_CELLS snapshot;
     assert(f.grid.get(&snapshot) == 213);
-    const auto *root = f.grid.getCell(UUID128(0));
+    const auto *root = f.backend.getCell(UUID128(0));
     assert(root && root->getT()->m_nP == 640 * 480);
     assert((root->getT()->m_vC - Vector4f(.25f, .5f, .75f, 1)).norm() < 1e-6f);
     assert(snapshot.m_header.m_nMaxLevel == 5);
@@ -656,6 +775,9 @@ int main()
     testGridConfigRebuildsAndRemapsSelection();
     testGridConfigRuntimeLimitsAndSaveFailure();
     testCellSelectionApplyLoadAndSave();
+    testRuntimeWithoutEditor();
+    testStoppingEditorLeavesBackendRunning();
+    testEditorLinkValidation();
     testDenseSampleCloud();
     std::cout << "Octree grid regressions passed\n";
 }

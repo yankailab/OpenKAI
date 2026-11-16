@@ -160,7 +160,11 @@ class GridConfigBrowser(LIVE.Browser):
 
 
 def verify_saved(launch, expected):
-    saved = json.loads(launch.read_text())["octGrid"]
+    config = json.loads(launch.read_text())
+    backend, editor = config["octGridPCL"], config["octGrid"]
+    assert "vSelectedCells" not in editor and "nMaxLevel" not in editor
+    assert "nMaxCells" not in backend and "nPminBuild" not in backend
+    saved = dict(backend, **editor)
     for key in INPUT_IDS:
         assert saved[key] == expected[key], (key, saved[key], expected[key])
     return saved
@@ -196,13 +200,15 @@ def main():
     args = parser.parse_args()
     source = json.loads((ROOT / "samples/AProver_LiDAR/AProver_LiDAR.json").read_text())
     config = {key: source[key] for key in
-              ("APP", "octGrid", "scepterTransform", "viewer", "jsonCmd", "wsServer", "wsServer_rx", "wsServer_tx")}
+              ("APP", "octGridPCL", "octGrid", "scepterTransform", "viewer", "jsonCmd", "wsServer", "wsServer_rx", "wsServer_tx")}
     initial = dict(vPorigin=[1, 2, 3], vRootCellSize=[10, 10, 12],
                    dTexpireCell=1500000000, dTexpirePCL=500000000,
                    nMaxCells=1000, nMaxLevel=5, nPminBuild=10)
     root_selection = ["0" * 32]
-    config["octGrid"].update(initial, vPCLframesIn=[], vSelectedCells=root_selection)
-    config["octGrid"].pop("_TransformRigid", None)
+    config["octGridPCL"].update({key: value for key, value in initial.items()
+                                if key not in ("nMaxCells", "nPminBuild")},
+                               vPCLframesIn=[], vSelectedCells=root_selection)
+    config["octGrid"].update({key: initial[key] for key in ("nMaxCells", "nPminBuild")})
     config["scepterTransform"].update(vT=[0, 0, 0], vR=[0, 0, 0, 1])
     initial_transform = dict(vT=[0, 0, 0], vAngle=[0, 0, 0])
     applied_transform = dict(vT=[1.25, -2.5, 3.75], vAngle=[10, -20, 30])

@@ -3,7 +3,7 @@
 
 #include "../../DataObject/PCLframe.h"
 #include "../../DataObject/LineFrame.h"
-#include "../../Universe/Grid/_SelectableOctGrid.h"
+#include "../../Universe/Grid/_SelectableOctGridPCL.h"
 
 namespace kai
 {
@@ -26,7 +26,7 @@ namespace kai
 
 	struct VIEWER_GRID_SOURCE : VIEWER_SOURCE_STYLE
 	{
-		_SelectableOctGrid *m_pGrid = nullptr;
+		_SelectableOctGridPCL *m_pGrid = nullptr;
 		int m_nC = 0;
 	};
 

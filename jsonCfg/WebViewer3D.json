@@ -5,7 +5,6 @@
     "bLog": true,
     "bStdErr": true
   },
-
   "pcFile": {
     "class": "_PCLfile",
     "bON": true,
@@ -22,7 +21,6 @@
     "type": "dataObject",
     "class": "PCLframe"
   },
-
   "cam": {
     "class": "_Scepter",
     "bON": false,
@@ -55,30 +53,41 @@
     "type": "dataObject",
     "class": "PCLframe"
   },
-
-
-  "octGrid": {
-    "class": "_SelectableOctGrid",
+  "octGridPCL": {
+    "class": "_OctreeGridPCL",
     "thread": {
       "FPS": 5
     },
-    "vPorigin": [0, 0, 0],
+    "vPorigin": [
+      0,
+      0,
+      0
+    ],
     "vRootCellSize": [
       5,
       5,
       5
     ],
     "nMaxLevel": 5,
-    "nMaxCells": 18333,
-    "nPminBuild": 1,
     "dTexpireCell": 0,
     "dTexpirePCL": 0,
     "vPCLframesIn": [
       "pcFilePoints",
       "scPC"
-    ]
+    ],
+    "bON": true,
+    "vSelectedCells": []
   },
-
+  "octGrid": {
+    "class": "_SelectableOctGridPCL",
+    "bON": true,
+    "_OctreeGridPCL": "octGridPCL",
+    "thread": {
+      "FPS": 5
+    },
+    "nMaxCells": 18333,
+    "nPminBuild": 1
+  },
   "viewer": {
     "class": "_WebSelectableOctGrid",
     "thread": {
@@ -135,12 +144,10 @@
           1,
           1
         ],
-        "_SelectableOctGrid": "octGrid"
+        "_SelectableOctGridPCL": "octGrid"
       }
     ]
   },
-
-
   "wsCmdServer": {
     "BytePacketStreamIn": "wsCmdServer_tx",
     "BytePacketStreamOut": "wsCmdServer_rx",
@@ -175,7 +182,6 @@
       "pcFile"
     ]
   },
-
   "wsCmdServer_tx": {
     "type": "dataObject",
     "class": "BytePacketStream",

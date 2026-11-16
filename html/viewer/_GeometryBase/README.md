@@ -47,7 +47,7 @@ stream timestamp changes or records expire. Equal timestamps cannot signal a
 changed payload. `bFrame` and module-based geometry sources are no longer used.
 
 The viewer uses the same [version-7 protocol](../../../docs/3D/WebViewer3D.md#binary-protocol-version-7)
-as `_SelectableOctGrid`: `/stream/points` and `/stream/lines`, JSON `hello`, binary
+as `_WebSelectableOctGrid`: `/stream/points` and `/stream/lines`, JSON `hello`, binary
 RGB snapshots, and `start`/`next` flow control. Each connection reconnects and
 clears independently. The backend reuses the existing protocol serialization.
 Cell streams and `_JSONcmd` commands are not part of this viewer.

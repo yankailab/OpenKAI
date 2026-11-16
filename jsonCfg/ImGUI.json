@@ -16,7 +16,6 @@
 			"viewer"
 		]
 	},
-
 	"pcFile": {
 		"class": "_PCLfile",
 		"bON": true,
@@ -29,9 +28,8 @@
 		],
 		"PCLframeOut": "pcFilePoints"
 	},
-
-	"octGrid": {
-		"class": "_SelectableOctGrid",
+	"octGridPCL": {
+		"class": "_OctreeGridPCL",
 		"bON": true,
 		"bLog": true,
 		"thread": {
@@ -45,18 +43,27 @@
 		"nMaxLevel": 4,
 		"dTexpireCell": 0,
 		"dTexpirePCL": 0,
+		"vPCLframesIn": [
+			"pcFilePoints"
+		],
+		"vSelectedCells": []
+	},
+	"octGrid": {
+		"class": "_SelectableOctGridPCL",
+		"bON": true,
+		"_OctreeGridPCL": "octGridPCL",
+		"bLog": true,
+		"thread": {
+			"FPS": 5
+		},
 		"vColCellOcc": [
 			1,
 			1,
 			1
 		],
 		"nMaxCells": 8333,
-		"nPminBuild": 1,
-		"vPCLframesIn": [
-			"pcFilePoints"
-		]
+		"nPminBuild": 1
 	},
-
 	"viewer": {
 		"class": "_ImGUIselectableOctGrid",
 		"thread": {
@@ -98,7 +105,7 @@
 		],
 		"vSelectableOctGrid": [
 			{
-				"_SelectableOctGrid": "octGrid"
+				"_SelectableOctGridPCL": "octGrid"
 			}
 		]
 	},

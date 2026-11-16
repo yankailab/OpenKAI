@@ -23,6 +23,8 @@ namespace kai
 
 	class _OctreeGridPCL : public _OctreeGridBase
 	{
+		friend class _SelectableOctGridPCL;
+
 	public:
 		_OctreeGridPCL();
 		virtual ~_OctreeGridPCL();
@@ -32,6 +34,10 @@ namespace kai
 		virtual bool link(InstanceMgr *pM) override;
 		virtual bool start(void);
 		virtual bool check(void);
+
+		// Selection belongs to the runtime grid, independently of any editor/viewer.
+		virtual vector<UUID128> getSelectedCells(void);
+		virtual bool bSelectedOccupied(float threshold);
 
 		// Return the spatial cell; point data is accessed through getT().
 		using _OctreeGridBase::getCell;
@@ -45,6 +51,12 @@ namespace kai
 		virtual void updatePoint(void);
 		virtual void deleteExpiredCells(void);
 		void resetPointInputs(void);
+
+		// Caller holds m_gridMutex. Used by the editor's coherent Apply/Save operations.
+		bool saveConfigLocked(bool bExport);
+		json selectedCellIDsJSON(void) const;
+		static bool readSelectionID(const json &j, UUID128 &id);
+		static string writeSelectionID(const UUID128 &id);
 
 	private:
 		virtual void update(void);
@@ -70,8 +82,9 @@ namespace kai
 		vector<GEOMETRY_POINT> m_vInputPoints;
 		uint64_t m_dTexpirePCL = 0;
 
-		// Serializes grid updates with root changes in derived modules.
+		// Serializes point updates, selection access and editor root/config changes.
 		std::mutex m_gridMutex;
+		vector<UUID128> m_vSelectedCells;
 	};
 
 }

@@ -68,13 +68,20 @@ class StreamReferenceSchemaTest(unittest.TestCase):
     def test_octree_grid_inheritance_and_payload_configuration(self):
         for name, base in (("_OctreeGridBase", "_ModuleBase"),
                            ("_OctreeGridPCL", "_OctreeGridBase"),
-                           ("_SelectableOctGrid", "_OctreeGridPCL")):
+                           ("_SelectableOctGridPCL", "_ModuleBase")):
             self.assertEqual(self.classes[name]["baseClasses"], [base])
             self.assertTrue(self.classes[name]["creatable"])
             parameters = self.parameters(name)
             for key in ("vPorigin", "vRootCellSize", "nMaxLevel"):
-                self.assertEqual(parameters[(key,)]["declaredIn"], "_OctreeGridBase")
+                if name == "_SelectableOctGridPCL":
+                    self.assertNotIn((key,), parameters)
+                else:
+                    self.assertEqual(parameters[(key,)]["declaredIn"], "_OctreeGridBase")
             self.assertNotIn(("_TransformRigid",), self.dependencies(name))
+        self.assertNotIn("_SelectableOctGrid", self.classes)
+        self.assertEqual(self.dependencies("_SelectableOctGridPCL")[("_OctreeGridPCL",)]["targetClass"], "_OctreeGridPCL")
+        self.assertNotIn(("vSelectedCells",), self.parameters("_SelectableOctGridPCL"))
+        self.assertIn(("vSelectedCells",), self.parameters("_OctreeGridPCL"))
         base_parameters = self.parameters("_OctreeGridBase")
         self.assertEqual(base_parameters[("nMaxLevel",)]["default"], 4)
         self.assertEqual(base_parameters[("vRootCellSize",)]["default"], [10, 10, 10])
@@ -361,7 +368,7 @@ class StreamReferenceSchemaTest(unittest.TestCase):
         self.assertFalse(dependencies[('PCLframeOut',)].get('required', False))
 
     def test_directional_list_and_viewer_adapters(self):
-        for name in ("_OctreeGridPCL", "_SelectableOctGrid", "_PCmerge"):
+        for name in ("_OctreeGridPCL", "_PCmerge"):
             dependencies = {tuple(d["path"]): d for d in self.classes[name]["dependencies"]}
             with self.subTest(class_name=name):
                 self.assertEqual(dependencies[("vPCLframesIn",)]["targetClass"], "PCLframe")

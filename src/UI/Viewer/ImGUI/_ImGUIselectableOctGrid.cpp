@@ -6,7 +6,7 @@
  */
 
 #include "_ImGUIselectableOctGrid.h"
-#include "../../../Universe/Grid/_SelectableOctGrid.h"
+#include "../../../Universe/Grid/_SelectableOctGridPCL.h"
 
 #include "ImGUIglRenderer.h"
 #include "imgui.h"

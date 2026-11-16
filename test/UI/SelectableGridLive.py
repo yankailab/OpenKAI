@@ -137,9 +137,9 @@ def main():
     source = json.loads((ROOT / "samples/AProver_LiDAR/AProver_LiDAR.json").read_text())
     config = {key: source[key] for key in (
         "APP", "scepter", "scepterTransform", "scPC", "camRGB", "camDepth",
-        "octGrid", "viewer", "jsonCmd", "wsServer", "wsServer_rx", "wsServer_tx")}
+        "octGridPCL", "octGrid", "viewer", "jsonCmd", "wsServer", "wsServer_rx", "wsServer_tx")}
     config["scepter"]["devURI"] = args.ip
-    config["octGrid"]["vSelectedCells"] = []
+    config["octGridPCL"]["vSelectedCells"] = []
     port, command_port = LIVE.HELPERS.free_port(), LIVE.HELPERS.free_port()
     while command_port == port:
         command_port = LIVE.HELPERS.free_port()
@@ -185,7 +185,7 @@ def main():
                                      state.get("saveReply") is not None)
                 assert state["saveReply"].get("bSuccess") is True, state
                 saved = json.loads(launch.read_text())
-                assert saved["octGrid"]["vSelectedCells"] == selected[0]["cellIDs"], saved["octGrid"]
+                assert saved["octGridPCL"]["vSelectedCells"] == selected[0]["cellIDs"], saved["octGridPCL"]
                 browser.evaluate("document.querySelector('#picker-clear').click()")
                 browser.wait("clear browser selection", lambda state: state["picked"] == 0)
                 browser.evaluate("document.querySelector('#picker-load').click()")

@@ -98,7 +98,7 @@
     "apRover": {
         "_APmav_base": "apBase",
         "_GeoFence": "geoFence",
-        "_SelectableOctGrid": "octGrid",
+        "_OctreeGridPCL": "octGridPCL",
         "apModeMove": 0,
         "bBumperActiveLow": true,
         "bEmergencyActiveLow": true,
@@ -190,16 +190,14 @@
         "thread": {},
         "webRoot": "html"
     },
-    "octGrid": {
+    "octGridPCL": {
         "bLog": false,
         "bON": true,
-        "class": "_SelectableOctGrid",
+        "class": "_OctreeGridPCL",
         "dTexpireCell": 1500000000,
         "dTexpirePCL": 500000000,
-        "nMaxCells": 18333,
         "nMaxLevel": 5,
-        "nPminBuild": 100,
-        "name": "octGrid",
+        "name": "octGridPCL",
         "thread": {
             "FPS": 10,
             "bLog": false,
@@ -269,6 +267,20 @@
             "00000000000000000000000000641a05",
             "00000000000000000000000000681a05"
         ]
+    },
+    "octGrid": {
+        "class": "_SelectableOctGridPCL",
+        "bON": true,
+        "_OctreeGridPCL": "octGridPCL",
+        "bLog": false,
+        "nMaxCells": 18333,
+        "nPminBuild": 100,
+        "thread": {
+            "FPS": 10,
+            "bLog": false,
+            "class": "_Thread",
+            "name": "thread"
+        }
     },
     "pcFilePoints": {
         "class": "PCLframe",
@@ -555,7 +567,7 @@
         ],
         "vSelectableOctGrid": [
             {
-                "_SelectableOctGrid": "octGrid",
+                "_SelectableOctGridPCL": "octGrid",
                 "matCol": [
                     0.3,
                     0.8,

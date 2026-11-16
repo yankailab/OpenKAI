@@ -7,7 +7,7 @@
 #include <limits>
 #include <stdexcept>
 #include <vector>
-#include "../../../Universe/Grid/_SelectableOctGrid.h"
+#include "../../../Universe/Grid/_SelectableOctGridPCL.h"
 
 namespace kai::webselectableoctgrid
 {

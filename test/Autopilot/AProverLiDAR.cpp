@@ -1,4 +1,5 @@
 #include "../../samples/AProver_LiDAR/_AProver_LiDAR.h"
+#include "../../src/Universe/Grid/_SelectableOctGridPCL.h"
 #include <cassert>
 #include <cmath>
 #include <iostream>
@@ -11,7 +12,7 @@ namespace
 
 using namespace kai;
 
-class GridHarness : public _SelectableOctGrid
+class GridHarness : public _OctreeGridPCL
 {
 public:
     void add(unsigned count, uint64_t stamp = getTns())
@@ -81,7 +82,7 @@ struct Fixture
         cfg.setJson({
             {"stream", {{"class", "MavlinkStream"}}},
             {"autopilot", {{"class", "_APmav_rover"}}},
-            {"grid", {{"class", "_SelectableOctGrid"}, {"nMaxLevel", 1}, {"nMaxCells", 0}, {"dTexpireCell", NSEC_SEC},
+            {"grid", {{"class", "_OctreeGridPCL"}, {"nMaxLevel", 1}, {"dTexpireCell", NSEC_SEC},
                 {"vSelectedCells", {"00000000000000000000000000000000"}}}},
             {"fence", {{"class", "_GeoFence"}, {"type", _GeoFence_polygon}, {"estD", 2},
                 {"vPolygon", {{-0.001, -0.001}, {-0.001, 0.001}, {0.001, 0.001}, {0.001, -0.001}}}}},
@@ -499,7 +500,7 @@ void testSampleConfigPersistence(const string &path)
         assert(instances.addExternalModule(new _AProver_LiDAR(), "apRover"));
         assert(instances.initAll());
         assert(instances.linkAll());
-        for (const char *name : {"apRover", "scepter", "octGrid", "geoFence", "viewer", "scepterViewer", "jsonCmd"})
+        for (const char *name : {"apRover", "scepter", "octGridPCL", "octGrid", "geoFence", "viewer", "scepterViewer", "jsonCmd"})
             assert(instances.findModule(name));
         // No startAll(): this test must neither connect devices nor open network listeners.
     };
@@ -508,19 +509,20 @@ void testSampleConfigPersistence(const string &path)
     {
         InstanceMgr instances;
         load(instances);
-        auto *grid = static_cast<_SelectableOctGrid *>(instances.findModule("octGrid"));
+        auto *grid = static_cast<_SelectableOctGridPCL *>(instances.findModule("octGrid"));
+        auto *backend = static_cast<_OctreeGridPCL *>(instances.findModule("octGridPCL"));
         auto *scepter = static_cast<_Scepter *>(instances.findModule("scepter"));
         const json before = *instances.findJsonCfg("apRover")->getJson();
         json selection = {{"cmd", "setCellSelection"}, {"cellIDs", {rootID}},
-                          {"nMaxLevel", before["octGrid"]["nMaxLevel"]}};
+                          {"nMaxLevel", before["octGridPCL"]["nMaxLevel"]}};
         for (const char *key : {"vPorigin", "vRootCellSize"})
         {
             selection[key] = json::array();
-            for (const auto &coordinate : before["octGrid"][key])
+            for (const auto &coordinate : before["octGridPCL"][key])
                 selection[key].push_back(coordinate.dump());
         }
         grid->jsonCmd(selection, nullptr); // Same native handler used by the grid viewer.
-        assert(grid->getSelectedCells().size() == 1);
+        assert(backend->getSelectedCells().size() == 1);
         assert(*instances.findJsonCfg("apRover")->getJson() == before); // Apply leaves launch JSON untouched.
         auto controls = scepter->getCamCtrl();
         controls.m_confidenceFilter.threshold = 17;
@@ -530,22 +532,23 @@ void testSampleConfigPersistence(const string &path)
         JsonCfg saved;
         assert(saved.readFromFile(path));
         // Saving another module must not accidentally persist an applied grid edit.
+        assert((*saved.getJson())["octGridPCL"] == before["octGridPCL"]);
         assert((*saved.getJson())["octGrid"] == before["octGrid"]);
         grid->jsonCmd({{"cmd", "saveConfig"}}, nullptr);
         assert(saved.readFromFile(path));
         const json &after = *saved.getJson();
-        assert(after["octGrid"]["vSelectedCells"] == json::array({rootID}));
+        assert(after["octGridPCL"]["vSelectedCells"] == json::array({rootID}));
         assert(after["scepter"]["scConfidenceFilterThreshold"] == 17);
         for (auto it = before.begin(); it != before.end(); ++it)
-            if (it.key() != "scepter" && it.key() != "octGrid")
+            if (it.key() != "scepter" && it.key() != "octGrid" && it.key() != "octGridPCL")
                 assert(after.at(it.key()) == it.value());
     }
     {
         InstanceMgr reloaded;
         load(reloaded);
-        auto *grid = static_cast<_SelectableOctGrid *>(reloaded.findModule("octGrid"));
+        auto *backend = static_cast<_OctreeGridPCL *>(reloaded.findModule("octGridPCL"));
         auto *scepter = static_cast<_Scepter *>(reloaded.findModule("scepter"));
-        assert(grid->getSelectedCells().size() == 1);
+        assert(backend->getSelectedCells().size() == 1);
         assert(scepter->getCamCtrl().m_confidenceFilter.threshold == 17);
     }
 #else

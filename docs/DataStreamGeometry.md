@@ -61,7 +61,8 @@ DataObject link keys end in `In` for inputs and `Out` for outputs. The suffix de
 | `_PCregistCol` | `PCLframeIn` | `PCLframeOut` |
 | `_LCalign` | `PCLframeIn`, `RGBframeIn` | `PCLframeOut` |
 | `_PCregistICP`, `_PCregistGlobal` | `PCLframeSrcIn`, `PCLframeTgtIn` | Existing registration result |
-| `_OctreeGridPCL`, `_SelectableOctGrid` | `vPCLframesIn` array | Existing cell interface |
+| `_OctreeGridPCL` | `vPCLframesIn` array | Cell counts and persistent selection |
+| `_SelectableOctGridPCL` | `_OctreeGridPCL` module link | Optional viewer cell snapshots and editing |
 | `_BenewakeTF`, `_TOFsense` | `BytePacketStreamIn` | `PCLframeOut` |
 | `_LeddarVu` | Modbus device | `PCLframeOut` |
 | `_Livox1`, `_Livox2` | Owned UDP sockets; `lvxIP` and host ports | `PCLframeOut`; optional `IMUstreamOut` |
@@ -92,16 +93,23 @@ For example, a file, grid, and viewer can share one cloud without referring to t
     "PCLframeOut": "filePoints",
     "vfName": ["data/PointCloud/StanfordBunny/bun000.ply"]
   },
-  "octGrid": {
-    "class": "_SelectableOctGrid",
+  "octGridPCL": {
+    "class": "_OctreeGridPCL",
+    "bON": true,
     "vPCLframesIn": ["filePoints"],
+    "vSelectedCells": [],
     "dTexpireCell": 0
+  },
+  "octGrid": {
+    "class": "_SelectableOctGridPCL",
+    "bON": true,
+    "_OctreeGridPCL": "octGridPCL"
   },
   "viewer": {
     "class": "_WebSelectableOctGrid",
     "port": 8080,
     "vGeometry": [{ "PCLframeIn": "filePoints", "nP": 400000 }],
-    "vSelectableOctGrid": [{ "_SelectableOctGrid": "octGrid" }]
+    "vSelectableOctGrid": [{ "_SelectableOctGridPCL": "octGrid" }]
   }
 }
 ```

@@ -1,11 +1,11 @@
 # Dear ImGui selectable octree grid viewer
 
-`_ImGUIselectableOctGrid` is a lightweight viewer module for OpenKAI 3D geometry streams. It derives from `_GeometryViewerBase`, copies geometry from `PCLframe` and `LineFrame` DataObjects and `_SelectableOctGrid::get(SELECTABLE_OCTGRID_CELLS*)` cell snapshots, and renders through Dear ImGui without using Open3D viewer APIs.
+`_ImGUIselectableOctGrid` is a lightweight viewer module for OpenKAI 3D geometry streams. It derives from `_GeometryViewerBase`, copies geometry from `PCLframe` and `LineFrame` DataObjects and `_SelectableOctGridPCL::get(SELECTABLE_OCTGRID_CELLS*)` cell snapshots, and renders through Dear ImGui without using Open3D viewer APIs.
 
 The viewer lives in `src/UI/Viewer/ImGUI/`: `_ImGUIselectableOctGrid.*` implements
 the module, `ImGUIbackend.*` handles the window/input backend, and
-`ImGUIglRenderer.*` renders its geometry with OpenGL. Its name matches the
-`_SelectableOctGrid` backend module and the browser viewer `_WebSelectableOctGrid`.
+`ImGUIglRenderer.*` renders its geometry with OpenGL. It reads the
+`_SelectableOctGridPCL` editor module, as does the browser viewer `_WebSelectableOctGrid`.
 
 ## Dear ImGui Install
 
@@ -117,7 +117,7 @@ Use the class name `_ImGUIselectableOctGrid` in JSON:
     ],
     "vSelectableOctGrid": [
       {
-        "_SelectableOctGrid": "occupancy_grid",
+        "_SelectableOctGridPCL": "occupancy_grid",
         "nC": 100000,
         "matLineWidth": 1,
         "matCol": [0.3, 0.8, 1.0]
@@ -128,7 +128,10 @@ Use the class name `_ImGUIselectableOctGrid` in JSON:
 ```
 
 `vGeometry` entries name `PCLframe` and/or `LineFrame` DataObjects through `PCLframeIn` and `LineFrameIn`.
-`vSelectableOctGrid` accepts only `_SelectableOctGrid` sources for cell streams.
+`vSelectableOctGrid` accepts only `_SelectableOctGridPCL` sources for cell streams.
+Each editor links a separate `_OctreeGridPCL` through its `_OctreeGridPCL` key.
+The backend owns selections and counting; disable the editor and viewer at launch
+with `bON: false` when configuration is complete.
 The viewer stores these in separate typed lists. Render snapshots contain only
 shared immutable draw assets, with no producer module pointers. Point/line
 conversion is cached per input timestamp and expiry boundary, so unchanged

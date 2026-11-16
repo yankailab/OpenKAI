@@ -19,7 +19,7 @@ def main():
     with tempfile.TemporaryDirectory(prefix="openkai-octree-grid-tests-") as temp:
         objects = []
         sources = ["test/Universe/OctreeGrid.cpp", "test/Universe/OctreeGridBase.cpp", "src/Universe/Grid/_OctreeGridPCL.cpp",
-                   "src/Universe/Grid/_SelectableOctGrid.cpp", "src/Universe/Grid/_OctreeGridBase.cpp"]
+                   "src/Universe/Grid/_SelectableOctGridPCL.cpp", "src/Universe/Grid/_OctreeGridBase.cpp"]
         for index, source in enumerate(sources):
             obj = str(pathlib.Path(temp) / f"test-{index}.o")
             args = shlex.split(entry["command"])

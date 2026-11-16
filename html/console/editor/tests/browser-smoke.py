@@ -237,14 +237,17 @@ def run(browser, editor):
         const grid = new OpenKAIModel(OPENKAI_SCHEMA);
         grid.addNode('PCLframe', 'points');
         grid.addNode('_OctreeGridPCL', 'grid');
-        grid.addNode('_SelectableOctGrid', 'selectable');
+        grid.addNode('_SelectableOctGridPCL', 'selectable');
         grid.connect('/grid', ['vPCLframesIn'], '/points');
-        grid.connect('/selectable', ['vPCLframesIn'], '/points');
+        grid.connect('/selectable', ['_OctreeGridPCL'], '/grid');
         grid.renameNode('/points', 'cloud');
-        for (const name of ['grid', 'selectable']) {
+        for (const name of ['grid']) {
             if (JSON.stringify(grid.toJSON()[name].vPCLframesIn) !== '["cloud"]')
                 throw Error('Grid stream arrays must connect and follow stream renames');
         }
+        grid.renameNode('/grid', 'backend');
+        if (grid.toJSON().selectable._OctreeGridPCL !== 'backend')
+            throw Error('The editor must reference and follow the backend grid');
         return {classes: source.classes.length, created};
     })()""")
     fixtures = [

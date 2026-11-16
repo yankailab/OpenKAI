@@ -534,10 +534,10 @@ def adapters(records, files, constants, symbol):
         for key in keys:
             records[name]['containers'].append({'path':[key],'type':'array'})
             param(name,[key],'array',helper)
-            targets = ['_SelectableOctGrid'] if key == 'vSelectableOctGrid' else ['PCLframe','LineFrame']
+            targets = ['_SelectableOctGridPCL'] if key == 'vSelectableOctGrid' else ['PCLframe','LineFrame']
             for target in targets:
                 input_key = target if key == 'vSelectableOctGrid' else target+'In'
-                dep(name,[key,'*',input_key],target,helper,target_kind='module' if target=='_SelectableOctGrid' else 'dataObject')
+                dep(name,[key,'*',input_key],target,helper,target_kind='module' if target=='_SelectableOctGridPCL' else 'dataObject')
                 param(name,[key,'*',input_key],'string',helper,dependency=True)
             if key == 'vGeometry':
                 param(name,[key,'*','name'],'string',helper)
@@ -695,7 +695,7 @@ def adapters(records, files, constants, symbol):
             elif name=='_WebGeometry' and diagnostic.get('expression')=='*pConfig':
                 diagnostic['resolution']='Reads bON from the referenced module, not this instance.'
     # The field below is read by UUID-specific helpers rather than jKv.
-    param('_SelectableOctGrid',['vSelectedCells'],'array','src/Universe/Grid/_SelectableOctGrid.cpp:loadConfig',description='Selected cell UUID strings; each ID must refer to the configured grid.')
+    param('_OctreeGridPCL',['vSelectedCells'],'array','src/Universe/Grid/_OctreeGridPCL.cpp:loadConfig',description='Selected cell UUID strings; each ID must refer to the configured grid.')
 
 
 def main():

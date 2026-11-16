@@ -45,7 +45,7 @@ namespace kai
 			}
 			const bool grid = string(key) == "vSelectableOctGrid";
 			const std::set<string> allowed = grid
-				? std::set<string>{"_SelectableOctGrid", "nC", "bVisible", "matCol", "matLineWidth"}
+				? std::set<string>{"_SelectableOctGridPCL", "nC", "bVisible", "matCol", "matLineWidth"}
 				: std::set<string>{"PCLframeIn", "LineFrameIn", "name", "nP", "nL", "bVisible", "matCol", "matPointSize", "matLineWidth"};
 			for (const auto &entry : entries)
 			{
@@ -65,7 +65,7 @@ namespace kai
 				string lineName;
 				if (grid)
 				{
-					jKv(entry, "_SelectableOctGrid", style.m_name);
+					jKv(entry, "_SelectableOctGridPCL", style.m_name);
 				}
 				else
 				{
@@ -95,7 +95,7 @@ namespace kai
 					VIEWER_GRID_SOURCE source;
 					static_cast<VIEWER_SOURCE_STYLE &>(source) = style;
 					auto *module = static_cast<BASE *>(manager->findModule(style.m_name));
-					source.m_pGrid = dynamic_cast<_SelectableOctGrid *>(module);
+					source.m_pGrid = dynamic_cast<_SelectableOctGridPCL *>(module);
 					if (!source.m_pGrid)
 					{
 						const json *config = manager->findJson(style.m_name);

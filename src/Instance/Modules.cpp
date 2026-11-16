@@ -30,7 +30,7 @@ namespace kai
 #ifdef WITH_UNIVERSE
 		ADD_MODULE(_OctreeGridBase);
 		ADD_MODULE(_OctreeGridPCL);
-		ADD_MODULE(_SelectableOctGrid);
+		ADD_MODULE(_SelectableOctGridPCL);
 		ADD_MODULE(_PCLfile);
 		ADD_MODULE(_PCmerge);
 		ADD_MODULE(_PCsend);

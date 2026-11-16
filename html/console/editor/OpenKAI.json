@@ -3,7 +3,7 @@
   "title": "OpenKAI editor class catalog",
   "description": "Source-derived editor metadata; not a JSON Schema validator. See SCHEMA.md.",
   "generator": "tools/generate-schema.py",
-  "sourceDigest": "3cb67012d2a78e2e34da42258b4658cd5d75a86fbd98b7c566c0c12d61ea709a",
+  "sourceDigest": "dc75a661097c505fee800479b2116ce8a94260426d269badbb70dff252cf27da",
   "categories": [
     "Actuator",
     "Actuator/Articulated",
@@ -24492,7 +24492,7 @@
           "path": [
             "vSelectableOctGrid",
             "*",
-            "_SelectableOctGrid"
+            "_SelectableOctGridPCL"
           ],
           "type": "string",
           "source": "src/UI/Viewer/SelectableOctGridSources.cpp:link",
@@ -24626,9 +24626,9 @@
           "path": [
             "vSelectableOctGrid",
             "*",
-            "_SelectableOctGrid"
+            "_SelectableOctGridPCL"
           ],
-          "targetClass": "_SelectableOctGrid",
+          "targetClass": "_SelectableOctGridPCL",
           "targetKind": "module",
           "multiple": false,
           "source": "src/UI/Viewer/SelectableOctGridSources.cpp:link",
@@ -26499,7 +26499,7 @@
           "path": [
             "vSelectableOctGrid",
             "*",
-            "_SelectableOctGrid"
+            "_SelectableOctGridPCL"
           ],
           "type": "string",
           "source": "src/UI/Viewer/SelectableOctGridSources.cpp:link",
@@ -26645,9 +26645,9 @@
           "path": [
             "vSelectableOctGrid",
             "*",
-            "_SelectableOctGrid"
+            "_SelectableOctGridPCL"
           ],
-          "targetClass": "_SelectableOctGrid",
+          "targetClass": "_SelectableOctGridPCL",
           "targetKind": "module",
           "multiple": false,
           "source": "src/UI/Viewer/SelectableOctGridSources.cpp:link",
@@ -29368,7 +29368,7 @@
           ],
           "type": "integer",
           "declaredIn": "_OctreeGridPCL",
-          "source": "src/Universe/Grid/_OctreeGridPCL.cpp:87",
+          "source": "src/Universe/Grid/_OctreeGridPCL.cpp:155",
           "typeEvidence": "declaration",
           "cppVariable": "m_dTexpireCell",
           "cppType": "uint64_t",
@@ -29380,7 +29380,7 @@
           ],
           "type": "integer",
           "declaredIn": "_OctreeGridPCL",
-          "source": "src/Universe/Grid/_OctreeGridPCL.cpp:88",
+          "source": "src/Universe/Grid/_OctreeGridPCL.cpp:156",
           "typeEvidence": "declaration",
           "cppVariable": "m_dTexpirePCL",
           "cppType": "uint64_t",
@@ -29444,7 +29444,7 @@
           ],
           "type": "array",
           "declaredIn": "_OctreeGridPCL",
-          "source": "src/Universe/Grid/_OctreeGridPCL.cpp:89",
+          "source": "src/Universe/Grid/_OctreeGridPCL.cpp:157",
           "typeEvidence": "declaration",
           "cppVariable": "m_vPCLframesIn",
           "cppType": "vector<string>",
@@ -29478,6 +29478,16 @@
             10,
             10
           ]
+        },
+        {
+          "path": [
+            "vSelectedCells"
+          ],
+          "type": "array",
+          "source": "src/Universe/Grid/_OctreeGridPCL.cpp:loadConfig",
+          "declaredIn": "_OctreeGridPCL",
+          "extraction": "audited-adapter",
+          "description": "Selected cell UUID strings; each ID must refer to the configured grid."
         }
       ],
       "dependencies": [
@@ -29500,11 +29510,17 @@
             "thread"
           ],
           "type": "object"
+        },
+        {
+          "path": [
+            "vSelectedCells"
+          ],
+          "type": "array"
         }
       ],
       "diagnostics": [
         {
-          "source": "src/Universe/Grid/_OctreeGridPCL.cpp:127",
+          "source": "src/Universe/Grid/_OctreeGridPCL.cpp:219",
           "kind": "unresolved-module-reference",
           "expression": "name",
           "resolution": "Covered by the vPCLframesIn DataObject adapter; names are loaded before link."
@@ -29520,13 +29536,25 @@
       "configurable": true
     },
     {
-      "name": "_SelectableOctGrid",
+      "name": "_SelectableOctGridPCL",
       "category": "Universe/Grid",
-      "source": "src/Universe/Grid/_SelectableOctGrid.h:57",
+      "source": "src/Universe/Grid/_SelectableOctGridPCL.h:56",
       "baseClasses": [
-        "_OctreeGridPCL"
+        "_ModuleBase"
       ],
       "parameters": [
+        {
+          "path": [
+            "_OctreeGridPCL"
+          ],
+          "type": "string",
+          "declaredIn": "_SelectableOctGridPCL",
+          "source": "src/Universe/Grid/_SelectableOctGridPCL.cpp:187",
+          "typeEvidence": "declaration",
+          "cppVariable": "name",
+          "cppType": "string",
+          "dependency": true
+        },
         {
           "path": [
             "bLog"
@@ -29564,35 +29592,11 @@
         },
         {
           "path": [
-            "dTexpireCell"
-          ],
-          "type": "integer",
-          "declaredIn": "_OctreeGridPCL",
-          "source": "src/Universe/Grid/_OctreeGridPCL.cpp:87",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_dTexpireCell",
-          "cppType": "uint64_t",
-          "default": 0
-        },
-        {
-          "path": [
-            "dTexpirePCL"
-          ],
-          "type": "integer",
-          "declaredIn": "_OctreeGridPCL",
-          "source": "src/Universe/Grid/_OctreeGridPCL.cpp:88",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_dTexpirePCL",
-          "cppType": "uint64_t",
-          "default": 0
-        },
-        {
-          "path": [
             "nMaxCells"
           ],
           "type": "integer",
-          "declaredIn": "_SelectableOctGrid",
-          "source": "src/Universe/Grid/_SelectableOctGrid.cpp:207",
+          "declaredIn": "_SelectableOctGridPCL",
+          "source": "src/Universe/Grid/_SelectableOctGridPCL.cpp:168",
           "typeEvidence": "declaration",
           "cppVariable": "m_nMaxCells",
           "cppType": "int",
@@ -29600,23 +29604,11 @@
         },
         {
           "path": [
-            "nMaxLevel"
-          ],
-          "type": "integer",
-          "declaredIn": "_OctreeGridBase",
-          "source": "src/Universe/Grid/_OctreeGridBase.cpp:78",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_nMaxLevel",
-          "cppType": "int",
-          "default": 4
-        },
-        {
-          "path": [
             "nPminBuild"
           ],
           "type": "integer",
-          "declaredIn": "_SelectableOctGrid",
-          "source": "src/Universe/Grid/_SelectableOctGrid.cpp:212",
+          "declaredIn": "_SelectableOctGridPCL",
+          "source": "src/Universe/Grid/_SelectableOctGridPCL.cpp:173",
           "typeEvidence": "declaration",
           "cppVariable": "m_nPminBuild",
           "cppType": "int",
@@ -29667,8 +29659,8 @@
             "vColCellOcc"
           ],
           "type": "array",
-          "declaredIn": "_SelectableOctGrid",
-          "source": "src/Universe/Grid/_SelectableOctGrid.cpp:208",
+          "declaredIn": "_SelectableOctGridPCL",
+          "source": "src/Universe/Grid/_SelectableOctGridPCL.cpp:169",
           "typeEvidence": "declaration",
           "cppVariable": "m_vColCellOcc",
           "cppType": "Vector4f",
@@ -29678,70 +29670,19 @@
             1,
             1
           ]
-        },
-        {
-          "path": [
-            "vPCLframesIn"
-          ],
-          "type": "array",
-          "declaredIn": "_OctreeGridPCL",
-          "source": "src/Universe/Grid/_OctreeGridPCL.cpp:89",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vPCLframesIn",
-          "cppType": "vector<string>",
-          "dependency": true,
-          "extraction": "audited-adapter"
-        },
-        {
-          "path": [
-            "vPorigin"
-          ],
-          "type": "array",
-          "declaredIn": "_OctreeGridBase",
-          "source": "src/Universe/Grid/_OctreeGridBase.cpp:76",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vPorigin",
-          "cppType": "Vector3f",
-          "defaultExpression": "Vector3f::Zero()"
-        },
-        {
-          "path": [
-            "vRootCellSize"
-          ],
-          "type": "array",
-          "declaredIn": "_OctreeGridBase",
-          "source": "src/Universe/Grid/_OctreeGridBase.cpp:77",
-          "typeEvidence": "declaration",
-          "cppVariable": "m_vRootCellSize",
-          "cppType": "Vector3f",
-          "default": [
-            10,
-            10,
-            10
-          ]
-        },
-        {
-          "path": [
-            "vSelectedCells"
-          ],
-          "type": "array",
-          "source": "src/Universe/Grid/_SelectableOctGrid.cpp:loadConfig",
-          "declaredIn": "_SelectableOctGrid",
-          "extraction": "audited-adapter",
-          "description": "Selected cell UUID strings; each ID must refer to the configured grid."
         }
       ],
       "dependencies": [
         {
           "path": [
-            "vPCLframesIn"
+            "_OctreeGridPCL"
           ],
-          "targetClass": "PCLframe",
-          "targetKind": "dataObject",
-          "multiple": true,
-          "source": "src/Universe/Grid/_OctreeGridPCL.cpp:link",
-          "declaredIn": "_OctreeGridPCL",
-          "extraction": "audited-adapter",
+          "targetClass": "_OctreeGridPCL",
+          "targetKind": "module",
+          "multiple": false,
+          "declaredIn": "_SelectableOctGridPCL",
+          "source": "src/Universe/Grid/_SelectableOctGridPCL.cpp:188",
+          "required": true,
           "containers": []
         }
       ],
@@ -29751,12 +29692,6 @@
             "thread"
           ],
           "type": "object"
-        },
-        {
-          "path": [
-            "vSelectedCells"
-          ],
-          "type": "array"
         }
       ],
       "diagnostics": [],
@@ -40488,8 +40423,8 @@
       "src/Universe/Grid/_OctreeGridBase.h",
       "src/Universe/Grid/_OctreeGridPCL.cpp",
       "src/Universe/Grid/_OctreeGridPCL.h",
-      "src/Universe/Grid/_SelectableOctGrid.cpp",
-      "src/Universe/Grid/_SelectableOctGrid.h",
+      "src/Universe/Grid/_SelectableOctGridPCL.cpp",
+      "src/Universe/Grid/_SelectableOctGridPCL.h",
       "src/Universe/_TransformRigid.cpp",
       "src/Universe/_TransformRigid.h",
       "src/Utility/BitFlag.h",
@@ -40557,10 +40492,10 @@
       "src/Vision/_VideoFile.h",
       "src/main.cpp"
     ],
-    "configReads": 627,
-    "resolvedReads": 615,
-    "moduleLookups": 141,
-    "resolvedLookups": 136,
+    "configReads": 628,
+    "resolvedReads": 616,
+    "moduleLookups": 142,
+    "resolvedLookups": 137,
     "unresolvedReads": 12,
     "unresolvedLookups": 5,
     "diagnosticsCount": 17,
@@ -40569,7 +40504,7 @@
         "source": "src/UI/Viewer/SelectableOctGridSources.cpp:68",
         "kind": "unresolved-json-alias",
         "expression": "entry",
-        "key": "_SelectableOctGrid",
+        "key": "_SelectableOctGridPCL",
         "resolution": "Covered by the viewer adapters in this generator.",
         "className": "SelectableOctGridSources"
       },
@@ -40689,7 +40624,7 @@
         "className": "_WebMavlinkStream"
       },
       {
-        "source": "src/Universe/Grid/_OctreeGridPCL.cpp:127",
+        "source": "src/Universe/Grid/_OctreeGridPCL.cpp:219",
         "kind": "unresolved-module-reference",
         "expression": "name",
         "resolution": "Covered by the vPCLframesIn DataObject adapter; names are loaded before link.",
