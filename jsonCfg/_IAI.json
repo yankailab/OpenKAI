@@ -25,7 +25,7 @@
 		"thread": {
 			"FPS": 10
 		},
-		"type": "RTU",
+		"modbusType": "RTU",
 		"rtuPort": "/dev/ttyACM3",
 		"rtuBaud": 38400,
 		"/rtuBaud": 115200,

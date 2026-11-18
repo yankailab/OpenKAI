@@ -22,8 +22,8 @@
 		"thread": {
 			"FPS": 1
 		},
-		"/type": "RTU",
-		"type": "TCP",
+		"/modbusType": "RTU",
+		"modbusType": "TCP",
 		"rtuPort": "/dev/ttyUSB0",
 		"rtuBaud": 115200,
 		"rtuParity": "N",

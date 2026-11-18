@@ -3,7 +3,7 @@
   "title": "OpenKAI editor class catalog",
   "description": "Source-derived editor metadata; not a JSON Schema validator. See SCHEMA.md.",
   "generator": "tools/generate-schema.py",
-  "sourceDigest": "8a4ee1726b27fa699b5d0f63f76eda5886a1fe5ffaa13c5e9b1a140d3a8105d3",
+  "sourceDigest": "d4564edf6c3c6670a11e7a96b8bf20a4a5a0a2a201733648a7f60a465bb1c1ab",
   "categories": [
     "Actuator",
     "Actuator/Articulated",
@@ -17662,7 +17662,7 @@
     {
       "name": "_Modbus",
       "category": "Protocol",
-      "source": "src/Protocol/_Modbus.h:10",
+      "source": "src/Protocol/_Modbus.h:11",
       "baseClasses": [
         "_ModuleBase"
       ],
@@ -17685,7 +17685,7 @@
           ],
           "type": "boolean",
           "declaredIn": "_Modbus",
-          "source": "src/Protocol/_Modbus.cpp:29",
+          "source": "src/Protocol/_Modbus.cpp:31",
           "typeEvidence": "declaration",
           "cppVariable": "m_bModbusDebug",
           "cppType": "bool",
@@ -17720,7 +17720,7 @@
           ],
           "type": "string",
           "declaredIn": "_Modbus",
-          "source": "src/Protocol/_Modbus.cpp:43",
+          "source": "src/Protocol/_Modbus.cpp:46",
           "typeEvidence": "declaration",
           "cppVariable": "m_type",
           "cppType": "string",
@@ -17732,7 +17732,7 @@
           ],
           "type": "integer",
           "declaredIn": "_Modbus",
-          "source": "src/Protocol/_Modbus.cpp:30",
+          "source": "src/Protocol/_Modbus.cpp:32",
           "typeEvidence": "declaration",
           "cppVariable": "m_nErrReconnect",
           "cppType": "int",
@@ -17756,7 +17756,7 @@
           ],
           "type": "integer",
           "declaredIn": "_Modbus",
-          "source": "src/Protocol/_Modbus.cpp:34",
+          "source": "src/Protocol/_Modbus.cpp:35",
           "typeEvidence": "declaration",
           "cppVariable": "m_rtuBaud",
           "cppType": "int",
@@ -17764,11 +17764,23 @@
         },
         {
           "path": [
+            "rtuDataBits"
+          ],
+          "type": "integer",
+          "declaredIn": "_Modbus",
+          "source": "src/Protocol/_Modbus.cpp:36",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_rtuDataBits",
+          "cppType": "int",
+          "default": 8
+        },
+        {
+          "path": [
             "rtuParity"
           ],
           "type": "string",
           "declaredIn": "_Modbus",
-          "source": "src/Protocol/_Modbus.cpp:33",
+          "source": "src/Protocol/_Modbus.cpp:34",
           "typeEvidence": "declaration",
           "cppVariable": "m_rtuParity",
           "cppType": "string",
@@ -17780,7 +17792,7 @@
           ],
           "type": "string",
           "declaredIn": "_Modbus",
-          "source": "src/Protocol/_Modbus.cpp:32",
+          "source": "src/Protocol/_Modbus.cpp:33",
           "typeEvidence": "declaration",
           "cppVariable": "m_rtuPort",
           "cppType": "string",
@@ -17788,11 +17800,23 @@
         },
         {
           "path": [
+            "rtuStopBits"
+          ],
+          "type": "integer",
+          "declaredIn": "_Modbus",
+          "source": "src/Protocol/_Modbus.cpp:37",
+          "typeEvidence": "declaration",
+          "cppVariable": "m_rtuStopBits",
+          "cppType": "int",
+          "default": 1
+        },
+        {
+          "path": [
             "tIntervalUsec"
           ],
           "type": "integer",
           "declaredIn": "_Modbus",
-          "source": "src/Protocol/_Modbus.cpp:39",
+          "source": "src/Protocol/_Modbus.cpp:40",
           "typeEvidence": "declaration",
           "cppVariable": "m_tIntervalUsec",
           "cppType": "uint64_t",
@@ -17804,7 +17828,7 @@
           ],
           "type": "integer",
           "declaredIn": "_Modbus",
-          "source": "src/Protocol/_Modbus.cpp:40",
+          "source": "src/Protocol/_Modbus.cpp:41",
           "typeEvidence": "declaration",
           "cppVariable": "m_tOutSec",
           "cppType": "uint32_t",
@@ -17816,7 +17840,7 @@
           ],
           "type": "integer",
           "declaredIn": "_Modbus",
-          "source": "src/Protocol/_Modbus.cpp:41",
+          "source": "src/Protocol/_Modbus.cpp:42",
           "typeEvidence": "declaration",
           "cppVariable": "m_tOutUSec",
           "cppType": "uint32_t",
@@ -17828,7 +17852,7 @@
           ],
           "type": "string",
           "declaredIn": "_Modbus",
-          "source": "src/Protocol/_Modbus.cpp:36",
+          "source": "src/Protocol/_Modbus.cpp:38",
           "typeEvidence": "declaration",
           "cppVariable": "m_tcpAddr",
           "cppType": "string",
@@ -17840,7 +17864,7 @@
           ],
           "type": "integer",
           "declaredIn": "_Modbus",
-          "source": "src/Protocol/_Modbus.cpp:37",
+          "source": "src/Protocol/_Modbus.cpp:39",
           "typeEvidence": "declaration",
           "cppVariable": "m_tcpPort",
           "cppType": "int",
@@ -40362,8 +40386,8 @@
       "src/Vision/_VideoFile.h",
       "src/main.cpp"
     ],
-    "configReads": 630,
-    "resolvedReads": 618,
+    "configReads": 632,
+    "resolvedReads": 620,
     "moduleLookups": 141,
     "resolvedLookups": 136,
     "unresolvedReads": 12,

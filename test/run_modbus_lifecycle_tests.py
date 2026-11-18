@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Test native disconnected Modbus/EBYTE lifecycle against an existing shared build.
+"""Test native Modbus configuration, reconnection and Modbus/EBYTE lifecycle.
 
 Usage: python3 test/run_modbus_lifecycle_tests.py [build-directory]
-Requires WITH_IO=ON, USE_LIBMODBUS=ON, and BUILD_EXECUTABLE=ON. No device or
-network is used. Every case runs separately with a timeout and a temporary
-nonexistent serial path. Build flags and dependencies come from CMake outputs.
+Requires WITH_IO=ON, USE_LIBMODBUS=ON, and BUILD_EXECUTABLE=ON. No hardware is
+used: connection tests use ephemeral loopback TCP ports and pseudo-terminals.
+Every case runs separately with a timeout. Build flags and dependencies come
+from CMake outputs.
 """
 import argparse
 import json
@@ -24,7 +25,8 @@ def main():
     parser.add_argument('--headers', type=Path, help='matching OpenKAI header root (normally source/src)')
     parser.add_argument('--library', type=Path, help='matching shared library (normally build/libOpenKAI.so)')
     parser.add_argument('--case', action='append', choices=['stop-modbus', 'stop-ebyte', 'destroy-modbus',
-                        'destroy-ebyte', 'manager-bus-first', 'manager-ebyte-first'])
+                        'destroy-ebyte', 'manager-bus-first', 'manager-ebyte-first',
+                        'configuration', 'reconfigure', 'concurrent-close', 'reconnect'])
     options = parser.parse_args()
     build = options.build_directory.resolve()
     cache = (build / 'CMakeCache.txt').read_text().splitlines()
@@ -59,7 +61,8 @@ def main():
     runtime_environment['LD_PRELOAD'] = ' '.join(
         [str(library)] + ([environment['LD_PRELOAD']] if environment.get('LD_PRELOAD') else []))
     cases = options.case or ['stop-modbus', 'stop-ebyte', 'destroy-modbus', 'destroy-ebyte',
-                            'manager-bus-first', 'manager-ebyte-first']
+                            'manager-bus-first', 'manager-ebyte-first',
+                            'configuration', 'reconfigure', 'concurrent-close', 'reconnect']
     with tempfile.TemporaryDirectory(prefix='openkai-modbus-lifecycle-') as temp:
         work = Path(temp)
         obj, executable = work / 'test.o', work / 'modbus-lifecycle'

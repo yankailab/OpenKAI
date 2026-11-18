@@ -60,7 +60,7 @@ Other runners accept the build directory as their first argument:
 | `run_realsense_preview_tests.py` | `WITH_VISION`, `USE_OPENCV`, `USE_REALSENSE`; preview controls and IMU |
 | `run_scepter_color_tests.py` | `WITH_VISION`, `USE_OPENCV`, `USE_SCEPTER_SDK`; mocked capture and color |
 | `run_ftservo_tests.py` | `WITH_ACTUATOR`, `WITH_IO`, `USE_FTSERVO`; pseudo-terminal motion, feedback and shutdown |
-| `run_modbus_lifecycle_tests.py` | `WITH_IO`, `WITH_PROTOCOL`, `USE_LIBMODBUS`; disconnected stop and destruction |
+| `run_modbus_lifecycle_tests.py` | `WITH_IO`, `WITH_PROTOCOL`, `USE_LIBMODBUS`; configuration round-trips, TCP/RTU switching, concurrent close, reconnect, stop and destruction |
 | `run_geofence_tests.py` | `WITH_NAVIGATION`; prediction and bounce |
 | `run_octree_grid_tests.py`, `run_transform_rigid_tests.py` | `WITH_UNIVERSE`; grids, transforms and point pipelines |
 | `run_glim_timing_tests.py` | `WITH_SLAM`, `WITH_UNIVERSE`, `USE_GLIM`; preprocessing and IMU gating |
@@ -72,6 +72,63 @@ Other runners accept the build directory as their first argument:
 These suites do not need sensor hardware. Transport and startup cases use local
 sockets; FTServo uses a pseudo-terminal. See each runner's docstring and the
 corresponding module documentation for optional dependencies.
+
+## Modbus runtime configuration
+
+After the usual `setConfig()` / `loadConfig()` initialization, callers can change
+the connection without replacing the `_Modbus` instance or stopping its worker:
+
+```cpp
+modbus.close();
+modbus.setType("TCP");
+modbus.setTcpAddr("192.168.3.7");
+modbus.setTcpPort(502);
+modbus.setResponseTimeout(1, 0); // seconds, microseconds
+if (!modbus.open()) {
+    // Connection failed; a running worker will retry. close() cancels retries.
+}
+```
+
+For RTU, use `setType("RTU")`, `setRtuPort()`, `setRtuBaud()`, `setRtuParity()`
+(`"N"`, `"E"`, `"O"`), `setRtuDataBits()` (5–8), and `setRtuStopBits()` (1 or 2).
+The defaults remain 115200 baud, even parity, 8 data bits, and 1 stop bit.
+Each setter has a matching `get...()` method returning a copy; the timeout pair
+is read together using `getResponseTimeout(sec, usec)` with `uint32_t` references.
+`setModbusDebug()`, `setErrReconnect()`, and `setIntervalUsec()` expose the other
+settings. The error threshold and write interval apply immediately. Transport,
+debug and response-timeout changes apply on the next connection; calling `open()`
+on an already open connection is a no-op. `loadConfig()` and `open()` validate
+settings and report failure with `false`.
+
+A single mutex protects settings, context lifetime, connection state, and complete
+transactions. `close()` waits for any active transaction and keeps the connection
+closed until an explicit `open()`, even when the worker is running. Getters and
+setters can therefore wait for a transaction's response timeout. The caller must
+serialize its own multi-call configuration sequence against other configuration
+writers. `start()` retains automatic initial connection; `stop()` joins the worker
+without closing the connection. Callers must stop using the object before destroying
+it. Reloading JSON retains the existing worker and the requested open/closed state;
+an invalid reload disables retries until `open()` is called again. Thread settings
+are initialized once, not changed by a connection reload.
+
+Use `modbusType` for the JSON transport key. `type` is reserved for InstanceMgr's
+`module` / `dataObject` discriminator. Legacy `type: "RTU"` / `"TCP"` is accepted
+when loading the class directly; migrate files before loading through InstanceMgr.
+`saveConfig()` writes `modbusType` and removes only legacy transport-valued `type`
+keys. RTU framing is stored as `rtuDataBits` and `rtuStopBits`. The timeout fields
+remain `tOutSec` and `tOutUSec` (microseconds below 1000000; total timeout nonzero).
+`nErrReconnect` remains a nonnegative threshold: reconnect when accumulated
+transaction errors **exceed** it, resetting the count on a new connection. With
+the default zero, the first transaction error triggers reconnection.
+
+Run the complete hardware-free suite with:
+
+```bash
+python3 test/run_modbus_lifecycle_tests.py build
+```
+
+The connection tests use real libmodbus peers on ephemeral loopback ports and
+pseudo-terminals; `--case` can select an individual scenario.
 
 ## Live and browser checks
 

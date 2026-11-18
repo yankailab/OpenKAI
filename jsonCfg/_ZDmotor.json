@@ -25,8 +25,7 @@
 			"FPS": 30
 		},
 		"bLog": false,
-		"/type": "RTU",
-		"/migration": "RTU is the module default. Leave type unset: InstanceMgr reserves it for module/dataObject dispatch.",
+		"modbusType": "RTU",
 		"rtuPort": "/dev/ttyUSB0",
 		"rtuBaud": 19200,
 		"rtuParity": "N"
