@@ -138,6 +138,12 @@ conversion is cached per input timestamp and expiry boundary, so unchanged
 geometry is retained across UI frames. Source vectors are copied with `get`
 when `getTstamp()` changes. Empty publications with changed timestamps clear
 prior geometry; repeated timestamps cannot signal updates.
+For LiDAR ring inputs, the snapshot includes all physical slots. The viewer
+omits zero-timestamp slots and nonfinite positions, then applies its point cap
+in storage order. It does not select the newest points by capture time.
+`dTexpire` filters point/line ages against backend monotonic time; keep it zero
+when sensor capture timestamps use another clock. DataObject `nBuf` controls
+retention independently of these viewer limits.
 Source configuration and limits
 are shared with the [web viewer](WebViewer3D.md#viewer-sources).
 

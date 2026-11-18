@@ -421,8 +421,10 @@ display label. Declare the named streams and connect producers to them as shown
 in [the DataObject migration guide](../DataStreamGeometry.md).
 Per-source limits are capped by the viewer's corresponding rendering
 limit; zero disables that output. A zero cell limit still publishes its root header.
-Point output takes the first `min(nPbuf, nP)` valid points, so a spatially ordered
-PLY can look cropped when this cap is too small. To display an entire file, set
+Point output takes the first `min(nPbuf, nP)` valid points in physical storage
+order. A retained LiDAR ring is not reordered by capture time, so the cap does
+not select its newest points. A spatially ordered PLY can look cropped when
+this cap is too small. To display an entire file, set
 both the viewer `nPbuf` and its `vGeometry[].nP` to at least the PLY vertex count.
 For example, a 6,231,958-point cloud needs about 89.2 MiB for XYZ/RGB output;
 `nPbuf: 9000000` with a matching file-source `nP` accommodates it. The combined
@@ -466,7 +468,11 @@ when the reference grid is hidden and stay fixed to the world coordinate axes.
 Positions are float32. Point and line colors are normalized RGB8 and render
 opaque; black source colors use the material RGB fallback, matching the ImGui
 viewer. PLY alpha is ignored, including the alpha byte in packed `rgba` colors.
-Invalid timestamps, expired geometry, and nonfinite positions are omitted.
+Zero timestamps, expired geometry, and nonfinite positions are omitted, including
+unused slots in a LiDAR ring snapshot. `dTexpire` compares capture timestamps
+with the backend's monotonic clock; leave it at zero when a sensor uses a
+different capture clock. Buffer retention remains controlled by the DataObject's
+`nBuf`, independently of viewer expiry and rendering caps.
 Lines use native WebGL line segments at one pixel wide; thick-line materials
 are not implemented. Grid cells retain RGBA8 (including black), with per-cell
 alpha multiplied by cell object opacity (`matCol[3]`). Alpha 0 is invisible,

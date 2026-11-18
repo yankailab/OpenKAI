@@ -1,5 +1,4 @@
 // Run with test/run_byte_packet_tests.py --can-only after a WITH_PROTOCOL build.
-#ifdef OPENKAI_BYTE_PACKET_PROTOCOL_TEST
 
 #include "../../src/Protocol/_SocketCAN.h"
 #include "../../src/Protocol/_USR_CANET.h"
@@ -554,5 +553,3 @@ void runCANStreamTests(void)
 	testCANlinks();
 	testCANworkers();
 }
-
-#endif

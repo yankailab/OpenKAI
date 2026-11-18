@@ -30,13 +30,11 @@ namespace kai
 		virtual void clear(void);
 		virtual void console(void *pConsole);
 		virtual void jsonCmd(const json &j, void *pJSONbase);
-		//		virtual void draw(void *pMat);
 
 		virtual bool saveConfig(bool bExport) override;
 
 		void updateMatrices(void);
 		bool L2C(const Vector2i &vSizeImg, const Vector3f &vPi, Vector2i &vPo);
-		//		bool pt2Pix(const Vector2i &vSizeImg, const Vector3f &vPi, Vector2i &vPo);
 
 		Vector2d getCamFocal(void);
 		Vector2d getCamCenter(void);

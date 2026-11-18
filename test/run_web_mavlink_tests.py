@@ -14,7 +14,7 @@ import sys
 import tempfile
 
 sys.dont_write_bytecode = True
-from run_byte_packet_tests import link_command
+from build_helpers import link_command
 
 
 def main():
@@ -34,7 +34,7 @@ def main():
         if "-MF" in command:
             command[command.index("-MF") + 1] = obj + ".d"
         subprocess.run(command + ["-UNDEBUG"], cwd=entry["directory"], check=True)
-        command = [arg for arg in link_command(build) if not arg.startswith("-Wl,--dependency-file=")]
+        command = link_command(build)
         command[next(i for i, arg in enumerate(command) if arg.endswith("/src/main.cpp.o"))] = obj
         executable = str(pathlib.Path(temp) / "web-mavlink-tests")
         command[command.index("-o") + 1] = executable

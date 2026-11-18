@@ -1,7 +1,7 @@
 #ifndef OpenKAI_src_Sensor_Distance_DistancePoint_H_
 #define OpenKAI_src_Sensor_Distance_DistancePoint_H_
 
-#include "../../DataObject/PCLframe.h"
+#include "../../DataObject/PCLstream.h"
 #include <cmath>
 
 namespace kai

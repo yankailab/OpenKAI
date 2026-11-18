@@ -75,10 +75,9 @@ namespace
         assert(std::fabs(decoded.points[0].y + 5.1f) < 0.00001f);
         assert(std::fabs(decoded.points[0].z - 5.09984436f) < 0.00001f);
         assert(decoded.points[0].offsetUs == 258);
-        assert(decoded.points[0].timestampUs == 4328719366000248ULL);
         assert(decoded.points[0].intensity == 255 && decoded.points[0].attribute == 2);
         assert(decoded.points[1].range == 0 && decoded.points[1].x == 0);
-        assert(decoded.points[95].timestampUs == 4328719366065525ULL);
+        assert(decoded.points[95].offsetUs == 65535);
         assert(decoded.points[95].x == -1.0f / 32768);
         assert(decoded.points[95].y == -32767.0f / 32768);
         assert(decoded.points[95].intensity == 42 && decoded.points[95].attribute == 1);
@@ -108,7 +107,8 @@ namespace
         bad = bytes;
         put(bad, 10, UINT64_MAX / 1000000, 6);
         put(bad, 16, UINT64_MAX % 1000000, 4);
-        assert(!decodeMsop(bad.data(), bad.size(), decoded)); // Point offset overflow.
+        assert(decodeMsop(bad.data(), bad.size(), decoded));
+        assert(decoded.timestampUs == UINT64_MAX && decoded.points[95].offsetUs == 65535);
         auto edge = bytes; put(edge, 10, 0, 6); put(edge, 16, 0, 4);
         put(edge, 4, 0, 2); edge[31] = 0;
         assert(decodeMsop(edge.data(), edge.size(), decoded));

@@ -96,7 +96,9 @@ namespace kai
         bool m_firmwareKnown = false, m_configFailed = false, m_samplingSent = false;
         uint16_t m_sequence = 0;
         std::map<uint16_t, PendingCommand> m_pending;
-        uint64_t m_timeoutNs = 10 * NSEC_SEC, m_lastRx = 0, m_lastHeartbeat = 0, m_lastHandshake = 0;
+        uint64_t m_timeoutNs = 10 * NSEC_SEC;
+        uint64_t m_lastRx = 0;
+        uint64_t m_lastHeartbeat = 0;
         string m_lastError;
         json m_observed = json::object();
 

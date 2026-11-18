@@ -67,16 +67,24 @@ its submap protocol. It reads `PCLmapIn` rather than the flat `PCLframeOut` outp
 point/line geometry streams. Add the GLIM module name to `_JSONcmd.vBASE` and
 enter that same module name in the viewer's command panel.
 
-For another sensor, connect its `PCLframeOut` and optional `IMUstreamOut` to GLIM through
-`PCLframeIn` and `IMUstreamIn` and
-select its `configPath`. Clouds use metres and increasing timestamps in
-nanoseconds. When using an IMU, samples must use m/s² including gravity and
-rad/s, calibrated IMU-to-cloud extrinsics, and the same capture clock as depth. The input interface gives one timestamp per complete cloud; it
-does not deskew a scanning LiDAR. Keep the input cloud transform fixed in the
-sensor frame. DataObject setters and getters copy complete clouds. Readers poll
-`getTstamp()` and copy a changed frame with `get(points)`; repeated timestamps
-cannot signal a changed payload. Configure GLIM's `PCLmapOut` output and the
-viewer's `PCLmapIn` with the same DataObject name.
+For another sensor, connect its camera `PCLframeOut` or LiDAR `PCLstreamOut` to a
+`PCLframe` DataObject named by GLIM's `PCLframeIn`. Connect optional
+`IMUstreamOut` through `IMUstreamIn` and select the matching `configPath`.
+Clouds use metres and increasing capture timestamps in nanoseconds. When using
+an IMU, samples must use m/s² including gravity and rad/s, calibrated IMU-to-cloud
+extrinsics, and the same capture clock as the points. Keep the input cloud
+transform fixed in the sensor frame.
+
+Camera producers replace complete snapshots with `set`; LiDAR producers append
+packets with `add`, retaining up to the destination's `nBuf` points. GLIM owns
+point validation and its capture-time cursor. LiDAR profiles set
+`scanDurationMs: 100` to select new points from the latest 100 ms window at
+approximately 10 Hz. With `global_shutter_lidar: false`, per-point capture times
+supply the relative offsets used for deskewing; depth-camera profiles use zero
+offsets. Stream update timestamps signal changed storage and are separate from
+point capture times. See [GLIM input timing](../../../docs/GLIM.md) for details.
+Configure GLIM's `PCLmapOut` output and the viewer's `PCLmapIn` with the same
+DataObject name.
 
 The Orbbec example uses native depth, a 0.3–6 m range, 5 cm preprocessing cells,
 and a 25 cm GICP grid. Its IMU-to-depth transform is the connected Gemini 335's
@@ -255,21 +263,20 @@ Only GLM3 is accepted. The geometry viewer's `/stream/points` and
 
 ## Validation
 
+With a rebuilt `WITH_SLAM=ON`, `USE_GLIM=ON` OpenKAI executable and
+`CMAKE_EXPORT_COMPILE_COMMANDS=ON`, run the synthetic preprocessing and IMU-gating
+checks in both rolling and global shutter modes:
+
 ```sh
-cmake -S test/slam -B /tmp/openkai-slam-tests
-cmake --build /tmp/openkai-slam-tests -j4
-ctest --test-dir /tmp/openkai-slam-tests --output-on-failure
-python3 test/slam/browser.py build/OpenKAI
-python3 test/slam/browser.py build/OpenKAI --hardware
-python3 test/slam/browser.py build/OpenKAI --config jsonCfg/GLIM_scepter.json
-python3 test/slam/browser.py build/OpenKAI --config jsonCfg/GLIM_scepter.json --hardware
+python3 test/run_glim_timing_tests.py build
 ```
 
-Transport tests cover slow-client catch-up, chunking, pose-only corrections,
-reconnection, session resets and route isolation with synthetic submaps.
-The browser test needs Chrome/Chromium, local sockets and, in hardware mode,
-camera access (USB or network). It uses temporary ports/configuration and the
-actual UI/JSONcmd. The native suite covers CPU odometry with IMU and CT
-odometry without IMU, including complete final-frame mapping on Stop.
-Artifacts: `/tmp/openkai-glim-viewer.png` and
-`/tmp/openkai-glim-browser-backend.log`.
+For a connected Livox sensor, the live integration check also exercises GLIM
+mapping and its map stream:
+
+```sh
+python3 test/Sensor/LiDAR/live.py build/OpenKAI --glim --seconds 20
+```
+
+See [Testing and debugging](../../../docs/6-test.md) for build requirements and
+other available suites.

@@ -16,7 +16,7 @@ import sys
 import tempfile
 
 sys.dont_write_bytecode = True
-from run_byte_packet_tests import link_command
+from build_helpers import link_command
 
 
 def main():
@@ -33,21 +33,15 @@ def main():
     environment["CCACHE_DISABLE"] = "1"
     with tempfile.TemporaryDirectory(prefix="openkai-glim-timing-") as temp:
         temp = pathlib.Path(temp)
-        objects = []
-        # Link the test entry point against the existing, rebuilt OpenKAI
-        # implementation, whether it is a shared library or direct objects.
-        for index, source in enumerate(("test/SLAM/GLIMTiming.cpp",)):
-            obj = str(temp / f"timing-{index}.o")
-            command = list(entry["arguments"]) if "arguments" in entry else shlex.split(entry["command"])
-            command[command.index("-o") + 1] = obj
-            command[command.index("-c") + 1] = str(repo / source)
-            if "-MF" in command:
-                command[command.index("-MF") + 1] = obj + ".d"
-            subprocess.run(command + ["-UNDEBUG"], cwd=entry["directory"], env=environment, check=True)
-            objects.append(obj)
-        command = [arg for arg in link_command(build) if not arg.startswith("-Wl,--dependency-file=")]
-        for suffix, obj in zip(("/src/main.cpp.o",), objects):
-            command[next(i for i, arg in enumerate(command) if arg.endswith(suffix))] = obj
+        obj = str(temp / "timing.o")
+        command = list(entry["arguments"]) if "arguments" in entry else shlex.split(entry["command"])
+        command[command.index("-o") + 1] = obj
+        command[command.index("-c") + 1] = str(repo / "test/SLAM/GLIMTiming.cpp")
+        if "-MF" in command:
+            command[command.index("-MF") + 1] = obj + ".d"
+        subprocess.run(command + ["-UNDEBUG"], cwd=entry["directory"], env=environment, check=True)
+        command = link_command(build)
+        command[next(i for i, arg in enumerate(command) if arg.endswith("/src/main.cpp.o"))] = obj
         executable = str(temp / "glim-timing-tests")
         command[command.index("-o") + 1] = executable
         subprocess.run(command, cwd=build, env=environment, check=True)

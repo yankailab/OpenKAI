@@ -132,7 +132,7 @@ def run(args, temp):
             eventually(lambda: commands.request('getIMU'), lambda r: not r.get('enabled') and not r.get('available'))
             success(commands.request('setConfig', config={'lvxIMUdataEn': original['lvxIMUdataEn']}))
             eventually(lambda: commands.request('getIMU'), lambda r: r.get('available'))
-            result['controls'] = ['invalid patches rejected', 'frame duration', 'save temporary launch', 'IMU off/on']
+            result['controls'] = ['invalid patches rejected', 'disconnect timeout', 'save temporary launch', 'IMU off/on']
             for data_type in [2, 3, 1]:
                 success(commands.request('setConfig', config={'lvxPCLdataType': data_type}))
                 applied = eventually(lambda: commands.request('getConfig'),

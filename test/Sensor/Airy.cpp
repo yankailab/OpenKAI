@@ -148,12 +148,7 @@ namespace
         UdpEndpoint releasedMSOP(msopPort), releasedDIFOP(difopPort), releasedIMU(imuPort);
     }
 
-    const std::array<uint16_t, 8> early{{100, 200, 300, 400, 500, 600, 700, 800}};
-    const std::array<uint16_t, 8> late{{20000, 22000, 24000, 26000, 28000, 30000, 32000, 34000}};
-    const std::array<uint16_t, 8> zero{{0, 50, 100, 150, 200, 250, 300, 350}};
-
-    airy::Msop packet(uint32_t sequence, uint64_t timestampNs,
-                      std::array<uint16_t, 8> angles = early, size_t count = airy::kPointCount)
+    airy::Msop packet(uint32_t sequence, uint64_t timestampNs, size_t count = airy::kPointCount)
     {
         airy::Msop result;
         result.sequence = sequence;
@@ -161,14 +156,10 @@ namespace
         result.sequenceValid = true;
         result.model = 2;
         result.returnMode = 0;
-        result.azimuths = angles;
         for (size_t i = 0; i < result.points.size(); ++i)
         {
             auto &point = result.points[i];
-            point.block = static_cast<uint8_t>(i / 48);
-            point.blockAzimuth = angles[point.block];
-            point.offsetNs = static_cast<uint32_t>(point.block * 10000 + i % 48 * 100);
-            point.timestampNs = timestampNs + point.offsetNs;
+            point.offsetNs = static_cast<uint32_t>(i / 48 * 10000 + i % 48 * 100);
             point.x = point.range = i < count ? 1.0f : 0.0f;
             point.intensity = 128;
         }
@@ -234,15 +225,15 @@ namespace
         Access::output(driver, cloud);
         Access::info(driver, calibration());
         const uint64_t before = getTns();
-        Access::packet(driver, packet(10, 1000000000, {{35900, 35950, 0, 0, 50, 50, 100, 100}}));
+        Access::packet(driver, packet(10, 1000000000));
         vector<GEOMETRY_POINT> points;
         const uint64_t update = cloud.get(points, 0);
         assert(update >= before && update <= getTns());
-        assert(points.size() == 384); // A full packet is available across azimuth zero.
+        assert(points.size() == 384); // Every decoded packet is available immediately.
         assert(points.front().m_tStamp == 1000000000);
         assert(points.back().m_tStamp == 1000074700);
-        Access::packet(driver, packet(11, 1001000000, late));
-        Access::packet(driver, packet(12, 1002000000, zero));
+        Access::packet(driver, packet(11, 1001000000));
+        Access::packet(driver, packet(12, 1002000000));
         cloud.get(points, 0);
         assert(points.size() == 1152);
         cloud.get(points, 1001000000);
@@ -255,7 +246,7 @@ namespace
         cloud.clear();
         Access::output(dual, cloud);
         Access::info(dual, calibration());
-        auto returns = packet(1, 2000000000, {{35900, 35900, 35900, 35900, 0, 0, 0, 0}});
+        auto returns = packet(1, 2000000000);
         returns.dual = true;
         Access::packet(dual, returns);
         cloud.get(points, 0);
@@ -291,26 +282,6 @@ namespace
         assert(points.size() == 8 * 384 && points.back().m_tStamp == 1000074700);
     }
 
-    void testCroppedFOV()
-    {
-        DriverWithTransform driver;
-        PCLstream cloud;
-        Access::output(driver, cloud);
-        auto info = calibration();
-        info.calibration.fovStart = 10000;
-        info.calibration.fovEnd = 12000;
-        Access::info(driver, info);
-        const std::array<uint16_t, 8> sector{{10000, 10300, 10600, 10900, 11200, 11500, 11800, 12000}};
-        Access::packet(driver, packet(1, 1000000000, sector));
-        vector<GEOMETRY_POINT> points;
-        cloud.get(points, 0);
-        assert(points.size() == 384);
-        Access::packet(driver, packet(2, 1100000000, sector));
-        cloud.get(points, 0);
-        assert(points.size() == 768); // No revolution boundary is needed for output.
-        assert(points[384].m_tStamp == 1100000000);
-    }
-
     void testFilteringTransformAndCapacity()
     {
         DriverWithTransform driver;
@@ -320,7 +291,7 @@ namespace
         configure(driver, {{"vRangeD", {1.0, 10.0}}});
         driver.m_transform.setTranslation(1, 2, 3);
         driver.m_transform.setRotation(0, 0, 0.5, 0.5);
-        auto data = packet(1, 1000000000, early, 5);
+        auto data = packet(1, 1000000000, 5);
         data.points[0].x = data.points[0].range = 0.5f;
         data.points[2].x = data.points[2].range = 10.0f;
         data.points[3].x = data.points[3].range = 11.0f;
@@ -350,11 +321,12 @@ namespace
         Access::packet(driver, packet(3, 1002000000), UINT64_MAX - 10);
         cloud.get(points, 0);
         assert(Access::status(driver).at("invalidPackets") == 2 && points.empty());
-        Access::packet(driver, packet(3, 1002000000, early, 2), 5000000000ULL);
+        Access::packet(driver, packet(3, UINT64_MAX, 2), 5000000000ULL);
         cloud.get(points, 0);
+        // Host timestamps remain usable when adding sensor-time offsets would overflow.
         assert(points.size() == 2 && points[0].m_tStamp == 5000000000ULL && points[1].m_tStamp == 5000000100ULL);
         configure(driver, {{"bUseSensorTime", true}});
-        Access::packet(driver, packet(4, 0, early, 1));
+        Access::packet(driver, packet(4, 0, 1));
         assert(cloud.newest().m_tStamp == 0 && cloud.newest().m_vP.norm() > 0);
         cloud.get(points, 0);
         assert(points.size() == 2); // The reader chooses to omit invalid timestamps.
@@ -633,7 +605,6 @@ int main()
     testCalibration();
     testImmediatePacketsAndDualReturns();
     testSequenceAndRecovery();
-    testCroppedFOV();
     testFilteringTransformAndCapacity();
     testIMU();
     testIMUpreview();

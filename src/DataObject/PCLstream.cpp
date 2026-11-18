@@ -20,7 +20,10 @@ namespace kai
 		m_iBset = 0;
 		// Initial allocation is not a publication. Reloading an existing
 		// stream does notify readers that its retained history was cleared.
-		if (getTstamp()) updateTstamp();
+		if (getTstamp())
+		{
+			updateTstamp();
+		}
 		return true;
 	}
 
@@ -31,14 +34,18 @@ namespace kai
 			std::shared_lock lock(m_sMutex);
 			(*m_pJ)["nBuf"] = m_nBuf;
 		}
-		return !bExport || m_pJcfg->saveToFile();
+		IF__(!bExport, true);
+		return m_pJcfg->saveToFile();
 	}
 
 	bool PCLstream::clear(size_t nBuf)
 	{
 		std::unique_lock lock(m_sMutex);
 		IF_F(nBuf > std::numeric_limits<int>::max());
-		if (nBuf) m_nBuf = nBuf;
+		if (nBuf)
+		{
+			m_nBuf = nBuf;
+		}
 		m_vElement.assign(m_nBuf, GEOMETRY_POINT());
 		m_iBset = 0;
 		updateTstamp();

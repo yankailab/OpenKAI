@@ -115,8 +115,6 @@ namespace kai
 
 	bool _PCcrop::check(void)
 	{
-		//		NULL_F(m_pInCtx.m_pPCB);
-
 		return _ModuleBase::check();
 	}
 
@@ -134,18 +132,7 @@ namespace kai
 	{
 		IF_(!check());
 
-		// PointCloud* pOut = m_sPC.next();
-		// PointCloud pcIn;
-		// m_pPCB->getPC(&pcIn);
-		// int nP = pcIn.points_.size();
-		// for (int i = 0; i < nP; i++)
-		// {
-		// 	Vector3d vP = pcIn.points_[i];
-		// 	IF_CONT(!bFilter(vP));
-
-		// 	pOut->points_.push_back(vP);
-		// 	pOut->colors_.push_back( pcIn.colors_[i]);
-		// }
+		// TODO: filter point-cloud snapshots through bFilter.
 	}
 
 	bool _PCcrop::bFilter(Vector3d &vP)

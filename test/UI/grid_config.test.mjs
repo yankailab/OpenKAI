@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { webcrypto } from 'node:crypto';
+import { readFile } from 'node:fs/promises';
+import { runInNewContext } from 'node:vm';
 import { GridConfigControls } from '../../html/viewer/_SelectableOctGrid/js/gridConfigControls.js';
 import { TransformControls } from '../../html/viewer/_SelectableOctGrid/js/transformControls.js';
 import { GridPickerControls } from '../../html/viewer/_SelectableOctGrid/js/gridPickerControls.js';
@@ -212,19 +214,47 @@ test('save errors preserve drafts and apply timeouts or disconnects require a fr
   assert.equal(controls.loaded, true);
 });
 
-test('transform Apply and Save are separate and Save replies do not overwrite drafts', t => {
-  const { controls, element, sent } = setup(t, [], element => {
+const commandHandler = await readFile(new URL('../../html/viewer/_SelectableOctGrid/js/wsCmdHandler.js', import.meta.url), 'utf8');
+const transform = { vT: [1, 2, 3], vAngle: [0, Math.PI / 2, -Math.PI] };
+
+function setupTransform(t) {
+  const ui = setup(t, [], element => {
     element('transform-module').value = 'transform';
     return new TransformControls();
   });
-  const transform = { vT: [1, 2, 3], vAngle: [0, Math.PI / 2, 0] };
-  const reply = (fields = {}) => controls.reply({ ...sent.at(-1), bSuccess: true, config: transform, ...fields });
+  const context = { window: ui.window, CustomEvent, strEOJ: 'EOJ', wsCmdLog() {} };
+  runInNewContext(commandHandler, context);
+  return {
+    ...ui,
+    submit: () => ui.element('transform-config').onsubmit({
+      preventDefault() {}, currentTarget: ui.element('transform-config'),
+    }),
+    reply(fields = {}, command = ui.sent.at(-1)) {
+      const text = JSON.stringify({ ...command, bSuccess: true, config: transform, ...fields }) + 'EOJ';
+      // Keep coverage of fragmented command framing and the page's event routing.
+      context.cmdHandler({ data: text.slice(0, 11) });
+      context.cmdHandler({ data: text.slice(11) });
+    },
+  };
+}
+
+test('transform Apply and Save are separate and Save replies do not overwrite drafts', t => {
+  const { controls, element, sent, reply, submit } = setupTransform(t);
   assert.equal(sent[0].cmd, 'getConfig');
+  for (const fields of [{ module: 'other' }, { cmd: 'setConfig' }, { requestId: 'stale' }]) {
+    reply(fields);
+    assert.equal(controls.loaded, false);
+    assert.equal(element('transform-apply').disabled, true);
+  }
   reply();
+  assert.equal(Number(element('transform-pitch').value), 90);
+  assert.equal(Number(element('transform-yaw').value), -180);
   element('transform-x').value = '8';
-  element('transform-config').onsubmit({ preventDefault() {}, currentTarget: element('transform-config') });
+  element('transform-roll').value = '45';
+  submit();
   assert.equal(sent[1].cmd, 'setConfig');
   assert.deepEqual(sent[1].config.vT, [8, 2, 3]);
+  assert.deepEqual(sent[1].config.vAngle, [Math.PI / 4, Math.PI / 2, -Math.PI]);
   reply({ config: { ...transform, vT: [8, 2, 3] } });
   assert.equal(sent.length, 2, 'Apply must not save automatically');
   assert.equal(element('transform-status').textContent, 'Applied transform.');
@@ -235,6 +265,80 @@ test('transform Apply and Save are separate and Save replies do not overwrite dr
   reply({ config: undefined });
   assert.equal(element('transform-x').value, '99');
   assert.equal(element('transform-status').textContent, 'Saved transform to JSON.');
+});
+
+test('transform rejects invalid values and backend errors without saving', t => {
+  const { element, sent, reply, submit } = setupTransform(t);
+  reply();
+  for (const invalid of ['', 'Infinity']) {
+    element('transform-x').value = invalid;
+    submit();
+    assert.equal(sent.length, 1);
+    assert.match(element('transform-x').validityMessage, /finite/);
+  }
+  element('transform-x').value = '4';
+  submit();
+  reply({ bSuccess: false, error: 'Invalid transform' });
+  assert.equal(sent.length, 2);
+  assert.equal(sent.at(-1).cmd, 'setConfig');
+  assert.match(element('transform-status').textContent, /Invalid transform/);
+  assert.equal(element('transform-x').value, '4');
+});
+
+test('transform save failures and timeouts preserve drafts and allow retry', t => {
+  const { controls, element, sent, reply, timers } = setupTransform(t);
+  reply();
+  element('transform-x').value = '99';
+  element('transform-save').onclick();
+  reply({ bSuccess: false, error: 'JSON file is read-only' });
+  assert.match(element('transform-status').textContent, /Saving transform failed: JSON file is read-only/);
+  assert.equal(element('transform-save').disabled, false);
+  element('transform-save').onclick();
+  [...timers.values()][0]();
+  assert.match(element('transform-status').textContent, /Saving was not confirmed/);
+  assert.equal(controls.loaded, true);
+  assert.equal(element('transform-save').disabled, false);
+  assert.equal(element('transform-x').value, '99');
+  assert.equal(sent.filter(command => command.cmd === 'setConfig').length, 0);
+});
+
+test('transform recovers from missing modules, target changes and disconnects', t => {
+  const { controls, element, sent, reply, submit, timers, window, state } = setupTransform(t);
+  const oldRequest = sent[0];
+  [...timers.values()][0]();
+  assert.match(element('transform-status').textContent, /No reply from transform/);
+  assert.equal(element('transform-module').disabled, false);
+  element('transform-module').value = 'otherTransform';
+  element('transform-module').oninput();
+  element('transform-module').onchange();
+  reply({}, oldRequest);
+  assert.equal(controls.loaded, false);
+  reply();
+  submit();
+  const stale = sent.at(-1);
+  window.wsSocket = null; state();
+  assert.match(element('transform-status').textContent, /Apply was not confirmed/);
+  assert.equal(element('transform-save').disabled, true);
+  window.wsSocket = { readyState: 1 }; state();
+  assert.equal(sent.at(-1).cmd, 'getConfig');
+  reply({}, stale);
+  assert.equal(controls.loaded, false);
+  reply();
+  assert.equal(element('transform-save').disabled, false);
+  element('transform-save').onclick();
+  window.wsSocket = null; state();
+  assert.match(element('transform-status').textContent, /Saving was not confirmed/);
+});
+
+test('transform rejects malformed backend configurations before loading', t => {
+  const { controls, element, reply } = setupTransform(t);
+  reply({ config: { vT: [1, 2], vAngle: [0, 0, 0] } });
+  assert.equal(controls.loaded, false);
+  assert.match(element('transform-status').textContent, /Invalid transform reply/);
+  assert.equal(element('transform-save').disabled, true);
+  element('transform-load').onclick();
+  reply();
+  assert.equal(element('transform-save').disabled, false);
 });
 
 function pickerWithSources(modules) {

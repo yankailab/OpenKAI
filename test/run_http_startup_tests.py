@@ -14,7 +14,7 @@ import sys
 import tempfile
 
 sys.dont_write_bytecode = True
-from run_byte_packet_tests import link_command
+from build_helpers import link_command
 
 
 def main():
@@ -43,7 +43,7 @@ def main():
                 command[command.index("-MF") + 1] = extra + ".d"
             subprocess.run(command, cwd=entry["directory"], check=True)
             extra_objects.append(extra)
-        command = [arg for arg in link_command(build) if not arg.startswith("-Wl,--dependency-file=")]
+        command = link_command(build)
         command[next(i for i, arg in enumerate(command) if arg.endswith("/src/main.cpp.o"))] = obj
         command[1:1] = extra_objects
         executable = str(pathlib.Path(temp) / "http-startup-tests")

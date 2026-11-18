@@ -152,20 +152,20 @@ void runDataObjStreamTests(void)
 	producer.add({input[0], input[0], input[0]}, 107);
 	accumulated.get(snapshot);
 	assert(snapshot.size() == 2);
-	assert(accumulated.saveConfig());
+	assert(accumulated.saveConfig(false));
 	assert(config.getJson()->at("nBuf") == 2);
 	(*config.getJson())["nBuf"] = static_cast<size_t>(std::numeric_limits<int>::max()) + 1;
 	assert(!accumulated.loadConfig());
 	accumulated.get(snapshot);
 	assert(snapshot.size() == 2); // invalid configuration does not clear storage
 
-	assert(frame.saveConfig());
+	assert(frame.saveConfig(false));
 	assert(frameConfig.getJson()->at("nBuf") == 0);
 	initial.setConfig(&frameConfig, frameConfig.getJson());
 	assert(initial.loadConfig());
 	assert(initial.get(snapshot) == 0 && snapshot.empty());
 	assert(initial.get(snapshot, 0) == 0 && snapshot.empty());
 	frame.set(input, 108);
-	assert(frame.saveConfig());
+	assert(frame.saveConfig(false));
 	assert(frameConfig.getJson()->at("nBuf") == input.size());
 }

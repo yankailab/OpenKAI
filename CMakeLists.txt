@@ -49,7 +49,6 @@ option(WITH_TOOLS "Build calibration tools" OFF)
 option(WITH_UI "" OFF)
 option(WITH_UNIVERSE "" OFF)
 option(WITH_VISION "" OFF)
-option(WITH_TEST "Build with unit test modules" OFF)
 
 # Eigen 5 retains the Eigen3 package name and Eigen3::Eigen target.
 find_package(Eigen3 5 REQUIRED CONFIG)
@@ -604,33 +603,6 @@ if(WITH_VISION)
    endif()
   endif() # opencv
 endif()
-
-# Test modules
-
-if(WITH_TEST)
-  add_definitions(-DWITH_TEST)
-  list(APPEND OpenKAI_cpp
-	test/_TestBase.cpp
-  )
-
-  if(WITH_IO)
-    if(USE_WSSERVER)
-      list(APPEND OpenKAI_cpp
-		test/IO/_TestWebSocket.cpp
-      )
-    endif()
-  endif()
-
-
-  if(WITH_PROTOCOL)
-    file(GLOB_RECURSE Test_Protocol test/Protocol/*.cpp test/Protocol/*.c)
-    list(APPEND OpenKAI_cpp
-		${Test_Protocol}
-    )
-  endif()
-
-endif()
-
 
 # Dependencies
 

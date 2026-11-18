@@ -28,7 +28,6 @@ namespace kai
 
 		jKv<int>(j, "vWinSize", m_vWinSize);
 		jKv(j, "bFullScreen", m_bFullScreen);
-		jKv(j, "dirSave", m_dirSave);
 
 		jKv(j, "camProjType", m_camProj.m_type);
 		jKv(j, "camFov", m_camProj.m_fov);
@@ -59,7 +58,6 @@ namespace kai
 		json &j = *m_pJ;
 		j["vWinSize"] = {m_vWinSize.x(), m_vWinSize.y()};
 		j["bFullScreen"] = m_bFullScreen;
-		j["dirSave"] = m_dirSave;
 		j["camProjType"] = m_camProj.m_type;
 		j["camFov"] = m_camProj.m_fov;
 		j["vCamLR"] = {m_camProj.m_vLR.x(), m_camProj.m_vLR.y()};
@@ -75,18 +73,6 @@ namespace kai
 
 		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
-	}
-
-	bool _GeometryViewerBase::link(InstanceMgr *pM)
-	{
-		IF_F(!this->_ModuleBase::link(pM));
-
-		string tfName;
-		jKv(*m_pJ, "_TransformRigid", tfName);
-		m_pTf = dynamic_cast<_TransformRigid *>(static_cast<_ModuleBase *>(pM->findModule(tfName)));
-		IF_Le_F(!tfName.empty() && !m_pTf, "_TransformRigid not found: " + tfName);
-
-		return true;
 	}
 
 	bool _GeometryViewerBase::start(void)

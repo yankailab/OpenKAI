@@ -28,7 +28,7 @@ the stream preserves duplicate, zero, and out-of-order timestamps as supplied.
 
 `PCLstream` retains up to `nBuf` points (default 100000) in its ring. Its
 `get(points, tStampFrom)` requires an explicit point-time cursor; zero selects
-all retained points with valid timestamps. `PCLframe` derives from `PCLstream`
+all retained points with nonzero timestamps. `PCLframe` derives from `PCLstream`
 and adds `get(points)` to copy the entire storage vector in physical buffer
 order, including unused and zero-timestamp slots. It also provides
 `set(points, tStamp)` to replace the whole vector, set `nBuf` to the input size,
@@ -55,7 +55,10 @@ Declare each DataObject as a top-level launch object. DataObjects have no worker
 }
 ```
 
-A DataObject can remain enabled when its producer is disabled: readers then copy an empty initial payload. DataObject names must be unique, and configured readers require the matching type.
+A DataObject can remain enabled when its producer is disabled. Its initial
+payload contains no valid records; a `PCLframe` whole-buffer read still returns
+its configured `nBuf` zero-timestamp slots. DataObject names must be unique, and
+configured readers require the matching type.
 
 ## Module configuration
 
@@ -218,21 +221,14 @@ For landing tags, normalized area is the radius bounding square's area,
 and `vKdist` tag calibration when migrating: the former generic dimension-area
 calculation returned zero for radius-only tag dimensions.
 
-Run the focused bounding-box stream, tracker, and target-control checks from the repository root:
+Run typed stream storage checks, including bounding boxes, against a rebuilt
+OpenKAI executable with `WITH_IO=ON`, `WITH_PROTOCOL=ON`, and a compilation database:
 
 ```sh
-cmake -S test/DataObject -B /tmp/openkai-bbox-tests
-cmake --build /tmp/openkai-bbox-tests --parallel 2
-ctest --test-dir /tmp/openkai-bbox-tests --output-on-failure
-
-cmake -S test/Tracker -B /tmp/openkai-tracker-tests
-cmake --build /tmp/openkai-tracker-tests --parallel 2
-ctest --test-dir /tmp/openkai-tracker-tests --output-on-failure
-
-cmake -S test/Autopilot -B /tmp/openkai-target-tests
-cmake --build /tmp/openkai-target-tests --parallel 2
-ctest --test-dir /tmp/openkai-target-tests --output-on-failure
+python3 test/run_byte_packet_tests.py build --streams-only
 ```
+
+See [Testing and debugging](6-test.md) for build requirements and other suites.
 
 ## Frame ownership and timing
 
@@ -344,39 +340,28 @@ uses GLM3 with map timestamps. Legacy wire decoders are not supported.
 
 Updated launches include `Detectors.json`, `WebViewer3D.json`, `ImGUI.json`, `APmav_drive.json`, `Orbbec.json`, `Scepter.json`, `GLIM_orbbec.json`, `GLIM_scepter.json`, and `_GLIM.json`. `Livox1.json` is the standalone Avia-generation LiDAR example; `Livox2.json` is the Mid-360 example. Set `Lvx1.lvxIP` to the sensor address. Both Livox drivers own their UDP sockets, select the host address from the route, and accept host ports directly on the instance. They decode their respective Ethernet protocols without an external Livox SDK and append to `PCLstream` (or derived `PCLframe`) and optional `IMUstream` objects. Their web viewers use the existing geometry streaming protocol. See the [Livox1 setup and controls](../html/viewer/_Livox1/README.md) for model support and legacy protocol settings. Build LiDAR with `WITH_SENSOR` and `WITH_UNIVERSE`; the examples' WebSocket command service also needs `WITH_IO`. Open3D is not required. `_GLIM.json` declares input streams but needs a producer to populate them.
 
-The old `_IMUbase` preview modules are absent from the migrated examples; camera and LiDAR IMU data go to `IMUstream`. The `_LCalign.json` launch now uses point and image DataObjects but retains legacy viewer and IMU settings. Legacy `.kiss` launches still reference older Tools/Open3D interfaces and are not migrated examples. The historical `test/apMavlinkFollow.kiss` has updated bounding-box stream links, but its older syntax and remaining module settings still need migration before use. Open3D point registration now uses the point stream keys above, while its registration and visualization algorithms still require `USE_OPEN3D`. Other `USE_OPEN3D` interfaces remain outside this migration.
+The old `_IMUbase` preview modules are absent from the migrated examples; camera and LiDAR IMU data go to `IMUstream`. The `_LCalign.json` launch now uses point and image DataObjects but retains legacy viewer and IMU settings. Legacy `.kiss` launches still reference older Tools/Open3D interfaces and are not migrated examples. Open3D point registration now uses the point stream keys above, while its registration and visualization algorithms still require `USE_OPEN3D`. Other `USE_OPEN3D` interfaces remain outside this migration.
 
 ## Point transport and validation
 
 `_PCsend` and `_PCrecv` use only PCL2. Every packet is little-endian and has a 24-byte header: four-byte `PCL2` magic, packet byte count (`u32`), frame timestamp (`u64`), total point count (`u32`), and first point index (`u32`). Each 32-byte record contains XYZRGB (`6 × float32`) and its timestamp (`u64`). There is no native-struct padding. The receiver publishes only a complete frame; an empty frame is represented by its header. Older point transport layouts are unsupported.
 
-Run the independent stream, viewer, geometry, grid, LiDAR, and SLAM-input checks from the repository root:
+Run the stream, viewer, geometry, grid, LiDAR, and SLAM-input checks against a
+rebuilt OpenKAI executable with the relevant modules enabled:
 
 ```sh
-cmake -S test/DataObject -B /tmp/openkai-stream-tests
-cmake --build /tmp/openkai-stream-tests --parallel 2
-ctest --test-dir /tmp/openkai-stream-tests --output-on-failure
-
-cmake -S test/Universe -B /tmp/openkai-geometry-test
-cmake --build /tmp/openkai-geometry-test --parallel 2
-ctest --test-dir /tmp/openkai-geometry-test --output-on-failure
-
-cmake -S test/Vision -B /tmp/openkai-vision-tests
-cmake --build /tmp/openkai-vision-tests --parallel 2
-ctest --test-dir /tmp/openkai-vision-tests --output-on-failure
-
-cmake -S test/Tracker -B /tmp/openkai-tracker-tests
-cmake --build /tmp/openkai-tracker-tests --parallel 2
-ctest --test-dir /tmp/openkai-tracker-tests --output-on-failure
-
-cmake -S test/UI -B /tmp/openkai-ui-tests
-cmake --build /tmp/openkai-ui-tests --parallel 2
-ctest --test-dir /tmp/openkai-ui-tests --output-on-failure
-
-python3 html/viewer/tests/run.py /tmp/openkai-stream-tests/viewer_cache_test
+python3 test/run_byte_packet_tests.py build --streams-only
+python3 test/run_transform_rigid_tests.py build
+python3 test/run_octree_grid_tests.py build
+python3 test/run_web_geometry_tests.py build
+python3 test/run_livox1_tests.py build
+python3 test/run_livox2_tests.py build
+python3 test/run_glim_timing_tests.py build
+node --test test/UI/*.test.mjs
 ```
 
-These checks use synthetic data and do not start hardware devices.
+These checks use synthetic data and do not start hardware devices. See
+[Testing and debugging](6-test.md) for dependencies and build options.
 
 ### Rigid transform modules
 

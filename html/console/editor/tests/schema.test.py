@@ -56,7 +56,7 @@ class StreamReferenceSchemaTest(unittest.TestCase):
         self.assertTrue(tree[("_TransformRigidChildren",)]["multiple"])
         for name in ("_Livox1", "_Livox2", "_Airy", "_E1R", "_PCLfile", "_PCmerge", "_PCrecv", "_PCsend",
                      "_PCcrop", "_PCremove", "_PCdownSample", "_PCregistCol",
-                     "_GeometryViewerBase", "_NavBase", "_AutopilotBase", "_LCalign"):
+                     "_NavBase", "_AutopilotBase", "_LCalign"):
             with self.subTest(class_name=name):
                 self.assertEqual(self.classes[name]["baseClasses"], ["_ModuleBase"])
                 self.assertEqual(self.dependencies(name)[("_TransformRigid",)]["targetClass"], "_TransformRigid")
@@ -64,6 +64,9 @@ class StreamReferenceSchemaTest(unittest.TestCase):
                     self.assertNotIn((key,), self.parameters(name))
         for key in ("vT", "vR"):
             self.assertIn((key,), self.parameters("_TransformRigid"))
+        self.assertEqual(self.classes["_GeometryViewerBase"]["baseClasses"], ["_ModuleBase"])
+        self.assertNotIn(("_TransformRigid",), self.dependencies("_GeometryViewerBase"))
+        self.assertNotIn(("dirSave",), self.parameters("_GeometryViewerBase"))
 
     def test_octree_grid_inheritance_and_payload_configuration(self):
         for name, base in (("_OctreeGridBase", "_ModuleBase"),

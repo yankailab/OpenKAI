@@ -15,7 +15,7 @@ import sys
 import tempfile
 
 sys.dont_write_bytecode = True
-from run_byte_packet_tests import link_command
+from build_helpers import link_command
 
 
 def main():
@@ -40,8 +40,7 @@ def main():
                 command[command.index("-MF") + 1] = obj + ".d"
             subprocess.run(command + ["-UNDEBUG"], cwd=entry["directory"], check=True)
             objects.append(obj)
-        command = [arg for arg in link_command(build) if not arg.startswith("-Wl,--dependency-file=")
-                   and not arg.endswith("/src/Vision/RGBD/_Scepter.cpp.o")]
+        command = link_command(build)
         index = next(i for i, arg in enumerate(command) if arg.endswith("/src/main.cpp.o"))
         command[index:index + 1] = objects
         executable = str(pathlib.Path(temp) / "scepter-color-tests")

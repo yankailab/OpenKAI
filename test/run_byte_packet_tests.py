@@ -15,35 +15,7 @@ import shlex
 import subprocess
 import tempfile
 
-
-def link_command(build):
-    # Current builds separate the executable from libOpenKAI; retain support for
-    # older builds where OpenKAI itself was the executable target.
-    for target in ("OpenKAI_executable", "OpenKAI"):
-        link_file = build / f"CMakeFiles/{target}.dir/link.txt"
-        if link_file.exists():
-            commands = [link_file.read_text()]
-        elif (build / "build.ninja").exists():
-            # Ninja keeps the command in its build graph instead of link.txt.
-            result = subprocess.run(
-                ["ninja", "-C", str(build), "-t", "commands", target],
-                capture_output=True, text=True,
-            )
-            if result.returncode:
-                continue
-            commands = result.stdout.splitlines()
-        else:
-            continue
-        for command in commands:
-            args = shlex.split(command)
-            if "-c" in args or not any(arg.endswith("/src/main.cpp.o") for arg in args):
-                continue
-            if args[:2] == [":", "&&"]:
-                args = args[2:]
-            if "&&" in args:
-                args = args[:args.index("&&")]
-            return args
-    raise RuntimeError("OpenKAI executable link command was not found; build with BUILD_EXECUTABLE=ON first")
+from build_helpers import link_command
 
 
 def main():
@@ -51,7 +23,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("build_directory", nargs="?", type=pathlib.Path, default=repo / "build")
     modes = parser.add_mutually_exclusive_group()
-    modes.add_argument("--streams-only", action="store_true", help="run the four typed stream and concurrent byte packet storage regressions")
+    modes.add_argument("--streams-only", action="store_true", help="run typed stream and concurrent byte packet storage regressions")
     modes.add_argument("--byte-only", action="store_true", help="run typed stream, byte transport, and non-MAVLink parser regressions")
     modes.add_argument("--can-only", action="store_true", help="run CAN codecs and independent worker regressions only")
     modes.add_argument("--mavlink-only", action="store_true", help="run MAVLink stream, codec, and consumer regressions only")
@@ -86,11 +58,10 @@ def main():
             compile_args[compile_args.index("-c") + 1] = str(repo / source)
             if "-MF" in compile_args:
                 compile_args[compile_args.index("-MF") + 1] = test_object + ".d"
-            compile_args.extend(["-DOPENKAI_BYTE_PACKET_PROTOCOL_TEST", "-UNDEBUG"])
+            compile_args.extend(["-UNDEBUG"])
             subprocess.run(compile_args, cwd=entry["directory"], check=True)
             test_objects.append(test_object)
         executable = str(pathlib.Path(temp) / "byte-packet-tests")
-        link_args = [arg for arg in link_args if not arg.startswith("-Wl,--dependency-file=")]
         main_object = next(arg for arg in link_args if arg.endswith("/src/main.cpp.o"))
         index = link_args.index(main_object)
         link_args[index:index + 1] = test_objects

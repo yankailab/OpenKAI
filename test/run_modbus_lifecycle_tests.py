@@ -14,6 +14,8 @@ import shlex
 import subprocess
 import tempfile
 
+from build_helpers import link_command
+
 
 def main():
     repo = Path(__file__).resolve().parents[1]
@@ -29,10 +31,7 @@ def main():
     source = Path(next(line.split('=', 1)[1] for line in cache if line.startswith('CMAKE_HOME_DIRECTORY:')))
     headers = (options.headers or source / 'src').resolve()
     library = (options.library or build / 'libOpenKAI.so').resolve()
-    link_file = build / 'CMakeFiles/OpenKAI_executable.dir/link.txt'
-    if not link_file.is_file():
-        parser.error('Build the OpenKAI_executable target with the Unix Makefiles generator first')
-    link = shlex.split(link_file.read_text())
+    link = link_command(build)
     compile_database = build / 'compile_commands.json'
     if compile_database.is_file():
         entry = next(item for item in json.loads(compile_database.read_text())
@@ -40,6 +39,8 @@ def main():
         compile_args = list(entry.get('arguments') or shlex.split(entry['command']))
         compile_cwd = Path(entry['directory'])
     else:
+        if not (build / 'CMakeFiles/OpenKAI.dir/flags.make').is_file():
+            parser.error('Configure CMake with CMAKE_EXPORT_COMPILE_COMMANDS=ON first')
         values = {}
         for line in (build / 'CMakeFiles/OpenKAI.dir/flags.make').read_text().splitlines():
             if ' = ' in line:
@@ -71,7 +72,6 @@ def main():
         compile_args[1:1] = ['-I' + str(headers)]
         compile_args.append('-UNDEBUG')
         subprocess.run(compile_args, cwd=compile_cwd, env=environment, check=True)
-        link = [arg for arg in link if not arg.startswith('-Wl,--dependency-file=')]
         main_index = next(i for i, arg in enumerate(link) if arg.endswith('/src/main.cpp.o'))
         link[main_index] = str(obj)
         link[link.index('-o') + 1] = str(executable)

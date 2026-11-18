@@ -55,8 +55,8 @@ namespace e1r
     {
         float x = 0, y = 0, z = 0, range = 0;
         uint8_t intensity = 0, attribute = 0;
+        // The driver applies these offsets to the selected sensor or host clock.
         uint16_t offsetUs = 0;
-        uint64_t timestampUs = 0;
     };
 
     struct Msop
@@ -94,9 +94,6 @@ namespace e1r
             const uint8_t *block = p + 32 + 12 * i;
             Point &point = decoded.points[i];
             point.offsetUs = u16(block);
-            if (decoded.timestampUs > std::numeric_limits<uint64_t>::max() - point.offsetUs)
-                return fail(error, "E1R point timestamp overflow");
-            point.timestampUs = decoded.timestampUs + point.offsetUs;
             point.range = float(u16(block + 2)) * 0.005f;
             const float scale = point.range / 32768.0f;
             point.x = float(i16(block + 4)) * scale;

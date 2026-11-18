@@ -242,7 +242,6 @@
 			500
 		],
 		"bFullScreen": false,
-		"dirSave": "/home/kai/Documents/",
 		"/dirSave": "/media/lab/",
 		"/migration": "The legacy geometry frontend is replaced by the current ImGUI viewer. Original geometry and unsupported frontend settings are retained as comment keys.",
 		"/pathRes": "/usr/local/bin/Open3D/resources",

@@ -124,8 +124,7 @@ namespace
         assert(m.points[0].feature == 3 && m.points[0].intensity == 123);
         assert(m.points[48].channel == 48 && m.points[48].ring == 48 && m.points[48].offsetNs == 41888);
         assert(m.points[8].offsetNs == 5712 && m.points[96].offsetNs == 111080);
-        assert(m.points[383].offsetNs == 426536 && m.points[383].timestampNs == 2000526536ULL);
-        assert(m.blockOffsetsNs[0] == 0 && m.blockOffsetsNs[1] == 0 && m.blockOffsetsNs[7] == 333240);
+        assert(m.points[383].offsetNs == 426536);
         // Encoder-clockwise yaw, horizontal calibration, lens and vertical angles are applied independently.
         const double azimuth = (9000 - 174) * kPi / 18000;
         const double elevation = 10 * kPi / 18000;
@@ -143,7 +142,9 @@ namespace
         bad = bytes; put(bad, 44, 36000, 2); assert(!decodeMsop(bad.data(), bad.size(), d.calibration, m));
         bad = bytes; put(bad, 26, 1000000, 4); assert(!decodeMsop(bad.data(), bad.size(), d.calibration, m));
         bad = bytes; put(bad, 20, UINT64_MAX / 1000000000, 6); put(bad, 26, (UINT64_MAX % 1000000000) / 1000, 4);
-        assert(!decodeMsop(bad.data(), bad.size(), d.calibration, m));
+        assert(decodeMsop(bad.data(), bad.size(), d.calibration, m));
+        assert(m.timestampNs == UINT64_MAX - UINT64_MAX % 1000);
+        assert(m.points[383].offsetNs == 426536); // Clock selection and addition belong to the driver.
         Calibration empty; assert(!decodeMsop(bytes.data(), bytes.size(), empty, m));
         bad = bytes; bad[31] = 0x10; assert(decodeMsop(bad.data(), bad.size(), d.calibration, m));
         put(bad, 12, 65535, 4); assert(decodeMsop(bad.data(), bad.size(), d.calibration, m) && m.sequenceValid);
@@ -155,15 +156,15 @@ namespace
         Difop d; const auto db = difop(); assert(decodeDifop(db.data(), db.size(), d));
         Msop m; auto bytes = msop(2, 3);
         assert(decodeMsop(bytes.data(), bytes.size(), d.calibration, m) && m.dual);
-        assert(m.points[0].timestampNs == m.points[96].timestampNs); // Both returns describe the same firing.
-        assert(m.points[48].timestampNs == m.points[144].timestampNs);
+        assert(m.points[0].offsetNs == m.points[96].offsetNs); // Both returns describe the same firing.
+        assert(m.points[48].offsetNs == m.points[144].offsetNs);
         assert(m.points[192].offsetNs == 111080 && m.points[383].offsetNs == 204376);
         bytes = msop(1);
         assert(decodeMsop(bytes.data(), bytes.size(), d.calibration, m));
         assert(m.points[4].offsetNs == 7616 && m.points[48].channel == 0 && m.points[48].offsetNs == 111080);
         assert(m.points[383].offsetNs == 874664);
         bytes = msop(1, 3); assert(decodeMsop(bytes.data(), bytes.size(), d.calibration, m));
-        assert(m.points[0].timestampNs == m.points[48].timestampNs && m.points[96].offsetNs == 111080);
+        assert(m.points[0].offsetNs == m.points[48].offsetNs && m.points[96].offsetNs == 111080);
         bytes = msop(2); d.calibration.installMode = 1;
         assert(decodeMsop(bytes.data(), bytes.size(), d.calibration, m));
         assert(m.points[8].offsetNs == 11424 && m.points[383].offsetNs == 432248);
@@ -175,12 +176,13 @@ namespace
         d.calibration.installMode = 0;
         for (unsigned block = 0; block < 8; ++block) put(bytes, 44 + block * 148, (35980 + 40 * (block / 2)) % 36000, 2);
         assert(decodeMsop(bytes.data(), bytes.size(), d.calibration, m));
-        assert(m.azimuths[0] == 35980 && m.azimuths[2] == 20 && m.blockOffsetsNs[2] == 111080);
+        assert(m.points[0].x > 0 && m.points[0].y > 0);
+        assert(m.points[96].x > 0 && m.points[96].y < 0 && m.points[96].offsetNs == 111080);
         // A configured 90-degree blind interval delays the next firing by 25ms at 600rpm.
         d.calibration.fovStart = 9000; d.calibration.fovEnd = 36000;
         for (unsigned block = 0; block < 8; ++block) put(bytes, 44 + block * 148, block < 2 ? 35980 : 9000 + (block / 2 - 1) * 40, 2);
         assert(decodeMsop(bytes.data(), bytes.size(), d.calibration, m));
-        assert(m.blockOffsetsNs[2] == 25000000);
+        assert(m.points[96].offsetNs == 25000000);
     }
 
     void testImu()

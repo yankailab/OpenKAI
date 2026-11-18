@@ -224,7 +224,7 @@ def check_controls(browser, captured=None):
         assert(request.config.bReflectivity === false, 'Boolean controls must remain boolean'); reply();
         let count=sent.length;
         change('tOutSec','0'); change('tOutSec','30.5');
-        assert(sent.length === count, 'Numeric bounds and integer validation must reject invalid frame durations');
+        assert(sent.length === count, 'Numeric bounds and integer validation must reject invalid receiver timeouts');
         request=change('tOutSec','50'); assert(request.config.tOutSec === 50, 'Valid receiver timeout must be sent'); reply();
         for (const [key,value] of [['vRangeD','[40,1]'],['vRangeD','[0,"40"]'],['vColorDefault','[1,0]'],['vColorDefault','[1,2,0]']]) {
             count=sent.length; change(key,value); assert(sent.length === count, 'Invalid vector must not be sent: '+key+' '+value);

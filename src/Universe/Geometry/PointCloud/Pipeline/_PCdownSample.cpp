@@ -59,8 +59,6 @@ namespace kai
 
 	bool _PCdownSample::check(void)
 	{
-		//	NULL_F(m_pInCtx.m_pPCB);
-
 		return _ModuleBase::check();
 	}
 
@@ -78,11 +76,7 @@ namespace kai
 	{
 		IF_(!check());
 
-		// PointCloud* pOut = m_sPC.next();
-		// PointCloud pcIn;
-		// m_pPCB->getPC(&pcIn);
-
-		// *pOut = *pcIn.VoxelDownSample(m_rVoxel);
+		// TODO: downsample point-cloud snapshots using m_rVoxel.
 	}
 
 }

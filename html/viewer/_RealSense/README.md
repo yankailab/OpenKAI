@@ -125,9 +125,13 @@ For a different command port, append
 `?cmdPort=7891` to the URL. Close other command connections before running it,
 since the launch configuration allows one command client.
 
-For the connected D455, run `python3 test/RealSense/hardware_smoke.py`. It tests
-live stream combinations, SDK control readback, point-cloud transport, IMU preview
-validity across capture restarts, rejected changes, saving/reloading and shutdown. It uses a temporary launch configuration
-and restores the controls changed by the test. SDK option validation, preview
-fusion, IMU interpolation and console shutdown also have standalone CMake/CTest projects in
-`test/RealSense`, `test/SLAM` and `test/Protocol`.
+For synthetic preview control, IMU, and configuration regressions, build with
+`WITH_VISION=ON`, `USE_OPENCV=ON`, `USE_REALSENSE=ON`, `BUILD_EXECUTABLE=ON`, and
+`CMAKE_EXPORT_COMPILE_COMMANDS=ON`, then run:
+
+```bash
+python3 test/run_realsense_preview_tests.py build
+```
+
+This suite does not open a camera. Use the live browser check above to inspect a
+connected device.

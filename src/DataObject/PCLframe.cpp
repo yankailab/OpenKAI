@@ -9,14 +9,6 @@
 
 namespace kai
 {
-	PCLframe::PCLframe()
-	{
-	}
-
-	PCLframe::~PCLframe()
-	{
-	}
-
 	void PCLframe::set(const vector<GEOMETRY_POINT> &src, uint64_t tStamp)
 	{
 		std::unique_lock lock(m_sMutex);
@@ -32,11 +24,4 @@ namespace kai
 		dest = m_vElement;
 		return getTstamp();
 	}
-
-	void PCLframe::console(void *pConsole)
-	{
-		NULL_(pConsole);
-		DataObjBase::console(pConsole);
-	}
-
 }

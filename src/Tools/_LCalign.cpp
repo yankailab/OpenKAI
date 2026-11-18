@@ -137,7 +137,7 @@ namespace kai
 
 		m_vCsize = Vector2i(mIn.cols, mIn.rows);
 		vector<GEOMETRY_POINT> input;
-		const uint64_t tStamp = m_pPCLin->get(input);
+		const uint64_t tStamp = m_pPCLin->get(input, 0);
 		IF_(tStamp == 0);
 		vector<GEOMETRY_POINT> output;
 		output.reserve(input.size());
@@ -145,10 +145,7 @@ namespace kai
 		const Isometry3f pose = m_pTf ? m_pTf->getPoseCombinedf() : Isometry3f::Identity();
 		for (const GEOMETRY_POINT &point : input)
 		{
-			IF_CONT(point.m_tStamp == 0);
-
 			Vector3f vP = point.m_vP;
-			//			Vector3f vP(-vPin.y(), -vPin.z(), vPin.x()); // mid360 to cam
 
 			Vector2i vPimg = Vector2i::Zero();
 			IF_CONT(!L2C(m_vCsize, vP, vPimg));
@@ -327,9 +324,6 @@ namespace kai
 			jr["aCdist"] = m_aCdist;
 			jr["aCt"] = m_aCt;
 
-			// Vector3f vCr = Vector3f::Zero();
-			// jr["vCr"] = {vCr, };
-
 			pJb->sendJson(jr);
 		}
 		else if (cmd == "saveCfg")
@@ -350,7 +344,7 @@ namespace kai
 			vector<GEOMETRY_POINT> points;
 			if (m_pPCLout)
 			{
-				m_pPCLout->get(points);
+				m_pPCLout->get(points, 0);
 			}
 			bool bR = m_pPCLout && _PCLfile::savePLY(fPly, points);
 
@@ -363,49 +357,3 @@ namespace kai
 	}
 
 }
-
-// bool _LCalign::pt2Pix(const Vector2i &vSizeImg, const Vector3f &vPi, Vector2i &vPo)
-// {
-// 	// --- 1) LiDAR -> Camera ---
-// 	const auto &R = m_aCr;
-// 	const auto &T = m_aCt;
-// 	const Vector3d vPc(
-// 		R[0] * vPi.x() + R[1] * vPi.y() + R[2] * vPi.z() + T[0],
-// 		R[3] * vPi.x() + R[4] * vPi.y() + R[5] * vPi.z() + T[1],
-// 		R[6] * vPi.x() + R[7] * vPi.y() + R[8] * vPi.z() + T[2]);
-
-// 	// Point must be in front of camera
-// 	IF_F(vPc.z() <= 1e-9);
-
-// 	// --- 2) Normalize ---
-// 	const Vector2d vPnorm(
-// 		vPc.x() / vPc.z(),
-// 		vPc.y() / vPc.z());
-
-// 	// --- 3) Distortion ---
-// 	const double k1 = m_aCdist[0];
-// 	const double k2 = m_aCdist[1];
-// 	const double p1 = m_aCdist[2];
-// 	const double p2 = m_aCdist[3];
-// 	const double k3 = m_aCdist[4];
-// 	const double r2 = vPnorm.x() * vPnorm.x() + vPnorm.y() * vPnorm.y();
-// 	const double r4 = r2 * r2;
-// 	const double r6 = r4 * r2;
-// 	const double radial = 1.0 + k1 * r2 + k2 * r4 + k3 * r6;
-
-// 	const double xDist = vPnorm.x() * radial + 2.0 * p1 * vPnorm.x() * vPnorm.y() + p2 * (r2 + 2.0 * vPnorm.x() * vPnorm.x());
-// 	const double yDist = vPnorm.y() * radial + p1 * (r2 + 2.0 * vPnorm.y() * vPnorm.y()) + 2.0 * p2 * vPnorm.x() * vPnorm.y();
-
-// 	// --- 4) Project to pixel ---
-// 	const double u = m_vCf.x() * xDist + m_vCc.x();
-// 	const double v = m_vCf.y() * yDist + m_vCc.y();
-
-// 	int px = round(u);
-// 	int py = round(v);
-// 	IF_F(px < 0 || px >= vSizeImg.x());
-// 	IF_F(py < 0 || py >= vSizeImg.y());
-
-// 	vPo = Vector2i(px, py);
-
-// 	return true;
-// }

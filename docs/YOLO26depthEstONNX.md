@@ -106,23 +106,6 @@ The worker keeps at most one pending snapshot alongside the frame it is processi
 
 Official model and export documentation: [Ultralytics monocular depth estimation](https://docs.ultralytics.com/tasks/depth/).
 
-## Regression tests
-
-The standalone tests use small synthetic ONNX fixtures and require no camera or Python:
-
-```bash
-cmake -S test/Detector -B /tmp/openkai-yolo26-depth-tests
-cmake --build /tmp/openkai-yolo26-depth-tests -j4
-ctest --test-dir /tmp/openkai-yolo26-depth-tests --output-on-failure
-```
-
-To also exercise all five real models through the C++ inference and DataObject pipeline:
-
-```bash
-/tmp/openkai-yolo26-depth-tests/yolo26_depth --model \
-  /home/kai/dev/models/YOLO26/yolo26{n,s,m,l,x}-depth.onnx
-```
-
 ## CPU performance
 
 The detector enables `ORT_ENABLE_ALL`, including CPU layout optimizations, and defaults to `nThread: 0` for automatic physical-core threading. The example configuration uses this setting. Set a positive count, such as 4 or 8, when sharing the CPU with other busy modules; measure the full pipeline because the best count depends on CPU topology and workload. `thread.FPS` controls inference loop pacing. The separate point-cloud worker wakes immediately when an estimate is ready and can overlap the next inference; its `threadPP.FPS` setting does not introduce a wait or rate limit.
@@ -137,20 +120,12 @@ The following historical results were measured before the asynchronous point-clo
 
 These are local processing benchmarks, not guaranteed live-camera frame rates. The optimized graph/thread sweep changed depth values by at most about 0.00053% relative on the test tensor. Input resolution and model precision are unchanged. Scalar arithmetic also reduced Debug point-cloud generation from about 20.5 ms to 4.2 ms. `_D2RGB` now skips unchanged frames rather than repeatedly colorizing them at the preview thread rate.
 
-The standard thread console truncates FPS to an integer, so the original 507 ms cycle appeared as 1 FPS. Use the standalone benchmark below to measure processing latency independently of loop pacing and display refresh.
+The standard thread console truncates FPS to an integer, so the original 507 ms cycle appeared as 1 FPS. Measure processing latency independently of loop pacing and display refresh.
 
 The [Ultralytics depth benchmark](https://docs.ultralytics.com/tasks/depth/) reports warmed inference alone on a 32-core Xeon Skylake, excluding preprocessing and output work. Its [published ONNX profiler](https://docs.ultralytics.com/reference/utils/benchmarks/#ultralytics.utils.benchmarks.ProfileModels.profile_onnx_model) uses all graph optimizations and eight workers; the depth table does not specify its worker count. See ONNX Runtime's [graph optimization](https://onnxruntime.ai/docs/performance/model-optimizations/graph-optimizations.html) and [CPU threading](https://onnxruntime.ai/docs/performance/tune-performance/threading.html) documentation.
 
-To benchmark the current pipeline without changing the application's existing build mode:
-
-```bash
-cmake -S test/Detector -B /tmp/openkai-depth-perf -DCMAKE_BUILD_TYPE=RelWithDebInfo
-cmake --build /tmp/openkai-depth-perf -j4
-/tmp/openkai-depth-perf/depth_benchmark \
-  --model /home/kai/dev/models/YOLO26/yolo26n-depth.onnx \
-  --threads 0 --graph default --warmup 2 --iterations 10
-```
-
-Use `--threads 8` to compare a bounded pool. `--stage detect` reports `detect_and_enqueue`, the main-thread time through depth publication and cloud handoff, and `detect_to_point_cloud`, the time through publication of the matching asynchronous cloud. The benchmark waits for that cloud outside the main-thread timing before starting each sample; these are per-frame latency measurements, not steady throughput with overlapping frames.
-
-The benchmark also exposes `--graph extended` to compare the previous runtime optimization level. For application throughput beyond the Debug results, build OpenKAI with `-DCMAKE_BUILD_TYPE=RelWithDebInfo`; this retains debug symbols while optimizing the per-pixel C++ work.
+The standalone detector test and benchmark harness used for these historical
+measurements is no longer included in the repository. For application throughput,
+build OpenKAI with `-DCMAKE_BUILD_TYPE=RelWithDebInfo`; this retains debug symbols
+while optimizing the per-pixel work. See [Testing and debugging](6-test.md) for the
+available regression suites.

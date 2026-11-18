@@ -8,7 +8,7 @@ import sys
 import tempfile
 
 sys.dont_write_bytecode = True
-from run_byte_packet_tests import link_command
+from build_helpers import link_command
 
 
 def main():
@@ -18,8 +18,7 @@ def main():
     entry = next(item for item in entries if item["file"].endswith("/src/Universe/Grid/_OctreeGridPCL.cpp"))
     with tempfile.TemporaryDirectory(prefix="openkai-octree-grid-tests-") as temp:
         objects = []
-        sources = ["test/Universe/OctreeGrid.cpp", "test/Universe/OctreeGridBase.cpp", "src/Universe/Grid/_OctreeGridPCL.cpp",
-                   "src/Universe/Grid/_SelectableOctGridPCL.cpp", "src/Universe/Grid/_OctreeGridBase.cpp"]
+        sources = ["test/Universe/OctreeGrid.cpp", "test/Universe/OctreeGridBase.cpp"]
         for index, source in enumerate(sources):
             obj = str(pathlib.Path(temp) / f"test-{index}.o")
             args = shlex.split(entry["command"])
@@ -29,7 +28,7 @@ def main():
                 args[args.index("-MF") + 1] = obj + ".d"
             subprocess.run(args + ["-UNDEBUG"], cwd=entry["directory"], check=True)
             objects.append(obj)
-        args = [arg for arg in link_command(build) if not arg.startswith("-Wl,--dependency-file=")]
+        args = link_command(build)
         main_index = next(i for i, arg in enumerate(args) if arg.endswith("/src/main.cpp.o"))
         args[main_index:main_index + 1] = objects
         executable = str(pathlib.Path(temp) / "octree-grid-tests")

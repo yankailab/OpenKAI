@@ -6,7 +6,7 @@ import shlex
 import subprocess
 import sys
 import tempfile
-from run_byte_packet_tests import link_command
+from build_helpers import link_command
 
 
 def main():
@@ -30,7 +30,7 @@ def main():
             args.extend(["-UNDEBUG"])
             subprocess.run(args, cwd=entry["directory"], check=True)
             objects.append(obj)
-        args = [arg for arg in link_command(build) if not arg.startswith("-Wl,--dependency-file=")]
+        args = link_command(build)
         main_index = next(i for i, arg in enumerate(args) if arg.endswith("/src/main.cpp.o"))
         args[main_index:main_index + 1] = objects
         executable = str(pathlib.Path(temp) / "transform-tests")

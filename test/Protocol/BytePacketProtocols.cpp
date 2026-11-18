@@ -1,6 +1,4 @@
 // Run with ../run_byte_packet_tests.py after building the WITH_PROTOCOL target.
-// WITH_TEST also globs this directory; keep its normal application entry intact.
-#ifdef OPENKAI_BYTE_PACKET_PROTOCOL_TEST
 
 #include "../../src/Protocol/_JSONbase.h"
 #ifdef USE_MAVLINK
@@ -338,5 +336,3 @@ int main(int argc, char **argv)
 		: "DataObjStream and MavlinkStream storage, transport, protocol, and consumer regressions passed\n");
 	return 0;
 }
-
-#endif

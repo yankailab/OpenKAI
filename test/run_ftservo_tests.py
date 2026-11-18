@@ -12,7 +12,7 @@ import subprocess
 import sys
 import tempfile
 
-from run_byte_packet_tests import link_command
+from build_helpers import link_command
 
 
 def main():
@@ -29,7 +29,7 @@ def main():
             args[args.index("-MF") + 1] = obj + ".d"
         args.append("-UNDEBUG")
         subprocess.run(args, cwd=entry["directory"], check=True)
-        args = [arg for arg in link_command(build) if not arg.startswith("-Wl,--dependency-file=")]
+        args = link_command(build)
         index = next(i for i, arg in enumerate(args) if arg.endswith("/src/main.cpp.o"))
         args[index] = obj
         executable = str(Path(temp) / "ftservo-tests")

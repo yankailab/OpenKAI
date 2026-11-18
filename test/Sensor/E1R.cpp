@@ -152,7 +152,6 @@ namespace
             point.intensity = 128;
             point.attribute = 1;
             point.offsetUs = static_cast<uint16_t>(i);
-            point.timestampUs = timestampUs + i;
         }
         return result;
     }
@@ -294,8 +293,9 @@ namespace
         assert(points.size() == 4 && points[2].m_tStamp == 1000000000);
         configure(driver, {{"bUseSensorTime", false}});
         cloud.clear();
-        Access::packet(driver, packet(0, 0, 2), 5000000000ULL);
+        Access::packet(driver, packet(0, UINT64_MAX, 2), 5000000000ULL);
         cloud.get(points, 0);
+        // Host timestamps remain usable when converting the sensor clock would overflow.
         assert(points.size() == 2 && points[0].m_tStamp == 5000000000ULL && points[1].m_tStamp == 5000001000ULL);
         configure(driver, {{"bUseSensorTime", true}});
         cloud.clear();

@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_Universe_Geometry__GeometryViewerBase_H_
 #define OpenKAI_src_Universe_Geometry__GeometryViewerBase_H_
 
-#include "../_TransformRigid.h"
+#include "../../Base/_ModuleBase.h"
 
 namespace kai
 {
@@ -38,7 +38,6 @@ namespace kai
 
 		virtual bool loadConfig(void) override;
 		bool saveConfig(bool bExport) override;
-		virtual bool link(InstanceMgr *pM) override;
 		virtual bool start(void);
 		virtual bool check(void);
 
@@ -62,11 +61,9 @@ namespace kai
 		virtual void updateCamPose(void);
 
 	protected:
-		_TransformRigid *m_pTf = nullptr;
 		// rendering
 		Vector2i m_vWinSize = Vector2i::Zero();
 		bool m_bFullScreen = false;
-		string m_dirSave = "";
 
 		GVIEWER_CAM_PROJ m_camProj;
 		GVIEWER_CAM_POSE m_camPose;

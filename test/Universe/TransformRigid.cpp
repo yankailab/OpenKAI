@@ -468,7 +468,7 @@ namespace
 		assert(std::remove(path) == 0);
 	}
 
-	void testPointCloud(void)
+	void testPointCloud(bool stream)
 	{
 		JsonCfg cfg;
 		cfg.setJson({
@@ -495,7 +495,15 @@ namespace
 		GEOMETRY_POINT point;
 		point.m_vP = Vector3f(1, 0, 0);
 		point.m_tStamp = 1;
-		input->set({point}, 1);
+		if (stream)
+		{
+			assert(input->clear(3));
+			input->add({point}, 1);
+		}
+		else
+		{
+			input->set({point}, 1);
+		}
 		assert(merge.start());
 		for (unsigned i = 0; i < 200 && output->getTstamp() != input->getTstamp(); ++i)
 		{
@@ -510,7 +518,17 @@ namespace
 		assert(!merge.link(&instances));
 		j["merge"].erase("_TransformRigid");
 		assert(merge.link(&instances));
-		input->set({point}, 2);
+		if (stream)
+		{
+			// Wrap the ring with an invalid return between valid points. The
+			// merged frame must preserve their arrival order, not slot order.
+			input->add({{{2, 0, 0}, {0, 1, 0}, 2},
+				{{0, 0, 0}, {0, 0, 0}, 0}, {{3, 0, 0}, {0, 0, 1}, 3}}, 2);
+		}
+		else
+		{
+			input->set({point}, 2);
+		}
 		assert(merge.start());
 		for (unsigned i = 0; i < 200 && output->getTstamp() != input->getTstamp(); ++i)
 		{
@@ -518,7 +536,18 @@ namespace
 		}
 		merge.join();
 		output->get(points);
-		assert(points[0].m_vP.isApprox(point.m_vP));
+		if (stream)
+		{
+			assert(points.size() == 2);
+			assert(points[0].m_vP.isApprox(Vector3f(2, 0, 0)));
+			assert(points[1].m_vP.isApprox(Vector3f(3, 0, 0)));
+			assert(points[0].m_tStamp == 2 && points[1].m_tStamp == 3);
+		}
+		else
+		{
+			assert(points.size() == 1);
+			assert(points[0].m_vP.isApprox(point.m_vP));
+		}
 	}
 }
 
@@ -535,7 +564,8 @@ int main()
 	testTree(true);
 	testInvalidTrees();
 	testWorker();
-	testPointCloud();
+	testPointCloud(false);
+	testPointCloud(true);
 	testFileLinkOrder();
 	testConsumerConfigIsolation<_PCmerge>("_PCmerge", {{"rVoxel", 0.25}});
 #ifdef WITH_SLAM

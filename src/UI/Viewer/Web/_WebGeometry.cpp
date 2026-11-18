@@ -1,5 +1,6 @@
 #include "_WebGeometry.h"
 #include "WebAssets.h"
+#include "../../_Console.h"
 #include "../../../Instance/InstanceMgr.h"
 #include "../../../IO/WebSocketStream.h"
 #include <algorithm>

@@ -43,7 +43,11 @@ Each changed stream timestamp replaces the complete point or line frame,
 including empty publications that clear the display. `dTexpire` filters individual
 record timestamps in nanoseconds; zero disables expiry. The backend copies
 source records with `get` and reuses those copies and encoded data until the
-stream timestamp changes or records expire. Equal timestamps cannot signal a
+stream timestamp changes or records expire. LiDAR snapshots include the ring's
+physical slots; the viewer omits zero timestamps and nonfinite positions before
+applying its rendering cap in storage order. `nBuf` controls point retention.
+Expiry compares capture times with backend monotonic time, so keep `dTexpire`
+zero when a sensor uses a different clock. Equal timestamps cannot signal a
 changed payload. `bFrame` and module-based geometry sources are no longer used.
 
 The viewer uses the same [version-7 protocol](../../../docs/3D/WebViewer3D.md#binary-protocol-version-7)

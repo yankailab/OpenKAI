@@ -41,7 +41,7 @@ namespace kai
         static void receiveImu(_Livox1 &driver) { driver.receive(_Livox1::Imu); }
         static void service(_Livox1 &driver, uint64_t now) { driver.service(now); }
         static void timers(_Livox1 &driver, uint64_t now)
-        { driver.m_lastRx = driver.m_lastHeartbeat = driver.m_lastHandshake = now; }
+        { driver.m_lastRx = driver.m_lastHeartbeat = now; }
         static vector<vector<uint8_t>> pending(_Livox1 &driver)
         {
             vector<vector<uint8_t>> result;

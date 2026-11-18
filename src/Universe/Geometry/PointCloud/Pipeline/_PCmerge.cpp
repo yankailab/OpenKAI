@@ -154,7 +154,7 @@ namespace kai
 		{
 			if (m_vpPCLin[i]->getTstamp() != m_vInputStamps[i])
 			{
-				const uint64_t inputStamp = m_vpPCLin[i]->get(m_vInputPoints[i]);
+				const uint64_t inputStamp = m_vpPCLin[i]->get(m_vInputPoints[i], 0);
 				changed = changed || inputStamp != m_vInputStamps[i];
 				m_vInputStamps[i] = inputStamp;
 			}
@@ -175,11 +175,6 @@ namespace kai
 		{
 			for (const GEOMETRY_POINT &point : input)
 			{
-				if (point.m_tStamp == 0)
-				{
-					continue;
-				}
-
 				GEOMETRY_POINT transformed = point;
 				transformed.m_vP = pose * point.m_vP;
 				if (m_rVoxel == 0.0f)

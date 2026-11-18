@@ -1,5 +1,6 @@
 #include "_WebSelectableOctGrid.h"
 #include "WebAssets.h"
+#include "../../_Console.h"
 #include "../../../Instance/InstanceMgr.h"
 #include "../../../IO/WebSocketStream.h"
 #include <algorithm>

@@ -184,10 +184,12 @@ namespace airy
     struct Point
     {
         float x = 0, y = 0, z = 0, range = 0;
-        uint8_t intensity = 0, feature = 0, channel = 0, block = 0;
-        uint16_t ring = 0, blockAzimuth = 0;
+        uint8_t intensity = 0;
+        uint8_t feature = 0;
+        uint8_t channel = 0;
+        uint16_t ring = 0;
+        // The driver applies these offsets to the selected sensor or host clock.
         uint32_t offsetNs = 0;
-        uint64_t timestampNs = 0;
     };
     struct Msop
     {
@@ -198,8 +200,6 @@ namespace airy
         bool dual = false;
         float temperature = 0, topTemperature = 0;
         std::array<Point, kPointCount> points{};
-        std::array<uint16_t, kBlockCount> azimuths{};
-        std::array<uint32_t, kBlockCount> blockOffsetsNs{};
     };
 
     inline bool validMsopHeader(const uint8_t *p, std::size_t size)
@@ -244,12 +244,13 @@ namespace airy
         decoded.dual = decoded.returnMode == 3;
         decoded.temperature = temperature(p + 38); decoded.topTemperature = temperature(p + 40);
         if (!timestamp(p + 20, decoded.timestampNs)) return fail(error, "Invalid Airy MSOP timestamp");
+        std::array<uint16_t, kBlockCount> azimuths{};
         for (std::size_t block = 0; block < kBlockCount; ++block)
         {
             const uint8_t *b = p + 42 + block * 148;
             if (b[0] != 0xff || b[1] != 0xee || u16(b + 2) >= 36000)
                 return fail(error, "Invalid Airy block marker or azimuth");
-            decoded.azimuths[block] = u16(b + 2);
+            azimuths[block] = u16(b + 2);
         }
 
         const unsigned channelBlocks = decoded.model == 2 ? 2 : 1;
@@ -268,7 +269,7 @@ namespace airy
             uint64_t elapsed = kFiringPeriodNs;
             if (group + groupBlocks < kBlockCount)
             {
-                step = (int(decoded.azimuths[group + groupBlocks]) - decoded.azimuths[group] + 36000) % 36000;
+                step = (int(azimuths[group + groupBlocks]) - azimuths[group] + 36000) % 36000;
                 // Cropped FOV packets can cross the skipped angular sector.
                 // The next firing resumes after the configured blind interval.
                 if (step > 100)
@@ -280,27 +281,26 @@ namespace airy
             for (unsigned local = 0; local < groupBlocks; ++local)
             {
                 const unsigned block = group + local;
-                if (groupOffset > UINT32_MAX) return fail(error, "Airy block time offset overflow");
-                decoded.blockOffsetsNs[block] = static_cast<uint32_t>(groupOffset);
                 for (unsigned lane = 0; lane < 48; ++lane)
                 {
                     const unsigned channel = lane + (decoded.model == 2 && block % 2 ? 48 : 0);
                     const uint32_t firing = firingOffsetNs(decoded.model, calibration.installMode, channel);
                     const uint64_t offset = groupOffset + firing;
-                    if (offset > UINT32_MAX || decoded.timestampNs > UINT64_MAX - offset)
-                        return fail(error, "Airy point timestamp overflow");
+                    if (offset > UINT32_MAX)
+                    {
+                        return fail(error, "Airy point time offset overflow");
+                    }
                     const uint8_t *raw = p + 42 + block * 148 + 4 + lane * 3;
                     Point &point = decoded.points[block * 48 + lane];
                     const uint16_t packedDistance = u16(raw);
                     point.range = (packedDistance & 0x3fff) * 0.005f;
                     point.intensity = raw[2]; point.feature = uint8_t(packedDistance >> 14);
-                    point.channel = static_cast<uint8_t>(channel); point.block = static_cast<uint8_t>(block);
-                    point.ring = calibration.rings[channel]; point.blockAzimuth = decoded.azimuths[block];
+                    point.channel = static_cast<uint8_t>(channel);
+                    point.ring = calibration.rings[channel];
                     point.offsetNs = static_cast<uint32_t>(offset);
-                    point.timestampNs = decoded.timestampNs + offset;
                     // Encoder angles increase clockwise. Keep the sensor's
                     // right-handed XYZ frame, including its optical-center offset.
-                    const int encoder = decoded.azimuths[block] + static_cast<int>(double(step) * firing / kFiringPeriodNs);
+                    const int encoder = azimuths[block] + static_cast<int>(double(step) * firing / kFiringPeriodNs);
                     const double azimuth = (encoder + calibration.horizontal[channel]) * kPi / 18000.0;
                     const double elevation = calibration.vertical[channel] * kPi / 18000.0;
                     const double encoderRadians = encoder * kPi / 18000.0;

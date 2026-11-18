@@ -153,7 +153,7 @@ namespace kai
         if (m_started) return true;
         if (!check()) return false;
         m_state = State::Discovering;
-        m_lastRx = m_lastHeartbeat = m_lastHandshake = m_lastIMUrx = 0;
+        m_lastRx = m_lastHeartbeat = m_lastIMUrx = 0;
         m_lvxDevType = livox1::Unknown; m_firmwareKnown = false; m_workState = 0;
         resetClocks();
         m_detectedSN.clear(); m_observed = json::object();
@@ -282,7 +282,8 @@ namespace kai
     {
         m_state = State::Discovering;
         m_pending.clear(); m_firmwareKnown = false; m_configFailed = false; m_samplingSent = false;
-        m_lastRx = m_lastHeartbeat = m_lastHandshake = 0; m_workState = 0;
+        m_lastRx = m_lastHeartbeat = 0;
+        m_workState = 0;
         m_lastError = reason;
         if (m_pPCLout) m_pPCLout->clear();
         resetClocks();
@@ -351,7 +352,7 @@ namespace kai
         livox1::put16(payload.data() + 6, m_hostPortCmd);
         if (payload.size() == 10) livox1::put16(payload.data() + 8, m_lvxCfg.m_hostPortIMU);
         m_state = State::Handshaking;
-        m_lastRx = m_lastHandshake = getTns();
+        m_lastRx = getTns();
         sendCommand(0, livox1::Handshake, payload);
     }
 

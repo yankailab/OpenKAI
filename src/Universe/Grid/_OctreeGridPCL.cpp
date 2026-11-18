@@ -309,7 +309,7 @@ namespace kai
 			{
 				continue;
 			}
-			const uint64_t stamp = input.m_pFramein->get(m_vInputPoints);
+			const uint64_t stamp = input.m_pFramein->get(m_vInputPoints, tExpire);
 			if (stamp == input.m_tStamp)
 			{
 				continue;
@@ -319,7 +319,7 @@ namespace kai
 			for (const GEOMETRY_POINT &point : m_vInputPoints)
 			{
 				const float *position = point.m_vP.data();
-				if (bExpired(point.m_tStamp, tExpire) || !std::isfinite(position[0]) ||
+				if (!std::isfinite(position[0]) ||
 					!std::isfinite(position[1]) || !std::isfinite(position[2]))
 				{
 					continue;

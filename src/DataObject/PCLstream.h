@@ -25,11 +25,12 @@ namespace kai
 		PCLstream();
 		virtual ~PCLstream() = default;
 		bool loadConfig() override;
-		bool saveConfig(bool bExport = false) override;
+		bool saveConfig(bool bExport) override;
 
-		// Zero keeps the current capacity. Clearing does not change point clocks.
+		// Zero keeps the current capacity; all slots reset to invalid points.
 		bool clear(size_t nBuf = 0);
 		// The cursor is a point capture timestamp, not this object's update stamp.
+		// Require it explicitly so PCLframe's whole-buffer get remains unambiguous.
 		uint64_t get(vector<GEOMETRY_POINT> &dest, uint64_t tStampFrom);
 
 	protected:
