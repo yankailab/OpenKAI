@@ -10,7 +10,7 @@ namespace kai
 {
     struct Livox1TestAccess
     {
-        static void outputs(_Livox1 &driver, PCLframe &cloud, IMUstream &imu)
+        static void outputs(_Livox1 &driver, PCLstream &cloud, IMUstream &imu)
         { driver.m_pPCLout = &cloud; driver.m_pIMUout = &imu; }
         static void transform(_Livox1 &driver, _TransformRigid &transform) { driver.m_pTf = &transform; }
         static bool config(_Livox1 &driver, const json &patch, json &errors, bool live = true)
@@ -60,7 +60,7 @@ namespace kai
                 {"discovering", driver.m_state == _Livox1::State::Discovering},
                 {"failed", driver.m_configFailed}, {"pending", driver.m_pending.size()},
                 {"pointPackets", driver.m_pointPackets}, {"imuSamples", driver.m_imuSamples},
-                {"framePoints", driver.m_vFramePoints.size()}, {"invalidPackets", driver.m_invalidPackets},
+                {"invalidPackets", driver.m_invalidPackets},
                 {"commandRetries", driver.m_commandRetries}, {"commandErrors", driver.m_commandErrors},
                 {"observed", driver.m_observed}};
         }
@@ -124,7 +124,7 @@ namespace
     struct DriverFixture
     {
         JsonCfg config;
-        PCLframe cloud;
+        PCLstream cloud;
         IMUstream imu;
         _Livox1 driver;
         uint16_t broadcastPort, commandPort, pointPort, imuPort;
@@ -356,19 +356,38 @@ namespace
 
     void testOutputAdapters()
     {
-        PCLframe cloud; IMUstream imu; _Livox1 driver; _TransformRigid transform;
+        PCLstream cloud; IMUstream imu; _Livox1 driver; _TransformRigid transform;
         Access::outputs(driver, cloud, imu); Access::model(driver); Access::connected(driver);
         transform.setTranslation(5, -3, 2); Access::transform(driver, transform);
         const uint64_t stamp = 10000000000ULL;
-        Access::points(driver, singlePoint(stamp));
-        Access::points(driver, singlePoint(stamp)); // duplicates never enter the output frame
-        Access::points(driver, singlePoint(stamp - 100));
-        Access::points(driver, singlePoint(stamp + 100000000));
         vector<GEOMETRY_POINT> actual;
-        assert(cloud.get(actual) == stamp && actual.size() == 1);
+        const uint64_t before = getTns();
+        Access::points(driver, singlePoint(stamp));
+        assert(cloud.get(actual, 0) >= before && actual.size() == 1); // first packet is published immediately
+        assert(cloud.get(actual, 0) != stamp); // stream freshness uses the host clock
         assert(actual[0].m_tStamp == stamp);
         assert((actual[0].m_vP - Vector3f(6, -3, 2)).norm() < 1e-5f);
         assert(actual[0].m_vC.isApprox(Vector3f::Ones()));
+        cloud.clear(3); // retained capacity belongs to the shared output stream
+        Access::points(driver, singlePoint(stamp));
+        Access::points(driver, singlePoint(stamp)); // duplicate timestamps remain available
+        Access::points(driver, singlePoint(stamp - 100)); // reordered packets remain available
+        cloud.get(actual, 0);
+        assert(actual.size() == 3 && actual[0].m_tStamp == stamp && actual[1].m_tStamp == stamp);
+        assert(actual[2].m_tStamp == stamp - 100);
+        Access::points(driver, singlePoint(stamp + 100000000));
+        cloud.get(actual, 0);
+        assert(actual.size() == 3 && actual[0].m_tStamp == stamp && actual[1].m_tStamp == stamp - 100);
+        assert(actual[2].m_tStamp == stamp + 100000000);
+        cloud.get(actual, stamp);
+        assert(actual.size() == 1 && actual[0].m_tStamp == stamp + 100000000);
+        const auto invalidBefore = Access::transport(driver).at("invalidPackets");
+        Access::points(driver, singlePoint(0)); // a zero timestamp still reaches the ring and evicts the oldest point
+        cloud.get(actual, 0);
+        assert(actual.size() == 2 && actual[0].m_tStamp == stamp - 100);
+        assert(actual[1].m_tStamp == stamp + 100000000);
+        assert(Access::transport(driver).at("pointPackets") == 6);
+        assert(Access::transport(driver).at("invalidPackets") == invalidBefore);
         Access::imu(driver, imuPacket(stamp));
         Access::imu(driver, imuPacket(stamp));
         deque<IMUstream::IMU_DATA> gyro, acc;
@@ -388,7 +407,7 @@ namespace
         imu.get(gyro, acc); assert(gyro.size() == 3);
         assert(Access::config(driver, {{"lvxIMUdataEn", 0}}, errors));
         imu.get(gyro, acc); assert(gyro.empty() && acc.empty());
-        driver.clear(); cloud.get(actual); assert(actual.empty());
+        driver.clear(); cloud.get(actual, 0); assert(actual.empty());
     }
 
     void testAtomicConfiguration()
@@ -397,13 +416,13 @@ namespace
         auto &driver = fixture.driver; Access::model(driver);
         const auto before = Access::values(driver); json errors;
         const json invalid[] = {
-            {{"lvxReturnMode", 4}, {"frameDurationMs", 25}},
+            {{"lvxReturnMode", 4}, {"bReflectivity", false}},
             {{"lvxCoordinate", 2}}, {{"lvxScanPattern", -1}}, {{"lvxWorkMode", 0}},
             {{"lvxIP", "239.1.2.3"}}, {{"lvxHostIP", "not-an-ip"}},
             {{"lvxHostPortPCL", fixture.imuPort}}, {{"lvxPortCmd", 0}},
             {{"lvxHostPortIMU", 65536}}, {{"receiveBufferBytes", -1}},
             {{"vRangeD", {10, 1}}}, {{"vColorDefault", {1, "bad", 1}}},
-            {{"bIMUpreview", 1}}, {{"bIMUstab", true}, {"frameDurationMs", 25}}
+            {{"bIMUpreview", 1}}, {{"bIMUstab", true}, {"bReflectivity", false}}
         };
         for (const auto &patch : invalid)
         {
@@ -413,7 +432,7 @@ namespace
         assert(!Access::config(driver, {{"lvxHostIP", "127.0.0.3"}}, errors));
         assert(Access::values(driver) == before);
         assert(Access::config(driver, {{"lvxReturnMode", 3}, {"lvxScanPattern", 1},
-            {"frameDurationMs", 25}, {"bIMUpreview", true}}, errors));
+            {"bReflectivity", false}, {"bIMUpreview", true}}, errors));
         assert(Access::values(driver).at("lvxReturnMode") == 3);
         assert(driver.saveConfig(false));
         _Livox1 restored; restored.BASE::setConfig(&fixture.config, fixture.config.getJson());
@@ -632,7 +651,8 @@ namespace
         Access::receivePoints(driver);
         assert(Access::transport(driver).at("pointPackets") == 2);
         vector<GEOMETRY_POINT> points;
-        assert(fixture.cloud.get(points) == stamp && points.size() == 1);
+        assert(fixture.cloud.get(points, 0) > 0 && points.size() == 2);
+        assert(points[0].m_tStamp == stamp && points[1].m_tStamp == stamp + 100000000);
         assert(points[0].m_vP.isApprox(Vector3f(1, 0, 0)));
         other.send(imuPacket(stamp), fixture.imuPort);
         sensor.send(singlePoint(stamp), fixture.imuPort);
@@ -645,10 +665,10 @@ namespace
         const auto now = getTns(); Access::timers(driver, now);
         Access::service(driver, now + 2 * NSEC_SEC + 1);
         assert(Access::transport(driver).at("discovering") == true);
-        assert(Access::pending(driver).empty() && Access::transport(driver).at("framePoints") == 0);
+        assert(Access::pending(driver).empty());
         deque<IMUstream::IMU_DATA> gyro, acc; fixture.imu.get(gyro, acc);
         assert(gyro.empty() && acc.empty());
-        fixture.cloud.get(points); assert(points.empty());
+        fixture.cloud.get(points, 0); assert(points.empty());
         sensor.send(broadcast(), fixture.broadcastPort); Access::receiveBroadcast(driver);
         const auto newHandshake = sensor.receive();
         assert(newHandshake.bytes[10] == 1);

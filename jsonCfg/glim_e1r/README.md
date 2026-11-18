@@ -55,3 +55,7 @@ cmake --build build --parallel 4
 update their respective modules in `jsonCfg/GLIM_E1R.json`. Profile files in this
 folder supply the GLIM defaults; restart OpenKAI after editing them. Point-cloud
 exports go to `data/glim_e1r/`.
+
+The E1R driver appends decoded packets immediately to `PCLstreamOut`. Retention
+belongs to `e1rPoints.nBuf` (50,000 points); GLIM uses `scanDurationMs: 100` to
+select recent, previously unconsumed points from that rolling snapshot.

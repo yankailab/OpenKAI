@@ -31,6 +31,7 @@ namespace kai
 		ADD_DATA_STREAM(MavlinkStream);
 #endif
 		ADD_DATA_STREAM(PCLframe);
+		ADD_DATA_STREAM(PCLstream);
 		ADD_DATA_STREAM(PCLmap);
 		ADD_DATA_STREAM(SharedMemoryFrame);
 		ADD_DATA_STREAM(UGLIDcellStream);

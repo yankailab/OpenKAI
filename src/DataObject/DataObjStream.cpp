@@ -10,6 +10,7 @@
 #include "BytePacketStream.h"
 #include "CANframeStream.h"
 #include "UGLIDcellStream.h"
+#include "PCLstream.h"
 
 namespace kai
 {
@@ -71,5 +72,6 @@ namespace kai
 	template class DataObjStream<BYTE_PACKET>;
 	template class DataObjStream<CAN_FRAME>;
 	template class DataObjStream<UGLID_CELL_T>;
+	template class DataObjStream<GEOMETRY_POINT>;
 
 }

@@ -9,7 +9,7 @@ cmake --build build-glim -j4
 
 Use `-DCMAKE_PREFIX_PATH=/your/install/prefix` for a nonstandard installation. `glim::glim` supplies GTSAM, gtsam_points, Eigen, OpenMP, spdlog and Boost dependencies. GLIM is only required when both `WITH_SLAM` and `USE_GLIM` are enabled. SLAM also builds its shared navigation, geometry, and DataObject dependencies when their wider module groups are disabled.
 
-Include `jsonCfg/_GLIM.json` using the application's `APP.vInclude`, or copy its SLAM module and DataObject declarations into your camera configuration. Connect the camera's `PCLframeOut` output to `slamPoints` and its IMU output to `slamIMU` (`IMUstreamOut` for RGBD cameras and Livox). SLAM reads them through `PCLframeIn` and `IMUstreamIn`. The example declares input streams; it needs a sensor producer to populate them. Paths are relative to the process working directory. See [Geometry DataObjects](DataStreamGeometry.md) for the complete configuration mapping.
+Include `jsonCfg/_GLIM.json` using the application's `APP.vInclude`, or copy its SLAM module and DataObject declarations into your camera configuration. Connect the camera's `PCLframeOut` (or LiDAR's `PCLstreamOut`) output to the `PCLframe` object `slamPoints` and its IMU output to `slamIMU` (`IMUstreamOut` for RGBD cameras and Livox). SLAM reads them through `PCLframeIn` and `IMUstreamIn`. The example declares input streams; it needs a sensor producer to populate them. Paths are relative to the process working directory. See [Geometry DataObjects](DataStreamGeometry.md) for the complete configuration mapping.
 
 `jsonCfg/glim_orbbec` contains CPU configuration templates adapted from GLIM 1.2.2, with its MIT license. You can also point `configPath` at a copy of `/home/kai/dev/glim/config`. In that copy, select the CPU odometry, sub-mapping and global-mapping JSON files in `config.json`; the upstream configuration selects GPU modules by default. Every `_GLIM` instance in one process must use the same configuration directory because GLIM configuration is global. Restart the process after editing those profile files. The supported web controls use per-instance constructor parameters and apply on the next session without replacing global configuration.
 
@@ -21,7 +21,21 @@ The RealSense launch captures native depth at 640×480/30 Hz, acceleration at 25
 
 `glim_realSense/config_sensors.json` contains the attached D455's factory IMU-to-depth transform, queried through librealsense: translation `[0.03022, -0.0074, -0.01602]` meters and identity quaternion. Both acceleration and gyro profiles reported this transform. Verify `T_lidar_imu` against the SDK calibration when using another device; this is a D455 profile, not a universal RealSense transform. The raw SDK motion vectors already have the depth optical axis orientation; retain the IMU origin offset in GLIM rather than rotating the vectors again.
 
-The GLIM adapter treats each cloud as a single exposure, with zero per-point time offsets. It suits depth-camera clouds; it does not deskew a scanning LiDAR. Producers copy complete vectors into `PCLframe::set(points, sensorTimestampNs)`. Consumers use `get(points)` to copy a cloud and its matching timestamp. `getTstamp()` allows idle polls to skip that copy. There are no shared DataObject snapshots or revision counters; updates with the same timestamp are indistinguishable.
+The GLIM adapter follows `global_shutter_lidar` in its sensor profile: depth
+cameras use zero per-point offsets, while scanning LiDAR profiles use capture
+timestamps for deskewing. Camera producers replace whole snapshots with
+`PCLframe::set`; LiDAR producers append packets through `PCLstream::add` into a
+`PCLframe` destination. SLAM reads retained points, validates them, and advances
+its own point-time cursor so overlapping snapshots are not replayed. The stream
+update timestamp is a change notification, separate from point capture time.
+
+`scanDurationMs` defaults to zero (unpaced snapshot reads). The LiDAR profiles
+set it to 100: this limits polling to approximately 10 Hz and selects new points
+from the latest 100 ms of capture time. Retention is separately configured by
+`nBuf` on the destination data object. SLAM derives each scan's start from its
+earliest selected point. A backwards sensor-clock jump of at least one second
+requires restarting tracking; retained points from the previous epoch are
+excluded when starting a new session.
 
 `IMUstream` accepts `addGyro(value, timestampNs)` and
 `addAcc(value, timestampNs)`. `get(gyro, acc)` copies the
@@ -39,7 +53,7 @@ The Orbbec CPU odometry example requires an IMU. Run `build/OpenKAI jsonCfg/GLIM
 
 Scepter and Orbbec SDKs can be enabled in the same build. GLIM's spdlog must precede the Scepter SDK in the link order because the SDK exports an incompatible bundled spdlog; CMake declares the explicit dependency to preserve that order. Camera/SLAM saved controls for Scepter live under `jsonCfg/glim_scepter`, and its PLY output defaults to `data/glim_scepter`. The Orbbec settings remain separate. Sensor rates and preprocessing parameters still need tuning for the scene and camera.
 
-`_SLAMbase` owns DataObject linking, timestamp tracking, the worker, pose publication and the session lifecycle. `_GLIM` owns preprocessing, odometry, submaps and global mapping. Processing is sequential on the OpenKAI worker; if processing falls behind, it takes the latest completed cloud. Reading a new cloud copies its points into the consumer. SLAM rejects empty clouds and non-increasing capture timestamps without advancing the estimator clock. IMU-required odometry waits for a paired IMU sample later than the cloud timestamp.
+`_SLAMbase` owns DataObject linking, timestamp tracking, the worker, pose publication and the session lifecycle. `_GLIM` owns preprocessing, odometry, submaps and global mapping. Processing is sequential on the OpenKAI worker; if processing falls behind, it takes the latest retained point window. Reading a new cloud copies its points into the consumer. SLAM rejects empty clouds and non-increasing capture timestamps without advancing the estimator clock. IMU-required odometry waits for a paired IMU sample later than the cloud timestamp.
 
 - `start()` starts the worker and, by default, a session. Set `bAutoStart: false` to start tracking explicitly.
 - `startTracking()` creates a new session, or returns success if one is already active. Initialization may need several seconds of IMU and point-cloud data.
@@ -56,9 +70,7 @@ Hz), interpolation, callback delays, duplicate samples, independent readers,
 acceleration outages, and capture-clock resets:
 
 ```sh
-cmake -S test/SLAM -B /tmp/openkai-slam-tests
-cmake --build /tmp/openkai-slam-tests --parallel 4
-ctest --test-dir /tmp/openkai-slam-tests --output-on-failure
+python3 test/run_glim_timing_tests.py build
 ```
 
 These checks do not validate real GLIM estimation, live sensor calibration, or

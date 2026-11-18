@@ -117,17 +117,17 @@ def run(args, temp):
             result['cloud'] = dict(frames=len(clouds), counts=clouds, seconds=time.monotonic()-start)
             points.close()
             points = None
-            for invalid in [{'frameDurationMs': 0}, {'lvxIMUdataEn': 7}, {'unexpectedSetting': 1}]:
+            for invalid in [{'tOutSec': 0}, {'lvxIMUdataEn': 7}, {'unexpectedSetting': 1}]:
                 rejected = commands.request('setConfig', config=invalid)
                 assert not rejected.get('bSuccess'), rejected
-            changed = 50 if original['frameDurationMs'] != 50 else 100
-            patched = success(commands.request('setConfig', config={'frameDurationMs': changed}))
-            assert patched['config']['frameDurationMs'] == changed, patched
+            changed = 50 if original['tOutSec'] != 50 else 100
+            patched = success(commands.request('setConfig', config={'tOutSec': changed}))
+            assert patched['config']['tOutSec'] == changed, patched
             saved = success(commands.request('saveConfig'))
             on_disk = json.loads(launch.read_text())
-            assert on_disk['Lvx1']['frameDurationMs'] == changed, on_disk['Lvx1']
+            assert on_disk['Lvx1']['tOutSec'] == changed, on_disk['Lvx1']
             assert on_disk['wsServer']['port'] == cmd_port
-            success(commands.request('setConfig', config={'frameDurationMs': original['frameDurationMs']}))
+            success(commands.request('setConfig', config={'tOutSec': original['tOutSec']}))
             success(commands.request('setConfig', config={'lvxIMUdataEn': 0}))
             eventually(lambda: commands.request('getIMU'), lambda r: not r.get('enabled') and not r.get('available'))
             success(commands.request('setConfig', config={'lvxIMUdataEn': original['lvxIMUdataEn']}))
@@ -138,9 +138,9 @@ def run(args, temp):
                 applied = eventually(lambda: commands.request('getConfig'),
                                      lambda r: r.get('status', {}).get('configApplied') and
                                      r.get('status', {}).get('observed', {}).get('lvxPCLdataType') == data_type)
-                count_before = applied['status']['frames']
+                count_before = applied['status']['pointPackets']
                 eventually(lambda: commands.request('getConfig'),
-                           lambda r: r.get('status', {}).get('frames', 0) >= count_before + 3)
+                           lambda r: r.get('status', {}).get('pointPackets', 0) >= count_before + 3)
                 points = helpers.WebSocket(f'ws://127.0.0.1:{geometry_port}/stream/points', timeout=15)
                 assert json.loads(points.receive())['version'] == 7
                 points.send('start')
@@ -178,7 +178,7 @@ def run(args, temp):
             if commands:
                 try:
                     if original:
-                        commands.request('setConfig', config={k: original[k] for k in ['frameDurationMs', 'lvxIMUdataEn', 'lvxPCLdataType']})
+                        commands.request('setConfig', config={k: original[k] for k in ['tOutSec', 'lvxIMUdataEn', 'lvxPCLdataType']})
                     if args.glim:
                         commands.request('stop', module='GLIM')
                 except (OSError, EOFError, TimeoutError) as error:

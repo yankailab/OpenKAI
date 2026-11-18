@@ -55,8 +55,10 @@ correspondence limit and eight optimizer iterations. These are starting values
 to tune for the scene and motion, not a measured Airy noise model. Slow motion
 and overlapping scans with varied geometry help tracking.
 
-The sensor/viewer buffers allow 200,000 points per frame, covering the manual's
-nominal dual-return rate of about 171,000 points per 10 Hz scan. `nMapPoints`
+The `airyPoints` data object's `nBuf` retains 200,000 points, covering the manual's
+nominal dual-return rate of about 171,000 points per 10 Hz scan. The driver adds
+packets immediately; GLIM selects recent, previously unconsumed points using
+`scanDurationMs: 100`. The viewer reads the rolling `PCLframe` snapshot. `nMapPoints`
 limits the optional flat point-cloud output to 400,000 points; the accumulated
 submaps streamed by `_WebGLIM` are not capped by that value. Map updates are
 published every 200 ms.

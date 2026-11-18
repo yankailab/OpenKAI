@@ -6,6 +6,8 @@
  */
 
 #include "_SLAMbase.h"
+#include <algorithm>
+#include <limits>
 #include <stdexcept>
 
 namespace kai
@@ -27,6 +29,9 @@ namespace kai
 		IF_F(!_NavBase::loadConfig());
 		const json &j = *m_pJ;
 		jKv(j, "bAutoStart", m_bAutoStart);
+		jKv(j, "scanDurationMs", m_scanDurationMs);
+		IF_Le_F(m_scanDurationMs > std::numeric_limits<uint64_t>::max() / NSEC_MSEC,
+			"SLAM scanDurationMs exceeds the supported duration");
 		return true;
 	}
 
@@ -36,6 +41,7 @@ namespace kai
 
 		json &j = *m_pJ;
 		j["bAutoStart"] = m_bAutoStart;
+		j["scanDurationMs"] = m_scanDurationMs;
 
 		IF__(!bExport, true);
 		return m_pJcfg->saveToFile();
@@ -88,6 +94,7 @@ namespace kai
 		IF_F(!check());
 		m_tStampLastFrame = 0;
 		m_tPointInput = 0;
+		m_tPointRead = m_tPointCursor = m_tPointNewest = 0;
 		m_dqGyro.clear();
 		m_dqAcc.clear();
 		m_bIMUbatch = false;
@@ -154,6 +161,7 @@ namespace kai
 		m_tStampLastFrame = 0;
 		m_tStampLastIMU = 0;
 		m_tPointInput = 0;
+		m_tPointRead = m_tPointCursor = m_tPointNewest = 0;
 		m_dqGyro.clear();
 		m_dqAcc.clear();
 		m_bIMUbatch = false;
@@ -176,29 +184,74 @@ namespace kai
 		{
 			return false;
 		}
-		stamp = m_pPCLin->get(points);
-		if (stamp == m_tPointInput)
+		const uint64_t now = getTns();
+		const uint64_t duration = m_scanDurationMs * NSEC_MSEC;
+		if (m_tPointRead && now >= m_tPointRead && now - m_tPointRead < duration)
 		{
 			return false;
 		}
-		m_tPointInput = stamp;
-		
-		// An empty frame is a clear, not a sensor measurement. Its host-clock
-		// timestamp must not advance the estimator's capture clock.
+		// Epoch detection below needs retained points in arrival order.
+		const uint64_t published = m_pPCLin->get(points, 0);
+		if (published == m_tPointInput)
+		{
+			return false;
+		}
+		m_tPointInput = published;
+		m_tPointRead = now;
+		points.erase(std::remove_if(points.begin(), points.end(),
+			[this](const GEOMETRY_POINT &point) { return !validInputPoint(point); }), points.end());
+
+		// Clears and invalid samples cannot advance the estimator's capture clock.
 		if (points.empty())
 		{
 			return false;
 		}
-		if (stamp < m_tStampLastFrame)
+		// Retained history can still contain the previous epoch's larger stamps.
+		// Inspect the newest arrival before sorting; allow short packet reordering.
+		const uint64_t newest = points.back().m_tStamp;
+		if (newest < m_tPointNewest && m_tPointNewest - newest >= NSEC_SEC)
 		{
 			throw std::runtime_error("Point-cloud clock reset; restart SLAM tracking");
 		}
-		if (stamp == m_tStampLastFrame)
+		m_tPointNewest = newest;
+		// A restarted session may see both epochs in the ring until the old
+		// entries are overwritten. Only the suffix after the last reset belongs
+		// to the current sensor epoch.
+		auto epoch = points.begin();
+		for (auto point = points.begin() + 1; point != points.end(); ++point)
+		{
+			const uint64_t previous = (point - 1)->m_tStamp;
+			if (point->m_tStamp < previous && previous - point->m_tStamp >= NSEC_SEC)
+			{
+				epoch = point;
+			}
+		}
+		points.erase(points.begin(), epoch);
+		const uint64_t latest = std::max_element(points.begin(), points.end(),
+			[](const GEOMETRY_POINT &a, const GEOMETRY_POINT &b) { return a.m_tStamp < b.m_tStamp; })->m_tStamp;
+		const uint64_t from = duration && latest > duration ? latest - duration : 0;
+		points.erase(std::remove_if(points.begin(), points.end(),
+			[this, from](const GEOMETRY_POINT &point) {
+				return point.m_tStamp <= m_tPointCursor || point.m_tStamp < from;
+			}), points.end());
+		if (points.empty())
 		{
 			return false;
 		}
+		// Every poll consumes fresh points, optionally from a scan-sized window.
+		// Capture time anchors deskewing; the stream's host timestamp is only a
+		// change notification. Keep equal-time returns together in stable order.
+		std::stable_sort(points.begin(), points.end(),
+			[](const GEOMETRY_POINT &a, const GEOMETRY_POINT &b) { return a.m_tStamp < b.m_tStamp; });
+		stamp = points.front().m_tStamp;
+		m_tPointCursor = points.back().m_tStamp;
 		m_tStampLastFrame = stamp;
 		return true;
+	}
+
+	bool _SLAMbase::validInputPoint(const GEOMETRY_POINT &point) const
+	{
+		return point.m_tStamp && point.m_vP.allFinite();
 	}
 
 	bool _SLAMbase::readIMU(Vector3d &acc, Vector3d &gyro, uint64_t &stamp)

@@ -2,8 +2,8 @@
 
 Images, depth, points, lines, maps, detections, tracked boxes, and IMU samples are owned by independent DataObjects. `*Frame` classes replace complete payloads with `set(...)` and copy them with `get(...)`. `*Stream` classes append timestamped elements with `add(...)` and copy retained histories with `get(...)`. Detection and tracking outputs use `BBoxStream`; IMU channels use `IMUstream`. Consumers resolve a DataObject name through `InstanceMgr::findDataObject` instead of calling a producer module. `OCTGRID_CELL` and selectable-grid cell interfaces remain grid-owned.
 
-`BBoxStream`, `BytePacketStream`, `CANframeStream`, and `UGLIDcellStream` inherit
-`DataObjStream<T>` with `BBOX_OBJ`, `BYTE_PACKET`, `CAN_FRAME`, and `UGLID_CELL_T`
+`BBoxStream`, `BytePacketStream`, `CANframeStream`, `UGLIDcellStream`, and `PCLstream` inherit
+`DataObjStream<T>` with `BBOX_OBJ`, `BYTE_PACKET`, `CAN_FRAME`, `UGLID_CELL_T`, and `GEOMETRY_POINT`
 elements, respectively. Their shared `add(const vector<T>&, tStamp = 0)` copies
 elements into a bounded ring without changing element timestamps. The optional
 timestamp updates only the stream's `m_tStamp`; zero uses the current backend
@@ -25,6 +25,21 @@ The returned stream timestamp is separate from the element cursor. Consumers
 advance that cursor from the elements they process. Producers that require
 incremental delivery must coordinate increasing, nonzero element timestamps;
 the stream preserves duplicate, zero, and out-of-order timestamps as supplied.
+
+`PCLstream` retains up to `nBuf` points (default 100000) in its ring. Its
+`get(points, tStampFrom)` requires an explicit point-time cursor; zero selects
+all retained points with valid timestamps. `PCLframe` derives from `PCLstream`
+and adds `get(points)` to copy the entire storage vector in physical buffer
+order, including unused and zero-timestamp slots. It also provides
+`set(points, tStamp)` to replace the whole vector, set `nBuf` to the input size,
+and reset the ring write position to zero. Use each `PCLframe` exclusively for
+stream accumulation with `add` or whole-frame replacement with `set`.
+Consumers needing arrival order use `get(points, tStampFrom)` instead.
+An empty frame has `nBuf: 0`; a zero-capacity stream retains no points.
+`clear(nBuf)` empties the ring and optionally changes capacity; `clear()` keeps
+capacity. A stream producer can therefore target either storage class, while
+frame consumers require a `PCLframe` destination. Consumers decide temporal
+validity and age; producers do not rewrite capture times or discard old points.
 
 Declare each DataObject as a top-level launch object. DataObjects have no worker thread:
 
@@ -65,8 +80,8 @@ DataObject link keys end in `In` for inputs and `Out` for outputs. The suffix de
 | `_SelectableOctGridPCL` | `_OctreeGridPCL` module link | Optional viewer cell snapshots and editing |
 | `_BenewakeTF`, `_TOFsense` | `BytePacketStreamIn` | `PCLframeOut` |
 | `_LeddarVu` | Modbus device | `PCLframeOut` |
-| `_Livox1`, `_Livox2` | Owned UDP sockets; `lvxIP` and host ports | `PCLframeOut`; optional `IMUstreamOut` |
-| `_RoboSenseAiry` | Existing UDP modules | `PCLframeOut` |
+| `_Livox1`, `_Livox2` | Owned UDP sockets; `lvxIP` and host ports | `PCLstreamOut`; optional `IMUstreamOut` |
+| `_Airy`, `_E1R` | Owned MSOP/DIFOP UDP sockets | `PCLstreamOut`; Airy also supports `IMUstreamOut` |
 | `_SLAMbase`, `_GLIM` | `PCLframeIn`; optional `IMUstreamIn` | `_GLIM`: optional `PCLframeOut` and `PCLmapOut` |
 | RGBD camera modules | Device | `RGBframeOut`, `DframeOut`, `IRframeOut`, `RGBDframeOut`, `RGBDtRGBframeOut`, `RGBDtDframeOut`, `PCLframeOut`, `IMUstreamOut` |
 | `_WebGLIM` | `PCLmapIn` | Browser map stream |
@@ -77,8 +92,9 @@ The `_PointCloud`, `_GeometryBase`, and `_Line` module classes have been removed
 Remaining former geometry subclasses inherit directly from `_ModuleBase` and retain an optional
 `_TransformRigid *m_pTf` link. Point-cloud transforms use the linked module's combined pose,
 including its parent chain. Without a link, the transform is identity. Point-cloud producers
-each declare their own `PCLframe *m_pPCLout` output pointer,
-resolved from the `PCLframeOut` configuration key. The referenced DataObject owns
+declare a `PCLframe *m_pPCLout` for whole-frame replacement, or a
+`PCLstream *m_pPCLout` for incremental LiDAR packets, resolved from `PCLframeOut`
+or `PCLstreamOut` respectively. The referenced DataObject owns
 the point data and remains managed by `InstanceMgr`. Use a `LineFrame` DataObject
 declaration for line storage. Geometry viewers retain their existing typed input
 streams and camera settings.
@@ -306,19 +322,27 @@ Benewake always publishes one beam. Leddar's register and `0x41` read modes both
 publish complete frames; `0x41` keeps the nearest valid return per division and
 invalidates divisions without detections.
 
-Livox groups packets into `frameDurationMs` timestamp windows (default 100 ms), then publishes the completed cloud to its `PCLframe` when the next window starts. Each point retains its capture timestamp. `nMaxFramePoints` bounds the assembly buffer (default 100000); excess points in that window are discarded. Clearing the driver also discards its pending unpublished frame. Its `IMUstream` output is independent of the cloud frame.
+Livox1, Livox2, Airy, and E1R append each decoded packet directly to
+`PCLstreamOut`. They retain no private cloud history or host frame assembly.
+Buffer capacity belongs to the destination's `nBuf`. The drivers preserve point
+capture timestamps; the stream update timestamp records host publication time.
+Clearing a driver clears its destination. IMU publication remains independent.
+The supplied viewer/SLAM profiles use `PCLframe` destinations so readers can
+snapshot the retained ring. LiDAR SLAM profiles set `scanDurationMs: 100` on
+`_GLIM`, which selects fresh points from the latest capture-time window and
+tracks its own cursor rather than replaying the entire retained history.
 
 `PCLmap::get(vector<Submap> &submaps, uint64_t &session)` copies each submap's
 local point vector and pose, copies the SLAM session ID, and returns the map
 timestamp. Session identifies an estimator lifecycle; it is not an update
 counter. Viewers retain their own copied map and send only changed poses or new
 geometry over the network. Replacing geometry under an existing submap ID
-requires a changed submap timestamp. Geometry viewers use v6; the GLIM viewer
+requires a changed submap timestamp. Geometry viewers use v7; the GLIM viewer
 uses GLM3 with map timestamps. Legacy wire decoders are not supported.
 
 ## Examples and scope
 
-Updated launches include `Detectors.json`, `WebViewer3D.json`, `ImGUI.json`, `APmav_drive.json`, `Orbbec.json`, `Scepter.json`, `GLIM_orbbec.json`, `GLIM_scepter.json`, and `_GLIM.json`. `Livox1.json` is the standalone Avia-generation LiDAR example; `Livox2.json` is the Mid-360 example. Set `Lvx1.lvxIP` to the sensor address. Both Livox drivers own their UDP sockets, select the host address from the route, and accept host ports directly on the instance. They decode their respective Ethernet protocols without an external Livox SDK and publish the same `PCLframe` and optional `IMUstream` objects. Their web viewers use the existing geometry streaming protocol. See the [Livox1 setup and controls](../html/viewer/_Livox1/README.md) for model support and legacy protocol settings. Build LiDAR with `WITH_SENSOR` and `WITH_UNIVERSE`; the examples' WebSocket command service also needs `WITH_IO`. Open3D is not required. `_GLIM.json` declares input streams but needs a producer to populate them.
+Updated launches include `Detectors.json`, `WebViewer3D.json`, `ImGUI.json`, `APmav_drive.json`, `Orbbec.json`, `Scepter.json`, `GLIM_orbbec.json`, `GLIM_scepter.json`, and `_GLIM.json`. `Livox1.json` is the standalone Avia-generation LiDAR example; `Livox2.json` is the Mid-360 example. Set `Lvx1.lvxIP` to the sensor address. Both Livox drivers own their UDP sockets, select the host address from the route, and accept host ports directly on the instance. They decode their respective Ethernet protocols without an external Livox SDK and append to `PCLstream` (or derived `PCLframe`) and optional `IMUstream` objects. Their web viewers use the existing geometry streaming protocol. See the [Livox1 setup and controls](../html/viewer/_Livox1/README.md) for model support and legacy protocol settings. Build LiDAR with `WITH_SENSOR` and `WITH_UNIVERSE`; the examples' WebSocket command service also needs `WITH_IO`. Open3D is not required. `_GLIM.json` declares input streams but needs a producer to populate them.
 
 The old `_IMUbase` preview modules are absent from the migrated examples; camera and LiDAR IMU data go to `IMUstream`. The `_LCalign.json` launch now uses point and image DataObjects but retains legacy viewer and IMU settings. Legacy `.kiss` launches still reference older Tools/Open3D interfaces and are not migrated examples. The historical `test/apMavlinkFollow.kiss` has updated bounding-box stream links, but its older syntax and remaining module settings still need migration before use. Open3D point registration now uses the point stream keys above, while its registration and visualization algorithms still require `USE_OPEN3D`. Other `USE_OPEN3D` interfaces remain outside this migration.
 

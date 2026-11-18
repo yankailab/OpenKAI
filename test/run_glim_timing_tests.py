@@ -34,7 +34,9 @@ def main():
     with tempfile.TemporaryDirectory(prefix="openkai-glim-timing-") as temp:
         temp = pathlib.Path(temp)
         objects = []
-        for index, source in enumerate(("test/SLAM/GLIMTiming.cpp", "src/SLAM/_GLIM.cpp", "src/DataObject/IMUstream.cpp")):
+        # Link the test entry point against the existing, rebuilt OpenKAI
+        # implementation, whether it is a shared library or direct objects.
+        for index, source in enumerate(("test/SLAM/GLIMTiming.cpp",)):
             obj = str(temp / f"timing-{index}.o")
             command = list(entry["arguments"]) if "arguments" in entry else shlex.split(entry["command"])
             command[command.index("-o") + 1] = obj
@@ -44,7 +46,7 @@ def main():
             subprocess.run(command + ["-UNDEBUG"], cwd=entry["directory"], env=environment, check=True)
             objects.append(obj)
         command = [arg for arg in link_command(build) if not arg.startswith("-Wl,--dependency-file=")]
-        for suffix, obj in zip(("/src/main.cpp.o", "/src/SLAM/_GLIM.cpp.o", "/src/DataObject/IMUstream.cpp.o"), objects):
+        for suffix, obj in zip(("/src/main.cpp.o",), objects):
             command[next(i for i, arg in enumerate(command) if arg.endswith(suffix))] = obj
         executable = str(temp / "glim-timing-tests")
         command[command.index("-o") + 1] = executable

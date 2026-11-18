@@ -8,10 +8,10 @@ const labels = {
   lvxCoordinate: 'Point coordinates', lvxReturnMode: 'Return mode', lvxScanPattern: 'Scan pattern',
   lvxHighSensitivity: 'High sensitivity',
   lvxSampling: 'Point cloud capture', lvxFan: 'Sensor fan', bIMUpreview: 'Enable IMU preview',
-  lvxWorkMode: 'Power mode', lvxIMUdataEn: 'Embedded IMU', frameDurationMs: 'Point cloud frame duration (ms)',
+  lvxWorkMode: 'Power mode', lvxIMUdataEn: 'Embedded IMU',
   bIMUstab: 'Stabilize point cloud with IMU', bReflectivity: 'Color by reflectivity',
   vColorDefault: 'Point color [R, G, B]', vRangeD: 'Distance range [minimum, maximum] (m)',
-  nMaxFramePoints: 'Maximum points per frame', tOutSec: 'Device timeout (s)'
+  tOutSec: 'Device timeout (s)'
 };
 const formatValue = value => value == null ? '' : typeof value === 'object' ? JSON.stringify(value) : String(value);
 const errorText = errors => Object.entries(errors || {}).map(([key, value]) => `${labels[key] || key}: ${formatValue(value)}`).join(' · ');
@@ -143,8 +143,8 @@ export class LivoxControls {
       firmware: 'Firmware version', workState: 'Sensor work state', statusCode: 'Sensor status code',
       hostIP: 'Active host Ethernet IP', socketsOpen: 'UDP sockets open',
       configApplied: 'Settings applied', pendingCommands: 'Pending commands', pendingSettings: 'Pending settings', pointPackets: 'Point packets',
-      points: 'Points received', frames: 'Frames published', imuSamples: 'IMU samples',
-      invalidPackets: 'Invalid packets', outOfOrderPackets: 'Out-of-order packets', frameOverflows: 'Frame overflows',
+      points: 'Points received', imuSamples: 'IMU samples',
+      invalidPackets: 'Invalid packets', outOfOrderPackets: 'Out-of-order packets',
       commandErrors: 'Command errors', commandRetries: 'Command retries', lastError: 'Last device error'
     };
     for (const [key, label] of Object.entries(labels)) {

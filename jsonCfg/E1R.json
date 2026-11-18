@@ -7,7 +7,8 @@
 	},
 	"e1rPoints": {
 		"type": "dataObject",
-		"class": "PCLframe"
+		"class": "PCLframe",
+		"nBuf": 50000
 	},
 	"E1R": {
 		"class": "_E1R",
@@ -16,15 +17,12 @@
 			"FPS": 200
 		},
 		"bLog": false,
-		"PCLframeOut": "e1rPoints",
 		"deviceIP": "192.168.1.200",
 		"bindIP": "0.0.0.0",
 		"msopPort": 6699,
 		"difopPort": 7788,
 		"receiveBufferBytes": 4194304,
 		"tOutSec": 3,
-		"frameTimeoutMs": 250,
-		"nMaxFramePoints": 50000,
 		"bReflectivity": true,
 		"bDropNoise": true,
 		"bUseSensorTime": true,
@@ -37,7 +35,8 @@
 			1.0,
 			1.0
 		],
-		"_TransformRigid": "E1RTransform"
+		"_TransformRigid": "E1RTransform",
+		"PCLstreamOut": "e1rPoints"
 	},
 	"viewer": {
 		"class": "_WebGeometry",

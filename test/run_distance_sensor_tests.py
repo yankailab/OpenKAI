@@ -24,7 +24,7 @@ def main():
     with tempfile.TemporaryDirectory(prefix="openkai-distance-") as temp:
         obj = str(pathlib.Path(temp) / "distance-tests.o")
         args = shlex.split(entry["command"])
-        use_modbus = "-DUSE_MODBUS" in args
+        use_modbus = any(arg.split("=", 1)[0] == "-DUSE_LIBMODBUS" for arg in args)
         args[args.index("-o") + 1] = obj
         args[args.index("-c") + 1] = str(repo / "test/Sensor/DistanceSensors.cpp")
         if "-MF" in args:
@@ -39,6 +39,10 @@ def main():
         if use_modbus:
             for name in ["modbus_read_input_registers", "modbus_send_raw_request", "modbus_receive_confirmation"]:
                 args.append("-Wl,--wrap=" + name)
+                # --wrap covers direct object links. Export the same test stub
+                # under the real symbol too, so libOpenKAI calls are intercepted.
+                args.extend(["-Wl,--defsym=" + name + "=__wrap_" + name,
+                             "-Wl,--export-dynamic-symbol=" + name])
         subprocess.run(args, cwd=build, check=True)
         subprocess.run([executable], cwd=repo, check=True, timeout=30)
 

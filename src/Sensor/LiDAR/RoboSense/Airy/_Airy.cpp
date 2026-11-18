@@ -56,8 +56,8 @@ namespace kai
     {
         m_config = {{"deviceIP", "192.168.1.200"}, {"bindIP", "0.0.0.0"},
             {"msopPort", 6699}, {"difopPort", 7788}, {"imuPort", 6688}, {"receiveBufferBytes", 4194304},
-            {"tOutSec", 3}, {"frameTimeoutMs", 250}, {"nMaxFramePoints", 200000},
-            {"bReflectivity", true}, {"bIMUoutput", true}, {"bIMUpreview", false}, {"bUseSensorTime", true}, {"splitAngle", 0.0},
+            {"tOutSec", 3},
+            {"bReflectivity", true}, {"bIMUoutput", true}, {"bIMUpreview", false}, {"bUseSensorTime", true},
             {"vRangeD", {0.1, 60.0}}, {"vColorDefault", {1.0, 1.0, 1.0}}};
     }
 
@@ -76,7 +76,6 @@ namespace kai
             }
         }
         if (!applyConfig(patch, false, errors)) { LOG_E(errors.dump()); return false; }
-        m_framePoints.reserve(m_config.at("nMaxFramePoints").get<size_t>());
         return true;
     }
 
@@ -98,9 +97,9 @@ namespace kai
         IF_Le_F(!tfName.empty() && !m_pTf, "_TransformRigid not found: " + tfName);
 
         string name;
-        jKv(*m_pJ, "PCLframeOut", name);
-        m_pPCLout = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(name)));
-        IF_Le_F(!m_pPCLout, "PCLframeOut not found: " + name);
+        jKv(*m_pJ, "PCLstreamOut", name);
+        m_pPCLout = dynamic_cast<PCLstream *>(static_cast<DataObjBase *>(pM->findDataObject(name)));
+        IF_Le_F(!m_pPCLout, "PCLstreamOut not found: " + name);
         name.clear();
         jKv(*m_pJ, "IMUstreamOut", name);
         m_pIMUout = dynamic_cast<IMUstream *>(static_cast<DataObjBase *>(pM->findDataObject(name)));
@@ -160,7 +159,8 @@ namespace kai
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
         closeSockets();
         m_started = false;
-        resetFrame();
+        m_haveSequence = false;
+        m_havePacket = false;
         resetIMUpreview();
     }
 
@@ -212,13 +212,11 @@ namespace kai
                     if (sockets[i].revents & (POLLERR | POLLNVAL)) m_lastError = "Airy UDP receive socket error";
                 }
             const uint64_t now = getTns();
-            if (m_frameActive && m_lastMSOP && now - m_lastMSOP >= m_config.at("frameTimeoutMs").get<uint64_t>() * NSEC_MSEC)
-                publishFrame(true);
             const uint64_t last = std::max({m_lastMSOP, m_lastDIFOP, m_lastIMU});
             if (last && now - last >= m_config.at("tOutSec").get<uint64_t>() * NSEC_SEC && !m_timedOut)
             {
                 m_timedOut = true;
-                resetFrame();
+                m_haveSequence = m_havePacket = false;
                 if (m_config.at("deviceIP") == "0.0.0.0")
                 { m_selectedIP.clear(); m_calibration = airy::Calibration{}; }
                 m_lastIMUstamp = 0;
@@ -280,18 +278,10 @@ namespace kai
         }
     }
 
-    void _Airy::resetFrame()
-    {
-        m_framePoints.clear();
-        m_frameActive = false;
-        m_framePartial = false;
-        m_haveSequence = m_havePacket = m_haveAzimuth = false;
-        m_frameStamp = m_lastPacketNs = 0;
-    }
-
     void _Airy::resetSensor(bool bClearOutput)
     {
-        resetFrame();
+        m_haveSequence = false;
+        m_havePacket = false;
         m_lastMSOP = m_lastDIFOP = m_lastIMU = m_lastIMUstamp = 0;
         m_selectedIP.clear();
         m_observed = json::object();
@@ -303,21 +293,6 @@ namespace kai
         {
             m_pIMUout->clear();
         }
-    }
-
-    void _Airy::publishFrame(bool partial)
-    {
-        if (!m_frameActive) return;
-        // Keep capture time consistent with point times. A sensor clock reset
-        // remains visible to downstream SLAM instead of inventing a new epoch.
-        const uint64_t stamp = std::max<uint64_t>(m_frameStamp, 1);
-        if (m_pPCLout) m_pPCLout->set(m_framePoints, stamp);
-        m_lastPublishedStamp = stamp;
-        ++m_frames;
-        if (partial || m_framePartial) ++m_partialFrames;
-        m_framePoints.clear();
-        m_frameActive = false;
-        m_framePartial = false;
     }
 
     void _Airy::handleMSOP(const airy::Msop &packet, uint64_t receivedNs)
@@ -332,91 +307,67 @@ namespace kai
         ++m_pointPackets;
         if (m_lastMSOP && receivedNs > m_lastMSOP && receivedNs - m_lastMSOP >=
             m_config.at("tOutSec").get<uint64_t>() * NSEC_SEC)
-        { publishFrame(true); resetFrame(); }
+            m_haveSequence = m_havePacket = false;
         m_lastMSOP = receivedNs;
         const bool clockReset = m_havePacket && m_lastPacketNs > packet.timestampNs && m_lastPacketNs - packet.timestampNs >= NSEC_SEC;
         if (clockReset)
         {
-            publishFrame(true); resetFrame(); ++m_clockResets;
+            m_haveSequence = m_havePacket = false;
+            ++m_clockResets;
             m_lastIMUstamp = 0;
             resetIMUpreview();
             if (m_pIMUout) m_pIMUout->clear();
         }
-        if (m_havePacket && packet.timestampNs < m_lastPacketNs) { ++m_outOfOrderPackets; return; }
+        if (m_observed.contains("model") && (m_observed.at("model") != packet.model ||
+            m_observed.at("msopReturnMode") != packet.returnMode))
+            m_haveSequence = m_havePacket = false;
+        // Sequence and capture-time diagnostics never discard decoded points.
+        bool outOfOrder = m_havePacket && packet.timestampNs < m_lastPacketNs;
+        bool advanceSequence = true;
         if (m_haveSequence && packet.sequenceValid)
         {
             // Airy's 32-bit wire field contains a counter modulo 65536.
             const uint32_t delta = (packet.sequence - m_lastSequence) & 0xffff;
-            if (!delta || delta > 0x8000) { ++m_outOfOrderPackets; return; }
-            if (delta > 1) { m_droppedPackets += delta - 1; m_framePartial = true; }
+            if (!delta || delta > 0x8000) { outOfOrder = true; advanceSequence = false; }
+            else if (delta > 1) m_droppedPackets += delta - 1;
         }
-        if (m_observed.contains("model") && (m_observed.at("model") != packet.model ||
-            m_observed.at("msopReturnMode") != packet.returnMode))
-        { publishFrame(true); resetFrame(); }
+        if (outOfOrder) ++m_outOfOrderPackets;
+        if (advanceSequence)
+        {
+            m_lastSequence = packet.sequence;
+            m_haveSequence = packet.sequenceValid;
+        }
         m_observed["temperatureC"] = packet.temperature;
         m_observed["topTemperatureC"] = packet.topTemperature;
         m_observed["model"] = packet.model;
         m_observed["msopReturnMode"] = packet.returnMode;
         m_observed["dualReturn"] = packet.dual;
-        m_lastPacketNs = packet.timestampNs;
-        m_lastSequence = packet.sequence;
-        m_haveSequence = packet.sequenceValid;
+        m_lastPacketNs = m_havePacket ? std::max(m_lastPacketNs, packet.timestampNs) : packet.timestampNs;
         m_havePacket = true;
         const float minimum = m_config.at("vRangeD")[0], maximum = m_config.at("vRangeD")[1];
-        const size_t limit = m_config.at("nMaxFramePoints");
         const bool reflectivity = m_config.at("bReflectivity");
         const Vector3f color(m_config.at("vColorDefault")[0], m_config.at("vColorDefault")[1], m_config.at("vColorDefault")[2]);
-        const uint16_t split = static_cast<uint16_t>(std::lround(m_config.at("splitAngle").get<double>() * 100));
-        const bool croppedFOV = (unsigned(m_calibration.fovEnd) + 36000 - m_calibration.fovStart) % 36000 != 0;
-        bool overflow = false;
-        uint8_t previousBlock = 255;
         const Isometry3f pose = m_pTf ? m_pTf->getPoseCombinedf() : Isometry3f::Identity();
+        vector<GEOMETRY_POINT> points;
+        points.reserve(packet.points.size());
         for (const auto &sample : packet.points)
         {
-            // Split only at block boundaries: channel calibration/interpolation
-            // crosses zero at different points, and dual echoes share azimuths.
-            if (sample.block != previousBlock)
-            {
-                previousBlock = sample.block;
-                const uint16_t angle = static_cast<uint16_t>((unsigned(sample.blockAzimuth) + 36000 - split) % 36000);
-                // A narrow configured FOV omits its blind sector, so the reset
-                // at the next revolution can be smaller than half a turn.
-                const bool boundary = m_haveAzimuth && angle < m_lastAzimuth &&
-                    (croppedFOV || m_lastAzimuth - angle > 18000);
-                if (boundary) publishFrame();
-                if (!m_frameActive)
-                {
-                    m_frameActive = true;
-                    m_frameStamp = std::max<uint64_t>(packetNs + sample.offsetNs, 1);
-                    m_framePartial = !boundary;
-                }
-                m_lastAzimuth = angle;
-                m_haveAzimuth = true;
-            }
-            const uint64_t stamp = std::max<uint64_t>(packetNs + sample.offsetNs, 1);
-            m_frameStamp = std::min(m_frameStamp, stamp);
             if (sample.range <= 0 || sample.range < minimum || sample.range > maximum) continue;
-            if (m_framePoints.size() >= limit) { overflow = true; m_framePartial = true; continue; }
             GEOMETRY_POINT point;
             point.m_vP = pose * Vector3f(sample.x, sample.y, sample.z);
             point.m_vC = reflectivity ? Vector3f::Constant(sample.intensity / 255.0f) : color;
-            point.m_tStamp = stamp;
-            m_framePoints.push_back(point);
-            ++m_points;
+            point.m_tStamp = packetNs + sample.offsetNs;
+            points.push_back(point);
         }
-        if (overflow) ++m_frameOverflows;
+        m_points += points.size();
+        if (m_pPCLout) m_pPCLout->add(points);
     }
 
     void _Airy::handleDIFOP(const airy::Difop &packet, uint64_t receivedNs)
     {
         ++m_difopPackets;
         m_lastDIFOP = receivedNs;
-        if (!(packet.calibration == m_calibration))
-        {
-            // Never combine points computed with two calibration/firing tables.
-            resetFrame();
-            m_calibration = packet.calibration;
-        }
+        m_calibration = packet.calibration;
         m_observed.update({{"sensorIp", packet.sensorIp}, {"destinationIp", packet.destinationIp}, {"mac", packet.mac},
             {"msopPort", packet.msopPort}, {"difopPort", packet.difopPort}, {"rpm", packet.rpm}, {"motorSpeed", packet.motorSpeed},
             {"serial", packet.serial}, {"mainFirmware", packet.mainFirmware}, {"baseFirmware", packet.baseFirmware},
@@ -516,8 +467,9 @@ namespace kai
     void _Airy::clear()
     {
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
-        resetFrame();
-        if (m_pPCLout) m_pPCLout->set({}, ++m_lastPublishedStamp);
+        m_haveSequence = false;
+        m_havePacket = false;
+        if (m_pPCLout) m_pPCLout->clear();
         if (m_pIMUout) m_pIMUout->clear();
         m_lastIMUstamp = 0;
         resetIMUpreview();
@@ -543,16 +495,11 @@ namespace kai
         schema["receiveBufferBytes"] = {{"type", "integer"}, {"label", "UDP receive buffer (bytes)"}, {"category", "Network"}, {"min", 65536}, {"max", 67108864},
             {"description", "Requested socket buffer; the operating system may cap this value."}};
         schema["tOutSec"] = {{"type", "integer"}, {"label", "Disconnect timeout (s)"}, {"category", "Network"}, {"min", 1}, {"max", 120}};
-        schema["frameTimeoutMs"] = {{"type", "integer"}, {"label", "Partial frame timeout (ms)"}, {"category", "Point cloud"}, {"min", 20}, {"max", 2000},
-            {"description", "Publish the remaining partial frame after this interval without MSOP packets. Normal frames split at the configured azimuth once per revolution."}};
-        schema["nMaxFramePoints"] = {{"type", "integer"}, {"label", "Maximum points per frame"}, {"category", "Point cloud"}, {"min", 96}, {"max", 1000000}};
         schema["bReflectivity"] = {{"type", "bool"}, {"label", "Reflectivity coloring"}, {"category", "Point cloud"}};
         schema["bIMUoutput"] = {{"type", "bool"}, {"label", "Publish raw IMU samples"}, {"category", "IMU"},
             {"description", "Publish accelerometer and gyroscope values in SI units in the raw IMU axes; no orientation fusion or LiDAR extrinsic transform is applied."}};
         schema["bIMUpreview"] = {{"type", "bool"}, {"label", "Enable IMU preview"}, {"category", "IMU"},
             {"description", "Run viewer-only orientation fusion. Disabled by default to save CPU; raw IMU publication is independent."}};
-        schema["splitAngle"] = {{"type", "float"}, {"label", "Frame split azimuth (degrees)"}, {"category", "Point cloud"}, {"min", 0}, {"max", 359.99},
-            {"description", "Start each scan at this raw motor azimuth; splitting occurs at block boundaries."}};
         schema["bUseSensorTime"] = {{"type", "bool"}, {"label", "Use sensor timestamps"}, {"category", "Point cloud"},
             {"description", "When disabled, timestamp packets with host monotonic receive time, retaining per-point offsets."}};
         schema["vRangeD"] = {{"type", "range"}, {"label", "Distance range (m)"}, {"category", "Point cloud"}, {"length", 2}, {"min", 0}, {"max", 81.915}};
@@ -591,7 +538,6 @@ namespace kai
                             element.get<double>() < spec.at("min").get<double>() || element.get<double>() > spec.at("max").get<double>()) valid = false;
                 if (valid && field.key() == "vRangeD") valid = value[0].get<double>() < value[1].get<double>();
             }
-            else if (type == "float") valid = value.is_number() && std::isfinite(value.get<double>()) && value.get<double>() >= spec.at("min").get<double>() && value.get<double>() <= spec.at("max").get<double>();
             else valid = value.is_number_integer() && value.get<double>() >= spec.at("min").get<double>() && value.get<double>() <= spec.at("max").get<double>();
             if (!valid) { errors[field.key()] = "Invalid type or value outside supported range"; continue; }
             next[field.key()] = value;
@@ -609,10 +555,6 @@ namespace kai
         }
         if (next != m_config)
         {
-            bool scanChanged = false;
-            for (const auto &field : next.items())
-                if (field.key() != "bIMUpreview" && field.value() != m_config.at(field.key())) scanChanged = true;
-            if (scanChanged) resetFrame();
             if (networkChanged || next.at("deviceIP") != m_config.at("deviceIP"))
             {
                 resetSensor(live);
@@ -650,9 +592,9 @@ namespace kai
             {"calibrationReady", m_calibration.valid}, {"uncalibratedPackets", m_uncalibratedPackets},
             {"imuPackets", m_imuPackets}, {"imuSamples", m_imuSamples}, {"imuOutOfOrder", m_imuOutOfOrder}, {"imu", imuValues()},
             {"lastIMUageMs", m_lastIMU ? json((now - m_lastIMU) / NSEC_MSEC) : json()},
-            {"frames", m_frames}, {"partialFrames", m_partialFrames}, {"droppedPackets", m_droppedPackets},
+            {"droppedPackets", m_droppedPackets},
             {"invalidPackets", m_invalidPackets}, {"outOfOrderPackets", m_outOfOrderPackets},
-            {"frameOverflows", m_frameOverflows}, {"clockResets", m_clockResets},
+            {"clockResets", m_clockResets},
             {"lastPacketAgeMs", last ? json((now - last) / NSEC_MSEC) : json()},
             {"lastMSOPageMs", m_lastMSOP ? json((now - m_lastMSOP) / NSEC_MSEC) : json()},
             {"lastDIFOPageMs", m_lastDIFOP ? json((now - m_lastDIFOP) / NSEC_MSEC) : json()},
@@ -664,7 +606,7 @@ namespace kai
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
         _ModuleBase::console(pConsole);
         if (pConsole) static_cast<_Console *>(pConsole)->addMsg("Airy " + statusValues().at("state").get<string>() +
-            " " + m_selectedIP + " frames=" + std::to_string(m_frames) + " " + m_lastError);
+            " " + m_selectedIP + " points=" + std::to_string(m_points) + " " + m_lastError);
     }
 
     void _Airy::jsonCmd(const json &request, void *pJSONbase)

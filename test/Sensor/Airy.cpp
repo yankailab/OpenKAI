@@ -11,14 +11,13 @@ namespace kai
 {
     struct AiryTestAccess
     {
-        static void output(_Airy &driver, PCLframe &cloud, IMUstream *imu = nullptr)
+        static void output(_Airy &driver, PCLstream &cloud, IMUstream *imu = nullptr)
         { driver.m_pPCLout = &cloud; driver.m_pIMUout = imu; }
         static void packet(_Airy &driver, const airy::Msop &packet, uint64_t received = 100000000000ULL)
         { driver.handleMSOP(packet, received); }
         static void info(_Airy &driver, const airy::Difop &packet) { driver.handleDIFOP(packet, getTns()); }
         static void imu(_Airy &driver, const airy::Imu &packet, uint64_t received = 100000000000ULL)
         { driver.handleIMU(packet, received); }
-        static void publish(_Airy &driver, bool partial = false) { driver.publishFrame(partial); }
         static bool config(_Airy &driver, const json &patch, json &errors)
         { return driver.applyConfig(patch, true, errors); }
         static json config(_Airy &driver) { return driver.configValues(); }
@@ -29,7 +28,6 @@ namespace kai
         static bool levelingReady(_Airy &driver) { return driver.m_haveIMUleveling; }
         static uint64_t previewStamp(_Airy &driver) { return driver.m_previewStamp; }
         static void running(_Airy &driver, bool running) { driver.m_started = running; }
-        static size_t pending(_Airy &driver) { return driver.m_framePoints.size(); }
         static void resetSensor(_Airy &driver) { driver.resetSensor(true); }
         static json transport(_Airy &driver)
         {
@@ -52,6 +50,17 @@ namespace
         DriverWithTransform() { m_pTf = &m_transform; }
         ~DriverWithTransform() { stop(); }
         _TransformRigid m_transform;
+    };
+
+    class InspectableStream : public PCLstream
+    {
+    public:
+        GEOMETRY_POINT newest()
+        {
+            std::shared_lock lock(m_sMutex);
+            assert(!m_vElement.empty());
+            return m_vElement[(m_iBset + m_vElement.size() - 1) % m_vElement.size()];
+        }
     };
 
     class UdpEndpoint
@@ -103,7 +112,7 @@ namespace
         config.setJson({{"name", "airy-retry-test"}, {"class", "_Airy"},
             {"deviceIP", "127.0.0.1"}, {"bindIP", "127.0.0.1"},
             {"msopPort", msopPort}, {"difopPort", difopPort}, {"imuPort", imuPort}});
-        PCLframe cloud;
+        PCLstream cloud;
         DriverWithTransform driver;
         driver.setConfig(&config, config.getJson());
         assert(driver.loadConfig());
@@ -188,94 +197,104 @@ namespace
     void testCalibration()
     {
         DriverWithTransform driver;
-        PCLframe cloud;
+        PCLstream cloud;
         Access::output(driver, cloud);
+        vector<GEOMETRY_POINT> points;
         Access::packet(driver, packet(10, 1000000000));
-        assert(Access::pending(driver) == 0);
+        cloud.get(points, 0);
+        assert(points.empty());
         assert(Access::status(driver).at("uncalibratedPackets") == 1);
         const auto info = calibration();
         Access::info(driver, info);
         assert(Access::status(driver).at("calibrationReady") == true);
         Access::packet(driver, packet(10, 1000000000));
-        assert(Access::pending(driver) == 384);
-        Access::info(driver, info); // Repeated DIFOP cannot discard an active scan.
-        assert(Access::pending(driver) == 384);
+        const uint64_t update = cloud.get(points, 0);
+        assert(points.size() == 384);
+        Access::info(driver, info);
+        assert(cloud.get(points, 0) == update && points.size() == 384);
         auto changed = info;
         changed.calibration.horizontal[1] = 200;
-        Access::info(driver, changed);
-        assert(Access::pending(driver) == 0);
+        Access::info(driver, changed); // Stored points survive a calibration update.
+        assert(cloud.get(points, 0) == update && points.size() == 384);
         Access::packet(driver, packet(11, 1001000000));
-        assert(Access::pending(driver) == 384);
+        cloud.get(points, 0);
+        assert(points.size() == 768);
         changed.calibration.valid = false;
         Access::info(driver, changed); // Do not keep using a stale table.
-        assert(Access::pending(driver) == 0 && !Access::status(driver).at("calibrationReady").get<bool>());
+        assert(!Access::status(driver).at("calibrationReady").get<bool>());
         Access::packet(driver, packet(12, 1002000000));
-        assert(Access::pending(driver) == 0 && Access::status(driver).at("uncalibratedPackets") == 2);
+        cloud.get(points, 0);
+        assert(points.size() == 768 && Access::status(driver).at("uncalibratedPackets") == 2);
     }
 
-    void testFramesAndDualReturns()
+    void testImmediatePacketsAndDualReturns()
     {
         DriverWithTransform driver;
-        PCLframe cloud;
+        PCLstream cloud;
         Access::output(driver, cloud);
         Access::info(driver, calibration());
+        const uint64_t before = getTns();
         Access::packet(driver, packet(10, 1000000000, {{35900, 35950, 0, 0, 50, 50, 100, 100}}));
         vector<GEOMETRY_POINT> points;
-        assert(cloud.get(points) == 1000000000 && points.size() == 96);
-        assert(Access::pending(driver) == 288);
-        assert(Access::status(driver).at("frames") == 1 && Access::status(driver).at("partialFrames") == 1);
+        const uint64_t update = cloud.get(points, 0);
+        assert(update >= before && update <= getTns());
+        assert(points.size() == 384); // A full packet is available across azimuth zero.
+        assert(points.front().m_tStamp == 1000000000);
+        assert(points.back().m_tStamp == 1000074700);
         Access::packet(driver, packet(11, 1001000000, late));
         Access::packet(driver, packet(12, 1002000000, zero));
-        assert(cloud.get(points) == 1000020000 && points.size() == 672);
-        assert(Access::status(driver).at("frames") == 2 && Access::status(driver).at("partialFrames") == 1);
-        assert(points.front().m_tStamp == 1000020000);
-        for (const auto &point : points) assert(point.m_tStamp >= 1000020000);
+        cloud.get(points, 0);
+        assert(points.size() == 1152);
+        cloud.get(points, 1001000000);
+        assert(points.size() == 767 && points.front().m_tStamp == 1001000100);
+        const json status = Access::status(driver);
+        assert(status.at("pointPackets") == 3 && status.at("points") == 1152);
+        assert(!status.contains("frames") && !status.contains("partialFrames") && !status.contains("frameOverflows"));
 
         _Airy dual;
+        cloud.clear();
         Access::output(dual, cloud);
         Access::info(dual, calibration());
         auto returns = packet(1, 2000000000, {{35900, 35900, 35900, 35900, 0, 0, 0, 0}});
         returns.dual = true;
         Access::packet(dual, returns);
-        cloud.get(points);
-        assert(points.size() == 192 && Access::pending(dual) == 192);
-        assert(Access::status(dual).at("frames") == 1); // One boundary, not four.
-
-        _Airy custom;
-        Access::output(custom, cloud);
-        Access::info(custom, calibration());
-        configure(custom, {{"splitAngle", 90.0}});
-        Access::packet(custom, packet(1, 3000000000, {{8900, 8950, 9000, 9000, 9050, 9050, 9100, 9100}}));
-        assert(cloud.get(points) == 3000000000 && points.size() == 96);
+        cloud.get(points, 0);
+        assert(points.size() == 384);
+        assert(Access::status(dual).at("observed").at("dualReturn") == true);
     }
 
     void testSequenceAndRecovery()
     {
         DriverWithTransform driver;
+        PCLstream cloud;
+        Access::output(driver, cloud);
         Access::info(driver, calibration());
         Access::packet(driver, packet(65535, 1000000000));
-        Access::packet(driver, packet(0, 1001000000)); // Counter wrap is not a scan boundary.
-        assert(Access::pending(driver) == 768 && Access::status(driver).at("frames") == 0);
-        Access::packet(driver, packet(0, 1001000000)); // Duplicate.
-        Access::packet(driver, packet(65535, 1000000000)); // Reordered.
+        Access::packet(driver, packet(0, 1001000000));
+        Access::packet(driver, packet(0, 1001000000)); // Duplicate diagnostics do not filter points.
+        Access::packet(driver, packet(65535, 1000000000)); // Reordered capture times are retained.
         Access::packet(driver, packet(3, 1003000000)); // 1,2 lost.
+        vector<GEOMETRY_POINT> points;
+        cloud.get(points, 0);
+        assert(points.size() == 5 * 384);
+        assert(points[3 * 384].m_tStamp == 1000000000);
         assert(Access::status(driver).at("outOfOrderPackets") == 2);
         assert(Access::status(driver).at("droppedPackets") == 2);
-        Access::publish(driver, true);
         Access::packet(driver, packet(4, 1004000000));
         assert(Access::status(driver).at("droppedPackets") == 2);
         // A prolonged MSOP pause must recover even while DIFOP/IMU remain alive.
         Access::packet(driver, packet(40000, 5000000000), 104000000000ULL);
-        assert(Access::pending(driver) == 384);
         assert(Access::status(driver).at("outOfOrderPackets") == 2);
         Access::packet(driver, packet(0, 1000000000), 104000001000ULL);
         assert(Access::status(driver).at("clockResets") == 1);
+        cloud.get(points, 0);
+        assert(points.size() == 8 * 384 && points.back().m_tStamp == 1000074700);
     }
 
     void testCroppedFOV()
     {
         DriverWithTransform driver;
-        PCLframe cloud;
+        PCLstream cloud;
         Access::output(driver, cloud);
         auto info = calibration();
         info.calibration.fovStart = 10000;
@@ -283,24 +302,19 @@ namespace
         Access::info(driver, info);
         const std::array<uint16_t, 8> sector{{10000, 10300, 10600, 10900, 11200, 11500, 11800, 12000}};
         Access::packet(driver, packet(1, 1000000000, sector));
-        Access::packet(driver, packet(2, 1100000000, sector));
         vector<GEOMETRY_POINT> points;
-        assert(cloud.get(points) == 1000000000 && points.size() == 384);
-        assert(Access::status(driver).at("frames") == 1);
-
-        // A split inside the sector must not also split at the skipped sector.
-        configure(driver, {{"splitAngle", 110.0}});
-        Access::packet(driver, packet(3, 1200000000, sector));
-        assert(Access::status(driver).at("frames") == 2);
-        Access::packet(driver, packet(4, 1300000000, sector));
-        assert(Access::status(driver).at("frames") == 3);
-        assert(cloud.get(points) == 1200040000 && points.size() == 384);
+        cloud.get(points, 0);
+        assert(points.size() == 384);
+        Access::packet(driver, packet(2, 1100000000, sector));
+        cloud.get(points, 0);
+        assert(points.size() == 768); // No revolution boundary is needed for output.
+        assert(points[384].m_tStamp == 1100000000);
     }
 
-    void testFilteringTransformAndCap()
+    void testFilteringTransformAndCapacity()
     {
         DriverWithTransform driver;
-        PCLframe cloud;
+        InspectableStream cloud;
         Access::output(driver, cloud);
         Access::info(driver, calibration());
         configure(driver, {{"vRangeD", {1.0, 10.0}}});
@@ -310,32 +324,48 @@ namespace
         data.points[0].x = data.points[0].range = 0.5f;
         data.points[2].x = data.points[2].range = 10.0f;
         data.points[3].x = data.points[3].range = 11.0f;
-        Access::packet(driver, data); Access::publish(driver);
+        Access::packet(driver, data);
         vector<GEOMETRY_POINT> points;
-        cloud.get(points);
+        cloud.get(points, 0);
         assert(points.size() == 3);
         assert((points[0].m_vP - Vector3f(1, 3, 3)).norm() < 0.0001f);
         assert((points[1].m_vP - Vector3f(1, 12, 3)).norm() < 0.0001f);
         assert((points[0].m_vC - Vector3f::Constant(128.0f / 255)).norm() < 0.0001f);
-        configure(driver, {{"bReflectivity", false}, {"vColorDefault", {0.2, 0.4, 0.6}}, {"nMaxFramePoints", 96}});
-        Access::packet(driver, packet(2, 1001000000)); Access::publish(driver);
-        cloud.get(points);
-        assert(points.size() == 96 && Access::status(driver).at("frameOverflows") == 1);
+        assert(points[0].m_tStamp == 1000000100);
+        configure(driver, {{"bReflectivity", false}, {"vColorDefault", {0.2, 0.4, 0.6}}});
+        assert(cloud.clear(96)); // Capacity belongs to the output stream.
+        Access::packet(driver, packet(2, 1001000000));
+        cloud.get(points, 0);
+        assert(points.size() == 96 && points.front().m_tStamp == 1001060000);
+        assert(points.back().m_tStamp == 1001074700);
+        assert(Access::status(driver).at("points") == 387); // Every filtered point was forwarded.
         assert((points[0].m_vC - Vector3f(.2f, .4f, .6f)).norm() < 0.0001f);
         driver.clear();
-        cloud.get(points);
-        assert(points.empty() && Access::pending(driver) == 0);
+        cloud.get(points, 0);
+        assert(points.empty());
         Access::packet(driver, packet(3, UINT64_MAX - 10));
-        assert(Access::status(driver).at("invalidPackets") == 1 && Access::pending(driver) == 0);
+        cloud.get(points, 0);
+        assert(Access::status(driver).at("invalidPackets") == 1 && points.empty());
         configure(driver, {{"bUseSensorTime", false}});
         Access::packet(driver, packet(3, 1002000000), UINT64_MAX - 10);
-        assert(Access::status(driver).at("invalidPackets") == 2 && Access::pending(driver) == 0);
+        cloud.get(points, 0);
+        assert(Access::status(driver).at("invalidPackets") == 2 && points.empty());
+        Access::packet(driver, packet(3, 1002000000, early, 2), 5000000000ULL);
+        cloud.get(points, 0);
+        assert(points.size() == 2 && points[0].m_tStamp == 5000000000ULL && points[1].m_tStamp == 5000000100ULL);
+        configure(driver, {{"bUseSensorTime", true}});
+        Access::packet(driver, packet(4, 0, early, 1));
+        assert(cloud.newest().m_tStamp == 0 && cloud.newest().m_vP.norm() > 0);
+        cloud.get(points, 0);
+        assert(points.size() == 2); // The reader chooses to omit invalid timestamps.
+        driver.stop(); driver.stop();
+        assert(Access::status(driver).at("state") == "stopped");
     }
 
     void testIMU()
     {
         DriverWithTransform driver;
-        PCLframe cloud;
+        PCLstream cloud;
         IMUstream imu;
         Access::output(driver, cloud, &imu);
         airy::Imu data;
@@ -373,7 +403,7 @@ namespace
     void testIMUpreview()
     {
         DriverWithTransform driver;
-        PCLframe cloud;
+        PCLstream cloud;
         IMUstream imu;
         Access::output(driver, cloud, &imu);
         Access::running(driver, true);
@@ -450,7 +480,7 @@ namespace
     void testPreviewOptIn()
     {
         DriverWithTransform driver;
-        PCLframe cloud;
+        PCLstream cloud;
         IMUstream imu;
         Access::output(driver, cloud, &imu);
         Access::running(driver, true);
@@ -459,7 +489,9 @@ namespace
         assert(Access::schema(driver).at("bIMUpreview").at("type") == "bool");
         Access::info(driver, calibration());
         Access::packet(driver, packet(1, 1000000000));
-        const size_t pending = Access::pending(driver);
+        vector<GEOMETRY_POINT> points;
+        const uint64_t cloudUpdate = cloud.get(points, 0);
+        const size_t storedPoints = points.size();
         airy::Imu data;
         data.timestampNs = 1000000000;
         data.acceleration = {{0, 0, -9.80665}};
@@ -481,7 +513,7 @@ namespace
         assert(gyro.size() == 20 && acc.size() == 20); // Disabled preview still supplies SLAM.
 
         configure(driver, {{"bIMUpreview", true}});
-        assert(Access::previewEnabled(driver) && Access::pending(driver) == pending);
+        assert(Access::previewEnabled(driver) && cloud.get(points, 0) == cloudUpdate && points.size() == storedPoints);
         imu.get(gyro, acc); assert(gyro.size() == 20); // Enabling does not consume raw history.
         assert(Access::imuValues(driver).at("tFusion") == "0");
         values = sample(); assert(values.at("orientationValid") == false);
@@ -489,7 +521,7 @@ namespace
         for (unsigned i = 0; i < 30; ++i) values = sample();
         const auto rawCount = Access::status(driver).at("imuSamples").get<size_t>();
         configure(driver, {{"bIMUpreview", false}});
-        assert(!Access::previewEnabled(driver) && Access::pending(driver) == pending);
+        assert(!Access::previewEnabled(driver) && cloud.get(points, 0) == cloudUpdate && points.size() == storedPoints);
         for (unsigned i = 0; i < 20; ++i) values = sample();
         assert(Access::status(driver).at("imuSamples") == rawCount + 20);
         assert(values.at("previewEnabled") == false && values.at("tFusion") == "0");
@@ -521,7 +553,7 @@ namespace
         JsonCfg config;
         config.setJson({{"name", "airy-config-test"}, {"class", "_Airy"},
             {"deviceIP", "127.0.0.2"}, {"bUseSensorTime", false}, {"bIMUoutput", false}});
-        PCLframe cloud;
+        PCLstream cloud;
         IMUstream imu;
         DriverWithTransform driver;
         driver.setConfig(&config, config.getJson());
@@ -531,7 +563,7 @@ namespace
         GEOMETRY_POINT point;
         point.m_vP = Vector3f(7, 8, 9);
         point.m_tStamp = 100;
-        cloud.set({point}, 100);
+        cloud.add({point}, 100);
         const auto assertStreamsUnchanged = [&]
         {
             deque<IMUstream::IMU_DATA> gyro, acc;
@@ -539,7 +571,7 @@ namespace
             assert(gyro[0].m_t == 100 && gyro[0].m_v.isApprox(Vector3f(1, 2, 3)));
             assert(acc[0].m_t == 100 && acc[0].m_v.isApprox(Vector3f(4, 5, 6)));
             vector<GEOMETRY_POINT> points;
-            assert(cloud.get(points) == 100 && points.size() == 1);
+            assert(cloud.get(points, 0) == 100 && points.size() == 1);
             assert(points[0].m_tStamp == 100 && points[0].m_vP.isApprox(point.m_vP));
         };
         assert(driver.loadConfig());
@@ -574,7 +606,7 @@ namespace
         }
         const json invalid[] = {json(), json::array(), {{"msopPort", 7788}}, {{"imuPort", 6699}},
             {{"imuPort", -1}}, {{"vRangeD", {0, 120}}}, {{"vRangeD", {10, 1}}}, {{"splitAngle", 360}},
-            {{"splitAngle", -1}}, {{"splitAngle", std::numeric_limits<double>::infinity()}},
+            {{"nMaxFramePoints", 96}}, {{"frameTimeoutMs", 250}},
             {{"bIMUoutput", 1}}, {{"bIMUpreview", 1}}, {{"bIMUpreview", "true"}},
             {{"bIMUpreview", nullptr}}, {{"deviceIP", "999.0.0.1"}},
             {{"bReflectivity", false}, {"unexpected", 1}}, {{"deviceRPM", 1200}}};
@@ -583,7 +615,7 @@ namespace
             assert(!Access::config(driver, patch, errors));
             assert(!errors.empty() && Access::config(driver) == original);
         }
-        configure(driver, {{"imuPort", 0}, {"splitAngle", 89.99}});
+        configure(driver, {{"imuPort", 0}});
         assert(Access::config(driver).at("imuPort") == 0);
         Access::info(driver, calibration());
         assert(Access::config(driver).at("deviceRPM") == 600);
@@ -599,10 +631,10 @@ int main()
 {
     testSocketRetries();
     testCalibration();
-    testFramesAndDualReturns();
+    testImmediatePacketsAndDualReturns();
     testSequenceAndRecovery();
     testCroppedFOV();
-    testFilteringTransformAndCap();
+    testFilteringTransformAndCapacity();
     testIMU();
     testIMUpreview();
     testPreviewOptIn();

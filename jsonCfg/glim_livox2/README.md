@@ -28,9 +28,11 @@ port; see the [Livox networking notes](../../html/viewer/_Livox2/README.md).
 `lvxIMUdataEn: 1` enables the built-in 200 Hz IMU. `_Livox2` converts acceleration
 from g to m/s² once, using 9.80665; gyroscope values are rad/s. No additional
 acceleration scale is needed. `bIMUstab: false` keeps points in the original LiDAR
-coordinates for GLIM's inertial motion compensation. `frameDurationMs: 100` groups the
-non-repeating scan into approximately 10 Hz point clouds using sensor timestamps;
-the Mid-360 packet frame counter does not delimit these scans.
+coordinates for GLIM's inertial motion compensation. The driver appends packets
+immediately to `PCLstreamOut`; `livoxPoints.nBuf` retains 100,000 points. GLIM's
+`scanDurationMs: 100` selects non-overlapping recent point windows at approximately
+10 Hz, using per-point sensor timestamps. The Mid-360 packet frame counter does
+not delimit these scans.
 
 `config_sensors.json` sets `global_shutter_lidar: false`. The frame timestamp is
 the scan start and each point retains its capture time in the same nanosecond

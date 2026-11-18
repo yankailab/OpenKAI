@@ -51,7 +51,7 @@ namespace kai
     {
         m_config = {{"deviceIP", "192.168.1.200"}, {"bindIP", "0.0.0.0"},
             {"msopPort", 6699}, {"difopPort", 7788}, {"receiveBufferBytes", 4194304},
-            {"tOutSec", 3}, {"frameTimeoutMs", 250}, {"nMaxFramePoints", 50000},
+            {"tOutSec", 3},
             {"bReflectivity", true}, {"bDropNoise", true}, {"bUseSensorTime", true},
             {"vRangeD", {0.1, 120.0}}, {"vColorDefault", {1.0, 1.0, 1.0}}};
     }
@@ -71,7 +71,6 @@ namespace kai
             }
         }
         if (!applyConfig(patch, false, errors)) { LOG_E(errors.dump()); return false; }
-        m_framePoints.reserve(m_config.at("nMaxFramePoints").get<size_t>());
         return true;
     }
 
@@ -93,9 +92,9 @@ namespace kai
         IF_Le_F(!tfName.empty() && !m_pTf, "_TransformRigid not found: " + tfName);
 
         string name;
-        jKv(*m_pJ, "PCLframeOut", name);
-        m_pPCLout = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(name)));
-        IF_Le_F(!m_pPCLout, "PCLframeOut not found: " + name);
+        jKv(*m_pJ, "PCLstreamOut", name);
+        m_pPCLout = dynamic_cast<PCLstream *>(static_cast<DataObjBase *>(pM->findDataObject(name)));
+        IF_Le_F(!m_pPCLout, "PCLstreamOut not found: " + name);
         return true;
     }
 
@@ -129,7 +128,7 @@ namespace kai
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
         if (!check()) return false;
         if (m_started) return true;
-        resetFrame();
+        m_haveSequence = false;
         m_lastMSOP = m_lastDIFOP = 0;
         m_selectedIP.clear();
         m_observed = json::object();
@@ -150,7 +149,7 @@ namespace kai
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
         closeSockets();
         m_started = false;
-        resetFrame();
+        m_haveSequence = false;
     }
 
     void _E1R::update()
@@ -199,13 +198,11 @@ namespace kai
                     if (sockets[i].revents & (POLLERR | POLLNVAL)) m_lastError = "E1R UDP receive socket error";
                 }
             const uint64_t now = getTns();
-            if (m_frameActive && m_lastMSOP && now - m_lastMSOP >= m_config.at("frameTimeoutMs").get<uint64_t>() * NSEC_MSEC)
-                publishFrame(true);
             const uint64_t last = std::max(m_lastMSOP, m_lastDIFOP);
             if (last && now - last >= m_config.at("tOutSec").get<uint64_t>() * NSEC_SEC && !m_timedOut)
             {
                 m_timedOut = true;
-                resetFrame();
+                m_haveSequence = false;
                 if (m_config.at("deviceIP") == "0.0.0.0") m_selectedIP.clear();
             }
         }
@@ -254,31 +251,6 @@ namespace kai
         }
     }
 
-    void _E1R::resetFrame()
-    {
-        m_framePoints.clear();
-        m_frameActive = false;
-        m_framePartial = false;
-        m_haveSequence = false;
-        m_frameStamp = 0;
-        m_lastPacketUs = 0;
-    }
-
-    void _E1R::publishFrame(bool partial)
-    {
-        if (!m_frameActive) return;
-        // PCL consumers use strictly increasing frame IDs even after a sensor
-        // clock reset. Individual point timestamps retain the chosen time base.
-        const uint64_t stamp = std::max(m_frameStamp, m_lastPublishedStamp + 1);
-        if (m_pPCLout) m_pPCLout->set(m_framePoints, stamp);
-        m_lastPublishedStamp = stamp;
-        ++m_frames;
-        if (partial || m_framePartial) ++m_partialFrames;
-        m_framePoints.clear();
-        m_frameActive = false;
-        m_framePartial = false;
-    }
-
     void _E1R::handleMSOP(const e1r::Msop &packet, uint64_t receivedNs)
     {
         const bool sensorTime = m_config.at("bUseSensorTime");
@@ -296,41 +268,34 @@ namespace kai
         m_observed["msopTimeMode"] = packet.timeMode;
         const bool clockReset = m_haveSequence && (packet.timeMode != m_timeMode ||
             (m_lastPacketUs > packet.timestampUs && m_lastPacketUs - packet.timestampUs >= 1000000));
-        if (clockReset) { publishFrame(true); resetFrame(); ++m_clockResets; }
-        bool newSequenceFrame = !m_haveSequence;
+        if (clockReset) { m_haveSequence = false; ++m_clockResets; }
+        bool outOfOrder = false;
         if (m_haveSequence)
         {
             const bool firstPacket = packet.sequence == 0 && packet.timestampUs > m_lastPacketUs;
-            if (packet.timestampUs < m_lastPacketUs || (packet.sequence == m_lastSequence && !firstPacket) ||
-                (packet.sequence < m_lastSequence && packet.timestampUs == m_lastPacketUs))
-            { ++m_outOfOrderPackets; return; }
-            if (packet.sequence < m_lastSequence || firstPacket) { publishFrame(); newSequenceFrame = true; }
+            outOfOrder = packet.timestampUs < m_lastPacketUs || (packet.sequence == m_lastSequence && !firstPacket) ||
+                (packet.sequence < m_lastSequence && packet.timestampUs == m_lastPacketUs);
+            if (outOfOrder) ++m_outOfOrderPackets;
+            else if (packet.sequence < m_lastSequence || firstPacket) m_droppedPackets += packet.sequence;
             else if (packet.sequence > unsigned(m_lastSequence) + 1)
-            {
                 m_droppedPackets += packet.sequence - unsigned(m_lastSequence) - 1;
-                m_framePartial = true;
-            }
         }
-        // Validate conversion to OpenKAI nanoseconds separately from the
-        // protocol parser, which retains the full microsecond wire timestamp.
-        const uint64_t packetNs = sensorTime ? packet.timestampUs * 1000 : receivedNs;
-        if (!m_frameActive)
+        else m_droppedPackets += packet.sequence;
+        // Diagnostics describe wire ordering without rejecting capture times.
+        if (!outOfOrder)
         {
-            m_frameActive = true;
-            m_frameStamp = std::max<uint64_t>(packetNs, 1);
-            m_framePartial = m_framePartial || !newSequenceFrame || packet.sequence != 0;
-            if (newSequenceFrame && packet.sequence != 0) m_droppedPackets += packet.sequence;
+            m_lastPacketUs = packet.timestampUs;
+            m_lastSequence = packet.sequence;
+            m_timeMode = packet.timeMode;
         }
+        const uint64_t packetNs = sensorTime ? packet.timestampUs * 1000 : receivedNs;
         m_haveSequence = true;
-        m_lastPacketUs = packet.timestampUs;
-        m_lastSequence = packet.sequence;
-        m_timeMode = packet.timeMode;
         const float minimum = m_config.at("vRangeD")[0], maximum = m_config.at("vRangeD")[1];
-        const size_t limit = m_config.at("nMaxFramePoints");
         const bool reflectivity = m_config.at("bReflectivity"), dropNoise = m_config.at("bDropNoise");
         const Vector3f color(m_config.at("vColorDefault")[0], m_config.at("vColorDefault")[1], m_config.at("vColorDefault")[2]);
-        bool overflow = false;
         const Isometry3f pose = m_pTf ? m_pTf->getPoseCombinedf() : Isometry3f::Identity();
+        vector<GEOMETRY_POINT> points;
+        points.reserve(packet.points.size());
         for (const auto &sample : packet.points)
         {
             // The guide defines 1 as normal and 2 as noise. Live E1R firmware
@@ -338,15 +303,14 @@ namespace kai
             // retain these unclassified points as well as documented normals.
             if (sample.range <= 0 || sample.range < minimum || sample.range > maximum ||
                 (dropNoise && sample.attribute > 1)) continue;
-            if (m_framePoints.size() >= limit) { overflow = true; continue; }
             GEOMETRY_POINT point;
             point.m_vP = pose * Vector3f(sample.x, sample.y, sample.z);
             point.m_vC = reflectivity ? Vector3f::Constant(sample.intensity / 255.0f) : color;
-            point.m_tStamp = std::max<uint64_t>(packetNs + uint64_t(sample.offsetUs) * 1000, 1);
-            m_framePoints.push_back(point);
-            ++m_points;
+            point.m_tStamp = packetNs + uint64_t(sample.offsetUs) * 1000;
+            points.push_back(point);
         }
-        if (overflow) { ++m_frameOverflows; m_framePartial = true; }
+        m_points += points.size();
+        if (m_pPCLout) m_pPCLout->add(points);
     }
 
     void _E1R::handleDIFOP(const e1r::Difop &packet, uint64_t receivedNs)
@@ -364,8 +328,8 @@ namespace kai
     void _E1R::clear()
     {
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
-        resetFrame();
-        if (m_pPCLout) m_pPCLout->set({}, ++m_lastPublishedStamp);
+        m_haveSequence = false;
+        if (m_pPCLout) m_pPCLout->clear();
     }
 
     json _E1R::configValues() const
@@ -388,9 +352,6 @@ namespace kai
         schema["receiveBufferBytes"] = {{"type", "integer"}, {"label", "UDP receive buffer (bytes)"}, {"category", "Network"}, {"min", 65536}, {"max", 67108864},
             {"description", "Requested socket buffer; the operating system may cap this value."}};
         schema["tOutSec"] = {{"type", "integer"}, {"label", "Disconnect timeout (s)"}, {"category", "Network"}, {"min", 1}, {"max", 120}};
-        schema["frameTimeoutMs"] = {{"type", "integer"}, {"label", "Partial frame timeout (ms)"}, {"category", "Point cloud"}, {"min", 20}, {"max", 2000},
-            {"description", "Publish the remaining partial frame after this interval without MSOP packets. Normal frames follow the packet sequence reset."}};
-        schema["nMaxFramePoints"] = {{"type", "integer"}, {"label", "Maximum points per frame"}, {"category", "Point cloud"}, {"min", 96}, {"max", 1000000}};
         schema["bReflectivity"] = {{"type", "bool"}, {"label", "Reflectivity coloring"}, {"category", "Point cloud"}};
         schema["bDropNoise"] = {{"type", "bool"}, {"label", "Filter noisy point attributes"}, {"category", "Point cloud"},
             {"description", "Keep normal (1) and unclassified (0, used by firmware 8.1.1) points; reject noise (2) and unknown attributes. Zero ranges are always discarded."}};
@@ -447,9 +408,9 @@ namespace kai
         }
         if (next != m_config)
         {
-            resetFrame();
             if (networkChanged || next.at("deviceIP") != m_config.at("deviceIP"))
             {
+                m_haveSequence = false;
                 m_selectedIP.clear(); m_lastMSOP = m_lastDIFOP = 0;
                 m_observed = json::object(); m_timedOut = false; m_lastError.clear();
             }
@@ -468,9 +429,9 @@ namespace kai
             connected ? "device information only" : last ? "disconnected" : "waiting";
         return {{"state", state}, {"deviceOpen", connected}, {"sourceIP", m_selectedIP},
             {"pointPackets", m_pointPackets}, {"difopPackets", m_difopPackets}, {"points", m_points},
-            {"frames", m_frames}, {"partialFrames", m_partialFrames}, {"droppedPackets", m_droppedPackets},
+            {"droppedPackets", m_droppedPackets},
             {"invalidPackets", m_invalidPackets}, {"outOfOrderPackets", m_outOfOrderPackets},
-            {"frameOverflows", m_frameOverflows}, {"clockResets", m_clockResets},
+            {"clockResets", m_clockResets},
             {"lastPacketAgeMs", last ? json((now - last) / NSEC_MSEC) : json()},
             {"lastMSOPageMs", m_lastMSOP ? json((now - m_lastMSOP) / NSEC_MSEC) : json()},
             {"lastDIFOPageMs", m_lastDIFOP ? json((now - m_lastDIFOP) / NSEC_MSEC) : json()},
@@ -482,7 +443,7 @@ namespace kai
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
         _ModuleBase::console(pConsole);
         if (pConsole) static_cast<_Console *>(pConsole)->addMsg("E1R " + statusValues().at("state").get<string>() +
-            " " + m_selectedIP + " frames=" + std::to_string(m_frames) + " " + m_lastError);
+            " " + m_selectedIP + " points=" + std::to_string(m_points) + " " + m_lastError);
     }
 
     void _E1R::jsonCmd(const json &request, void *pJSONbase)

@@ -48,7 +48,7 @@ The sample runs `_WebGeometry` on TCP **8080** and `_JSONcmd` on TCP **7890**.
     "lvxHostPortCmd": 56000,
     "lvxHostPortPCL": 56001,
     "lvxHostPortIMU": 56002,
-    "PCLframeOut": "livoxPoints",
+    "PCLstreamOut": "livoxPoints",
     "IMUstreamOut": "livoxIMU",
     "bIMUpreview": true
   }
@@ -87,7 +87,7 @@ controls are available for the connected model and firmware, including:
 - Normal, power saving, or standby power mode (`lvxWorkMode`).
 - Point cloud sampling (`lvxSampling`), IMU capture (`lvxIMUdataEn`), and fan
   control (`lvxFan`), where supported.
-- OpenKAI frame duration, frame size limit, distance range, point color,
+- OpenKAI device timeout, distance range, point color,
   reflectivity, IMU preview, and stabilization.
 
 Unsupported controls are disabled. Device identity, network configuration, and
@@ -98,10 +98,11 @@ writes the current settings to the launch JSON used to start OpenKAI.
 
 Status refreshes every two seconds and more often while settings are pending.
 The device panel includes firmware, current work state, the heartbeat status code,
-and packet/frame counters.
-Refresh pauses while a field has focus so unfinished input is preserved. Frame
-duration is OpenKAI's point-cloud accumulation window, independent of the
-sensor's scan pattern. Power saving, standby, and disabled sampling can stop
+and packet/point counters.
+Refresh pauses while a field has focus so unfinished input is preserved.
+Packets append immediately to `PCLstreamOut`; the destination's `nBuf` owns the
+retained point count. The supplied `PCLframe` destination lets the viewer read
+that ring as a snapshot. Point timestamp validity and age are consumer decisions. Power saving, standby, and disabled sampling can stop
 point-cloud delivery; select normal mode and enable sampling to resume it.
 
 ## IMU preview
@@ -137,7 +138,7 @@ end with the literal `EOJ` delimiter; replies can span WebSocket messages.
 ```json
 {"module":"Lvx1","cmd":"getConfig","requestId":"lidar-1"}
 {"module":"Lvx1","cmd":"setConfig","requestId":"lidar-2","config":{"lvxReturnMode":2}}
-{"module":"Lvx1","cmd":"setConfig","requestId":"lidar-3","config":{"frameDurationMs":100}}
+{"module":"Lvx1","cmd":"setConfig","requestId":"lidar-3","config":{"tOutSec":3}}
 {"module":"Lvx1","cmd":"saveConfig","requestId":"lidar-4"}
 {"module":"Lvx1","cmd":"getIMU","requestId":"imu-1"}
 ```

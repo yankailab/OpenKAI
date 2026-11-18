@@ -41,6 +41,7 @@ namespace kai
 		virtual void stopSLAM(void);
 		virtual void resetSLAM(void);
 		virtual void updateSLAM(void);
+		virtual bool validInputPoint(const GEOMETRY_POINT &point) const;
 
 		bool readPointCloud(vector<GEOMETRY_POINT> &points, uint64_t &stamp);
 		bool readIMU(Vector3d &acc, Vector3d &gyro, uint64_t &stamp);
@@ -51,7 +52,11 @@ namespace kai
 		std::mutex m_mtxSLAM;
 		std::atomic_uint m_controlWaiters{0};
 		PCLframe *m_pPCLin = nullptr;
-		uint64_t m_tPointInput = 0;
+		uint64_t m_tPointInput = 0; // publication clock, independent of sensor time
+		uint64_t m_tPointRead = 0;
+		uint64_t m_tPointCursor = 0; // latest consumed point capture time
+		uint64_t m_tPointNewest = 0; // most recent valid arrival, for clock resets
+		uint64_t m_scanDurationMs = 0; // zero consumes each published frame immediately
 		IMUstream *m_pIMUin = nullptr;
 		deque<IMUstream::IMU_DATA> m_dqGyro;
 		deque<IMUstream::IMU_DATA> m_dqAcc;

@@ -9,7 +9,7 @@
 #define OpenKAI_src_Sensor_LiDAR_Livox__Livox2_H_
 
 #include "../../../../Universe/_TransformRigid.h"
-#include "../../../../DataObject/PCLframe.h"
+#include "../../../../DataObject/PCLstream.h"
 #include "../../../../DataObject/IMUstream.h"
 #include "../../../../Dependencies/SensorFusion/SensorFusion.h"
 #include "../../../../Dependencies/CRC.h"
@@ -205,11 +205,10 @@ namespace kai
         json controlSchema() const;
         json imuValues() const;
         bool applyConfig(const json &patch, bool live, json &errors);
-        void resetFrame();
 
     protected:
         _TransformRigid *m_pTf = nullptr;
-        PCLframe *m_pPCLout = nullptr;
+        PCLstream *m_pPCLout = nullptr;
         std::array<int, SocketCount> m_sockets{{-1, -1, -1, -1, -1}};
         bool m_started = false;
         uint32_t m_hostIP = 0; // Actual local address, resolved from the route when lvxHostIP is zero.
@@ -251,23 +250,15 @@ namespace kai
         uint64_t m_lastIMUrx = 0;
         IMUstream *m_pIMUout = nullptr;
 
-        vector<GEOMETRY_POINT> m_vFramePoints;
         Vector3f m_vColorDefault = Vector3f::Ones();
         Vector2f m_vRangeD = Vector2f(0.1f, 200.0f);
         bool m_bReflectivity = true;
-        int m_nMaxFramePoints = 100000;
-        uint64_t m_frameDurationNs = 100 * NSEC_MSEC;
-        uint64_t m_tPCLframe = 0;
         uint64_t m_tLastPCL = 0;
-        uint8_t m_iPCLframe = 0;
-        bool m_bPCLframe = false;
         uint64_t m_pointPackets = 0;
         uint64_t m_points = 0;
-        uint64_t m_frames = 0;
         uint64_t m_imuSamples = 0;
         uint64_t m_invalidPackets = 0;
         uint64_t m_outOfOrderPackets = 0;
-        uint64_t m_frameOverflows = 0;
         uint64_t m_commandErrors = 0;
         uint64_t m_commandRetries = 0;
     };

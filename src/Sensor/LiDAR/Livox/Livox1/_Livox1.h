@@ -2,7 +2,7 @@
 #define OPENKAI_SENSOR_LIVOX1_H
 
 #include "../../../../Universe/_TransformRigid.h"
-#include "../../../../DataObject/PCLframe.h"
+#include "../../../../DataObject/PCLstream.h"
 #include "../../../../DataObject/IMUstream.h"
 #include "../../../../Utility/util.h"
 #include "../../../../Utility/utilNet.h"
@@ -73,7 +73,6 @@ namespace kai
         void handlePointCloudData(const uint8_t *bytes, size_t length);
         void handleIMUdata(const uint8_t *bytes, size_t length);
         uint64_t dataTimestamp(const uint8_t *bytes);
-        void resetFrame();
         void resetClocks();
         json configValues() const;
         json controlSchema() const;
@@ -81,7 +80,7 @@ namespace kai
         bool applyConfig(const json &patch, bool live, json &errors);
 
         _TransformRigid *m_pTf = nullptr;
-        PCLframe *m_pPCLout = nullptr;
+        PCLstream *m_pPCLout = nullptr;
         IMUstream *m_pIMUout = nullptr;
         mutable std::recursive_mutex m_mutex;
         std::array<int, SocketCount> m_sockets{{-1, -1, -1, -1}};
@@ -108,14 +107,12 @@ namespace kai
         uint8_t m_timeType = 255;
         uint64_t m_ppsAnchorHost = 0;
         int64_t m_ppsAnchorOffset = 0;
-        vector<GEOMETRY_POINT> m_vFramePoints;
         Vector3f m_vColorDefault = Vector3f::Ones();
         Vector2f m_vRangeD = Vector2f(0.1f, 500.0f);
-        bool m_bReflectivity = true, m_bPCLframe = false;
-        int m_nMaxFramePoints = 100000;
-        uint64_t m_frameDurationNs = 100 * NSEC_MSEC, m_tPCLframe = 0, m_tLastPCL = 0;
-        uint64_t m_pointPackets = 0, m_points = 0, m_frames = 0, m_imuSamples = 0,
-            m_invalidPackets = 0, m_outOfOrderPackets = 0, m_frameOverflows = 0,
+        bool m_bReflectivity = true;
+        uint64_t m_tLastPCL = 0;
+        uint64_t m_pointPackets = 0, m_points = 0, m_imuSamples = 0,
+            m_invalidPackets = 0, m_outOfOrderPackets = 0,
             m_commandErrors = 0, m_commandRetries = 0;
     };
 }

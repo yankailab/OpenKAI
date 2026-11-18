@@ -8,37 +8,22 @@
 #ifndef OpenKAI_src__DataStream__PCLframe__H_
 #define OpenKAI_src__DataStream__PCLframe__H_
 
-#include "DataObjBase.h"
+#include "PCLstream.h"
 
 namespace kai
 {
-    struct GEOMETRY_POINT
-    {
-        Vector3f m_vP = Vector3f::Zero();	// pos
-        Vector3f m_vC = Vector3f::Zero();	// color
-        uint64_t m_tStamp = 0;				// nanosecond timestamp, 0: invalid, >= 1 valid
-
-        void clear(void)
-        {
-            m_vP.setZero();
-            m_vC.setZero();
-            m_tStamp = 0;
-        }
-    };
-
-	class PCLframe : public DataObjBase
+	class PCLframe : public PCLstream
 	{
 	public:
 		PCLframe();
 		virtual ~PCLframe();
 		void console(void *pConsole) override;
 
+		// Replace the whole frame and match capacity to its size; use set or add exclusively.
 		void set(const vector<GEOMETRY_POINT> &src, uint64_t tStamp = 0);
+		// Copy all slots in storage order, including unused/invalid points in a stream buffer.
 		uint64_t get(vector<GEOMETRY_POINT> &dest);
-
-	private:
-		vector<GEOMETRY_POINT> m_vPoints;
-		std::shared_mutex m_sMutex;
+		using PCLstream::get;
 	};
 
 }

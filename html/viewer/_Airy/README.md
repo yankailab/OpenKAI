@@ -35,11 +35,13 @@ interface; neither changes the sensor's network settings.
 
 Airy uses its own 1248-byte MSOP/DIFOP formats, 48/96-channel packet models,
 5 mm range units and per-unit angular calibration. The native receiver waits
-for valid DIFOP calibration before publishing points, then splits scans at the
-azimuth wrap and retains per-point capture timestamps. The output is in metres,
+for valid DIFOP calibration before publishing points, then appends each decoded
+packet directly to `PCLstreamOut`, preserving per-point capture timestamps. The output is in metres,
 with X forward, Y left and Z up. The linked `_TransformRigid` instance's `vT` and
-`vR` define the OpenKAI mounting transform. The supplied configuration reserves 200,000 points per frame to
-accommodate dual returns; the manual specifies 10 Hz and a nominal 60 m maximum
+`vR` define the OpenKAI mounting transform. The destination data object's
+`nBuf: 200000` retains a rolling point history, which the viewer reads through
+`PCLframe`. Consumers choose timestamp validity and time windows. This capacity
+accommodates dual returns; the manual specifies 10 Hz and a nominal 60 m maximum
 range, with range varying by channel and target reflectivity.
 
 The implementation follows the supplied Airy User Guide and checks firing
@@ -51,7 +53,7 @@ the native decoder supports the documented 48/96-channel layouts.
 ## Controls
 
 Every backend schema field is shown in the control panel. Local receiver
-addresses, ports, buffers, timeouts, point limits, distance filters, color,
+addresses, ports, UDP receive buffers, device timeouts, distance filters, color,
 timestamps and IMU publication are editable. A change sends
 an immediate `setConfig` patch. **Save config** writes the accepted values to
 the publisher's section in the original launch JSON, preserving linked instances'

@@ -64,10 +64,10 @@ def check_controls(browser, captured=None):
         assert(sent.length === 1 && sent[0].cmd === 'getConfig', 'Connect must load config');
         assert($('#lidarModule').value === 'E1R', 'Default module must match launch configuration');
         let config = {deviceIP:'192.168.1.200', msopPort:6699, bReflectivity:true,
-            frameTimeoutMs:250, vRangeD:[0.1,120], vColorDefault:[1,1,1]};
+            tOutSec:3, vRangeD:[0.1,120], vColorDefault:[1,1,1]};
         const schema = {
             deviceIP:{type:'string',category:'Receiver'}, msopPort:{type:'integer',min:1,max:65535},
-            bReflectivity:{type:'bool'}, frameTimeoutMs:{type:'integer',min:10,max:10000},
+            bReflectivity:{type:'bool'}, tOutSec:{type:'integer',min:1,max:120},
             vRangeD:{type:'range',length:2,min:0,max:327.675}, vColorDefault:{type:'array',length:3,min:0,max:1},
             deviceReturnMode:{type:'integer',readOnly:true,category:'Device parameters',
                 choices:[{value:4,label:'Strongest'}]},
@@ -99,9 +99,9 @@ def check_controls(browser, captured=None):
         assert(field('bReflectivity').value === 'true', 'Rejected edit must restore accepted value');
         assert($('#configStatus').textContent.includes('Setting rejected'), 'Errors must be visible');
         count=sent.length;
-        change('frameTimeoutMs','0'); change('frameTimeoutMs','30.5'); change('msopPort','65536');
+        change('tOutSec','0'); change('tOutSec','30.5'); change('msopPort','65536');
         assert(sent.length === count, 'Numeric bounds and integer validation must reject invalid inputs');
-        request=change('frameTimeoutMs','500'); assert(request.config.frameTimeoutMs===500,'Valid number must be sent'); reply();
+        request=change('tOutSec','50'); assert(request.config.tOutSec===50,'Valid number must be sent'); reply();
         for (const [key,value] of [['vRangeD','[40,1]'],['vRangeD','[0,"40"]'],['vColorDefault','[1,0]'],
                                   ['vColorDefault','[1,2,0]']]) {
             count=sent.length; change(key,value); assert(sent.length===count,'Invalid vector must not be sent: '+key+' '+value);

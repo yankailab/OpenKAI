@@ -31,7 +31,8 @@ namespace kai::livox2
     {
         if (!p || size < 36 || size > 1380 || p[0] != 0 || u16(p + 1) != size || p[11] > 2) return false;
         const size_t stride = pointSize(p[10]), count = u16(p + 5);
-        if (!stride || !count || count > 1344 / stride || size != 36 + count * stride || !u64(p + 28)) return false;
+        // Point capture-time validity is selected by the stream consumer; keep the IMU clock requirement.
+        if (!stride || !count || count > 1344 / stride || size != 36 + count * stride || (p[10] == 0 && !u64(p + 28))) return false;
         if (u64(p + 28) > UINT64_MAX - uint64_t(u16(p + 3)) * 100) return false;
         // Mid-360 firmware omits the point-cloud checksum (zero), but supplies
         // IMU checksums. Check every checksum supplied by the device.

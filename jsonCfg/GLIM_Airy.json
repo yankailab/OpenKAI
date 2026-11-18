@@ -7,7 +7,8 @@
 	},
 	"airyPoints": {
 		"type": "dataObject",
-		"class": "PCLframe"
+		"class": "PCLframe",
+		"nBuf": 200000
 	},
 	"Airy": {
 		"class": "_Airy",
@@ -17,15 +18,12 @@
 			"FPS": 200
 		},
 		"bLog": false,
-		"PCLframeOut": "airyPoints",
 		"deviceIP": "192.168.1.200",
 		"bindIP": "0.0.0.0",
 		"msopPort": 6699,
 		"difopPort": 7788,
 		"receiveBufferBytes": 4194304,
 		"tOutSec": 3,
-		"frameTimeoutMs": 250,
-		"nMaxFramePoints": 200000,
 		"bReflectivity": true,
 		"bUseSensorTime": true,
 		"vRangeD": [
@@ -40,8 +38,8 @@
 		"imuPort": 6688,
 		"bIMUoutput": true,
 		"IMUstreamOut": "airyIMU",
-		"splitAngle": 0.0,
-		"_TransformRigid": "AiryTransform"
+		"_TransformRigid": "AiryTransform",
+		"PCLstreamOut": "airyPoints"
 	},
 	"wsServer": {
 		"BytePacketStreamIn": "wsServer_tx",
@@ -198,7 +196,8 @@
 		"nLiveFrames": 60,
 		"tMapUpdateNs": 200000000,
 		"PCLmapOut": "GLIMMap",
-		"_TransformRigid": "GLIMTransform"
+		"_TransformRigid": "GLIMTransform",
+		"scanDurationMs": 100
 	},
 	"glimPCL": {
 		"type": "dataObject",

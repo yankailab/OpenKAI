@@ -47,6 +47,7 @@ namespace kai
 		void stopSLAM(void) override;
 		void resetSLAM(void) override;
 		void updateSLAM(void) override;
+		bool validInputPoint(const GEOMETRY_POINT &point) const override;
 
 	private:
 		void insertMappingFrames(const vector<std::shared_ptr<const glim::EstimationFrame>> &frames);

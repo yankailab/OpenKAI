@@ -108,6 +108,47 @@ namespace
 		assert(frame.back() == 0); // RGB payload padding is retained after the final point.
 	}
 
+	void retainedPointFrameTest()
+	{
+		PCLframe points;
+		assert(points.clear(4));
+		VIEWER_GEOMETRY_SOURCE source;
+		source.m_pPCLframein = &points;
+		source.m_nP = 4;
+		WebGeometryCache cache;
+		auto point = [](float position, uint64_t stamp) {
+			GEOMETRY_POINT value;
+			value.m_vP = Vector3f(position, 0, 0);
+			value.m_tStamp = stamp;
+			return value;
+		};
+		auto snapshot = [&]() {
+			vector<uint8_t> frame;
+			wire::begin(frame, wire::Type::Points, 1, 0);
+			cache.appendTo(frame);
+			wire::finish(frame, 1);
+			return frame;
+		};
+		points.add({point(1, 10), point(999, 0), point(2, 20)}, 100);
+		assert(cache.refresh(source, wire::Type::Points, 1, 0));
+		auto frame = snapshot();
+		assert(readU32(frame, wire::HeaderBytes + 4) == 2);
+		assert(readFloat(frame, wire::HeaderBytes + wire::ObjectBytes) == 1);
+		assert(!cache.refresh(source, wire::Type::Points, 1, 0));
+		points.add({point(3, 30), point(4, 40)}, 200);
+		assert(cache.refresh(source, wire::Type::Points, 1, 0));
+		frame = snapshot();
+		assert(readU32(frame, wire::HeaderBytes + 4) == 3);
+		const size_t payload = wire::HeaderBytes + wire::ObjectBytes;
+		// Whole-frame reads retain physical ring order after the buffer wraps.
+		assert(readFloat(frame, payload) == 4 && readFloat(frame, payload + 12) == 2 &&
+			readFloat(frame, payload + 24) == 3);
+		assert(cache.refresh(source, wire::Type::Points, 1, 31));
+		frame = snapshot();
+		assert(readU32(frame, wire::HeaderBytes + 4) == 1);
+		assert(readFloat(frame, payload) == 4);
+	}
+
 	void oversizedFrameTest()
 	{
 		std::vector<uint8_t> frame;
@@ -163,6 +204,7 @@ int main()
 {
 	configuredCapsTest();
 	largeFrameTest();
+	retainedPointFrameTest();
 	oversizedFrameTest();
 	cellIDWireTest();
 	std::cout << "Web geometry configured caps, large point frames, frame limits and cell IDs passed\n";

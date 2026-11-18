@@ -34,7 +34,7 @@ All LiDAR networking is configured in the `_Livox2` instance:
     "lvxHostPortState": 56201,
     "lvxHostPortPCL": 56301,
     "lvxHostPortIMU": 56401,
-    "PCLframeOut": "livoxPoints",
+    "PCLstreamOut": "livoxPoints",
     "IMUstreamOut": "livoxIMU"
   }
 }
@@ -71,9 +71,9 @@ page URL when using a different command port.
 
 The LiDAR module defaults to **Lvx1**. **Refresh config** retrieves the driver's
 current configuration, supported parameter schema and device status. Controls
-include coordinate format, detection/work modes, embedded IMU, point-cloud frame
-duration, distance filtering, reflectivity/color, IMU stabilization, maximum frame
-size and timeout, as supported by the connected device. Network settings and
+include coordinate format, detection/work modes, embedded IMU, distance filtering,
+reflectivity/color, IMU stabilization and device timeout, as supported by the
+connected device. Network settings and
 device identity are read-only; edit network settings on `Lvx1` in the launch
 JSON before restarting OpenKAI. MID-360 does not expose unsupported frame-rate
 or scan-pattern choices.
@@ -86,10 +86,13 @@ choose another file. Status and packet counters refresh every two seconds, or
 more often while commands are pending. Periodic refresh pauses while an editable
 field has focus so unfinished input is preserved.
 
-Point-cloud frame duration controls OpenKAI's accumulation window, rather than
-the MID-360's physical scan rate. Shorter windows reduce latency and produce
-fewer points in each frame. IMU stabilization changes the displayed/output point
-coordinates; leave it off when GLIM consumes the raw LiDAR and IMU streams.
+Each decoded packet is appended immediately to `PCLstreamOut`. The destination
+owns retention through `nBuf` (100,000 points in this profile). It is a `PCLframe`
+so the viewer can read the retained cloud as a snapshot; incremental consumers
+can instead use `PCLstream::get(points, captureTimeCursor)`. Point timestamps are
+preserved, and consumers decide which points are valid or recent. GLIM owns its
+100 ms scan window through `scanDurationMs`. IMU stabilization changes output
+coordinates; leave it off when GLIM consumes raw LiDAR and IMU streams.
 
 ## IMU and SLAM
 
@@ -125,7 +128,7 @@ across WebSocket messages. Both directions include `module` and `requestId`.
 ```json
 {"module":"Lvx1","cmd":"getConfig","requestId":"lidar-1"}
 {"module":"Lvx1","cmd":"setConfig","requestId":"lidar-2","config":{"lvxIMUdataEn":1}}
-{"module":"Lvx1","cmd":"setConfig","requestId":"lidar-3","config":{"frameDurationMs":100}}
+{"module":"Lvx1","cmd":"setConfig","requestId":"lidar-3","config":{"tOutSec":3}}
 {"module":"Lvx1","cmd":"saveConfig","requestId":"lidar-4"}
 {"module":"Lvx1","cmd":"getIMU","requestId":"imu-1"}
 ```
@@ -169,13 +172,13 @@ python3 test/Sensor/LiDAR/live.py build/OpenKAI --glim --seconds 20
 
 The first two commands need no sensor. The hardware test starts its own backend
 with a temporary launch file and HTTP ports, verifies all three point formats,
-IMU enable/disable, invalid settings, frame duration, save and shutdown, and
+IMU enable/disable, invalid settings, receiver timeout, save and shutdown, and
 restores the settings it edits. Stop other Livox backends before running it.
 `--glim` also checks stationary inertial initialization, tracking and PLY export.
 Use `--output /tmp/livox-test` to retain logs and results.
 
 Live driver verification on 2026-10-23 used the owned UDP sockets with the
-MID-360 at `192.168.16.120`: the 20-second capture published 199 frames and
+MID-360 at `192.168.16.120` before the stream refactoring: that 20-second capture published 199 frames and
 received 4,021 IMU samples. All three point formats and clean shutdown passed,
 with no invalid packets, command errors, or command retries. This run did not
 repeat the browser verification below.

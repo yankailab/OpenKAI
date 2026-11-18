@@ -217,17 +217,25 @@ def run(browser, editor):
         const producers = new OpenKAIModel(OPENKAI_SCHEMA);
         producers.addNode('PCLframe', 'points');
         for (const name of ['_PCLfile', '_PCmerge', '_PCrecv',
-                            '_Livox2', '_Airy', '_E1R', '_PCregistCol', '_LCalign']) {
+                            '_Livox1', '_Livox2', '_Airy', '_E1R', '_PCregistCol', '_LCalign']) {
             const definition = producers.getClass(name);
             if (JSON.stringify(definition.baseClasses) !== '["_ModuleBase"]')
                 throw Error(name + ' must directly inherit _ModuleBase');
-            const output = definition.dependencies.find(dep => dep.path.join('.') === 'PCLframeOut');
-            if (!output || output.targetClass !== 'PCLframe' || output.declaredIn !== name)
-                throw Error(name + ' must declare its own PCLframeOut output');
+            const stream = ['_Livox1', '_Livox2', '_Airy', '_E1R'].includes(name);
+            const key = stream ? 'PCLstreamOut' : 'PCLframeOut';
+            const output = definition.dependencies.find(dep => dep.path.join('.') === key);
+            if (!output || output.targetClass !== (stream ? 'PCLstream' : 'PCLframe') || output.declaredIn !== name)
+                throw Error(name + ' must declare its own point output');
             producers.addNode(name, name);
-            producers.connect('/' + name, ['PCLframeOut'], '/points');
-            if (producers.toJSON()[name].PCLframeOut !== 'points')
+            producers.connect('/' + name, [key], '/points');
+            if (producers.toJSON()[name][key] !== 'points')
                 throw Error(name + ' must connect to a PCLframe DataObject');
+            if (stream) {
+                producers.addNode('PCLstream', name + 'stream');
+                producers.connect('/' + name, [key], '/' + name + 'stream');
+                if (producers.toJSON()[name][key] !== name + 'stream')
+                    throw Error(name + ' must also accept a PCLstream destination');
+            }
         }
         for (const name of ['_GeometryViewerBase', '_PCsend', '_PCcrop', '_PCremove', '_PCdownSample']) {
             const definition = producers.getClass(name);

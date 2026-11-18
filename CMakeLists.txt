@@ -107,6 +107,7 @@ list(APPEND OpenKAI_cpp
   src/DataObject/IMUstream.cpp
   src/DataObject/LineFrame.cpp
   src/DataObject/PCLframe.cpp
+  src/DataObject/PCLstream.cpp
   src/DataObject/PCLmap.cpp
   src/DataObject/SharedMemoryFrame.cpp
   src/DataObject/UGLIDcellStream.cpp

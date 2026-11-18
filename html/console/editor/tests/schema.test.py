@@ -101,9 +101,9 @@ class StreamReferenceSchemaTest(unittest.TestCase):
         self.assertEqual(set(self.schema["audit"]["factoryClassesWithoutDeclaration"]), registered.difference(self.classes))
 
     def test_data_object_factories_and_configuration_defaults(self):
-        names = {"BBoxStream", "BytePacketStream", "CANframeStream", "IMUstream", "LineFrame", "MavlinkStream", "PCLframe", "PCLmap",
+        names = {"BBoxStream", "BytePacketStream", "CANframeStream", "IMUstream", "LineFrame", "MavlinkStream", "PCLframe", "PCLstream", "PCLmap",
                  "RGBframe", "RGBDframe", "SharedMemoryFrame", "UGLIDcellStream"}
-        stream_classes = {"BBoxStream", "BytePacketStream", "CANframeStream", "UGLIDcellStream"}
+        stream_classes = {"BBoxStream", "BytePacketStream", "CANframeStream", "UGLIDcellStream", "PCLstream"}
         guarded_classes = {"RGBframe": "USE_OPENCV", "RGBDframe": "USE_OPENCV", "MavlinkStream": "USE_MAVLINK"}
         self.assertEqual(
             {name for name, entry in self.classes.items() if entry["category"] == "DataObject" and entry["creatable"]},
@@ -112,7 +112,7 @@ class StreamReferenceSchemaTest(unittest.TestCase):
         for name in names:
             with self.subTest(class_name=name):
                 record, parameters = self.classes[name], self.parameters(name)
-                base = "DataObjStream" if name in stream_classes else "DataObjBase"
+                base = "PCLstream" if name == "PCLframe" else "DataObjStream" if name in stream_classes else "DataObjBase"
                 self.assertEqual(record["baseClasses"], [base])
                 self.assertEqual(record["instanceKind"], "dataObject")
                 self.assertEqual(parameters[("type",)]["default"], "dataObject")
@@ -134,6 +134,9 @@ class StreamReferenceSchemaTest(unittest.TestCase):
         for name in ("BBoxStream", "CANframeStream", "IMUstream", "UGLIDcellStream"):
             self.assertEqual(self.parameters(name)[("nBuf",)]["type"], "integer")
             self.assertEqual(self.parameters(name)[("nBuf",)]["default"], 1000)
+        for name in ("PCLstream", "PCLframe"):
+            self.assertEqual(self.parameters(name)[("nBuf",)]["type"], "integer")
+            self.assertEqual(self.parameters(name)[("nBuf",)]["default"], 100000)
         self.assertEqual(self.parameters("BBoxStream")[("vContainerDim",)]["type"], "array")
         shared = self.parameters("SharedMemoryFrame")
         for key, value in {"shmName": "", "nB": 0, "bWriter": True}.items():
@@ -338,8 +341,8 @@ class StreamReferenceSchemaTest(unittest.TestCase):
                 "RGBDframeOut": "RGBDframe", "RGBDtRGBframeOut": "RGBDframe",
                 "RGBDtDframeOut": "RGBDframe", "PCLframeOut": "PCLframe", "IMUstreamOut": "IMUstream",
             },
-            "_Livox1": {"PCLframeOut": "PCLframe", "IMUstreamOut": "IMUstream"},
-            "_Livox2": {"PCLframeOut": "PCLframe", "IMUstreamOut": "IMUstream"},
+            "_Livox1": {"PCLstreamOut": "PCLstream", "IMUstreamOut": "IMUstream"},
+            "_Livox2": {"PCLstreamOut": "PCLstream", "IMUstreamOut": "IMUstream"},
             "_GLIM": {"PCLframeIn": "PCLframe", "IMUstreamIn": "IMUstream", "PCLframeOut": "PCLframe", "PCLmapOut": "PCLmap"},
             "_WebGLIM": {"PCLmapIn": "PCLmap"},
             "_PCregistICP": {"PCLframeSrcIn": "PCLframe", "PCLframeTgtIn": "PCLframe"},

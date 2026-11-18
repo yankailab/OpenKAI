@@ -30,7 +30,7 @@ namespace kai
         m_started = false;
         m_lvxState = lvxState_deviceQuery;
         m_pending.clear();
-        resetFrame();
+        m_tLastPCL = 0;
         if (m_bIMUpreview) m_imuPreview.reset();
         m_tIMU = m_lastIMUrx = 0;
     }
@@ -47,7 +47,6 @@ namespace kai
             if (m_pJ->contains(entry.key())) patch[entry.key()] = (*m_pJ)[entry.key()];
         if (!applyConfig(patch, false, errors)) { LOG_E(errors.dump()); return false; }
         IF_Le_F(!m_lvxIP, "Set lvxIP to the LiDAR IPv4 address");
-        m_vFramePoints.reserve(m_nMaxFramePoints);
         return true;
     }
 
@@ -70,9 +69,9 @@ namespace kai
         m_mountOrientation = m_pTf ? m_pTf->getRotation() : Quaterniond::Identity();
 
         string name;
-        jKv(*m_pJ, "PCLframeOut", name);
-        m_pPCLout = dynamic_cast<PCLframe *>(static_cast<DataObjBase *>(pM->findDataObject(name)));
-        IF_Le_F(!m_pPCLout, "PCLframeOut not found: " + name);
+        jKv(*m_pJ, "PCLstreamOut", name);
+        m_pPCLout = dynamic_cast<PCLstream *>(static_cast<DataObjBase *>(pM->findDataObject(name)));
+        IF_Le_F(!m_pPCLout, "PCLstreamOut not found: " + name);
         name.clear();
         jKv(*m_pJ, "IMUstreamOut", name);
         m_pIMUout = dynamic_cast<IMUstream *>(static_cast<DataObjBase *>(pM->findDataObject(name)));
@@ -153,7 +152,7 @@ namespace kai
         m_lastRx = m_lastDiscovery = m_lastQuery = m_lastIMUrx = 0;
         m_detectedSN.clear(); m_observed = json::object();
         m_pending.clear(); m_configFailed = false;
-        resetFrame();
+        m_tLastPCL = 0;
         if (m_bIMUpreview) m_imuPreview.reset();
         m_tIMU = 0;
         if (m_pIMUout) m_pIMUout->clear();
@@ -298,10 +297,10 @@ namespace kai
         {
             m_lvxState = lvxState_deviceQuery;
             m_lvxCmdPort = 0; m_lastDiscovery = 0;
-            if (m_pPCLout) m_pPCLout->set({}, m_tLastPCL ? m_tLastPCL : 1);
+            if (m_pPCLout) m_pPCLout->clear();
             m_pending.clear(); m_configFailed = false;
             m_lastError = "LiDAR timed out; rediscovering";
-            resetFrame();
+            m_tLastPCL = 0;
             if (m_bIMUpreview) m_imuPreview.reset();
             m_tIMU = m_lastIMUrx = 0;
             if (m_pIMUout) m_pIMUout->clear();
@@ -355,7 +354,7 @@ namespace kai
         // The sensor advertises its command endpoint; do not assume a fixed model-specific port.
         m_lvxState = lvxState_init;
         m_pending.clear(); m_configFailed = false; m_lastError.clear();
-        resetFrame();
+        m_tLastPCL = 0;
         if (m_bIMUpreview) m_imuPreview.reset();
         m_tIMU = 0;
         if (m_pIMUout) m_pIMUout->clear();
@@ -492,10 +491,6 @@ namespace kai
         handleInfo(cmd.data + 4, cmd.length - 28, livox2::u16(cmd.data));
         if (m_lvxState != lvxState_deviceQuery) m_lastRx = getTns();
     }
-    void _Livox2::resetFrame()
-    {
-        m_vFramePoints.clear(); m_tPCLframe = 0; m_tLastPCL = 0; m_bPCLframe = false;
-    }
 
     void _Livox2::handlePointCloudData(const LIVOX2_DATA &data)
     {
@@ -504,28 +499,11 @@ namespace kai
         const uint64_t stamp = livox2::u64(data.timestamp);
         m_lastRx = getTns();
         ++m_pointPackets;
-        if (m_tLastPCL && stamp <= m_tLastPCL)
-        {
-            ++m_outOfOrderPackets;
-            // A new clock epoch needs a fresh frame. Small reversals are
-            // reordered UDP datagrams and must never enter a SLAM scan.
-            if (m_tLastPCL - stamp < NSEC_SEC) return;
-            resetFrame();
-        }
+        if (m_tLastPCL && stamp <= m_tLastPCL) ++m_outOfOrderPackets;
         m_tLastPCL = stamp;
-        const bool boundary = m_bPCLframe && (stamp - m_tPCLframe >= m_frameDurationNs ||
-            (m_lvxCfg.m_patternMode != kLivoxLidarScanPatternNoneRepetive && data.frame_cnt != m_iPCLframe));
-        if (boundary)
-        {
-            m_pPCLout->set(m_vFramePoints, m_tPCLframe); ++m_frames;
-            m_vFramePoints.clear(); m_bPCLframe = false;
-        }
-        if (!m_bPCLframe)
-        {
-            m_tPCLframe = stamp; m_iPCLframe = data.frame_cnt; m_bPCLframe = true;
-        }
         const size_t stride = livox2::pointSize(data.data_type);
-        bool overflow = false;
+        vector<GEOMETRY_POINT> points;
+        points.reserve(data.dot_num);
         const Isometry3f pose = m_pTf ? m_pTf->getPoseCombinedf() : Isometry3f::Identity();
         for (size_t i = 0; i < data.dot_num; ++i)
         {
@@ -558,21 +536,20 @@ namespace kai
             const float distance2 = position.squaredNorm();
             if (!position.allFinite() || distance2 <= 0 || distance2 < m_vRangeD.x() * m_vRangeD.x() ||
                 distance2 > m_vRangeD.y() * m_vRangeD.y()) continue;
-            if (m_vFramePoints.size() >= size_t(m_nMaxFramePoints)) { overflow = true; continue; }
             GEOMETRY_POINT point;
             point.m_vP = pose * position;
             point.m_vC = m_bReflectivity ? Vector3f::Constant(reflectivity / 255.0f) : m_vColorDefault;
             point.m_tStamp = livox2::pointTime(stamp, data.time_interval, data.dot_num, i);
-            m_vFramePoints.push_back(point); ++m_points;
+            points.push_back(point); ++m_points;
         }
-        if (overflow) ++m_frameOverflows;
+        m_pPCLout->add(points);
     }
 
     void _Livox2::clear()
     {
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
-        resetFrame();
-        if (m_pPCLout) m_pPCLout->set({});
+        m_tLastPCL = 0;
+        if (m_pPCLout) m_pPCLout->clear();
     }
 
     void _Livox2::handleIMUdata(const LIVOX2_DATA &data)
@@ -638,8 +615,8 @@ namespace kai
             {"lvxDetectMode", m_lvxCfg.m_detectMode}, {"lvxWorkModeAfterBoot", m_lvxCfg.m_workModeAfterBoot},
             {"lvxWorkMode", m_lvxCfg.m_workMode}, {"lvxIMUdataEn", m_lvxCfg.m_imuDataEn},
             {"bIMUpreview", m_bIMUpreview}, {"bIMUstab", m_bIMUstab}, {"bReflectivity", m_bReflectivity},
-            {"frameDurationMs", m_frameDurationNs / NSEC_MSEC}, {"tOutSec", m_timeoutNs / NSEC_SEC},
-            {"nMaxFramePoints", m_nMaxFramePoints}, {"vColorDefault", {m_vColorDefault.x(), m_vColorDefault.y(), m_vColorDefault.z()}},
+            {"tOutSec", m_timeoutNs / NSEC_SEC},
+            {"vColorDefault", {m_vColorDefault.x(), m_vColorDefault.y(), m_vColorDefault.z()}},
             {"vRangeD", {m_vRangeD.x(), m_vRangeD.y()}}};
     }
 
@@ -656,9 +633,7 @@ namespace kai
         schema["lvxDetectMode"] = {{"type", "integer"}, {"label", "Detection"}, {"choices", choices({{0, "Normal"}, {1, "Sensitive"}})}};
         schema["lvxWorkMode"] = {{"type", "integer"}, {"label", "Work mode"}, {"choices", choices({{1, "Sampling"}, {2, "Idle"}, {9, "Ready"}})}};
         schema["lvxIMUdataEn"] = {{"type", "integer"}, {"label", "IMU output"}, {"choices", choices({{0, "Disabled"}, {1, "Enabled"}})}};
-        schema["frameDurationMs"] = {{"type", "integer"}, {"label", "Cloud frame duration (ms)"}, {"min", 20}, {"max", 1000}, {"description", "Host grouping interval for the non-repetitive scan"}};
         schema["tOutSec"] = {{"type", "integer"}, {"label", "Disconnect timeout (s)"}, {"min", 1}, {"max", 120}};
-        schema["nMaxFramePoints"] = {{"type", "integer"}, {"label", "Maximum points per frame"}, {"min", 96}, {"max", 1000000}};
         schema["bIMUpreview"] = {{"type", "bool"}, {"label", "Enable IMU preview"}, {"description", "Compute viewer orientation and graphs; raw IMUstream output is independent"}};
         schema["bIMUstab"] = {{"type", "bool"}, {"label", "Stabilize cloud roll/pitch"}, {"description", "Requires Enable IMU preview. Leave disabled for SLAM; SLAM performs its own IMU fusion"}};
         schema["bReflectivity"] = {{"type", "bool"}, {"label", "Reflectivity coloring"}};
@@ -737,17 +712,11 @@ namespace kai
         m_lvxCfg.m_detectMode = next.at("lvxDetectMode"); m_lvxCfg.m_workMode = next.at("lvxWorkMode");
         m_lvxCfg.m_imuDataEn = next.at("lvxIMUdataEn"); m_lvxCfg.m_frameRate = next.at("lvxFrameRate"); m_lvxCfg.m_workModeAfterBoot = next.at("lvxWorkModeAfterBoot");
         m_bIMUpreview = next.at("bIMUpreview"); m_bIMUstab = next.at("bIMUstab"); m_bReflectivity = next.at("bReflectivity");
-        m_frameDurationNs = next.at("frameDurationMs").get<uint64_t>() * NSEC_MSEC;
         m_timeoutNs = next.at("tOutSec").get<uint64_t>() * NSEC_SEC;
-        m_nMaxFramePoints = next.at("nMaxFramePoints");
         for (int i = 0; i < 3; ++i) m_vColorDefault[i] = next.at("vColorDefault")[i];
         for (int i = 0; i < 2; ++i) m_vRangeD[i] = next.at("vRangeD")[i];
         if (before != next)
         {
-            // Preview collection does not alter point decoding or the current cloud frame.
-            for (const auto &field : before.items())
-                if (field.key() != "bIMUpreview" && field.value() != next.at(field.key()))
-                { resetFrame(); break; }
             if (m_bIMUpreview && (before.at("bIMUpreview") != next.at("bIMUpreview") ||
                 before.at("lvxIMUdataEn") != next.at("lvxIMUdataEn"))) m_imuPreview.reset();
             if (before.at("lvxIMUdataEn") != next.at("lvxIMUdataEn"))
@@ -815,7 +784,7 @@ namespace kai
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
         _ModuleBase::console(console);
         if (console) static_cast<_Console *>(console)->addMsg("Livox state=" + std::to_string(m_lvxState) + " SN=" + m_detectedSN +
-            " frames=" + std::to_string(m_frames) + " IMU=" + std::to_string(m_imuSamples) + " " + m_lastError);
+            " IMU=" + std::to_string(m_imuSamples) + " " + m_lastError);
     }
 
     void _Livox2::jsonCmd(const json &request, void *pJSONbase)
@@ -846,8 +815,8 @@ namespace kai
                 reply["status"] = {{"state", m_lvxState == lvxState_deviceQuery ? "discovering" : m_lvxState == lvxState_init ? "configuring" : "connected"},
                     {"serialNumber", m_detectedSN}, {"deviceType", m_lvxDevType}, {"commandPort", m_lvxCmdPort},
                     {"hostIP", ipString(m_hostIP)}, {"socketsOpen", m_started},
-                    {"pointPackets", m_pointPackets}, {"points", m_points}, {"frames", m_frames}, {"imuSamples", m_imuSamples},
-                    {"invalidPackets", m_invalidPackets}, {"outOfOrderPackets", m_outOfOrderPackets}, {"frameOverflows", m_frameOverflows},
+                    {"pointPackets", m_pointPackets}, {"points", m_points}, {"imuSamples", m_imuSamples},
+                    {"invalidPackets", m_invalidPackets}, {"outOfOrderPackets", m_outOfOrderPackets},
                     {"commandErrors", m_commandErrors}, {"commandRetries", m_commandRetries},
                     {"pendingCommands", m_pending.size()}, {"configApplied", m_lvxState != lvxState_deviceQuery && !setting && !m_configFailed},
                     {"lastError", m_lastError}, {"observed", m_observed}};

@@ -2,11 +2,11 @@ const $ = selector => document.querySelector(selector);
 const labels = {
   deviceIP: 'Sensor source IP', bindIP: 'Host bind IP', msopPort: 'Point cloud UDP port',
   difopPort: 'Device information UDP port', receiveBufferBytes: 'Receive buffer (bytes)',
-  imuPort: 'IMU UDP port', bIMUoutput: 'Publish IMU samples', frameTimeoutMs: 'Frame timeout (ms)',
-  splitAngle: 'Frame split azimuth (°)',
+  imuPort: 'IMU UDP port', bIMUoutput: 'Publish IMU samples',
+
   bUseSensorTime: 'Use sensor timestamps', bReflectivity: 'Color by reflectivity',
   vColorDefault: 'Point color [R, G, B]', vRangeD: 'Distance range [minimum, maximum] (m)',
-  nMaxFramePoints: 'Maximum points per frame', tOutSec: 'Device timeout (s)'
+  tOutSec: 'Device timeout (s)'
 };
 const deviceLabels = {
   deviceSensorIP: 'Sensor IPv4', deviceDestinationIP: 'Destination IPv4', deviceMAC: 'Sensor MAC address',
@@ -150,8 +150,8 @@ export class AiryControls {
       pointPackets: 'Point packets', difopPackets: 'Device information packets',
       imuPackets: 'IMU packets', imuSamples: 'Published IMU samples', calibrationReady: 'Angle calibration ready',
       uncalibratedPackets: 'Packets awaiting calibration', imuOutOfOrder: 'Out-of-order IMU packets',
-      points: 'Points received', frames: 'Frames published', partialFrames: 'Partial frames', droppedPackets: 'Dropped packets',
-      invalidPackets: 'Invalid packets', outOfOrderPackets: 'Out-of-order packets', frameOverflows: 'Frame overflows',
+      points: 'Points received', droppedPackets: 'Dropped packets',
+      invalidPackets: 'Invalid packets', outOfOrderPackets: 'Out-of-order packets',
       clockResets: 'Sensor clock resets', lastPacketAgeMs: 'Last packet age (ms)',
       lastMSOPageMs: 'Last point packet age (ms)', lastDIFOPageMs: 'Last device packet age (ms)',
       lastIMUageMs: 'Last IMU packet age (ms)',

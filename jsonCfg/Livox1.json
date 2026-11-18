@@ -7,7 +7,8 @@
 	},
 	"livoxPoints": {
 		"type": "dataObject",
-		"class": "PCLframe"
+		"class": "PCLframe",
+		"nBuf": 100000
 	},
 	"livoxIMU": {
 		"type": "dataObject",
@@ -30,10 +31,7 @@
 		"lvxWorkMode": 1,
 		"lvxIMUdataEn": 1,
 		"bIMUstab": false,
-		"PCLframeOut": "livoxPoints",
 		"IMUstreamOut": "livoxIMU",
-		"nMaxFramePoints": 100000,
-		"frameDurationMs": 100,
 		"bReflectivity": true,
 		"vRangeD": [
 			0.1,
@@ -52,7 +50,8 @@
 		"lvxScanPattern": 0,
 		"lvxSampling": true,
 		"lvxFan": true,
-		"lvxHighSensitivity": true
+		"lvxHighSensitivity": true,
+		"PCLstreamOut": "livoxPoints"
 	},
 	"viewer": {
 		"class": "_WebGeometry",

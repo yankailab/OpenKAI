@@ -67,6 +67,15 @@ namespace kai
 
 	_GLIM::_GLIM() = default;
 
+	bool _GLIM::validInputPoint(const GEOMETRY_POINT &point) const
+	{
+		if (!_SLAMbase::validInputPoint(point)) return false;
+		const Vector3d position = point.m_vP.cast<double>();
+		const double distanceSquared = position.squaredNorm();
+		return distanceSquared > m_distanceNear * m_distanceNear &&
+			distanceSquared < m_distanceFar * m_distanceFar;
+	}
+
 	_GLIM::~_GLIM()
 	{
 		// Join the OpenKAI worker before destroying GLIM or base-class state.
@@ -408,15 +417,9 @@ namespace kai
 			raw->points.reserve(m_vInputPoints.size());
 			raw->times.reserve(m_vInputPoints.size());
 			uint64_t scanEnd = stamp;
-			const double nearSquared = m_distanceNear * m_distanceNear;
-			const double farSquared = m_distanceFar * m_distanceFar;
 			for (const auto &point : m_vInputPoints)
 			{
-				IF_CONT(!point.m_tStamp);
 				const float *p = point.m_vP.data();
-				IF_CONT(!std::isfinite(p[0]) || !std::isfinite(p[1]) || !std::isfinite(p[2]));
-				const double distanceSquared = double(p[0]) * p[0] + double(p[1]) * p[1] + double(p[2]) * p[2];
-				IF_CONT(distanceSquared <= nearSquared || distanceSquared >= farSquared);
 				if (!m_bGlobalShutter && point.m_tStamp < stamp)
 					throw std::runtime_error("LiDAR point timestamp precedes frame start; check capture timestamps");
 				raw->points.emplace_back(p[0], p[1], p[2], 1.0);

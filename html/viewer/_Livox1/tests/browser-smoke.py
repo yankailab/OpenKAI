@@ -188,7 +188,7 @@ def check_controls(browser, captured=None):
         assert(sent.length === 1 && sent[0].cmd === 'getConfig', 'Connect must load config');
         assert($('#lidarModule').value === 'Lvx1', 'Default module must match launch configuration');
         let config = {lvxIP:'192.168.1.100', lvxCoordinate:0, lvxReturnMode:0, lvxScanPattern:0, lvxWorkMode:1, lvxSampling:true, lvxHighSensitivity:true, lvxIMUdataEn:1, bIMUpreview:true, bReflectivity:true,
-            frameDurationMs:100, vRangeD:[0.1,40], vColorDefault:[1,1,1]};
+            tOutSec:3, vRangeD:[0.1,40], vColorDefault:[1,1,1]};
         const schema = {
             lvxIP:{type:'string',readOnly:true},
             lvxCoordinate:{type:'integer', choices:[{value:0,label:'Cartesian'},{value:1,label:'Spherical'}]},
@@ -199,7 +199,7 @@ def check_controls(browser, captured=None):
             lvxHighSensitivity:{type:'boolean'},
             lvxIMUdataEn:{type:'integer',choices:[{value:0,label:'Off'},{value:1,label:'On'}]},
             bIMUpreview:{type:'bool',label:'Enable IMU preview'},
-            bReflectivity:{type:'bool'}, frameDurationMs:{type:'integer',min:20,max:1000},
+            bReflectivity:{type:'bool'}, tOutSec:{type:'integer',min:2,max:120},
             vRangeD:{type:'range',length:2,min:0,max:10000}, vColorDefault:{type:'array',length:3,min:0,max:1},
             unsupported:{type:'int',supported:false}
         };
@@ -231,9 +231,9 @@ def check_controls(browser, captured=None):
         request=change('bReflectivity','false');
         assert(request.config.bReflectivity === false, 'Boolean controls must remain boolean'); reply();
         let count=sent.length;
-        change('frameDurationMs','0'); change('frameDurationMs','30.5');
+        change('tOutSec','0'); change('tOutSec','30.5');
         assert(sent.length === count, 'Numeric bounds and integer validation must reject invalid frame durations');
-        request=change('frameDurationMs','50'); assert(request.config.frameDurationMs === 50, 'Valid frame duration must be sent'); reply();
+        request=change('tOutSec','50'); assert(request.config.tOutSec === 50, 'Valid receiver timeout must be sent'); reply();
         for (const [key,value] of [['vRangeD','[40,1]'],['vRangeD','[0,"40"]'],['vColorDefault','[1,0]'],['vColorDefault','[1,2,0]']]) {
             count=sent.length; change(key,value); assert(sent.length === count, 'Invalid vector must not be sent: '+key+' '+value);
         }

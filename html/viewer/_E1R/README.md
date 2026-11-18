@@ -32,6 +32,12 @@ interface to receive the sensor's unicast traffic. Changing OpenKAI's bind/sourc
 addresses changes the receiver only; it does not change the sensor's network
 configuration.
 
+Each decoded point packet is appended immediately to `PCLstreamOut`. The sensor's
+packet frame counter is used for diagnostics, not host frame assembly. The
+`e1rPoints` destination is a `PCLframe` with `nBuf: 50000`, so the viewer reads a
+rolling snapshot. Point validity and age are consumer decisions; GLIM selects
+its own scans using `scanDurationMs: 100`.
+
 The controls are generated from the driver's schema so every exposed parameter
 is available, including receiver ports/buffers/timeouts, distance/noise filters,
 reflectivity/color, timestamps, position and orientation. A field change sends

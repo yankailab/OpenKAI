@@ -236,14 +236,14 @@ def run(args, output):
                 result['cloudCounts'] = counts
                 elapsed = time.monotonic() - start
                 after = success(commands.request('getConfig'))['status']
-                counters = ['pointPackets', 'difopPackets', 'frames', 'points', 'partialFrames',
-                            'droppedPackets', 'invalidPackets', 'outOfOrderPackets', 'frameOverflows']
+                counters = ['pointPackets', 'difopPackets', 'points',
+                            'droppedPackets', 'invalidPackets', 'outOfOrderPackets']
                 delta = {key: after[key] - before[key] for key in counters}
                 result['stream'] = {'seconds': elapsed, 'counterDelta': delta,
-                                   'sensorFramesPerSecond': delta['frames'] / elapsed,
+                                   'pointPacketsPerSecond': delta['pointPackets'] / elapsed,
                                    'pointCountRange': [min(counts), max(counts)], 'xyzBoundsMeters': bounds}
-                assert delta['frames'] > 0 and delta['points'] > 0, result['stream']
-                assert delta['invalidPackets'] == 0 and delta['frameOverflows'] == 0, result['stream']
+                assert delta['pointPackets'] > 0 and delta['points'] > 0, result['stream']
+                assert delta['invalidPackets'] == 0, result['stream']
             else:
                 assert all(math.isclose(p[0], 1, abs_tol=1e-6) and
                            math.isclose(p[1], expected_x + 2, abs_tol=1e-6) and p[2] == 3
@@ -293,7 +293,7 @@ def run(args, output):
                 transform_name = saved['E1R']['_TransformRigid']
                 assert saved[transform_name] == config[transform_name], saved[transform_name]
                 assert saved['viewer'] == config['viewer'] and saved['wsServer'] == config['wsServer']
-                assert saved['E1R']['PCLframeOut'] == config['E1R']['PCLframeOut']
+                assert saved['E1R']['PCLstreamOut'] == config['E1R']['PCLstreamOut']
                 new_msop, new_difop = free_udp_port(), free_udp_port()
                 while len({new_msop, new_difop, msop_port, difop_port}) != 4:
                     new_msop, new_difop = free_udp_port(), free_udp_port()
@@ -307,7 +307,7 @@ def run(args, output):
                     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as probe:
                         probe.bind(('127.0.0.1', old_port))
                 receive_cloud(points, lambda cloud: len(cloud) == 279)
-                result['checks'] = ['MSOP coordinates, distance/noise filtering and frame boundaries',
+                result['checks'] = ['MSOP coordinates, distance/noise filtering and immediate point segments',
                                     'DIFOP telemetry', 'invalid packet rejection', 'atomic invalid patches and bind failure',
                                     'read-only telemetry', 'pose transform', 'temporary launch save',
                                     'UDP socket rebind and old-port release']
